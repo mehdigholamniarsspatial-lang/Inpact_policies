@@ -1,0 +1,23 @@
+Django>=5.2,<5.3
+whitenoise>=6.6,<7
+openpyxl>=3.1,<4
+requests>=2.31,<3
+numpy>=1.24
+Pillow>=10.0
+
+# rasterio (+ native GDAL libraries) is only needed to render raster .tif
+# overlays from data/Raster/ LIVE. It is large and cannot be installed on
+# serverless platforms like Vercel. The app therefore falls back to the
+# PRE-RENDERED overlays in data/RasterPrerendered/ (PNG + JSON), which are
+# generated offline by scripts/prerender_rasters.py and committed to the repo.
+#
+# Workflow when you add or change a .tif in data/Raster/:
+#     pip install "rasterio>=1.3,<2"        (local machine only, once)
+#     python scripts/prerender_rasters.py
+#     git add data/RasterPrerendered && git commit && git push
+# Vercel will then serve the new overlay without needing rasterio at all.
+
+# --- Trend Analysis tab (piecewise regression engine, runs locally) ---
+# Ported from the standalone Streamlit dashboard into explorer/trend_engine.py.
+scipy>=1.13
+statsmodels>=0.14
