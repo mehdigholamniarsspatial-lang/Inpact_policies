@@ -159,40 +159,71 @@ def parse_filename(name: str) -> Optional[Tuple[str, str, str]]:
 
 def scan_catalog() -> Dict[str, Dict[str, Dict[str, str]]]:
     """
-    Scan ``data/Raster`` and return the nested catalogue::
+    Return the nested catalogue::
 
         { year: { sector: { parameter: filename } } }
+
+    Two sources are merged so the dropdowns are populated in every
+    environment:
+
+    * ``data/Raster/*.tif``            — the source grids (local / full envs);
+    * ``data/RasterPrerendered/*.png`` — the committed overlays that are the
+      only thing present on serverless hosts if the .tif files are excluded
+      from the deployment bundle to keep it small.
 
     Anything that does not match the naming convention is ignored. Called on
     every request so newly-added files appear without restarting the server.
     """
     catalog: Dict[str, Dict[str, Dict[str, str]]] = {}
-    if not RASTER_DIR.is_dir():
-        return catalog
-    for path in sorted(RASTER_DIR.iterdir()):
-        if path.suffix.lower() not in (".tif", ".tiff"):
-            continue
-        parsed = parse_filename(path.name)
+
+    def _add(name: str) -> None:
+        parsed = parse_filename(name)
         if parsed is None:
-            continue
+            return
         year, sector, parameter = parsed
-        catalog.setdefault(year, {}).setdefault(sector, {})[parameter] = path.name
+        # The catalogue value is always the canonical .tif name; it is only a
+        # logical key used to look the selection back up in resolve_path().
+        canonical = f"{Path(name).stem}.tif"
+        catalog.setdefault(year, {}).setdefault(sector, {})[parameter] = canonical
+
+    if RASTER_DIR.is_dir():
+        for path in sorted(RASTER_DIR.iterdir()):
+            if path.suffix.lower() in (".tif", ".tiff"):
+                _add(path.name)
+
+    if PRERENDERED_DIR.is_dir():
+        for path in sorted(PRERENDERED_DIR.iterdir()):
+            # Only advertise an overlay when BOTH halves of the pair exist.
+            if path.suffix.lower() == ".png" and path.with_suffix(".json").is_file():
+                _add(path.name)
+
     return catalog
 
 
 def resolve_path(year: str, sector: str, parameter: str) -> Optional[Path]:
     """
     Look up a (year, sector, parameter) selection in a freshly-scanned
-    catalogue and return the file path, or ``None`` if it is not a valid
-    combination. Resolving through the scan (rather than building a path from
-    user input) prevents path traversal.
+    catalogue and return the canonical raster path, or ``None`` if it is not a
+    valid combination. Resolving through the scan (rather than building a path
+    from user input) prevents path traversal.
+
+    The returned path is the .tif location even when that file is not present
+    on disk: :func:`render` falls back to the pre-rendered PNG/JSON pair, which
+    is keyed on the same stem.
     """
     catalog = scan_catalog()
     name = catalog.get(year, {}).get(sector, {}).get(parameter)
     if not name:
         return None
     path = RASTER_DIR / name
-    return path if path.is_file() else None
+    if path.is_file():
+        return path
+    stem = path.stem
+    if (PRERENDERED_DIR / f"{stem}.png").is_file() and (
+        PRERENDERED_DIR / f"{stem}.json"
+    ).is_file():
+        return path
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -331,13 +362,14 @@ def render(path: Path) -> dict:
          deployments without GDAL);
       3. :class:`RasterRenderingUnavailable` if neither is possible.
     """
-    if not RASTERIO_AVAILABLE:
+    if not (RASTERIO_AVAILABLE and path.is_file()):
         prerendered = _load_prerendered(path)
         if prerendered is not None:
             return prerendered
         raise RasterRenderingUnavailable(
-            "rasterio is not installed/available in this environment and no "
-            "pre-rendered overlay was found for this raster. Run "
+            "rasterio is not installed/available in this environment (or the "
+            "source .tif is not part of the deployment) and no pre-rendered "
+            "overlay was found for this raster. Run "
             "scripts/prerender_rasters.py locally and commit "
             "data/RasterPrerendered/."
         )
