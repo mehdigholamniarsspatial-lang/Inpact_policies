@@ -455,9 +455,6 @@ input[type=range]{accent-color:var(--emerald);width:100%}
   background:#fff;border:1px solid var(--grey-border);border-radius:12px;
   padding:1rem;
 }
-.trend-kpis{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-bottom:1rem;
-}
 .trend-chart-box{position:relative;height:420px}
 .trend-chart-box.sm{height:280px}
 .trend-diag-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
@@ -478,10 +475,60 @@ input[type=range]{accent-color:var(--emerald);width:100%}
 @media (max-width:992px){
   .trend-shell{grid-template-columns:1fr}
   .trend-side{position:static}
-  .trend-kpis{grid-template-columns:1fr}
   .trend-diag-grid{grid-template-columns:1fr}
   .trend-chart-box{height:320px}
 }
+
+/* ---- Simplified "Direction of trend" indicator (below the chart) ---- */
+.trend-direction{
+  display:flex;align-items:flex-start;gap:.7rem;flex-wrap:wrap;
+  margin-top:1rem;padding-top:.9rem;border-top:1px solid var(--grey-border);
+}
+.trend-direction .td-label{
+  font-size:.72rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+  color:var(--text-muted);padding-top:.4rem;
+}
+/* one pill per fitted segment; wraps to new rows when there are several */
+.td-segments{display:flex;flex-wrap:wrap;gap:.55rem;align-items:center}
+.td-pill{
+  display:inline-flex;align-items:center;gap:.45rem;
+  padding:.34rem .85rem;border-radius:999px;
+  font-size:.95rem;font-weight:800;letter-spacing:.2px;
+  border:1px solid transparent;
+}
+.td-pill i{font-size:1rem}
+/* segment number + start–end period shown inside each pill */
+.td-pill .td-segno{
+  font-size:.62rem;font-weight:800;letter-spacing:.4px;text-transform:uppercase;
+  opacity:.7;
+}
+.td-pill .td-period{
+  font-family:"IBM Plex Mono",monospace;font-size:.82rem;font-weight:700;
+  padding-right:.5rem;margin-right:.05rem;
+  border-right:1px solid currentColor;
+}
+/* colour states — set via .up / .down / .flat modifier on the pill */
+.td-pill.up{background:#FDECEA;color:#B23A2C;border-color:#F3C6C0}
+.td-pill.down{background:var(--emerald-light);color:var(--emerald-dark);border-color:#BBDCC9}
+.td-pill.flat{background:var(--grey-panel);color:var(--text-muted);border-color:var(--grey-border)}
+/* dim the period divider so it doesn't read as loud as the label */
+.td-pill .td-period{border-right-color:rgba(0,0,0,.12)}
+
+/* ---- Advanced Statistics collapsible panel ---- */
+.trend-adv{padding:0;overflow:hidden}
+.trend-adv-toggle{
+  width:100%;border:0;background:transparent;
+  display:flex;align-items:center;justify-content:space-between;gap:.6rem;
+  padding:1rem;font-size:.9rem;font-weight:800;letter-spacing:.3px;
+  color:var(--navy);cursor:pointer;
+}
+.trend-adv-toggle:hover{background:var(--grey-panel)}
+.trend-adv-toggle:focus-visible{outline:3px solid rgba(0,132,61,.35);outline-offset:-3px}
+.trend-adv-toggle .td-chev{font-size:1rem;transition:transform .25s ease}
+.trend-adv-toggle.collapsed .td-chev{transform:rotate(-90deg)}
+.trend-adv-body{padding:0 1rem 1rem}
+.trend-adv-sec{padding-top:1rem;border-top:1px solid var(--grey-border);margin-top:1rem}
+.trend-adv-sec:first-child{border-top:0;margin-top:0;padding-top:.4rem}
 
 /* ============ ABOUT TAB ============ */
 .about-wrap{max-width:1180px;margin:0 auto;padding:1.6rem 1.4rem 2.5rem}
@@ -1139,63 +1186,71 @@ input[type=range]{accent-color:var(--emerald);width:100%}
 
     <!-- ---- Main results column ---- -->
     <main class="trend-main">
-      <div class="trend-kpis">
-        <div class="kpi-card">
-          <div class="lbl">Whole-series Mann–Kendall trend</div>
-          <div class="val" id="trKpiMk">–</div>
-          <div class="sub" id="trKpiMkSub">Z, p-value after fitting</div>
-        </div>
-        <div class="kpi-card">
-          <div class="lbl">Sen's slope</div>
-          <div class="val" id="trKpiSen">–</div>
-          <div class="sub" id="trKpiSenSub">kt CO₂-eq · yr⁻¹ (CI)</div>
-        </div>
-        <div class="kpi-card">
-          <div class="lbl">Segments fitted</div>
-          <div class="val" id="trKpiSeg">–</div>
-          <div class="sub" id="trKpiSegSub">points used / dropped</div>
-        </div>
-      </div>
-
       <section class="panel-card mb-3">
         <div class="fw-bold mb-2" id="trChartTitle" style="color:var(--navy)">
           Piecewise Linear Regression
         </div>
         <div class="trend-chart-box"><canvas id="trChart"></canvas></div>
-      </section>
 
-      <section class="panel-card mb-3">
-        <div class="fw-bold mb-2" style="color:var(--navy)">Segment statistics</div>
-        <div class="trend-table-wrap">
-          <table class="table table-sm table-striped align-middle mb-0" id="trStatsTable">
-            <thead></thead><tbody></tbody>
-          </table>
-        </div>
-        <div class="trend-hint mt-1">
-          Slope units: kt CO₂-eq per year. CI bounds are for the slope at the
-          selected confidence level.
+        <!-- Simplified, plain-language trend indicator — one pill per fitted
+             segment (start–end + direction); raw Z / p-value live in Advanced
+             Statistics. Pills are injected by renderTrendDirection(). -->
+        <div id="trDirection" class="trend-direction" hidden>
+          <span class="td-label">Direction of trend</span>
+          <div class="td-segments" id="trDirectionSegments"></div>
         </div>
       </section>
 
-      <section class="panel-card mb-3" id="trMkPanel" hidden>
-        <div class="fw-bold mb-1" style="color:var(--navy)">
-          Segment-level Mann&ndash;Kendall analysis
-        </div>
-        <div class="trend-hint mb-2">
-          Two-sided test with tie correction and continuity-corrected Z; significance threshold &alpha; = 0.05.
-        </div>
-        <div class="trend-table-wrap">
-          <table class="table table-sm table-striped align-middle mb-0" id="trMkTable">
-            <thead></thead><tbody></tbody>
-          </table>
-        </div>
-      </section>
+      <!-- Advanced statistics — collapsed by default, expands on click -->
+      <section class="panel-card trend-adv mb-4">
+        <button class="trend-adv-toggle collapsed" type="button"
+                data-bs-toggle="collapse" data-bs-target="#trAdvancedPanel"
+                aria-expanded="false" aria-controls="trAdvancedPanel">
+          <span><i class="bi bi-sliders2 me-2"></i>Advanced Statistics</span>
+          <i class="bi bi-chevron-down td-chev"></i>
+        </button>
+        <div id="trAdvancedPanel" class="collapse">
+          <div class="trend-adv-body">
 
-      <section class="panel-card mb-4">
-        <div class="fw-bold mb-2" style="color:var(--navy)">Residual diagnostics</div>
-        <div class="trend-diag-grid">
-          <div class="trend-chart-box sm"><canvas id="trResChart"></canvas></div>
-          <div class="trend-chart-box sm"><canvas id="trHistChart"></canvas></div>
+            <!-- Segment statistics -->
+            <div class="trend-adv-sec">
+              <div class="fw-bold mb-2" style="color:var(--navy)">Segment statistics</div>
+              <div class="trend-table-wrap">
+                <table class="table table-sm table-striped align-middle mb-0" id="trStatsTable">
+                  <thead></thead><tbody></tbody>
+                </table>
+              </div>
+              <div class="trend-hint mt-1">
+                Slope units: kt CO₂-eq per year. CI bounds are for the slope at the
+                selected confidence level.
+              </div>
+            </div>
+
+            <!-- Segment-level Mann–Kendall -->
+            <div class="trend-adv-sec" id="trMkPanel" hidden>
+              <div class="fw-bold mb-1" style="color:var(--navy)">
+                Segment-level Mann&ndash;Kendall analysis
+              </div>
+              <div class="trend-hint mb-2">
+                Two-sided test with tie correction and continuity-corrected Z; significance threshold &alpha; = 0.05.
+              </div>
+              <div class="trend-table-wrap">
+                <table class="table table-sm table-striped align-middle mb-0" id="trMkTable">
+                  <thead></thead><tbody></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Residual diagnostics -->
+            <div class="trend-adv-sec">
+              <div class="fw-bold mb-2" style="color:var(--navy)">Residual diagnostics</div>
+              <div class="trend-diag-grid">
+                <div class="trend-chart-box sm"><canvas id="trResChart"></canvas></div>
+                <div class="trend-chart-box sm"><canvas id="trHistChart"></canvas></div>
+              </div>
+            </div>
+
+          </div>
         </div>
       </section>
     </main>
@@ -2533,6 +2588,12 @@ async function initTrendTab(){
     $t("trBreakpoints").addEventListener("keydown", e => {
       if (e.key === "Enter") runTrendFit();
     });
+    /* Residual-diagnostic charts live inside the collapsed Advanced Statistics
+       panel (display:none), so they may size to 0 on first render. Nudge them
+       to resize the moment the panel is expanded. */
+    $t("trAdvancedPanel").addEventListener("shown.bs.collapse", () => {
+      [trend.resChart, trend.histChart].forEach(c => { if (c) c.resize(); });
+    });
     runTrendFit(); // initial fit: first gas, first sector, no breakpoints
   }catch(err){
     trendError("Could not load the trend catalogue: " + err.message);
@@ -2594,18 +2655,64 @@ async function runTrendFit(){
   }
 }
 
+/* Map a direction key to its pill styling / wording. */
+const TREND_DIR = {
+  up:   {cls: "up",   icon: "bi-arrow-up-right",   label: "Increasing"},
+  down: {cls: "down", icon: "bi-arrow-down-right", label: "Decreasing"},
+  flat: {cls: "flat", icon: "bi-dash-lg",          label: "No significant trend"},
+};
+
+/* Build one "Direction of trend" pill per fitted segment. */
+function renderTrendDirection(d){
+  const box = $t("trDirection");
+  const host = $t("trDirectionSegments");
+  const segs = d.segments || [];
+  if (!segs.length){ box.hidden = true; host.innerHTML = ""; return; }
+
+  // Per-segment Mann–Kendall rows (present only when that toggle is on),
+  // keyed by segment index for quick lookup.
+  const mkBySeg = {};
+  (d.segment_mann_kendall || []).forEach(r => { mkBySeg[r.segment] = r; });
+  const alpha = 1 - (d.confidence || 0.95);
+  const yr = v => String(Math.round(v));
+
+  const multi = segs.length > 1;
+  box.querySelector(".td-label").textContent =
+    multi ? "Direction of trend (per segment)" : "Direction of trend";
+
+  host.innerHTML = segs.map(s => {
+    const mkRow = mkBySeg[s.Segment];
+    let key;
+    if (mkRow){
+      const raw = (mkRow.trend || "").toLowerCase();
+      key = raw.includes("increas") ? "up"
+          : raw.includes("decreas") ? "down" : "flat";
+    }else{
+      const sig = (s.p_value != null) && (s.p_value < alpha);
+      key = (sig && s.Slope > 0) ? "up"
+          : (sig && s.Slope < 0) ? "down" : "flat";
+    }
+    const dir = TREND_DIR[key];
+    const period = `${yr(s.Start)}–${yr(s.End)}`;
+    const segTag = multi ? `<span class="td-segno">Seg ${s.Segment}</span>` : "";
+    return `<span class="td-pill ${dir.cls}">${segTag}` +
+           `<span class="td-period">${period}</span>` +
+           `<i class="bi ${dir.icon}"></i>` +
+           `<span>${dir.label}</span></span>`;
+  }).join("");
+
+  box.hidden = false;
+}
+
 function renderTrendResults(d){
-  /* --- KPI cards --- */
-  const mk = d.mann_kendall, sen = d.sens_slope;
-  $t("trKpiMk").textContent = mk.trend.replace("no significant trend", "not significant");
-  $t("trKpiMkSub").textContent =
-    `Z = ${mk.Z.toFixed(2)}, p = ${mk.p_value < 1e-4 ? "<0.0001" : mk.p_value.toFixed(4)}`;
-  $t("trKpiSen").textContent = sen.slope.toFixed(2);
-  $t("trKpiSenSub").textContent =
-    `kt CO₂-eq·yr⁻¹ [${sen.ci_low.toFixed(2)}, ${sen.ci_high.toFixed(2)}]`;
-  $t("trKpiSeg").textContent = d.segments.length;
-  $t("trKpiSegSub").textContent =
-    `${d.cleaning.n_used} points used, ${d.cleaning.n_dropped} dropped`;
+  /* --- Plain-language "Direction of trend" indicator, PER SEGMENT ---
+     One pill per fitted segment, each labelled with its own start–end years.
+     With no breakpoints this is a single pill covering the whole period; with
+     breakpoints, each segment is interpreted separately. Prefers the
+     per-segment Mann–Kendall verdict when that analysis is enabled, otherwise
+     falls back to the segment's regression slope + p-value. The raw Z /
+     p-values remain available in the Advanced Statistics panel. --- */
+  renderTrendDirection(d);
 
   /* --- Main chart --- */
   $t("trChartTitle").textContent =
@@ -2665,7 +2772,9 @@ function renderTrendResults(d){
         y: {title: {display: true, text: "Emissions (kt CO₂-eq)"}},
       },
       plugins: {
-        legend: {labels: {filter: it => !it.text.startsWith("_")}},
+        /* Equation legend removed from the main view; the regression
+           equations remain available in the Advanced Statistics table. */
+        legend: {display: false},
         tooltip: {filter: it => !it.dataset.label.startsWith("_")},
       },
     },
