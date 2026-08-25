@@ -513,6 +513,12 @@ input[type=range]{accent-color:var(--emerald);width:100%}
 .td-pill.flat{background:var(--grey-panel);color:var(--text-muted);border-color:var(--grey-border)}
 /* dim the period divider so it doesn't read as loud as the label */
 .td-pill .td-period{border-right-color:rgba(0,0,0,.12)}
+/* Mann–Kendall Z (or regression t) + p-value, shown after the direction word */
+.td-pill .td-stats{
+  font-family:"IBM Plex Mono",monospace;font-size:.74rem;font-weight:600;
+  padding-left:.5rem;margin-left:.05rem;
+  border-left:1px solid rgba(0,0,0,.12);opacity:.85;
+}
 
 /* ---- Advanced Statistics collapsible panel ---- */
 .trend-adv{padding:0;overflow:hidden}
@@ -2680,25 +2686,35 @@ function renderTrendDirection(d){
   box.querySelector(".td-label").textContent =
     multi ? "Direction of trend (per segment)" : "Direction of trend";
 
+  // Test-statistic (Z for Mann–Kendall, t for the regression fallback) and
+  // p-value, formatted for display inside each pill.
+  const fmtStat = v => v == null ? "–" : v.toFixed(2);
+  const fmtP = p => p == null ? "p = –"
+                  : (p < 1e-4 ? "p < 0.0001" : `p = ${p.toFixed(4)}`);
+
   host.innerHTML = segs.map(s => {
     const mkRow = mkBySeg[s.Segment];
-    let key;
+    let key, statLabel, statVal, pVal;
     if (mkRow){
       const raw = (mkRow.trend || "").toLowerCase();
       key = raw.includes("increas") ? "up"
           : raw.includes("decreas") ? "down" : "flat";
+      statLabel = "Z"; statVal = mkRow.Z; pVal = mkRow.p_value;
     }else{
       const sig = (s.p_value != null) && (s.p_value < alpha);
       key = (sig && s.Slope > 0) ? "up"
           : (sig && s.Slope < 0) ? "down" : "flat";
+      statLabel = "t"; statVal = s.t_statistic; pVal = s.p_value;
     }
     const dir = TREND_DIR[key];
     const period = `${yr(s.Start)}–${yr(s.End)}`;
     const segTag = multi ? `<span class="td-segno">Seg ${s.Segment}</span>` : "";
+    const stats = `${statLabel} = ${fmtStat(statVal)} · ${fmtP(pVal)}`;
     return `<span class="td-pill ${dir.cls}">${segTag}` +
            `<span class="td-period">${period}</span>` +
            `<i class="bi ${dir.icon}"></i>` +
-           `<span>${dir.label}</span></span>`;
+           `<span>${dir.label}</span>` +
+           `<span class="td-stats">${stats}</span></span>`;
   }).join("");
 
   box.hidden = false;
