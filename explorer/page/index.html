@@ -382,6 +382,13 @@ input[type=range]{accent-color:var(--emerald);width:100%}
 .app-footer a{color:#9FE8C2;text-decoration:none}
 .app-footer a:hover{text-decoration:underline;color:#fff}
 .footer-links{display:flex;flex-wrap:wrap;gap:1.4rem}
+.footer-notices{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:2rem;
+  max-width:1200px;margin-top:1.25rem;padding-top:1.1rem;
+  border-top:1px solid rgba(200,214,226,.25);
+  font-size:.8rem;line-height:1.5;color:#DCE6EE;
+}
+.footer-acknowledgement,.footer-disclaimer{margin:0}
 
 /* ============ RESPONSIVE ============ */
 @media (max-width: 1199px){
@@ -392,6 +399,7 @@ input[type=range]{accent-color:var(--emerald);width:100%}
   .chart-wrap{height:300px}
   #map{height:380px}
   .kpi-grid,.participation-stats{grid-template-columns:1fr 1fr}
+  .footer-notices{grid-template-columns:1fr;gap:.75rem}
 }
 @media (prefers-reduced-motion: reduce){
   *{transition:none!important;animation:none!important}
@@ -1600,6 +1608,10 @@ input[type=range]{accent-color:var(--emerald);width:100%}
     <div class="text-end" style="opacity:.85">
       Version 2.0 · 2026 · © Environmental Protection Agency Ireland (prototype — synthetic data)
     </div>
+  </div>
+  <div class="footer-notices">
+    <p class="footer-acknowledgement">This project is funded under the EPA Research Programme 2021-2030. The EPA Research Programme is a Government of Ireland initiative funded by the Department of Climate, Energy and the Environment.</p>
+    <p class="footer-disclaimer">DISCLAIMER: Although every effort has been made to ensure the accuracy of the material contained in this website, complete accuracy cannot be guaranteed. Neither the Environmental Protection Agency nor the authors accept any responsibility whatsoever for loss or damage occasioned or claimed to have been occasioned, in part or in full, as a consequence of any person acting or refraining from acting, as a result of a matter contained in this website.</p>
   </div>
 </footer>
 
