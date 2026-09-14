@@ -26,18 +26,12 @@ inpact-explorer/
         └── index.html        # the self-contained Explorer page
 ```
 
-## Google satellite base map
+## Satellite base map
 
-The Explorer uses Google satellite imagery through the Maps JavaScript API
-and Leaflet GoogleMutant, preserving the station markers and raster overlays.
-Set `GOOGLE_MAPS_API_KEY` in the server environment and restart the server.
-Enable **Maps JavaScript API** and billing in the Google Cloud project; restrict
-the browser key to this API and the dashboard's website origins (including
-localhost for local development). On Vercel, add the variable in project
-settings and redeploy. The key is sent to the browser by design.
-
-If the key is missing or Google fails to load/authenticate, the map displays
-OpenStreetMap with a visible notice so the data overlays remain usable.
+The Explorer uses Esri World Imagery's public raster tile service as its only
+base map, preserving the station markers and emissions overlays. No API key
+or environment variable is required. Imagery attribution is displayed on the
+map. The service requires an internet connection.
 
 ## Editing the data
 

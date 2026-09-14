@@ -15,7 +15,6 @@ import json
 import logging
 from pathlib import Path
 
-from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
@@ -161,11 +160,6 @@ def _load_policies(csv_path: Path):
 def _render_page():
     """Read the page and splice in the inventory data from the CSV."""
     html = _PAGE_PATH.read_text(encoding="utf-8")
-    html = html.replace(
-        '/*@GOOGLE_MAPS_API_KEY@*/""',
-        json.dumps(settings.GOOGLE_MAPS_API_KEY).replace("<", "\\u003c"),
-        1,
-    )
     try:
         real_data, years = _load_inventory(_CSV_PATH)
         inventory_json = json.dumps(real_data, ensure_ascii=False)

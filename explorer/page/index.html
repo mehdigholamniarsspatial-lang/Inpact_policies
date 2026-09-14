@@ -992,7 +992,7 @@ input[type=range]{accent-color:var(--emerald);width:100%}
           <div class="panel-head">
             <span class="panel-num">2B</span>
             <h2 class="panel-title">Spatial Environmental Mapping</h2>
-            <span class="ms-auto text-muted" style="font-size:.72rem">EPA monitoring network · OpenStreetMap</span>
+            <span class="ms-auto text-muted" style="font-size:.72rem">EPA monitoring network · Esri World Imagery</span>
           </div>
           <div class="raster-bar" aria-label="Raster overlay selector">
             <div class="raster-field">
@@ -1618,7 +1618,6 @@ input[type=range]{accent-color:var(--emerald);width:100%}
 <!-- ================= SCRIPTS ================= -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet.gridlayer.googlemutant@0.15.0/dist/Leaflet.GoogleMutant.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script>
 /* =====================================================================
@@ -2168,52 +2167,11 @@ document.addEventListener("keydown", event => {
 });
 
 /* ---------------------- 4. Leaflet map ---------------------- */
-const map = L.map("map", { zoomControl: true, scrollWheelZoom: true }).setView([53.35, -8.0], 7);
-const fallbackBasemap = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+const map = L.map("map", { zoomControl: true, scrollWheelZoom: true, maxZoom: 18 }).setView([53.35, -8.0], 7);
+L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
   maxZoom: 18,
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  attribution: 'Tiles &copy; <a href="https://www.esri.com/">Esri</a> &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community'
 }).addTo(map);
-const googleMapsApiKey = /*@GOOGLE_MAPS_API_KEY@*/"";
-let googleSatellite;
-const basemapStatus = L.control({ position: "bottomleft" });
-basemapStatus.onAdd = () => {
-  const notice = L.DomUtil.create("div", "leaflet-bar");
-  notice.style.cssText = "background:white;padding:6px 10px;max-width:240px;font-size:12px";
-  notice.setAttribute("role", "status");
-  notice.textContent = googleMapsApiKey
-    ? "Loading Google satellite imagery…"
-    : "Google satellite is not configured. Showing OpenStreetMap.";
-  L.DomEvent.disableClickPropagation(notice);
-  return notice;
-};
-basemapStatus.addTo(map);
-function satelliteUnavailable() {
-  if (googleSatellite) map.removeLayer(googleSatellite);
-  fallbackBasemap.addTo(map);
-  basemapStatus.addTo(map);
-  basemapStatus.getContainer().textContent = "Google satellite is unavailable. Showing OpenStreetMap.";
-}
-if (googleMapsApiKey) {
-  window.gm_authFailure = satelliteUnavailable;
-  window.initGoogleSatellite = () => {
-    try {
-      googleSatellite = L.gridLayer.googleMutant({ type: "satellite", maxZoom: 18 });
-      googleSatellite.addTo(map);
-      map.removeLayer(fallbackBasemap);
-      basemapStatus.remove();
-    } catch (error) {
-      console.error("Google satellite initialization failed", error);
-      satelliteUnavailable();
-    }
-  };
-  const googleScript = document.createElement("script");
-  googleScript.src = "https://maps.googleapis.com/maps/api/js?" + new URLSearchParams({
-    key: googleMapsApiKey, loading: "async", callback: "initGoogleSatellite", v: "quarterly"
-  });
-  googleScript.async = true;
-  googleScript.onerror = satelliteUnavailable;
-  document.head.appendChild(googleScript);
-}
 L.control.scale({ imperial:false }).addTo(map);
 
 // ICOS-Ireland atmospheric greenhouse-gas monitoring stations

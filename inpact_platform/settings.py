@@ -23,9 +23,6 @@ DEBUG = os.environ.get("DEBUG", "0") == "1"
 # Vercel serves your app on *.vercel.app. Localhost covers local development.
 ALLOWED_HOSTS = [".vercel.app", "localhost", "127.0.0.1"]
 
-# Browser key with Maps JavaScript API enabled and website restrictions.
-GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY", "").strip()
-
 # Vercel sits behind a proxy that terminates HTTPS.
 CSRF_TRUSTED_ORIGINS = ["https://*.vercel.app"]
 
