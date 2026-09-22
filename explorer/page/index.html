@@ -389,6 +389,26 @@ input[type=range]{accent-color:var(--emerald);width:100%}
   font-size:.8rem;line-height:1.5;color:#DCE6EE;
 }
 .footer-acknowledgement,.footer-disclaimer{margin:0}
+.footer-notices .notice-title{
+  margin:0 0 .35rem;font-weight:700;font-size:.82rem;letter-spacing:.02em;color:#fff;
+}
+.footer-notices p{margin:0 0 .55rem}
+.footer-notices p:last-child{margin-bottom:0}
+.disclaimer-body{
+  position:relative;overflow:hidden;max-height:2.4rem;transition:max-height .25s ease;
+}
+.disclaimer-body::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:1.2rem;
+  background:linear-gradient(180deg,rgba(22,50,79,0),#16324F);
+  pointer-events:none;
+}
+.disclaimer-body.is-expanded{max-height:none}
+.disclaimer-body.is-expanded::after{display:none}
+.notice-toggle{
+  margin-top:.45rem;padding:0;border:0;background:none;cursor:pointer;
+  color:#9FE8C2;font-size:.78rem;font-weight:600;text-decoration:underline;
+}
+.notice-toggle:hover{color:#fff}
 
 /* ============ RESPONSIVE ============ */
 @media (max-width: 1199px){
@@ -1610,8 +1630,20 @@ input[type=range]{accent-color:var(--emerald);width:100%}
     </div>
   </div>
   <div class="footer-notices">
-    <p class="footer-acknowledgement">This project is funded under the EPA Research Programme 2021-2030. The EPA Research Programme is a Government of Ireland initiative funded by the Department of Climate, Energy and the Environment.</p>
-    <p class="footer-disclaimer">DISCLAIMER: Although every effort has been made to ensure the accuracy of the material contained in this website, complete accuracy cannot be guaranteed. Neither the Environmental Protection Agency nor the authors accept any responsibility whatsoever for loss or damage occasioned or claimed to have been occasioned, in part or in full, as a consequence of any person acting or refraining from acting, as a result of a matter contained in this website.</p>
+    <div class="footer-acknowledgement">
+      <p class="notice-title">Acknowledgements</p>
+      <p>This project is funded under the EPA Research Programme 2021-2030. The EPA Research Programme is a Government of Ireland initiative funded by the Department of Climate, Energy and the Environment.</p>
+    </div>
+    <div class="footer-disclaimer">
+      <p class="notice-title">Disclaimer</p>
+      <div class="disclaimer-body" id="disclaimerBody">
+        <p>The EPA gives no warranty, expressed or implied, as to the accuracy, reliability, or completeness of these datasets and/or information resources. It is strongly recommended that these datasets and/or information resources be verified with their designated Responsible Parties (as outlined in the metadata) and not through other sources that may have changed the dataset/information resource in some way.</p>
+        <p>THE ENTIRE RISK OF USE OF THE DATA AND/OR INFORMATION RESOURCE SHALL BE WITH THE USER.</p>
+        <p>The EPA does not express or imply warranty made regarding the utility of the data and/or information resources on other systems for general or scientific purposes nor shall the act of distribution to the public or other agencies constitute any such warranty. This disclaimer applies both to individual use of the data and/or information resources and aggregate use with other data/information resources.</p>
+        <p>To use the data and/or information resources, we ask that you agree to this liability disclaimer and that you use proper citation (as will be provided in the metadata) on any materials (digital or printed) in which this information appears, and that you use the data/information resource appropriately.</p>
+      </div>
+      <button type="button" class="notice-toggle" id="disclaimerToggle" aria-expanded="false" aria-controls="disclaimerBody">More</button>
+    </div>
   </div>
 </footer>
 
@@ -2983,7 +3015,19 @@ document.getElementById("fbSubmitBtn").addEventListener("click", async () => {
 });
 renderFbStats();
 
-/* ---------------------- 11. Init ---------------------- */
+/* ---------------------- 11. Footer disclaimer toggle ---------------------- */
+(function initDisclaimerToggle(){
+  const body = document.getElementById("disclaimerBody");
+  const btn  = document.getElementById("disclaimerToggle");
+  if (!body || !btn) return;
+  btn.addEventListener("click", () => {
+    const expanded = body.classList.toggle("is-expanded");
+    btn.textContent = expanded ? "Less" : "More";
+    btn.setAttribute("aria-expanded", String(expanded));
+  });
+})();
+
+/* ---------------------- 12. Init ---------------------- */
 buildChart();
 applyYearWindow();
 </script>
