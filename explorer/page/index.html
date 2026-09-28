@@ -819,14 +819,6 @@ input[type=range]{accent-color:var(--emerald);width:100%}
   height:calc(100vh - var(--header-h) - var(--tabnav-h, 52px));
   display:flex;flex-direction:column;padding:1rem .8rem .8rem;z-index:5;
 }
-.pt-side-head{display:flex;align-items:center;gap:.65rem;padding:0 .3rem .85rem;border-bottom:1px solid var(--grey-border);margin-bottom:.8rem}
-.pt-mark{
-  width:38px;height:38px;border-radius:10px;flex:0 0 38px;
-  background:linear-gradient(135deg,#0B5563,var(--teal));color:#fff;
-  display:flex;align-items:center;justify-content:center;font-size:1.1rem;
-}
-.pt-name{font-weight:800;color:var(--navy);font-size:.98rem;line-height:1.15}
-.pt-subname{font-size:.74rem;color:var(--text-muted);line-height:1.3;margin-top:.1rem}
 .pt-search{position:relative;margin-bottom:.8rem}
 .pt-search > i{position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none;font-size:.85rem}
 .pt-search input{
@@ -906,7 +898,6 @@ input[type=range]{accent-color:var(--emerald);width:100%}
 @media (max-width:991px){
   .pt-layout{flex-direction:column;align-items:stretch}
   .pt-side{width:auto;flex:none;position:static;height:auto;border-right:0;border-bottom:1px solid var(--grey-border);padding:.7rem .8rem .5rem}
-  .pt-side-head{border-bottom:0;padding-bottom:.5rem;margin-bottom:.3rem}
   .pt-menu-label,.pt-side-foot{display:none}
   .pt-vtabs{flex-direction:row;overflow-x:auto;overflow-y:visible;gap:.3rem;padding-bottom:.3rem}
   .pt-vtab{width:auto;flex:0 0 auto;white-space:nowrap;border-left:0;border-bottom:3px solid transparent;border-radius:8px 8px 0 0;padding:.45rem .7rem}
@@ -1639,13 +1630,6 @@ input[type=range]{accent-color:var(--emerald);width:100%}
 
     <!-- Left vertical sub-menu -->
     <aside class="pt-side" aria-label="Policy Timeline menu">
-      <div class="pt-side-head">
-        <span class="pt-mark" aria-hidden="true"><i class="bi bi-calendar3-range"></i></span>
-        <div>
-          <div class="pt-name">Ireland Climate Policy Timeline</div>
-          <div class="pt-subname">34 core policy families &middot; 2000&ndash;2023</div>
-        </div>
-      </div>
       <div class="pt-search">
         <i class="bi bi-search" aria-hidden="true"></i>
         <input id="ptSearch" type="search" placeholder="Find a policy or sector&hellip;" autocomplete="off"
