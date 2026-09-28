@@ -210,7 +210,13 @@ The tab has two parts:
   sticky panels behave as in the original. A top bar shows a breadcrumb (e.g.
   *Policy Timeline › Policies › Carbon Tax*), plus **Back / Forward / Reload**
   for pages visited in the tab and **New tab**, which opens the current view on
-  its own with the original header.
+  its own. A page opened this way keeps the INPACT header (INPACT logo, title,
+  subtitle and EPA logo; the logo links back to the dashboard) and the INPACT
+  *Acknowledgements* and *Disclaimer* footer. The Policy Timeline's own section
+  menu sits under the header. Header and footer come from
+  `policies/templates/policies/_inpact_header.html`, `_inpact_footer.html` and
+  `policies/static/policies/css/inpact-frame.css`, and are hidden inside the tab,
+  where the main page already shows them.
 
 On narrow screens (under 992 px wide) the sub-menu becomes a horizontal,
 scrollable strip above the content.

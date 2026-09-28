@@ -1,0 +1,29 @@
+{# INPACT Acknowledgements and Disclaimer, the same as on the main dashboard. Hidden inside the dashboard's Policy Timeline tab. #}
+<footer class="inpact-foot">
+  <div class="inpact-foot-inner">
+    <div>
+      <p class="notice-title">Acknowledgements</p>
+      <p>This project is funded under the EPA Research Programme 2021-2030. The EPA Research Programme is a Government of Ireland initiative funded by the Department of Climate, Energy and the Environment.</p>
+    </div>
+    <div>
+      <p class="notice-title">Disclaimer</p>
+      <div class="disclaimer-body" id="inpactDisclaimerBody">
+        <p>The EPA gives no warranty, expressed or implied, as to the accuracy, reliability, or completeness of these datasets and/or information resources. It is strongly recommended that these datasets and/or information resources be verified with their designated Responsible Parties (as outlined in the metadata) and not through other sources that may have changed the dataset/information resource in some way.</p>
+        <p>THE ENTIRE RISK OF USE OF THE DATA AND/OR INFORMATION RESOURCE SHALL BE WITH THE USER.</p>
+        <p>The EPA does not express or imply warranty made regarding the utility of the data and/or information resources on other systems for general or scientific purposes nor shall the act of distribution to the public or other agencies constitute any such warranty. This disclaimer applies both to individual use of the data and/or information resources and aggregate use with other data/information resources.</p>
+        <p>To use the data and/or information resources, we ask that you agree to this liability disclaimer and that you use proper citation (as will be provided in the metadata) on any materials (digital or printed) in which this information appears, and that you use the data/information resource appropriately.</p>
+      </div>
+      <button type="button" class="notice-toggle" id="inpactDisclaimerToggle" aria-expanded="false" aria-controls="inpactDisclaimerBody">More</button>
+    </div>
+  </div>
+</footer>
+<script>
+  (function () {
+    var body = document.getElementById("inpactDisclaimerBody"), btn = document.getElementById("inpactDisclaimerToggle");
+    btn.addEventListener("click", function () {
+      var open = body.classList.toggle("is-expanded");
+      btn.textContent = open ? "Less" : "More";
+      btn.setAttribute("aria-expanded", String(open));
+    });
+  })();
+</script>

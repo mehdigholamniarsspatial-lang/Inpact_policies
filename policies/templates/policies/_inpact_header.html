@@ -1,0 +1,17 @@
+{% load static %}{# INPACT header, the same as on the main dashboard. Shown when these pages are opened on their own; hidden inside the dashboard's Policy Timeline tab. #}
+<header class="inpact-head">
+  <div class="inpact-head-inner">
+    <a class="inpact-brand" href="/" title="Back to the INPACT dashboard">
+      <img src="{% static 'img/inpact-mark.png' %}"
+           alt="INPACT: Investigating National Policy Impacts on Atmospheric Climate Targets">
+    </a>
+    <div class="inpact-head-text">
+      <p class="inpact-title"><span class="accent">Ireland</span> Greenhouse Gas Policy Impact Explorer</p>
+      <p class="inpact-subtitle">Explore greenhouse gas emissions, atmospheric pollutants, climate policies and policy effectiveness across Ireland.</p>
+    </div>
+    <div class="inpact-funder">
+      <span class="funded-by">Funded by</span>
+      <img src="{% static 'img/epa-logo.png' %}" alt="Funded by the Environmental Protection Agency (EPA)">
+    </div>
+  </div>
+</header>

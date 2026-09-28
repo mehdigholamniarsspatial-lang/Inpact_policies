@@ -6,8 +6,9 @@
   <title>{% block title %}Ireland Climate Policy Timeline{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Public+Sans:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'policies/css/app.css' %}">
+  <link rel="stylesheet" href="{% static 'policies/css/inpact-frame.css' %}">
   <script>
     /* Embedded in the INPACT dashboard's "Policy Timeline" tab? */
     (function () {
@@ -31,6 +32,7 @@
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
+{% include "policies/_inpact_header.html" %}
 <header class="site-head">
   <div class="wrap head-inner">
     <a class="brand" href="{% url 'policies:overview' %}">
@@ -64,6 +66,7 @@
     <p><span class="csv-link"><a href="{% url 'policies:export_csv' %}">Download the dataset (CSV)</a> <span class="sep" aria-hidden="true">/</span> </span><a href="{% url 'policies:api_series' %}">Data API (JSON)</a> <span class="sep" aria-hidden="true">/</span> <a href="{% url 'policies:about' %}">About and citation</a></p>
   </div>
 </footer>
+{% include "policies/_inpact_footer.html" %}
 
 <div id="tip" class="tip" role="tooltip" hidden></div>
 {{ glossary|json_script:"glossary-data" }}
