@@ -83,6 +83,7 @@ body{
   font-size:.64rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
   color:var(--text-muted);
 }
+.brand-funder a{display:block}
 .brand-funder img{height:calc(var(--header-h) - 66px);width:auto;display:block}
 
 @media (max-width:991px){
@@ -911,8 +912,9 @@ input[type=range]{accent-color:var(--emerald);width:100%}
 <!-- ================= HEADER ================= -->
 <header class="app-header">
   <div class="header-inner">
-    <a class="brand-inpact" href="#" onclick="return false"
-       title="INPACT — Investigating National Policy Impacts on Atmospheric Climate Targets">
+    <a class="brand-inpact" href="https://www.universityofgalway.ie/ryaninstitute/researchcentresandclusters/c-caps/projects/inpact/"
+       target="_blank" rel="noopener"
+       title="INPACT project page, University of Galway (opens in a new tab)">
       <img src="/static/img/inpact-mark.png"
            alt="INPACT — Investigating National Policy Impacts on Atmospheric Climate Targets">
     </a>
@@ -922,8 +924,11 @@ input[type=range]{accent-color:var(--emerald);width:100%}
     </div>
     <div class="brand-funder">
       <span class="funded-by">Funded by</span>
-      <img src="/static/img/epa-logo.png"
-           alt="Funded by the Environmental Protection Agency (EPA)">
+      <a href="https://www.epa.ie/" target="_blank" rel="noopener"
+         title="Environmental Protection Agency (opens in a new tab)">
+        <img src="/static/img/epa-logo.png"
+             alt="Funded by the Environmental Protection Agency (EPA)">
+      </a>
     </div>
   </div>
 </header>

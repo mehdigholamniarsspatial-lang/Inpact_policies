@@ -25,6 +25,7 @@ html.embedded .inpact-head, html.embedded .inpact-foot { display: none; }
   padding-left: 1.4rem; border-left: 1px solid #E2E8EE;
 }
 .inpact-funder .funded-by { font-size: .64rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: #5C6B7A; }
+.inpact-funder a { display: block; }
 .inpact-funder img { height: calc(var(--ih-h) - 66px); width: auto; display: block; }
 @media (max-width: 991px) {
   .inpact-head { --ih-h: 116px; }
