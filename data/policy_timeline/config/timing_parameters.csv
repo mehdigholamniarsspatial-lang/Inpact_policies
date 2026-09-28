@@ -1,0 +1,13 @@
+mechanism_class,lag_years,ramp_years,half_life_years,parameter_basis,lag_low,lag_high,ramp_low,ramp_high,half_life_low,half_life_high
+price_flow,0.0,3.0,1.0,Claude supplied judgement scenario; not empirically fitted or independently literature-validated,0.0,1.0,1.0,6.0,0.5,3.0
+stock_buildings,1.0,10.0,30.0,Claude supplied judgement scenario; not empirically fitted or independently literature-validated,0.0,2.0,5.0,20.0,15.0,60.0
+stock_appliances,0.0,8.0,8.0,Claude supplied judgement scenario; not empirically fitted or independently literature-validated,0.0,1.0,4.0,12.0,4.0,15.0
+stock_vehicles,0.0,12.0,10.0,Claude supplied judgement scenario; not empirically fitted or independently literature-validated,0.0,1.0,8.0,16.0,6.0,16.0
+asset_subsidy,0.0,3.0,15.0,Claude supplied judgement scenario; not empirically fitted or independently literature-validated,0.0,1.0,2.0,6.0,8.0,30.0
+information_voluntary,0.0,2.0,2.0,Claude supplied judgement scenario; not empirically fitted or independently literature-validated,0.0,1.0,1.0,4.0,1.0,5.0
+supply_deployment,1.0,5.0,15.0,Claude supplied judgement scenario; not empirically fitted or independently literature-validated,0.0,3.0,3.0,10.0,8.0,25.0
+process_regulation,1.0,4.0,5.0,Claude supplied judgement scenario; not empirically fitted or independently literature-validated,0.0,2.0,2.0,8.0,2.0,10.0
+waste_fod,1.0,10.0,10.0,Claude supplied judgement scenario; not empirically fitted or independently literature-validated,0.0,3.0,6.0,20.0,5.0,20.0
+land_use,2.0,15.0,30.0,Claude supplied judgement scenario; not empirically fitted or independently literature-validated,1.0,5.0,8.0,30.0,15.0,60.0
+planning_infrastructure,2.0,10.0,20.0,Claude supplied judgement scenario; not empirically fitted or independently literature-validated,1.0,4.0,5.0,15.0,10.0,40.0
+framework,0.0,1.0,0.0,Conventional legal-presence fallback only; no empirical governance-response interpretation,0.0,0.0,1.0,1.0,0.0,0.0

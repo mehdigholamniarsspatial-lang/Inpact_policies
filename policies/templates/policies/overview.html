@@ -1,0 +1,99 @@
+{% extends "policies/base.html" %}
+{% load static policy_extras %}
+{% block title %}Overview | Ireland Climate Policy Timeline{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <h1>How Ireland's climate policies built up, year by year</h1>
+    <p class="lede">An annual record of {{ stats.core_families }} core greenhouse-gas mitigation policies and {{ stats.residual_bundles }} residual bundles in Ireland, 2000–2023. It integrates the policies Ireland reports to the European Union (EEA database) with the OECD's harmonised policy-stringency scores (CAPMF).</p>
+    <p><a class="btn" href="{% url 'policies:timeline' %}">Open the timeline</a> <a class="btn ghost" href="{% url 'policies:instruments' %}">Understand the instruments</a></p>
+  </div>
+  <figure class="hero-figure" style="margin:0">
+    <div id="river" aria-label="Every policy series as a strip of 24 years, shaded by intensity" role="img"></div>
+    <figcaption><span>Each line is one policy in one sector; darker means higher policy intensity. Hover to identify, click to open.</span><span id="river-legend"></span></figcaption>
+  </figure>
+</section>
+
+<div class="facts" role="list">
+  <div class="fact" role="listitem"><b>{{ stats.core_families }}</b><span>core policy families</span></div>
+  <div class="fact" role="listitem"><b>{{ stats.series }}</b><span>policy–sector series, incl. {{ stats.residual_bundles }} residuals</span></div>
+  <div class="fact" role="listitem"><b>{{ stats.active_2000 }} → {{ stats.active_2023 }}</b><span>series active in 2000 and in 2023</span></div>
+  <div class="fact" role="listitem"><b>{{ stats.candidates }}</b><span>source candidates screened</span></div>
+  <div class="fact" role="listitem"><b>{{ stats.checks_passed }}/{{ stats.checks_total }}</b><span>computational checks passed</span></div>
+</div>
+
+<section class="section">
+  <div class="section-head"><h2>How the dataset was built</h2><p>Two structurally different sources were aligned into one annual policy panel.</p></div>
+  <ol class="pipeline">
+    <li><span class="n">1</span><h3>Integrate two sources</h3><p>{{ stats.eea_records }} policy records reported by Ireland to the EU, and OECD stringency scores for {{ stats.capmf_categories }} policy categories ({{ stats.capmf_indicators }} detailed indicators), 1990–2023.</p></li>
+    <li><span class="n">2</span><h3>Screen candidates</h3><p>{{ stats.candidates }} candidates were assessed against five eligibility criteria; {{ stats.eligible }} were eligible. Every decision is documented with its reason.</p></li>
+    <li><span class="n">3</span><h3>Select the core</h3><p>Measures reaching 90% of each sector's reported savings, plus named OECD anchors, form the core. Smaller eligible measures go into one residual bundle per sector.</p></li>
+    <li><span class="n">4</span><h3>Score every year</h3><p>For each policy, sector and year: status, implementation (OECD score or assumed ramp-up), scope and bindingness, combined into a policy intensity index.</p></li>
+  </ol>
+  <p class="note"><a href="{% url 'policies:method' %}">Read the full methodology, selection flow and validation checks</a></p>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>Emissions context</h2><p>Ireland's greenhouse-gas emissions by sector in 2023, the final year of the dataset, alongside the number of policy series in each sector.</p></div>
+  <div class="panel">
+    <div class="split" style="gap:28px">
+      <div id="emis-chart" style="height:330px"></div>
+      <div class="prose small">
+        <p>Agriculture is Ireland's largest source of emissions, mainly methane from livestock and nitrous oxide from fertiliser and manure, yet only three agricultural policy series meet the selection criteria. Energy-related sectors, by contrast, are covered by many overlapping instruments.</p>
+        <p>This contrast reflects both policy history and the coverage of the sources: the OECD framework has no direct stringency indicators for agriculture, waste or land use. It should be kept in mind when comparing sectors.</p>
+        <p class="note">{{ emissions_source }} National total excluding LULUCF: 54.93 Mt CO₂e. LULUCF was a net source of 3.90 Mt CO₂e.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>Where the policies sit</h2><p>Number of policy series by sector and mechanism. Select a cell to list them; hover a heading for its meaning.</p></div>
+  <div class="panel">
+    <div class="matrix-wrap"><table class="matrix" id="matrix"></table></div>
+    <p class="note">A policy that covers several sectors (for example the carbon tax) appears once in each sector it affects.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>Four layers of policy</h2><p>Rows sit at different levels of a policy hierarchy, and the layers must not be added together.</p></div>
+  <div class="layer-stack layer-grid">
+    {% for key, label, short, desc in layers %}
+    <div class="layer-row"><div class="badge">{{ short }}</div><div><h3>{{ label }} <span class="count" data-layer-count="{{ key }}"></span></h3><p>{{ desc }}</p></div></div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section grid-2">
+  <div>
+    <div class="section-head"><h2>Policies in force</h2><p>Active series each year, by sector.</p></div>
+    <div class="panel"><div id="active-chart" style="height:320px"></div></div>
+  </div>
+  <div>
+    <div class="section-head"><h2>Where implementation values come from</h2><p>Active series each year, by the source of their implementation level.</p></div>
+    <div class="panel"><div id="source-chart" style="height:320px"></div></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="caveats">
+    <h3>Interpreting the data</h3>
+    <ul>
+      <li><b>No tonnes are estimated.</b> Policy intensity is a relative 0–1 index of how strongly a policy bears on its sector, not emissions avoided.</li>
+      <li><b>Reported savings are for selection only.</b> They repeat across years and sectors, so never add them up.</li>
+      <li><b>Frameworks, portfolios and residuals overlap</b> with other rows. Use the aggregation role on each policy before combining anything.</li>
+      <li><b>Some timing is assumed.</b> Where no OECD score matches, a hypothetical ramp-up is used; these years are hatched on the timeline.</li>
+      <li><b>Selection uses recent assessments.</b> Policies were selected using 2024–2030 reported estimates, which can introduce retrospective selection bias.</li>
+    </ul>
+  </div>
+</section>
+
+{{ matrix|json_script:"matrix-data" }}
+{{ emissions|json_script:"emissions-data" }}
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'policies/vendor/d3.min.js' %}"></script>
+<script src="{% static 'policies/vendor/plotly.min.js' %}"></script>
+<script src="{% static 'policies/js/overview.js' %}"></script>
+{% endblock %}

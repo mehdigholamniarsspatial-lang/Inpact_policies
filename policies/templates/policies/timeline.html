@@ -1,0 +1,70 @@
+{% extends "policies/base.html" %}
+{% load static %}
+{% block title %}Timeline | Ireland Climate Policy Timeline{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Policy timeline</h1>
+    <p class="muted prose">Every policy series across 2000–2023. Switch between the intensity grid, which shows how strongly each policy bore on its sector each year, and the lifespan view, which shows when each policy started and ended. Pick a year to see what was in force.</p>
+  </div>
+  <a class="btn ghost csv-link" id="export" href="#"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 2v8m0 0 3-3m-3 3L5 7M3 13h10"/></svg>Download filtered CSV</a>
+</div>
+
+<div class="tl-layout">
+  <div>
+    <div class="tl-toolbar">
+      <div class="controls">
+        <div class="control"><span class="label">View</span>
+          <div class="seg" id="view"><button data-value="grid" aria-pressed="true">Intensity grid</button><button data-value="life" aria-pressed="false">Lifespan</button></div></div>
+        <div class="control" id="metric-control"><label for="metric">Shade cells by</label>
+          <select id="metric">
+            <option value="intensity">Policy intensity (main index)</option>
+            <option value="impl">Implementation level</option>
+            <option value="capmf">OECD stringency (raw 0–10)</option>
+            <option value="gated">Equal-weight intensity</option>
+          </select></div>
+        <div class="control"><span class="label">Group by</span>
+          <div class="seg" id="group"><button data-value="sector" aria-pressed="true">Sector</button><button data-value="mechanism" aria-pressed="false">Mechanism</button><button data-value="layer" aria-pressed="false">Layer</button><button data-value="source" aria-pressed="false">Source</button></div></div>
+        <div class="control"><label for="sort">Order within group</label>
+          <select id="sort"><option value="start">Start year</option><option value="i2023">Intensity in 2023</option><option value="peak">Peak intensity</option><option value="name">Name</option></select></div>
+        <div class="control"><label for="q">Find a policy</label><input type="search" id="q" placeholder="e.g. carbon tax, Part L, ETS"></div>
+      </div>
+      <div class="row2">
+        <div class="control"><span class="label">Sectors <span class="muted small">(Alt-click to show only one)</span></span><div class="chips" id="sector-chips"></div></div>
+        <div class="control"><span class="label">Layers</span><div class="chips" id="layer-chips"></div></div>
+      </div>
+      <div class="row2"><div class="tl-legend" id="legend"></div></div>
+    </div>
+    <div class="tl-canvas" id="canvas"><div class="empty">Loading the timeline…</div></div>
+  </div>
+
+  <aside class="panel snapshot" id="snapshot" aria-live="polite">
+    <div class="player">
+      <button class="btn" id="play" type="button" aria-label="Play through the years">▶ Play</button>
+      <input type="range" id="year" min="2000" max="2023" value="2015" aria-label="Snapshot year"><output for="year" id="year-out">2015</output>
+    </div>
+    <div id="snap-body"></div>
+  </aside>
+</div>
+
+<section class="section grid-2">
+  <div>
+    <div class="section-head"><h2>Composition over time</h2><p id="comp-sub">Active series by group.</p></div>
+    <div class="panel"><div id="comp-chart" style="height:320px"></div></div>
+  </div>
+  <div>
+    <div class="section-head"><h2>Average intensity by group</h2><p>Mean of the shaded metric across the group's active series. Descriptive only; rows overlap and are not additive.</p></div>
+    <div class="panel"><div id="avg-chart" style="height:320px"></div></div>
+  </div>
+</section>
+
+<aside class="drawer" id="drawer" aria-hidden="true" aria-label="Policy quick view">
+  <button class="close" id="drawer-close" aria-label="Close">×</button>
+  <div id="drawer-body"></div>
+</aside>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'policies/vendor/d3.min.js' %}"></script>
+<script src="{% static 'policies/vendor/plotly.min.js' %}"></script>
+<script src="{% static 'policies/js/timeline.js' %}"></script>
+{% endblock %}

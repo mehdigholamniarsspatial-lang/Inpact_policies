@@ -34,6 +34,9 @@ CSRF_TRUSTED_ORIGINS = ["https://*.vercel.app"]
 INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "explorer",
+    # Ireland Climate Policy Timeline — mounted under /policy/ and shown in the
+    # Explorer's "Policy Timeline" tab (see explorer/page/index.html).
+    "policies",
 ]
 
 MIDDLEWARE = [
@@ -52,22 +55,39 @@ TEMPLATES = [
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [],
         "APP_DIRS": True,
-        "OPTIONS": {"context_processors": []},
+        "OPTIONS": {"context_processors": ["django.template.context_processors.request"]},
     },
 ]
 
 WSGI_APPLICATION = "inpact_platform.wsgi.application"
 
 # ---------------------------------------------------------------------------
-# Database-free application
+# Database (read-only policy dataset)
 # ---------------------------------------------------------------------------
-# The platform has no models, auth, admin, or database-backed sessions. Using
-# Django's dummy backend makes that explicit and avoids creating/accessing a
-# local SQLite file, which would not be persistent on Vercel serverless hosts.
+# The Explorer itself needs no database. The Policy Timeline app reads a
+# pre-built SQLite file that ships with the repo; the site never writes to it,
+# so it also works on read-only serverless filesystems such as Vercel.
+# Rebuild it with:  python manage.py load_policy_data
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.dummy",
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "data" / "policy_timeline" / "policy_timeline.sqlite3",
     }
+}
+
+# Folder holding the Ireland core policy release (CSV/XLSX files) that the
+# Policy Timeline loader and CSV download read from.
+POLICY_DATA_DIR = Path(os.environ.get("POLICY_DATA_DIR", BASE_DIR / "data" / "policy_timeline"))
+
+# Public attribution shown on the Policy Timeline's About page and citation.
+SITE_INFO = {
+    "title": "Ireland Climate Policy Timeline",
+    "project": os.environ.get("SITE_PROJECT", "INPACT"),
+    "authors": os.environ.get("SITE_AUTHORS", ""),
+    "institution": os.environ.get("SITE_INSTITUTION", ""),
+    "contact": os.environ.get("SITE_CONTACT", ""),
+    "version": os.environ.get("SITE_DATA_VERSION", "25 September 2026"),
+    "url": os.environ.get("SITE_URL", ""),
 }
 
 # ---------------------------------------------------------------------------

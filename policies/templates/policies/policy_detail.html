@@ -1,0 +1,153 @@
+{% extends "policies/base.html" %}
+{% load static policy_extras %}
+{% block title %}{{ s.policy_name }} | Ireland Climate Policy Timeline{% endblock %}
+{% block content %}
+<header class="detail-head" style="border-left-color: {{ mech_info.0 }}">
+  <p class="crumbs"><a href="{% url 'policies:explorer' %}">All policies</a> <span class="sep">/</span> <a href="{% url 'policies:explorer' %}?sector={{ s.sector|urlencode }}">{{ s.sector }}</a> <span class="sep">/</span> <span class="muted">{{ s.policy_id }}</span></p>
+  <h1>{{ s.policy_name }}</h1>
+  <p class="muted" style="margin:6px 0 0">{% if s.sector == "Cross-sectoral" %}{{ layer_info.0 }} applying across all sectors{% else %}{{ layer_info.0 }} affecting the {{ s.sector }} sector{% endif %}, using a {{ mech_info.1|lower }} mechanism; {% if s.end_year %}reported {{ s.start_year }}–{{ s.end_year }}{% else %}in force since {{ s.start_year }}{% endif %}.</p>
+  <div class="tags">
+    <span class="tag"><span class="dot" style="background:{{ sector_color }}"></span>{{ s.sector }}</span>
+    <span class="tag" data-term="mechanisms.{{ s.mechanism }}"><span class="dot" style="background:{{ mech_info.0 }}"></span>{{ mech_info.1 }}</span>
+    <span class="tag layer" data-term="layers.{{ s.layer }}">{{ layer_info.0 }}</span>
+    <span class="tag" data-term="sources.{{ s.source_datasets }}">Source: {{ source_info.0 }}</span>
+    <span class="tag" data-term="match.{{ s.match_confidence }}">OECD match: {{ match_info.0 }}</span>
+    <span class="tag" data-term="selection.{{ s.selection_rule }}">Selected as: {{ selection_info.0 }}</span>
+  </div>
+</header>
+
+<div class="glance">
+  <div><b>{{ s.start_year }}–{% if s.end_year %}{{ s.end_year }}{% endif %}</b><span>{% if s.end_year %}start and reported end{% else %}start year; still open{% endif %}</span></div>
+  <div><b>{{ s.intensity_2023|num:2 }}</b><span>policy intensity in 2023</span></div>
+  <div><b>{{ s.peak_intensity|num:2 }}</b><span>peak intensity, 2000–2023</span></div>
+  <div><b>{% if s.reported_effect_kt is not None %}{{ s.reported_effect_kt|num:0 }} kt{% else %}–{% endif %}</b><span>{% if s.reported_effect_kt is not None %}reported CO₂e per year ({{ s.effect_source|effect_label }}), used for selection only{% else %}no reported saving for this row{% endif %}</span></div>
+</div>
+
+<div class="split">
+  <div>
+    <section class="panel">
+      <h3>About this policy</h3>
+      <p class="prose">{{ s.description }}</p>
+      {% if s.reference_url %}<p class="small"><a href="{{ s.reference_url }}" rel="noopener" target="_blank">Official reference</a></p>{% endif %}
+      {% if d.milestones %}
+      <h3 style="margin-top:16px">Key milestones</h3>
+      <ol class="milestones">{% for yr, text in d.milestones %}<li><b>{{ yr }}</b><span>{{ text }}</span></li>{% endfor %}</ol>
+      <p class="note">Contextual milestones compiled from official sources. They are not used in the index.</p>
+      {% endif %}
+    </section>
+
+    {% if d.instrument %}
+    <section class="panel instrument-box" style="margin-top:20px;--c: {{ mech_info.0 }}">
+      <h3>About this type of instrument: {{ d.instrument.title|lower }}</h3>
+      <p>{{ d.instrument.rationale }}</p>
+      <div class="grid-2 small">
+        <div><b>Strengths</b><ul>{% for x in d.instrument.strengths %}<li>{{ x }}</li>{% endfor %}</ul></div>
+        <div><b>Limitations</b><ul>{% for x in d.instrument.limitations %}<li>{{ x }}</li>{% endfor %}</ul></div>
+      </div>
+      <p class="small muted"><b>Measurement in this dataset.</b> {{ d.instrument.measurement }}</p>
+      <p class="small"><a href="{% url 'policies:instruments' %}#{{ s.mechanism }}">Read the full guide to {{ mech_info.1|lower }} instruments</a></p>
+    </section>
+    {% endif %}
+
+    <section class="panel" style="margin-top:20px">
+      <div class="section-head" style="margin-bottom:8px;border:0;padding:0"><h3>Year by year</h3>
+        <div class="seg" id="chart-mode"><button data-value="index" aria-pressed="true">Indices (0–1)</button><button data-value="capmf" aria-pressed="false">OECD stringency (0–10)</button></div></div>
+      <div id="chart" style="height:340px"></div>
+      <p class="note">Filled markers use a matched OECD score; hollow markers use assumed timing. Shaded bands show the policy's status. Select a year on the chart or the slider to see how its intensity is built up.</p>
+      <div class="control" style="margin-top:12px"><label for="yr">Year: <output id="yr-out">2023</output></label><input type="range" id="yr" min="2000" max="2023" value="2023" style="accent-color:var(--cursor);width:100%"></div>
+      <div id="breakdown"></div>
+    </section>
+
+    {% if d.members %}
+    <section class="panel" style="margin-top:20px">
+      <h3>Measures in this residual bundle</h3>
+      <p class="small muted">The bundle's intensity is the average of these members' intensities. Do not also count the members separately.</p>
+      <div class="table-wrap"><table class="data">
+        <thead><tr><th>Measure</th><th>Mechanism</th><th>Active</th><th style="text-align:right">Coverage</th><th style="text-align:right">Bindingness</th><th style="text-align:right">Intensity 2023</th><th style="text-align:right">Reported kt</th></tr></thead>
+        <tbody>{% for mm in d.members %}<tr><td>{{ mm.policy_name }}<div class="small muted">{{ mm.policy_id }}</div></td><td><span class="tag"><span class="dot" style="background:{{ mm.mechanism|mech_color }}"></span>{{ mm.mechanism|mech_label }}</span></td><td>{{ mm.start_year }}–{% if mm.end_year %}{{ mm.end_year }}{% endif %}</td><td class="num">{{ mm.coverage_share|num:2 }}</td><td class="num">{{ mm.bindingness|num:2 }}</td><td class="num">{{ mm.intensity_2023|num:3 }}</td><td class="num">{{ mm.reported_effect_kt|num:0 }}</td></tr>{% endfor %}</tbody>
+      </table></div>
+    </section>
+    {% endif %}
+
+    {% if d.pams %}
+    <section class="panel" style="margin-top:20px">
+      <h3>Source records in the EEA registry</h3>
+      <p class="small muted">All EEA records linked to this policy. Records under the "with additional measures" scenario describe planned extensions; they are retained for traceability but are not treated as historical policy.</p>
+      <div class="table-wrap"><table class="data">
+        <thead><tr><th>PaM</th><th>Name as reported</th><th>Status</th><th>Scenario</th><th>Period</th><th style="text-align:right">Ex-post kt</th></tr></thead>
+        <tbody>{% for p in d.pams %}<tr><td>{{ p.pam_id }}</td><td>{{ p.name }}</td><td>{{ p.status }}</td><td>{{ p.scenario }}</td><td style="white-space:nowrap">{{ p.start }}{% if p.finish %}–{{ p.finish }}{% endif %}</td><td class="num">{{ p.expost_kt|num:0 }}</td></tr>{% endfor %}</tbody>
+      </table></div>
+    </section>
+    {% endif %}
+
+    <section class="panel" style="margin-top:20px">
+      <h3>Data-quality notes</h3>
+      <p class="small muted">Methodological notes recorded for this series, grouped by theme.</p>
+      <div class="grid-2">{% for group, flags in d.flag_groups.items %}<div class="flag-group"><h4>{{ group }}</h4><ul>{% for f in flags %}<li>{{ f }}</li>{% endfor %}</ul></div>{% endfor %}</div>
+    </section>
+
+    <section class="panel" style="margin-top:20px">
+      <h3>Sources</h3>
+      <ol class="citations">{% for c in d.citations %}<li>{{ c|urlize }}</li>{% endfor %}</ol>
+    </section>
+  </div>
+
+  <aside>
+    <section class="panel">
+      <h3>Classification</h3>
+      <dl class="kv">
+        <dt>Mechanism</dt><dd>{{ mech_info.1 }}<div class="small muted">{{ mech_info.2 }}</div></dd>
+        <dt>Layer</dt><dd>{{ layer_info.0 }}<div class="small muted">{{ layer_info.2 }}</div></dd>
+        <dt>Instrument type</dt><dd>{{ s.instrument_type }}</dd>
+        <dt>Regime</dt><dd>{{ s.regime }}</dd>
+        <dt>Gases</dt><dd>{{ s.ghg_affected }}</dd>
+        <dt>Bundle</dt><dd>{{ s.bundle }}</dd>
+        <dt>Why selected</dt><dd>{{ selection_info.0 }}<div class="small muted">{{ selection_info.1 }}</div></dd>
+        <dt>How to combine</dt><dd>{{ aggregation_info }}</dd>
+      </dl>
+    </section>
+
+    <section class="panel" style="margin-top:20px">
+      <h3>Fixed scores</h3>
+      <p class="small"><b>Coverage {{ s.coverage_share|num:2 }}</b>{% if coverage_label %}: {{ coverage_label }}{% endif %}</p>
+      <div class="bar-track"><div class="bar-fill" style="width:{% widthratio s.coverage_share 1 100 %}%"></div></div>
+      <p class="small muted" style="margin-top:6px">{{ s.coverage_rationale }}</p>
+      <p class="small" style="margin-top:12px"><b>Bindingness {{ s.bindingness|num:2 }}</b>{% if binding_label %}: {{ binding_label }}{% endif %}</p>
+      <div class="bar-track"><div class="bar-fill" style="width:{% widthratio s.bindingness 1 100 %}%"></div></div>
+      <p class="small muted" style="margin-top:6px">{{ s.bindingness_rationale }}</p>
+    </section>
+
+    <section class="panel" style="margin-top:20px">
+      <h3>OECD CAPMF link</h3>
+      <p class="small"><span class="term" data-term="match.{{ s.match_confidence }}">{{ match_info.0 }}</span>: {{ match_info.1 }}</p>
+      {% if d.capmf %}<ul class="small" style="padding-left:18px">{% for code, label in d.capmf %}<li><a href="{% url 'policies:capmf' %}?code={{ code }}">{{ label|default:code }}</a> <code>{{ code }}</code></li>{% endfor %}</ul>
+      <p class="small muted">Implementation is OECD-derived in {{ s.capmf_years }} of 24 years{% if s.assumed_years %}; {{ s.assumed_years }} active year{{ s.assumed_years|pluralize }} use assumed timing{% endif %}.</p>{% endif %}
+      {% if s.lag_years is not None and s.layer != 'residual' %}
+      <p class="small" style="margin-top:10px"><b>Assumed timing profile</b> ({{ s.mechanism_class|humanise }}): lag {{ s.lag_years|num:0 }} yr, ramp-up {{ s.ramp_years|num:0 }} yr, half-life after expiry {{ s.half_life_years|num:0 }} yr. <span class="muted">{{ s.parameter_basis }}</span></p>{% endif %}
+      <p class="small muted" style="margin-top:8px">Start-date basis: {{ s.start_year_basis }}</p>
+    </section>
+
+    {% if d.siblings %}
+    <section class="panel" style="margin-top:20px">
+      <h3>Same policy in other sectors</h3>
+      <ul class="small" style="padding-left:18px">{% for sib in d.siblings %}<li><a href="{% url 'policies:detail' sib.slug %}">{{ sib.sector }}</a> <span class="muted">(intensity 2023: {{ sib.intensity_2023|num:2 }})</span></li>{% endfor %}</ul>
+    </section>
+    {% endif %}
+
+    {% if d.overlaps %}
+    <section class="panel" style="margin-top:20px">
+      <h3>Overlapping policies</h3>
+      <ul class="small" style="padding-left:18px">{% for o in d.overlaps %}<li>{% if o.slug %}<a href="{% url 'policies:detail' o.slug %}">{{ o.other }}</a>{% else %}{{ o.other }}{% endif %}: {{ o.relationship|lower }} ({{ o.role }})</li>{% endfor %}</ul>
+      <p class="small muted">{{ d.overlaps.0.treatment }}</p>
+    </section>
+    {% endif %}
+  </aside>
+</div>
+
+{{ d.chart|json_script:"chart-data" }}
+<script>window.POLICY = {coverage: {{ s.coverage_share|default:0 }}, bindingness: {{ s.bindingness|default:0 }}, residual: {% if s.layer == 'residual' %}true{% else %}false{% endif %}, color: "{{ mech_info.0 }}"};</script>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'policies/vendor/plotly.min.js' %}"></script>
+<script src="{% static 'policies/js/detail.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "policies/base.html" %}
+{% load static policy_extras %}
+{% block title %}Categories | Ireland Climate Policy Timeline{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Policy categories</h1>
+    <p class="muted prose">Each policy is classified along several dimensions: the sector it affects, the mechanism it uses, its layer in the policy hierarchy, and the sources behind it. Pick a hierarchy and click through the rings to see how the categories nest.</p>
+  </div>
+</div>
+
+<section class="split">
+  <div class="panel">
+    <div class="controls" style="margin-bottom:8px">
+      <div class="control"><span class="label">Arrange rings as</span>
+        <div class="seg" id="hier">
+          <button data-value="sector" aria-pressed="true">Sector → mechanism</button>
+          <button data-value="mechanism" aria-pressed="false">Mechanism → sector</button>
+          <button data-value="layer" aria-pressed="false">Layer → mechanism</button>
+          <button data-value="source" aria-pressed="false">Source → OECD match</button>
+        </div></div>
+      <div class="control"><span class="label">Chart</span>
+        <div class="seg" id="chart-type"><button data-value="sunburst" aria-pressed="true">Sunburst</button><button data-value="treemap" aria-pressed="false">Treemap</button></div></div>
+    </div>
+    <div id="sunburst" style="height:560px"></div>
+    <p class="note">Segment size is the number of policy–sector series. Click a segment to zoom in; click the centre to zoom out.</p>
+  </div>
+  <aside class="panel node-panel" id="node-panel" aria-live="polite">
+    <h3>Select a segment</h3>
+    <p class="muted small">Its definition and the policies inside it will appear here.</p>
+  </aside>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>Category guide</h2>
+    <div class="seg" id="guide-toggle"><button data-value="mech" aria-pressed="true">By mechanism</button><button data-value="sector" aria-pressed="false">By sector</button></div>
+  </div>
+  <div class="cat-list" id="guide-mech">
+    {% for g in mechanism_groups %}
+    <article class="cat" style="--c: {{ g.color }}" id="mech-{{ g.key }}">
+      <h3>{{ g.label }} <small>{{ g.items|length }} series</small></h3>
+      <p>{{ g.desc }}</p>
+      {% if g.key != "mixed" %}<p class="small"><a href="{% url 'policies:instruments' %}#{{ g.key }}">Rationale, strengths and limitations</a></p>{% endif %}
+      <ul>{% for srs in g.items %}<li><a href="{% url 'policies:detail' srs.slug %}">{{ srs.policy_name }}</a><span>{{ srs.sector }}, {{ srs.start_year }}</span></li>{% endfor %}</ul>
+    </article>
+    {% endfor %}
+  </div>
+  <div id="guide-sector" hidden>
+  <p class="note" style="margin:-6px 0 12px">Sector emissions from the EPA final inventory (March 2026). Dashboard sectors aggregate EPA categories: Buildings combines residential, commercial and public services; Industry combines manufacturing combustion and industrial processes; Electricity corresponds to energy industries.</p>
+  <div class="cat-list">
+    {% for g in sector_groups %}
+    <article class="cat" style="--c: {{ g.color }}" id="sector-{{ g.key|slugify }}">
+      <h3>{{ g.label }} <small>{{ g.items|length }} series</small></h3>
+      <p>{{ g.desc }}</p>
+      {% if g.emis %}<p class="emis-line">{% if g.emis.share %}<b>{{ g.emis.mt|floatformat:1 }} Mt CO₂e</b> in 2023, {{ g.emis.share|pct:1 }} of national emissions{% else %}<b>Net source of {{ g.emis.mt|floatformat:1 }} Mt CO₂e</b> in 2023 (not in the national total){% endif %}</p>{% endif %}
+      <ul>{% for srs in g.items %}<li><a href="{% url 'policies:detail' srs.slug %}">{{ srs.policy_name }}</a><span>{{ srs.mechanism|mech_label }}, {{ srs.start_year }}</span></li>{% endfor %}</ul>
+    </article>
+    {% endfor %}
+  </div></div>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>How each policy is scored</h2><p>Policy intensity multiplies three components. Two are fixed judgement scores per policy; one changes by year.</p></div>
+  <div class="grid-3">
+    <div class="panel">
+      <h3>Implementation <span class="muted small">(changes by year)</span></h3>
+      <p class="small muted">Where a matching OECD CAPMF score exists, implementation is that score divided by 10. Otherwise an assumed ramp-up from the start year is used, depending on the policy's mechanism class.</p>
+      <div class="ladder"><div><b>0–1</b><span>OECD stringency ÷ 10, or assumed timing</span></div></div>
+    </div>
+    <div class="panel">
+      <h3>Coverage score <span class="muted small">(fixed)</span></h3>
+      <p class="small muted">How much of the sector the policy reaches. An ordinal judgement, not a measured share of emissions.</p>
+      <div class="ladder">{% for v, label in coverage_scores %}<div><b>{{ v }}</b><span>{{ label }}</span></div>{% endfor %}</div>
+    </div>
+    <div class="panel">
+      <h3>Bindingness <span class="muted small">(fixed)</span></h3>
+      <p class="small muted">How compulsory the policy is. A normative score, not observed compliance.</p>
+      <div class="ladder">{% for v, label in binding_scores %}<div><b>{{ v }}</b><span>{{ label }}</span></div>{% endfor %}</div>
+    </div>
+  </div>
+
+  <div class="split" style="margin-top:20px">
+    <div class="panel">
+      <h3>Scope and bindingness of every policy</h3>
+      <p class="small muted">Each dot is a policy series, sized by its peak intensity. Dots are nudged apart where scores coincide. Click one to open it.</p>
+      <div id="scatter" style="height:420px"></div>
+    </div>
+    <div class="panel">
+      <h3>Try the formula</h3>
+      <div class="controls" style="margin:8px 0 4px">
+        <div class="control" style="flex:1 1 100%"><label for="f-policy">Policy</label><select id="f-policy" style="width:100%"></select></div>
+        <div class="control" style="flex:1 1 100%"><label for="f-year">Year: <output id="f-year-out">2020</output></label><input id="f-year" type="range" min="2000" max="2023" value="2020" style="accent-color:var(--cursor)"></div>
+      </div>
+      <div id="f-body"></div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'policies/vendor/d3.min.js' %}"></script>
+<script src="{% static 'policies/vendor/plotly.min.js' %}"></script>
+<script src="{% static 'policies/js/categories.js' %}"></script>
+{% endblock %}

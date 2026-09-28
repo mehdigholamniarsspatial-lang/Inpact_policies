@@ -21,3 +21,6 @@ Pillow>=10.0
 # Ported from the standalone Streamlit dashboard into explorer/trend_engine.py.
 scipy>=1.13
 statsmodels>=0.14
+
+# --- Policy Timeline tab (Ireland Climate Policy Timeline app, /policy/) ---
+pandas>=2.0

@@ -1,0 +1,74 @@
+{% load static %}<!doctype html>
+<html lang="en-IE">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Ireland Climate Policy Timeline{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'policies/css/app.css' %}">
+  <script>
+    /* Embedded in the INPACT dashboard's "Policy Timeline" tab? */
+    (function () {
+      var embedded = false;
+      try { embedded = window.self !== window.top && window.parent.location.origin === location.origin; } catch (e) {}
+      if (!embedded) return;
+      document.documentElement.classList.add("embedded");
+      /* kind: "load" for a new page, "state" for filter changes kept in the URL */
+      var tell = function (kind) {
+        window.parent.postMessage({ type: "policy-nav", kind: kind, path: location.pathname + location.search + location.hash, title: document.title }, location.origin);
+      };
+      ["pushState", "replaceState"].forEach(function (k) {
+        var orig = history[k];
+        history[k] = function () { var r = orig.apply(this, arguments); tell("state"); return r; };
+      });
+      window.addEventListener("popstate", function () { tell("state"); });
+      window.addEventListener("DOMContentLoaded", function () { tell("load"); });
+    })();
+  </script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230B5563'/><rect x='6' y='9' width='14' height='4' fill='%23fff'/><rect x='10' y='15' width='16' height='4' fill='%23fff' opacity='.7'/><rect x='6' y='21' width='10' height='4' fill='%23fff' opacity='.45'/></svg>">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head">
+  <div class="wrap head-inner">
+    <a class="brand" href="{% url 'policies:overview' %}">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="6"/><rect x="6" y="9" width="14" height="4"/><rect x="10" y="15" width="16" height="4" opacity=".7"/><rect x="6" y="21" width="10" height="4" opacity=".45"/></svg>
+      <span>
+        <strong>Ireland Climate Policy Timeline</strong>
+        <small>Greenhouse-gas mitigation policies, 2000–2023</small>
+      </span>
+    </a>
+    <nav class="main-nav" aria-label="Main">
+      <a href="{% url 'policies:overview' %}" {% if active == 'overview' %}aria-current="page"{% endif %}>Overview</a>
+      <a href="{% url 'policies:timeline' %}" {% if active == 'timeline' %}aria-current="page"{% endif %}>Timeline</a>
+      <a href="{% url 'policies:categories' %}" {% if active == 'categories' %}aria-current="page"{% endif %}>Categories</a>
+      <a href="{% url 'policies:instruments' %}" {% if active == 'instruments' %}aria-current="page"{% endif %}>Instruments</a>
+      <a href="{% url 'policies:explorer' %}" {% if active == 'explorer' %}aria-current="page"{% endif %}>Policies</a>
+      <a href="{% url 'policies:capmf' %}" {% if active == 'capmf' %}aria-current="page"{% endif %}>OECD scores</a>
+      <a href="{% url 'policies:method' %}" {% if active == 'method' %}aria-current="page"{% endif %}>Methods</a>
+      <a href="{% url 'policies:about' %}" {% if active == 'about' %}aria-current="page"{% endif %}>About</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="site-foot wrap">
+  <div class="foot-grid">
+    <p><b>Ireland Climate Policy Timeline.</b> A retrospective record of policy exposure, not an estimate of emissions avoided. Intensity values are relative indices built from ordinal scores and, where flagged, assumed timing. See <a href="{% url 'policies:method' %}">Methods</a> before using them in analysis.</p>
+    <p>Sources: OECD Climate Actions and Policies Measurement Framework (CAPMF); European Environment Agency, database on national policies and measures; Irish and EU official sources.</p>
+    <p><span class="csv-link"><a href="{% url 'policies:export_csv' %}">Download the dataset (CSV)</a> <span class="sep" aria-hidden="true">/</span> </span><a href="{% url 'policies:api_series' %}">Data API (JSON)</a> <span class="sep" aria-hidden="true">/</span> <a href="{% url 'policies:about' %}">About and citation</a></p>
+  </div>
+</footer>
+
+<div id="tip" class="tip" role="tooltip" hidden></div>
+{{ glossary|json_script:"glossary-data" }}
+<script>window.URLS = {series: "{% url 'policies:api_series' %}", capmf: "{% url 'policies:api_capmf' %}", selection: "{% url 'policies:api_selection' %}", exportCsv: "{% url 'policies:export_csv' %}", policyBase: "{% url 'policies:explorer' %}", timeline: "{% url 'policies:timeline' %}", year: "{% url 'policies:api_year' 2000 %}".replace(/2000\/$/, "")};</script>
+<script src="{% static 'policies/js/common.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

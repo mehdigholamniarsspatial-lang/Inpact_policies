@@ -1,0 +1,99 @@
+pam_id,policy_id,source_row,Name of policy or measure,Projection scenario in which the policy or measure is included,Status of implementation,policy_unit_id
+1,IRL_P0001,2,Large Industry Energy Network (With Existing Measures),With existing measures,Implemented,U038
+2,IRL_P0002,3,Accelerated Capital Allowance for energy efficient equipment (With Existing Measures),With existing measures,Implemented,U007
+3,IRL_P0003,4,CHP Deployment - Public and Business sectors (With Existing Measures),With existing measures,Expired,U012
+4,IRL_P0004,5,Renewable Heat (ReHeat) Programme,With existing measures,Expired,U057
+5,IRL_P0005,6,Carbon Tax (With Existing Measures),With existing measures,Implemented,U013
+6,IRL_P0006,7,Public Sector Programme (With Existing Measures),With existing measures,Implemented,U052
+7,IRL_P0007,8,Supports for Exemplar Energy Efficiency Projects (SEEEP) and Energy Efficiency Retrofit Fund (EERF) & Better Energy Workplaces,With existing measures,Expired,U063
+8,IRL_P0008,9,Small and Medium Enterprises (SME) Programme (With Existing Measures),With existing measures,Expired,U059
+9,IRL_P0009,10,2005/2008 Building Regulations Part L Conservation of Fuel and Energy - Buildings other than dwellings,With existing measures,Expired,U002
+10,IRL_P0010,11,2002 Building Regulations - Part L Conservation of Fuel and Energy in Dwellings,With existing measures,Expired,U001
+11,IRL_P0011,12,2008 Building Regulations Part L Conservation of Fuel and Energy in Dwellings,With existing measures,Expired,U003
+12,IRL_P0012,13,2011 Part L Conservation of Fuel and Energy in Dwellings,With existing measures,Expired,U004
+13,IRL_P0013,14,Energy Efficient Boiler Regulation,With existing measures,Expired,U027
+14,IRL_P0014,15,Domestic Lighting (Eco-Design Directive),With existing measures,Expired,U021
+15,IRL_P0015,16,Greener Homes Scheme,With existing measures,Expired,U031
+16,IRL_P0016,17,Warmer Homes Scheme (With Existing Measures),With existing measures,Implemented,U066
+17,IRL_P0017,18,Better Energy Homes (With Existing Measures),With existing measures,Implemented,U010
+18,IRL_P0018,19,Electric vehicle deployment (With Existing Measures),With existing measures,Implemented,U024
+19,IRL_P0019,20,Vehicle Registration Tax and Motor Tax Rebalancing,With existing measures,Expired,U065
+20,IRL_P0020,21,Improved fuel economy of the private car fleet (EU Regulation),With existing measures,Expired,U034
+21,IRL_P0021,22,Aviation Efficiency,With existing measures,Expired,U008
+23,IRL_P0023,23,Transposition of Mobile Air Conditioning Directive (Directive 2006/40/EC),With existing measures,Implemented,U064
+24,IRL_P0024,24,Landfill Directive (1999/31/EC),With existing measures,Implemented,U037
+25,IRL_P0025,25,Dairy EBI (With Additional Measures),With additional measures,Planned,U016
+26,IRL_P0026,26,Deployment of renewables in electricity generation (With Existing Measures),With existing measures,Implemented,U019
+27,IRL_P0027,27,Deployment of biofuels in transport (With Existing Measures),With existing measures,Implemented,U018
+28,IRL_P0028,28,Deployment of renewables in heating (With Existing Measures),With existing measures,Implemented,U020
+29,IRL_P0026,29,Deployment of renewables in electricity generation (Not included in Projection Scenario),Not included in a projections scenario,Planned,U019
+30,IRL_P0027,30,Deployment of biofuels in transport (With Additional Measures),With additional measures,Planned,U018
+31,IRL_P0031,31,Community Energy Grants (With Existing Measures),With existing measures,Implemented,U014
+32,IRL_P0032,32,Energy Efficiency Obligation Scheme (EEOS)_cross-sectoral (With Existing Measures),With existing measures,Implemented,U026
+33,IRL_P0033,33,Deep Retrofit Pilot (With Existing Measures),With existing measures,Expired,U017
+34,IRL_P0034,34,EXEED Certified Grant (EXEED Grant Scheme) (With Existing Measures),With existing measures,Implemented,U023
+35,IRL_P0035,35,Support Scheme for Renewable Heat - heat pump supports (With Existing Measures),With existing measures,Implemented,U062
+36,IRL_P0036,36,Public Sector Pathfinder programme (With Existing Measures),With existing measures,Implemented,U051
+37,IRL_P0037,37,Warmth and Wellbeing Pilot (With Existing Measures),With existing measures,Expired,U067
+38,IRL_P0034,38,EXEED Certified Grant (EXEED Grant Scheme) (With Additional Measures),With additional measures,Planned,U023
+39,IRL_P0035,39,Support Scheme for Renewable Heat - heat pump supports (With Additional Measures),With additional measures,Planned,U062
+40,IRL_P0040,40,Heat Pumps - Domestic (With Additional Measures),With additional measures,Planned,U032
+41,IRL_P0036,41,Public Sector Pathfinder programme (With Additional Measures),With additional measures,Planned,U051
+42,IRL_P0037,42,Warmth and Wellbeing Pilot (With Additional Measures),With additional measures,Planned,U067
+43,IRL_P0002,43,Accelerated Capital Allowance for energy efficient equipment (With Additional Measures),With additional measures,Planned,U007
+44,IRL_P0001,44,Large Industry Energy Network (With Additional Measures),With additional measures,Planned,U038
+45,IRL_P0003,45,CHP Deployment - Public and Business sectors (With Additional Measures),With additional measures,Planned,U012
+46,IRL_P0005,46,Carbon Tax (With Additional Measures),With additional measures,Planned,U013
+47,IRL_P0006,47,Public Sector Programme (With Additional Measures),With additional measures,Planned,U052
+48,IRL_P0008,48,Small and Medium Enterprises (SME) Programme (With Additional Measures),With additional measures,Planned,U059
+49,IRL_P0016,49,Warmer Homes Scheme (With Additional Measures),With additional measures,Planned,U066
+50,IRL_P0017,50,Better Energy Homes (With Additional Measures),With additional measures,Planned,U010
+51,IRL_P0018,51,Electric vehicle deployment (With Additional Measures),With additional measures,Planned,U024
+52,IRL_P0031,52,Community Energy Grants (With Additional Measures),With additional measures,Planned,U014
+53,IRL_P0053,53,2018 Building Regulations - Non-Residential,With existing measures,Implemented,U005
+54,IRL_P0054,54,2019 Building Regulations - Residential (With Existing Measures),With existing measures,Implemented,U006
+56,IRL_P0056,55,Better Energy Finance  (With Existing Measures),With existing measures,Expired,U009
+57,IRL_P0057,56,Solar Pilot Scheme (With Existing Measures),With existing measures,Implemented,U061
+58,IRL_P0058,57,Major Renovations - Dwellings,With existing measures,Implemented,U042
+59,IRL_P0059,58,Other Domestic Retrofit (With Additional Measures),With additional measures,Planned,U047
+60,IRL_P0056,59,Better Energy Finance  (With Additional Measures),With additional measures,Planned,U009
+61,IRL_P0057,60,Solar Pilot Scheme (With Additional Measures),With additional measures,Planned,U061
+62,IRL_P0062,61,National Home Energy Upgrade Scheme (With Existing Measures),With existing measures,Implemented,U043
+63,IRL_P0062,62,National Home Energy Upgrade Scheme (With Additional Measures),With additional measures,Planned,U043
+64,IRL_P0064,63,Smart Meter Roll-Out - Household  (With Existing Measures),With existing measures,Implemented,U060
+65,IRL_P0064,64,Smart Meter Roll-Out - Household  (With Additional Measures),With additional measures,Planned,U060
+66,IRL_P0032,65,Energy Efficiency Obligation Scheme (EEOS)_cross-sectoral (With Additional Measures),With additional measures,Planned,U026
+67,IRL_P0028,66,Deployment of renewables in heating (Not included in Projection Scenario),Not included in a projections scenario,Planned,U020
+68,IRL_P0068,67,Low emission slurry spreading (With Existing Measures),With existing measures,Implemented,U040
+69,IRL_P0069,68,Crude protein reduction in dairy cows (With Existing Measures),With existing measures,Implemented,U015
+70,IRL_P0070,69,Reduced pig crude protein (With Additional Measures),With additional measures,Planned,U055
+71,IRL_P0071,70,Fertiliser use measures (With Additional Measures),With additional measures,Planned,U030
+72,IRL_P0072,71,Peatlands rehabilitation (with Existing Measures),With existing measures,Implemented,U049
+73,IRL_P0073,72,New afforestation (With Additional Measures),With additional measures,Planned,U045
+74,IRL_P0074,73,Water table management on drained organic soils (With Additional Measures),With additional measures,Planned,U068
+76,IRL_P0076,74,Low-Cost Finance for Home Energy Upgrades (With Additional Measures),With additional measures,Planned,U041
+77,IRL_P0077,75,Slurry additives for reduced methane emissions (With Additional Measures),With additional measures,Planned,U058
+78,IRL_P0078,76,Other slurry measures (pigs/cattle) (With Additional Measures),With additional measures,Planned,U048
+79,IRL_P0079,77,Reduced slaughter age - cattle (With Additional Measures),With additional measures,Planned,U056
+80,IRL_P0080,78,Reduced age first calving - cattle (With Additional Measures),With additional measures,Planned,U053
+81,IRL_P0081,79,Feed additives (With Additional Measures),With additional measures,Planned,U029
+82,IRL_P0082,80,Drying poultry manure (With Additional Measures),With additional measures,Planned,U022
+83,IRL_P0054,81,2019 Building Regulations - Residential (With Additional Measures),With additional measures,Planned,U006
+84,IRL_P0068,82,Low emission slurry spreading (With Additional Measures),With additional measures,Planned,U040
+85,IRL_P0085,83,Non-Domestic Microgen Scheme (With Existing Measures),With existing measures,Implemented,U046
+86,IRL_P0085,84,Non-Domestic Microgen Scheme (With Additional Measures),With additional measures,Planned,U046
+87,IRL_P0087,85,Implementation of the National Biomethane Strategy (With Existing Measures),With existing measures,Implemented,U033
+88,IRL_P0087,86,Implementation of the National Biomethane Strategy (Not included in Projection Scenario),Not included in a projections scenario,Planned,U033
+89,IRL_P0089,87,Private car demand reduction (with additional measures),With additional measures,Planned,U050
+90,IRL_P0090,88,Business Energy Upgrade Scheme (With additional measures),With additional measures,Planned,U011
+91,IRL_P0069,89,Crude protein reduction in dairy cows (With Additional Measures),With additional measures,Planned,U015
+92,IRL_P0092,90,Limit Straight Urea sales (With Additional Measures),With additional measures,Planned,U039
+93,IRL_P0093,91,Extended rotation (with Additional Measures),With additional measures,Planned,U028
+94,IRL_P0072,92,Peatlands rehabilitation (with Additional Measures),With additional measures,Planned,U049
+100,IRL_P0100,98,National implementation of F-Gas Regulation (Regulation (EU) 2024/573),With existing measures,Implemented,U044
+101,IRL_P0101,99,Increased Liming (With Existing Measures),With existing measures,Implemented,U036
+102,IRL_P0102,100,Energy Audits for SMEs (With Existing Measures),With existing measures,Implemented,U025
+103,IRL_P0102,101,Energy Audits for SMEs (With Additional Measures),With additional measures,Planned,U025
+104,IRL_P0104,102,Improved management of mineral soils (With Additional Measures),With additional measures,Planned,U035
+105,IRL_P0105,103,Reduced deforestation (With Additional Measures),With additional measures,Planned,U054
+107,IRL_P0090,105,Business Energy Upgrade Scheme (With Existing Measures),With existing measures,Implemented,U011

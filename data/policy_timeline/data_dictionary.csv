@@ -1,0 +1,68 @@
+position,column,unit,definition_and_derivation
+1,year,year,Calendar year; complete 2000-2023 grid.
+2,period_type,category,"historical means retrospective reconstruction, not historically available information."
+3,policy_id,identifier,Canonical policy-family ID or RES_sector. IRL IDs link to prior ChatGPT; CAPMF IDs identify added/consolidated anchors.
+4,policy_name,text,Clean name or explicit instrument family; residual row is a sector summary.
+5,layer,category,"L1 framework, L2 instrument, L3 delivery programme, or residual. Never sum L1 with other layers."
+6,bundle,category,Sector and mechanism grouping; pricing also distinguishes ETS/ESR. Frameworks and residuals have separate bundle names.
+7,sector,category,Eight requested sectors plus Cross-sectoral for national L1 frameworks only.
+8,multi_sector_flag,0/1,"1 when a canonical policy has multiple sector slices, or residual members include such policies. Repeated rows do not imply allocated effects."
+9,regime,category,"Affected ETS, ESR-compatible non-ETS, LULUCF, or Mixed scope. ESR is a harmonised non-ETS label, not a claim that the Regulation existed in 2000."
+10,mechanism,category,Reviewed mechanism; residual uses mixed because one sector residual can contain different mechanisms.
+11,instrument_type,category,"Primary source instrument label, with explicit substantive corrections for LIEN and VRT; original labels remain in raw input."
+12,ghg_affected,gas labels,"CO2, CH4, N2O, F-gases, All or semicolon-separated combination. Liming includes CO2 noted in its description; no gas-level tonnes inferred."
+13,source_datasets,category,"EEA, CAPMF or EEA+CAPMF identifies the policy database lineage. Additional official documents verify dates/scope."
+14,eea_pam_ids,identifiers,Historical source PaM IDs contributing to this row/family/residual. WAM IDs are not included here.
+15,capmf_code,identifiers,Matched LEV4 preferred or LEV3 code(s); no parent-child mix in a score. Residual lists member codes but has no aggregate raw score.
+16,match_confidence,category,"exact: same instrument/scope; close: instrument family; partial: contextual proxy; none: unmatched. These are judgments, not probabilities."
+17,selection_rule,category,"materiality_90pct, anchor_capmf, residual. An anchor can also pass materiality; separate flags retain both decisions."
+18,sector_effect_rank,rank,Descending positive effect rank within the primary selection sector. A merged family displays the minimum member rank; see selection log for all ranks.
+19,reported_effect_kt,kt CO2-eq/year,"Reported total used for selection, repeated across years and sector slices. Family sums are selection bookkeeping only, not independent measured effects. Blank for residual."
+20,effect_source,category,"First numeric: expost_2024, exante_2025_WEM, exante_2030; zero/negative values stop fallback. Family may list several sources; residual is not_quantified."
+21,start_year,year,Selected start or instrument-family boundary. CAPMF first-positive dates are explicitly distinguished from verified legal dates. Residual uses earliest member start.
+22,end_year,year,"Reported end of source phase, inclusive. Blank for open/continuing families; residual is blank if any member is open."
+23,status_in_year,category,"pre_implementation, active, post_expiry_residual, post_expiry_no_effect; extended unknown/mixed states are permitted where evidence requires."
+24,years_since_start,years,"year minus selected start, including negative values before the start; residual uses earliest start."
+25,implementation_raw_value,raw source unit,Independent observed rate/uptake/expenditure only. Entire column blank in this release because no such annual series was supplied/imported.
+26,implementation_raw_unit,text,Unit of the independent observed value; blank in this release.
+27,implementation_source,category,"capmf_derived or assumed here; observed reserved. assumed includes structural pre-start zeros and explicit no-effect zeros, distinguished in implementation_detail."
+28,implementation_level,0-1 indicator,"Same-year CAPMF/10 when matched and available; otherwise supplied hypothetical timing. After expiry, last operational level seeds a conditional assumed half-life tail."
+29,capmf_stringency,0-10,"Same-year raw CAPMF score; strict mean of distinct matched codes where needed. M, K and blank A are missing. Never backcast/forward-fill."
+30,coverage_share,ordinal 0-1 score,User-specified 0.1/0.25/0.5/1 scope rubric. Despite the required column name this is NOT a measured activity or emissions share. Residual: mean member score.
+31,coverage_rationale,text,Specific reason for the ordinal scope choice; fixed and provisional.
+32,bindingness,ordinal 0-1 score,"User rubric: enforcement 1, pricing/statutory obligation .75, incentive .5, information/voluntary .25; statutory frameworks 1. Residual: member mean."
+33,intensity_index,0-1 composite,"implementation_level * coverage_share * bindingness. Residual exception: strict mean of member intensity products. Relative scenario indicator, not causal effect."
+34,intensity_index_equal,0-1 composite,"Literal mean of implementation_level, coverage_share, bindingness. It stays positive before implementation; use the gated companion for timing sensitivity."
+35,data_quality_flag,semicolon list,"Source conflicts, proxy scope, ordinal judgments, hypothetical timing, source changes, family consolidation and residual rules."
+36,source_citation,text/URLs,"Source register, attached record identifiers and full official citations with retrieval status. Indexed-only evidence remains identified."
+37,mechanism_class,category,Claude timing class; framework fallback is a separate conventional class; residual is mixed.
+38,all_eea_variant_ids,identifiers,"Every source variant for lineage, including planned WAM/NIPS. These do not become historical policy records."
+39,prior_policy_ids,identifiers,Prior ChatGPT policy identities represented by the canonical row.
+40,claude_policy_unit_ids,identifiers,Claude Uxxx units linked through original PaM IDs.
+41,capmf_match_scope,category,Instrument/family or category/framework context. Contextual stringency does not measure programme-specific implementation.
+42,materiality_group_flag,0/1,At least one source member passed the sector 90% algorithm.
+43,anchor_flag,0/1,Retained under the reviewed CAPMF anchor rule.
+44,effect_reference_year,year,"2024, 2025 or 2030; blank when family sources span years or no single estimate applies."
+45,effect_value_state,category,"positive, negative, reported_zero, missing, family_selection_sum or mixed residual evidence."
+46,effect_source_field,source header,Exact EEA field(s) used for selection.
+47,materiality_sector,category,Primary sector to which an unallocated reported policy total is assigned once for ranking; carbon tax is anchor-only Cross-sectoral.
+48,materiality_effect_kt,kt CO2-eq/year,Selection total only on the primary-sector slice; never a measured sector allocation. Repeated over time; residual blank.
+49,start_year_basis,text,"Source and interpretation of the start, including timing conflicts and first-positive category boundaries."
+50,legacy,category,"continues/ends from source narrative, not_applicable_open, unknown, or mixed; says nothing about validated duration."
+51,bindingness_rationale,text,"Reason for the normative score, not evidence of observed compliance."
+52,source_row_numbers,Excel row identifiers,Original workbook row numbers including the header offset.
+53,aggregation_role,category,Framework context never aggregate; family representative excludes child duplicates; portfolio choose parent or delivery schemes; residual do not also include members.
+54,member_policy_ids,identifiers,Prior identities or canonical residual members; detailed residual contributions are in qa/residual_members.csv.
+55,implementation_detail,text,"Distinguishes CAPMF, timing fallback, structural zero, assumed legacy tail and residual averaging."
+56,capmf_observation_status,flags,"Original OECD A/E/K/M flags, or unavailable; multiple flags for multiple codes. E remains estimated."
+57,temporal_weight,0-1 scenario,"Hypothetical midyear ramp/legacy profile, even when CAPMF owns implementation_level. Never an empirically estimated response. Residual blank."
+58,lag_years,years,Claude supplied default lag; judgment scenario.
+59,ramp_years,years,Claude supplied duration of linear phase-in; judgment scenario.
+60,half_life_years,years,"Claude supplied post-expiry half-life, applied only if source supports continued effects."
+61,parameter_basis,text,Parameters explicitly unvalidated; framework legal-presence fallback is conventional.
+62,intensity_index_equal_gated,0-1 composite,Literal equal mean set to zero before start/after explicit end of effect; legacy years retain the mean. Residual mean of member gated values.
+63,coverage_score_type,category,ordinal_scope_not_measured_share.
+64,effect_scope,text,Warns that effect values repeat by year/sector and must not be summed.
+65,score_family_id,identifier,CAPMF code set or unmatched policy ID. Shared code sets reveal duplicated contextual information across different named measures.
+66,eligible_member_count,count,Residual fixed-denominator analytical member count; one for each core analytical component even if it consolidates several source vintages.
+67,valid_intensity_member_count,count,Members with nonmissing intensity. Residual means remain missing unless all fixed members are available.

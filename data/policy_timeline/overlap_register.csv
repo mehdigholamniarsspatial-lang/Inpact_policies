@@ -1,0 +1,13 @@
+parent_or_related_id,related_policy_id,relationship,treatment,quantified_overlap_share
+CAPMF_ACT_2015,CAPMF_CLIMATE_COUNCIL,shared_governance_context,Do not sum parent and children; choose policy-family or delivery representation. No invented overlap discount.,
+CAPMF_ACT_2021,CAPMF_NET_ZERO,same_statutory_framework,Do not sum parent and children; choose policy-family or delivery representation. No invented overlap discount.,
+CAPMF_ACT_2021,CAPMF_CARBON_BUDGETS,enabling_framework,Do not sum parent and children; choose policy-family or delivery representation. No invented overlap discount.,
+CAPMF_CARBON_BUDGETS,CAPMF_SECTOR_CEILINGS,framework_parent,Do not sum parent and children; choose policy-family or delivery representation. No invented overlap discount.,
+IRL_P0026,IRL_P0057,electricity_portfolio_contains_deployment,Do not sum parent and children; choose policy-family or delivery representation. No invented overlap discount.,
+IRL_P0026,IRL_P0085,electricity_portfolio_contains_deployment,Do not sum parent and children; choose policy-family or delivery representation. No invented overlap discount.,
+IRL_P0028,IRL_P0004,renewable_heat_portfolio_overlap,Do not sum parent and children; choose policy-family or delivery representation. No invented overlap discount.,
+IRL_P0028,IRL_P0015,renewable_heat_portfolio_overlap,Do not sum parent and children; choose policy-family or delivery representation. No invented overlap discount.,
+IRL_P0028,IRL_P0035,renewable_heat_portfolio_overlap,Do not sum parent and children; choose policy-family or delivery representation. No invented overlap discount.,
+CAPMF_PARTL_RES,IRL_P0013,building_code_heating_requirement_overlap,Do not sum parent and children; choose policy-family or delivery representation. No invented overlap discount.,
+IRL_P0006,IRL_P0036,public_sector_programme_and_delivery_project,Do not sum parent and children; choose policy-family or delivery representation. No invented overlap discount.,
+IRL_P0032,IRL_P0017,EEA_says_EEOS_estimates_exclude_grant_supported_savings,Do not sum parent and children; choose policy-family or delivery representation. No invented overlap discount.,

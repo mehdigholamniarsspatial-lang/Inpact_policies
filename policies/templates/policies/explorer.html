@@ -1,0 +1,43 @@
+{% extends "policies/base.html" %}
+{% load static %}
+{% block title %}Policies | Ireland Climate Policy Timeline{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>All policies</h1>
+    <p class="muted prose">Search and filter every policy series. Select a column heading to sort, and a policy name to open its full profile.</p>
+  </div>
+  <a class="btn ghost csv-link" id="export" href="#"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 2v8m0 0 3-3m-3 3L5 7M3 13h10"/></svg>Download these rows (CSV)</a>
+</div>
+
+<div class="panel">
+  <div class="filters">
+    <div class="control"><label for="q">Search</label><input type="search" id="q" placeholder="Name, ID or OECD code"></div>
+    <div class="control"><label for="f-sector">Sector</label><select id="f-sector"><option value="">All sectors</option></select></div>
+    <div class="control"><label for="f-mechanism">Mechanism</label><select id="f-mechanism"><option value="">All mechanisms</option></select></div>
+    <div class="control"><label for="f-layer">Layer</label><select id="f-layer"><option value="">All layers</option></select></div>
+    <div class="control"><label for="f-source">Source</label><select id="f-source"><option value="">Any source</option></select></div>
+    <div class="control"><label for="f-match">OECD match</label><select id="f-match"><option value="">Any match</option></select></div>
+    <div class="control"><label for="f-status">Status in 2023</label><select id="f-status"><option value="">Any status</option><option value="active">Active</option><option value="post_expiry_residual">Expired, lingering effect</option></select></div>
+    <button class="btn ghost" id="reset" type="button">Clear filters</button>
+  </div>
+  <p class="result-count" id="count" aria-live="polite"></p>
+  <div class="table-wrap">
+    <table class="data" id="tbl">
+      <thead><tr>
+        <th class="sortable" data-k="name">Policy</th>
+        <th class="sortable" data-k="sector">Sector</th>
+        <th class="sortable" data-k="mechanism">Mechanism</th>
+        <th class="sortable" data-k="layer">Layer</th>
+        <th class="sortable" data-k="start">Active</th>
+        <th class="sortable" data-k="match">OECD match</th>
+        <th>Intensity 2000–2023</th>
+        <th class="sortable" data-k="i2023" style="text-align:right">2023</th>
+        <th class="sortable" data-k="effectKt" style="text-align:right" data-tip="Reported annual saving used only to select policies. It repeats across sectors and years, so it must not be summed.">Reported kt CO₂e</th>
+      </tr></thead>
+      <tbody><tr><td colspan="9" class="empty">Loading policies…</td></tr></tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{% static 'policies/js/explorer.js' %}"></script>{% endblock %}

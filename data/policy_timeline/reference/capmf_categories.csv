@@ -1,0 +1,205 @@
+capmf_code,capmf_label,hierarchy_level,domain,instrument_class,classification_basis,national_instrument_identified
+LEV4_ETS_E_PR,ETS Electricity - price,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_CARBONTAX_E_PR,Carbon Tax - Electricity,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_CARBONTAX_T,Carbon tax - Transport,3,Transport,Market-based,OECD labels and technical documentation; context only,False
+LEV4_PHOUT_ICE_STAT,Phase out on the sales of new vehicles with combustion engines - legal status,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_BAN_PHOUT_ICE,Ban and phase out of passengers cars with ICE,3,Transport,Non market-based,OECD labels and technical documentation; context only,False
+LEV3_CARBONTAX_E,Carbon Tax - Electricity,3,Electricity,Market-based,OECD labels and technical documentation; context only,False
+LEV3_BAN_FF_ABROAD,Banning public finance for fossil fuel infrastructure abroad,3,Cross-sector or international,Non market-based,OECD labels and technical documentation; context only,False
+LEV3_CARBONTAX_B,Carbon tax - Buildings,3,Buildings,Market-based,OECD labels and technical documentation; context only,False
+LEV3_BAN_CREDIT,Banning governments' export credits for new unabated coal power plants,3,Cross-sector or international,Non market-based,OECD labels and technical documentation; context only,False
+LEV4_ETS_E_GHG,ETS Electricity - coverage GHG,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_ETS_E,ETS - Electricity,3,Electricity,Market-based,OECD labels and technical documentation; context only,False
+LEV4_PR_AV,Aviation emissions price,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_LABEL_LIGHT,Mandatory energy labels for appliances - Lighting,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_BAN_EXTRAC_STAT,Bans on fossil fuel extraction - legal status,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV2_INT_C_FIN,International public finance,2,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_BAN_ICE_STAT,Ban on the sales of new vehicles with combustion engines - legal status,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_LABEL_CAR,Labels for vehicles,3,Transport,Non market-based,OECD labels and technical documentation; context only,False
+LEV4_ETS_T_PR,ETS Transport - price,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_MEPS_LIGHT,MEPS of appliances - Lighting,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_ETS_I_PR,ETS Industry - price,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_PHOUT_EXTRAC_STAT,Phase out of fossil fuel extraction - legal status,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_PHOUT_OIL_DATE,"Phase out of fossil-fuel heating systems, Oil - date",4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_CARBONTAX_I,Carbon Tax - Industry,3,Industry,Market-based,OECD labels and technical documentation; context only,False
+LEV4_LABEL_REF,Mandatory energy labels for appliances - Refrigerator,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_ETS_I,ETS - Industry,3,Industry,Market-based,OECD labels and technical documentation; context only,False
+LEV3_BC,Building energy codes,3,Buildings,Non market-based,OECD labels and technical documentation; context only,False
+LEV4_AUCTION_WIND_DUR,Renewable energy auctions for wind - duration,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_NZ,Net Zero Targets,3,Cross-sector or international,"Targets, governance and data",OECD labels and technical documentation; context only,False
+LEV4_PHOUT_ICE_DATE,Phase out on the sales of new vehicles with combustion engines - date,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_MEPS_MOTOR,MEPS for electric motors,3,Industry,Non market-based,OECD labels and technical documentation; context only,False
+LEV4_PHOUT_OIL_STAT,"Phase out of fossil-fuel heating systems, Oil - legal status",4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_BAN_PHOUT_COAL,Ban and phase out on the construction of coal-fired power plants,3,Electricity,Non market-based,OECD labels and technical documentation; context only,False
+LEV4_ETS_T_GHG,ETS Transport - coverage GHG,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_BAN_FF_ABROAD_STAT,Banning public finance for fossil fuel infrastructure abroad -legal status,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_MEPS_AC,MEPS of appliances - Air Conditioner,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_BAN_OIL_DATE,"Ban of fossil-fuel heating systems, Oil - legal status",4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_AB_ESTABL_LAW,Independent climate advisory body - establishment by law,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_FIT_WIND_PR,Feed in tariffs for wind - price,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_CARBONTAX_T,Carbon Tax - Transport,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_AB_SECR_MEM,Independent climate advisory body - number of secretariat's members,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_BC_NON_RES,Building energy codes - non-residential buildings,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_BAN_PHOUT_HEAT,Ban and phase out of fossil fuel heating systems,3,Buildings,Non market-based,OECD labels and technical documentation; context only,False
+LEV4_BAN_OIL_STAT,"Ban of fossil-fuel heating systems, Oil - date",4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_EMIS_STD,Air emission standards,3,Electricity,Non market-based,OECD labels and technical documentation; context only,False
+LEV3_ETS_T,ETS - Transport,3,Transport,Market-based,OECD labels and technical documentation; context only,False
+LEV3_AUCTION,Renewable energy auctions,3,Electricity,Market-based,OECD labels and technical documentation; context only,False
+LEV4_LABEL_FRE,Mandatory energy labels for appliances - Freezer,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_FIT,Feed-In-Tariffs,3,Electricity,Market-based,OECD labels and technical documentation; context only,False
+LEV4_NZ_STAT,Net Zero Targets - status,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_AB_COUNC_MEM,Independent climate advisory body - number of council's members,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_AB,Climate advisory body,3,Cross-sector or international,"Targets, governance and data",OECD labels and technical documentation; context only,False
+LEV3_RECS,Renewable energy certificates,3,Electricity,Market-based,OECD labels and technical documentation; context only,False
+LEV4_EMIS_STD_SOX,Air Emission Standards - Sox,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_NZ_DATE,Net Zero Targets - target year,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_MEPS_MOTOR,MEPS for electric motors,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_MEPS_FRE,MEPS of appliances - Freezer,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_MEPS_REF,MEPS of appliances - Refrigerator,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_LABEL_AC,Mandatory energy labels for appliances - Air Conditioner,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_NZ_SEC_SCOPE,Net Zero Targets - sectoral scope,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_BAN_PHOUT_EXTRAC,Bans and phase out on fossil fuel extraction,3,Cross-sector or international,Non market-based,OECD labels and technical documentation; context only,False
+LEV4_PHOUT_COAL_DATE,Phase out of existing coal power plants - date,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_EMIS_STD_PM,Air Emission Standards - Pm,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_PHOUT_COAL_STAT,Phase out of existing coal power plants - legal status,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_BAN_COAL_DATE,Ban on the construction of coal power plants - date,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_BAN_FF_ABROAD_DATE,Banning public finance for fossil fuel infrastructure abroad - date,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_BAN_CREDIT_DATE,Banning governments' export credits for new unabated coal power plants - date,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_MEPS_LDV,MEPS for passenger vehicles,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_BAN_GAS_DATE,"Ban of fossil-fuel heating systems, Gas - date",4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_ETS_B_PR,ETS Buildings - price,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV2_CROSS_SEC_CG,Climate governance,2,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_LABEL_CAR,Mandatory energy labels for passenger vehicles,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_INT_INIT,Participation in international climate initiatives,3,Cross-sector or international,"Targets, governance and data",OECD labels and technical documentation; context only,False
+LEV4_CARBONTAX_B,Carbon Tax - Buildings,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_GHG_ACC_SEEA,Reporting of GHG emissions under SEEA Air emissions accounts,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_FIT_SOL_DUR,Feed in tariffs for solar PV - duration,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_BAN_COAL_STAT,Ban on the construction of coal power plants - legal status,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_EMIS_STD_NOX,Air Emission Standards - Nox,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_PHOUT_GAS_STAT,"Phase out of fossil-fuel heating systems, Gas - legal status",4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_AUCTION_WIND_PR,Renewable energy auctions for wind - price,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_NZ_GHG_SCOPE,Net Zero Targets - GHG scope,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_PHOUT_GAS_DATE,"Phase out of fossil-fuel heating systems, Gas - date",4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_CONG_CHARG,Congestion charges,3,Transport,Market-based,OECD labels and technical documentation; context only,False
+LEV3_ETS_B,ETS - Buildings,3,Buildings,Market-based,OECD labels and technical documentation; context only,False
+LEV4_ETS_I_GHG,ETS Industry - coverage GHG,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_BAN_EXTRAC_DATE,Bans on fossil fuel extraction - date,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_FIT_WIND_DUR,Feed in tariffs for wind - duration,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_AUCTION_SOL_DUR,Renewable energy auctions for solar PV - duration,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV2_SEC_B_NMBI,Buildings - Non market-based instruments,2,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_LABEL_APPL,Mandatory energy labels for appliances,3,Buildings,Non market-based,OECD labels and technical documentation; context only,False
+LEV4_PR_MAR,Maritime emissions price,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_PHOUT_EXTRAC_DATE,Phase out of fossil fuel extraction - date,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_BAN_CREDIT_STAT,Banning governments' export credits for new unabated coal power plants - legal status,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_MEPS_APPL,MEPS of appliances,3,Buildings,Non market-based,OECD labels and technical documentation; context only,False
+LEV4_INT_INIT,Participation in international climate initiatives,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_BAN_ICE_DATE,Ban on the sales of new vehicles with combustion engines - date,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_AUCTION_SOL_PR,Renewable energy auctions for solar PV - price,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_CARBONTAX_I,Carbon Tax - Industry,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_AB_ESTABL,Independent climate advisory body - establishment,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_CONG_CHARG,Congestion Charges,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_FIT_SOL_PR,Feed in tariffs for solar PV - price,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_AB_BUDGET,Independent climate advisory body - annual funding,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_ETS_B_GHG,ETS Buildings - coverage GHG,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_BAN_GAS_STAT,"Ban of fossil-fuel heating systems, Gas - legal status",4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_RECS,RPS with tradeable renewable energy certificates,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_BC_RES,Building energy codes - residential buildings,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_TREATY_UNFCCC,Participation in international climate agreements - UNFCCC convention,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_TREATY_MONTREALAMEND,Participation in international climate agreements - Montreal Amendment,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_TREATY_KYOTO,Participation in international climate agreements - Kyoto Protocol,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_MEPS_HDV,MEPS for heavy duty vehicles,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_UNFCCC_LTLEDS,Submission of Long-term low emissions development strategies (LT-LEDS),4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_NDC_LULUCF,NDCs - separate target for LULUCF,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_TREATY_PARIS,Participation in international climate agreements - Paris Agreement,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_TREATY_KIGALI,Participation in international climate agreements - Kigali Amendment,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV2_SEC_E_NMBI,Electricity - Non market-based instruments,2,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV2_SEC_E_MBI,Electricity - Market-based instruments,2,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV2_SEC_T_MBI,Transport - Market-based instruments,2,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV2_SEC_B_MBI,Buildings - Market-based instruments,2,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV2_SEC_I_MBI,Industry - Market-based instruments,2,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV2_CROSS_SEC_FFPP,Fossil fuel production policies,2,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV2_SEC_I_NMBI,Industry - Non market-based instruments,2,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV2_CROSS_SEC_GHGTAR,GHG emission targets,2,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV2_SEC_T_NMBI,Transport - Non market-based instruments,2,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV2_INT_GHGREP,GHG emissions data and reporting,2,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV1_SEC,Sectoral policies,1,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_MEPS_T,MEPS Transport,3,Transport,Non market-based,OECD labels and technical documentation; context only,False
+LEV3_GHG_ACC,GHG emissions reporting and accounting,3,Cross-sector or international,"Targets, governance and data",OECD labels and technical documentation; context only,False
+LEV3_PR_AV_MAR,Pricing of emissions from international aviation and maritime transport,3,Cross-sector or international,Market-based,OECD labels and technical documentation; context only,False
+LEV4_UNFCCC_GHGINV,Submission of GHG inventories,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_UNFCCC_BR,Submission of Biennial Reports / Biennial Update Reports (BR/BUR),4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_NDC_TARG_TYPE,NDCs - target type,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_UNFCCC_NDC,Submission of Nationally Determined Contribution,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_NDC,Nationally Determined Contributions,3,Cross-sector or international,"Targets, governance and data",OECD labels and technical documentation; context only,False
+LEV4_NDC_SING_MULT,NDCs - single/multi year,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_NDC_SCOPE_SEC,NDCs - sectoral scope,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_NDC_SCOPE_EMIS,NDCs - GHG scope,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_NDC_DET,NDCs - target specificity,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_GHG_ACC_ANNEX,GHG emissions reporting and accounting - GHG inventories Annex I,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_PR_CORSIA,CORSIA,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_METHAN,Methane abatement policies,3,Cross-sector or international,Non market-based,OECD labels and technical documentation; context only,False
+LEV4_EXCISETAX_I_COAL,Excise taxes on coal - Industry,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_EXCISETAX_B,Fossil fuels excise taxes - Buildings,3,Buildings,Market-based,OECD labels and technical documentation; context only,False
+LEV4_EXCISETAX_B_C_LPG,Excise taxes on LPG - commercial buildings,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_RDD_NUC,RD&D expenditure - Nuclear,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_EXCISETAX_B_R_LPG,Excise taxes on LPG - residential buildings,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_EXCISETAX_I_NATGAS,Excise taxes on natural gas - Industry,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_METHAN,Methane abatement policies,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_EXCISETAX_E_NATGAS,Excise taxes on natural gas - Electricity,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_EXCISETAX_I,Fossil fuels excise taxes - Industry,3,Industry,Market-based,OECD labels and technical documentation; context only,False
+LEV3_RDD_NUC,RD&D expenditure - Nuclear,3,Cross-sector or international,Market-based,OECD labels and technical documentation; context only,False
+LEV4_EXCISETAX_B_R_NATGAS,Excise taxes on natural gas - residential buildings,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_EXCISETAX_E_COAL,Excise taxes on coal - Electricity,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_EXCISETAX_E,Fossil fuels excise taxes - Electricity,3,Electricity,Market-based,OECD labels and technical documentation; context only,False
+LEV4_EXCISETAX_B_C_NATGAS,Excise taxes on natural gas - commercial buildings,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_EXCISETAX_I_DIESEL,Excise taxes on diesel - Industry,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_EXCISETAX_B_C_COAL,Excise taxes on coal - commercial buildings,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_EXCISETAX_B_R_DIESEL,Excise taxes on diesel - residential buildings,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_EXCISETAX_B_R_COAL,Excise taxes on coal - residential buildings,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_EXCISETAX_B_C_DIESEL,Excise taxes on diesel - commercial buildings,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_EVAL_BR,Evaluation of Biennial Reports and Biennial Update Reports,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_EVAL_BR,Evaluation of Biennial Reports and Biennial Update Reports,3,Cross-sector or international,"Targets, governance and data",OECD labels and technical documentation; context only,False
+LEV4_RDD_RES,RD&D expenditure - Renewable energy,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_EXP_RAIL,Share of rail on total surface transport public expenditure,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_RDD_EE,RD&D expenditure - Energy Efficiency,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_RDD_OTHER,RD&D expenditure - Other storage,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_RDD_CCS,RD&D expenditure - Carbon Capture and Storage,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_RDD_HYDR,RD&D expenditure - Hydrogen,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_FIN_MECH_I,Financing mechanisms for energy efficiency - Industry,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_FFS_PRODUCER,FFS reform for fossil fuel production,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_FFS_B,Fossil fuels subsidies - Buildings,3,Buildings,Market-based,OECD labels and technical documentation; context only,False
+LEV3_FFS_E,Fossil Fuel Subsidies -  Electricity,3,Electricity,Market-based,OECD labels and technical documentation; context only,False
+LEV3_FIN_MECH_B,Financing mechanisms available - Buildings,3,Buildings,Market-based,OECD labels and technical documentation; context only,False
+LEV3_FFS_PRODUCER,Fossil Fuel Subsidies Producer Support,3,Cross-sector or international,Market-based,OECD labels and technical documentation; context only,False
+LEV4_RENEWABLE_EXP,Planning Renewables Expansion,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_FFS_B,Reform of Fossil Fuel Subsidies - Buildings,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_EE_MANDATE,Energy Efficiency Mandates,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_RDD_CCS,RD&D expenditure - Carbon Capture and Storage,3,Cross-sector or international,Market-based,OECD labels and technical documentation; context only,False
+LEV3_FFS_I,Fossil Fuel Subsidies - Industry,3,Industry,Market-based,OECD labels and technical documentation; context only,False
+LEV4_FFS_T,Reform of Fossil Fuel Subsidies - Transport,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_FFS_T,Fossil fuels subsidies - Transport,3,Transport,Market-based,OECD labels and technical documentation; context only,False
+LEV3_RDD_HYDR,RD&D expenditure - Hydrogen,3,Cross-sector or international,Market-based,OECD labels and technical documentation; context only,False
+LEV3_EE_MANDATE,Energy efficiency mandates,3,Industry,Non market-based,OECD labels and technical documentation; context only,False
+LEV3_RENEWABLE_EXP,Planning for renewables expansion,3,Electricity,Non market-based,OECD labels and technical documentation; context only,False
+LEV4_FIN_MECH_B_R,Financing mechanisms for energy efficiency - residential buildings,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_FFS_I,Reform of Fossil Fuel Subsidies - Industrie,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_FIN_MECH_I,Financing mechanisms available - Industry,3,Industry,Market-based,OECD labels and technical documentation; context only,False
+LEV4_FIN_MECH_B_C,Financing mechanisms for energy efficiency - commercial buildings,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_FFS_E,Reform of Fossil Fuel Subsidies - Electricity,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_EXCISETAX_T,Fossil fuels excise taxes - Transport,3,Transport,Market-based,OECD labels and technical documentation; context only,False
+LEV3_SPEED,Speed limits on motorways,3,Transport,Non market-based,OECD labels and technical documentation; context only,False
+LEV4_EXCISETAX_T_DIESEL,Excise taxes on diesel - Transport,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_EXCISETAX_T_GASO,Excise taxes on gasoline - Transport,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV4_SPEED,Speed limits on motorways,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_EXP_RAIL,Share of rail on total surface transport public expenditure,3,Transport,Non market-based,OECD labels and technical documentation; context only,False
+LEV4_UNFCCC_NC,Submission of National Communication,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_UNFCCC,Submission of key UNFCCC documents,3,Cross-sector or international,"Targets, governance and data",OECD labels and technical documentation; context only,False
+LEV4_TREATY_MONTREALPROT,Participation in international climate agreements - Montreal Protocol,4,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_TREATY,Ratification of key international climate treaties,3,Cross-sector or international,"Targets, governance and data",OECD labels and technical documentation; context only,False
+LEV1_CROSS_SEC,Cross-sectoral policies,1,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_RDD_OTHER,RD&D expenditure - Other storage,3,Cross-sector or international,Market-based,OECD labels and technical documentation; context only,False
+LEV3_RDD_RES,RD&D expenditure - Renewable energy,3,Cross-sector or international,Market-based,OECD labels and technical documentation; context only,False
+LEV1_INT,International policies,1,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV2_INT_C_COORD,International cooperation,2,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV2_CROSS_SEC_RDD,Public RD&D expenditure,2,Cross-sector or international,unassigned_or_higher_level,OECD labels and technical documentation; context only,False
+LEV3_RDD_EE,RD&D expenditure - Energy Efficiency,3,Cross-sector or international,Market-based,OECD labels and technical documentation; context only,False

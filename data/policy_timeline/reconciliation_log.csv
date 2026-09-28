@@ -1,0 +1,17 @@
+topic,prior_or_prompt_issue,release_decision,audit_locator
+Identity,Both prior outputs have 68 scenario-stripped identities,Preserve 98 original PaMs and both ID systems; identities remain analytical/provisional,policy_id_lineage.csv
+Time window,Earlier builds covered 1990-2025/2030,Requested 2000-2023; no planned activation or post-CAPMF extension,config/settings.json
+CAPMF imputation,Claude backcast late-starting scores and carried 2023 forward,Use same-year scores only; hypothetical timing fallback is explicitly a different source,implementation_source; implementation_detail
+Reported effects,Claude used a log-transformed effect in its index,"Use reported effects only for selection, never intensity; no GHG inventory is used",selection_log.csv
+Zero/negative effects,Claude treated zero/negative as not quantified,First numeric estimate retained including zero/negative; future negative liming estimates audited,qa/negative_reported_effects.csv
+Group 106,Claude divided joint forestry effects equally,No allocation. Group/planned records do not become historical policies,raw PaMs and lineage
+EEOS,Claude linked to industrial mandates,Remove that match; separate supplier EEOS from mandatory large-enterprise audits,config/pam_classification.csv
+Aviation efficiency,Claude linked voluntary efficiency to aviation emissions pricing,Exclude unverified voluntary aggregate under eligibility rule; add actual aviation ETS anchor,selection_log.csv
+Boilers,Claude equated boiler regulation with whole residential building code,Keep boiler measure distinct; no forced Part L stringency match,IRL_P0013
+Renewable electricity,"Claude used max(FIT, auctions, planning), assuming exclusivity",Fixed mean of distinct FIT and auction categories as portfolio context; planning not treated as funding. Programmes can coexist,IRL_P0026; REFIT/RESS citations
+Building regulations,Separate vintages duplicated the same saturated CAPMF score,Two canonical Part L families; old records and conflicts retained in selection/provenance,CAPMF_PARTL_RES; CAPMF_PARTL_NONRES
+Frameworks/ETS,PaMs-only timeline did not name all major anchors,Add six national frameworks and ETS sector slices plus verified regulatory/category anchors,config/anchor_register.csv
+Temporal parameters,Claude described numeric defaults as literature-informed,Retain supplied defaults only as judgment scenarios; fix legacy tail to start from last operational intensity,config/timing_parameters.csv
+Coverage,Prior scores used geography/category counts,Use prompt ordinal legal-scope rubric; explicitly not a physical coverage share,coverage_share; coverage_rationale
+Equal weighting,Requested mean is positive with inactive implementation,Preserve exact formula and add an explicitly gated sensitivity column,intensity_index_equal_gated
+Source information,Both files are recent reporting snapshots,Selection uses later reported estimates; retrospective selection can bias future causal applications,methods_summary.md

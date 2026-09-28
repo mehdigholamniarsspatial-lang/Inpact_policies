@@ -1,0 +1,115 @@
+{% extends "policies/base.html" %}
+{% load static policy_extras %}
+{% block title %}Methods | Ireland Climate Policy Timeline{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Methods and data quality</h1>
+    <p class="lede">This page documents how {{ stats.candidates }} candidate policies were screened and selected, how each policy-year is scored, which assumptions are involved, and how the dataset was checked for internal consistency.</p>
+  </div>
+</div>
+
+<section class="panel">
+  <h2 style="font-size:22px">Selection flow</h2>
+  <p class="small muted prose">Both sources feed one core set. EEA policies and OECD categories overlap, because several can describe the same instrument. The {{ flow.eea_core }} selected EEA policies and {{ flow.capmf_core }} eligible OECD categories therefore consolidate into {{ flow.core_families }} policy families. Hover over a flow for its meaning.</p>
+  <div id="sankey" style="height:440px"></div>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>Scoring model</h2><p>Each policy <i>p</i> in sector <i>s</i> and year <i>t</i> is scored as follows.</p></div>
+  <div class="grid-2">
+    <div class="panel">
+      <p class="formula-display">I<sub>p,s,t</sub> = M<sub>p,s,t</sub> × C<sub>p,s</sub> × B<sub>p</sub></p>
+      <dl class="kv">
+        <dt>I, policy intensity</dt><dd>Relative index on [0, 1].</dd>
+        <dt>M, implementation</dt><dd>Same-year OECD CAPMF stringency ÷ 10 where a matching indicator exists. Otherwise an assumed profile: M = clip((t − t₀ − lag + 0.5) / ramp, 0, 1), where t₀ is the start year. After expiry with evidence of lasting effects, M decays as 2<sup>−(t − t<sub>end</sub>)/h</sup> from its last operational level, with half-life h.</dd>
+        <dt>C, coverage</dt><dd>Ordinal legal-scope score: 1 (whole sector), 0.5 (major subsector), 0.25 (defined segment), 0.1 (narrow pilot).</dd>
+        <dt>B, bindingness</dt><dd>Ordinal score: 1 (enforced rule or statute), 0.75 (price or obligation), 0.5 (incentive), 0.25 (information or voluntary).</dd>
+      </dl>
+    </div>
+    <div class="panel">
+      <h3>Aggregation rules</h3>
+      <ul class="small" style="padding-left:18px">
+        <li>Residual bundles take the strict mean of their fixed members' intensities; a missing member makes the bundle value missing.</li>
+        <li>Framework (L1) rows are contextual and never added to instruments or programmes.</li>
+        <li>Portfolios and their delivery schemes are alternative representations; use one or the other.</li>
+        <li>No national total index is computed, because rows overlap by design.</li>
+      </ul>
+      <h3 style="margin-top:14px">Sensitivity index</h3>
+      <p class="small">The equal-weight alternative is the unweighted mean (M + C + B) / 3. A gated version is set to zero before a policy starts. The multiplicative form of the main index follows composite-indicator practice (OECD/JRC, 2008), but its weights are a stated convention rather than an empirical estimate.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>Every candidate and its decision</h2><p>Five eligibility tests: (A) mitigation purpose, (B) applies in Ireland, (C) an identifiable instrument or framework, (D) an identified start date, (E) active within 2000–2023.</p></div>
+  <div class="panel">
+    <div class="filters">
+      <div class="control"><label for="c-q">Search</label><input type="search" id="c-q" placeholder="Candidate name or ID"></div>
+      <div class="control"><span class="label">Source</span><div class="seg" id="c-origin"><button data-value="" aria-pressed="true">Both</button><button data-value="EEA_deduplicated_PaM" aria-pressed="false">EEA</button><button data-value="CAPMF_positive_LEV3" aria-pressed="false">OECD</button></div></div>
+      <div class="control"><span class="label">Outcome</span><div class="seg" id="c-outcome"><button data-value="" aria-pressed="true">All</button><button data-value="core" aria-pressed="false">Core</button><button data-value="residual" aria-pressed="false">Residual</button><button data-value="excluded" aria-pressed="false">Excluded</button></div></div>
+    </div>
+    <p class="result-count" id="c-count"></p>
+    <div class="table-wrap" style="max-height:520px;overflow:auto"><table class="data" id="cands"><thead><tr><th>Candidate</th><th>Sector</th><th title="Eligibility tests A to E">A B C D E</th><th style="text-align:right">Reported kt</th><th style="text-align:right">Cumulative share</th><th>Outcome</th><th>Reason or basis</th></tr></thead><tbody></tbody></table></div>
+  </div>
+</section>
+
+<section class="section split">
+  <div class="panel">
+    <h3>The 90% materiality rule by sector</h3>
+    <p class="small muted">Within each sector, eligible EEA measures are ranked by their first available reported saving: ex-post 2024, then ex-ante 2025, then ex-ante 2030. They are selected in order until the selection covers 90% of the sector's positive reported total. The shares refer to reported totals, which may overlap, not to realised abatement.</p>
+    <div id="materiality" style="height:330px"></div>
+  </div>
+  <div class="panel">
+    <h3>Assumed timing profiles</h3>
+    <p class="small muted">When no OECD score matches, implementation follows a hypothetical linear ramp with a mid-year convention. After an expiry with evidence of lasting effects, it halves every half-life. Parameters vary by mechanism class and are scenario assumptions, not estimates.</p>
+    <div class="control"><label for="t-class">Mechanism class</label><select id="t-class"></select></div>
+    <div class="control" style="margin-top:8px"><label for="t-end">Policy ends after <output id="t-end-out">8</output> years <span class="muted">(0 = never)</span></label><input type="range" id="t-end" min="0" max="20" value="8" style="accent-color:var(--cursor)"></div>
+    <div id="ramp" style="height:230px"></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>Validation checks</h2><p>All {{ stats.checks_passed }} of {{ stats.checks_total }} internal consistency checks pass. They verify construction rules and do not substitute for independent expert review.</p></div>
+  <div class="panel flush"><div class="table-wrap"><table class="data"><thead><tr><th>Check</th><th>Result</th><th>What it verifies</th></tr></thead>
+    <tbody>{% for c in checks %}<tr><td style="white-space:nowrap"><b>{{ c.title }}</b></td><td class="{% if c.result == 'PASS' %}pass{% else %}fail{% endif %}">{% if c.result == 'PASS' %}Pass{% else %}{{ c.result }}{% endif %}</td><td>{{ c.detail }}</td></tr>{% endfor %}</tbody></table></div></div>
+</section>
+
+<section class="section grid-2">
+  <div>
+    <div class="section-head"><h2>Key methodological decisions</h2></div>
+    <div class="panel">
+      {% for topic, text in decisions %}<details class="more" style="border-bottom:1px solid var(--line-2);padding:8px 0"><summary>{{ topic }}</summary><p class="small">{{ text }}</p></details>{% endfor %}
+    </div>
+  </div>
+  <div>
+    <div class="section-head"><h2>Known overlaps</h2></div>
+    <div class="panel flush"><div class="table-wrap"><table class="data"><thead><tr><th>Parent or context</th><th>Related</th><th>Relationship</th></tr></thead>
+      <tbody>{% for o in overlaps %}<tr><td>{{ o.parent_id }}</td><td>{{ o.related_id }}</td><td>{{ o.relationship|humanise }}</td></tr>{% endfor %}</tbody></table></div>
+      <p class="note" style="padding:0 14px 12px">Related rows must not be summed. Use either the parent or its components. No numerical overlap discount is applied.</p></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>Data dictionary</h2><p>Definitions of all {{ dictionary|length }} variables in the downloadable dataset. Variables 1–36 are the core analytical variables; variables 37–67 document provenance, assumptions and aggregation rules.</p></div>
+  <div class="panel">
+    <div class="control" style="margin-bottom:10px"><label for="dict-q">Filter columns</label><input type="search" id="dict-q" placeholder="e.g. intensity, capmf, start"></div>
+    <div class="table-wrap" style="max-height:520px;overflow:auto"><table class="data" id="dict"><thead><tr><th>#</th><th>Column</th><th>Unit</th><th>Definition</th></tr></thead>
+      <tbody>{% for f in dictionary %}<tr><td>{{ f.position }}</td><td><code>{{ f.column }}</code></td><td style="white-space:nowrap">{{ f.unit }}</td><td>{{ f.definition }}</td></tr>{% endfor %}</tbody></table></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>Sources</h2><p>Official documents used to verify dates, scope and methodology. Web sources were accessed on 25 September 2026.</p></div>
+  <div class="panel flush"><div class="table-wrap"><table class="data"><thead><tr><th>Publisher</th><th>Title</th><th>Year</th></tr></thead>
+    <tbody>{% for r in references %}<tr><td>{{ r.publisher }}</td><td>{% if r.url %}<a href="{{ r.url }}" target="_blank" rel="noopener">{{ r.title }}</a>{% else %}{{ r.title }}{% endif %}</td><td style="white-space:nowrap">{{ r.publication_date }}</td></tr>{% endfor %}</tbody></table></div></div>
+</section>
+
+{{ flow|json_script:"flow-data" }}
+{{ materiality_json|json_script:"materiality-data" }}
+{{ timing|json_script:"timing-data" }}
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'policies/vendor/plotly.min.js' %}"></script>
+<script src="{% static 'policies/js/method.js' %}"></script>
+{% endblock %}

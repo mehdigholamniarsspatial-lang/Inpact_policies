@@ -809,6 +809,112 @@ input[type=range]{accent-color:var(--emerald);width:100%}
 .fb-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-top:.3rem}
 @media (max-width:575px){.fb-stats-row{grid-template-columns:1fr}}
 
+/* ============ POLICY TIMELINE TAB (embedded Ireland Climate Policy Timeline app) ============
+   Left: vertical sub-menu (one entry per section of the policy dashboard).
+   Right: the selected section, shown full height in a frame. */
+.pt-layout{display:flex;align-items:flex-start}
+.pt-side{
+  width:264px;flex:0 0 264px;background:#fff;border-right:1px solid var(--grey-border);
+  position:sticky;top:calc(var(--header-h) + var(--tabnav-h, 52px));
+  height:calc(100vh - var(--header-h) - var(--tabnav-h, 52px));
+  display:flex;flex-direction:column;padding:1rem .8rem .8rem;z-index:5;
+}
+.pt-side-head{display:flex;align-items:center;gap:.65rem;padding:0 .3rem .85rem;border-bottom:1px solid var(--grey-border);margin-bottom:.8rem}
+.pt-mark{
+  width:38px;height:38px;border-radius:10px;flex:0 0 38px;
+  background:linear-gradient(135deg,#0B5563,var(--teal));color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+}
+.pt-name{font-weight:800;color:var(--navy);font-size:.98rem;line-height:1.15}
+.pt-subname{font-size:.74rem;color:var(--text-muted);line-height:1.3;margin-top:.1rem}
+.pt-search{position:relative;margin-bottom:.8rem}
+.pt-search > i{position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none;font-size:.85rem}
+.pt-search input{
+  width:100%;border:1px solid var(--grey-border);border-radius:999px;
+  padding:.42rem 2rem .42rem 1.95rem;font-size:.82rem;background:var(--grey-panel);color:var(--text-main);
+}
+.pt-search input:focus{outline:none;border-color:var(--teal);background:#fff;box-shadow:0 0 0 .2rem rgba(14,140,138,.15)}
+.pt-search kbd{
+  position:absolute;right:.6rem;top:50%;transform:translateY(-50%);
+  font-size:.66rem;background:#fff;color:var(--text-muted);border:1px solid var(--grey-border);padding:0 .35rem;border-radius:4px;
+}
+.pt-search input:focus ~ kbd,.pt-search input:not(:placeholder-shown) ~ kbd{display:none}
+.pt-results{
+  position:absolute;left:0;top:calc(100% + 4px);width:380px;max-width:calc(100vw - 2rem);z-index:1200;
+  list-style:none;margin:0;padding:.3rem;background:#fff;
+  border:1px solid var(--grey-border);border-radius:12px;box-shadow:var(--shadow-lg);
+  max-height:380px;overflow-y:auto;
+}
+.pt-results li{padding:.45rem .6rem;border-radius:8px;cursor:pointer;display:flex;gap:.55rem;align-items:flex-start}
+.pt-results li[aria-selected="true"],.pt-results li:hover{background:var(--teal-light)}
+.pt-results .dot{width:9px;height:9px;border-radius:50%;flex:0 0 9px;margin-top:.38rem}
+.pt-results .nm{font-size:.85rem;font-weight:600;color:var(--navy);line-height:1.25}
+.pt-results .mt{font-size:.72rem;color:var(--text-muted)}
+.pt-menu-label{font-size:.68rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--text-muted);padding:0 .5rem .35rem}
+.pt-vtabs{display:flex;flex-direction:column;gap:.18rem;overflow-y:auto;min-height:0;flex:1 1 auto}
+.pt-vtab{
+  width:100%;text-align:left;border:0;background:transparent;font-family:inherit;cursor:pointer;
+  display:flex;gap:.65rem;align-items:flex-start;padding:.55rem .6rem .55rem .75rem;border-radius:10px;
+  border-left:3px solid transparent;color:var(--text-main);transition:background .15s,border-color .15s,color .15s;
+}
+.pt-vtab i{font-size:1.02rem;color:var(--text-muted);margin-top:.05rem;flex:0 0 auto;width:1.1rem;text-align:center}
+.pt-vtab .t{display:block;font-size:.88rem;font-weight:700;line-height:1.25}
+.pt-vtab .d{display:none;font-size:.73rem;line-height:1.38;color:var(--text-muted);margin-top:.2rem;font-weight:400}
+.pt-vtab:hover{background:var(--grey-panel)}
+.pt-vtab:hover i{color:var(--teal)}
+.pt-vtab:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
+.pt-vtab[aria-selected="true"]{background:var(--teal-light);border-left-color:var(--teal);color:#0B5563}
+.pt-vtab[aria-selected="true"] i{color:var(--teal)}
+.pt-vtab[aria-selected="true"] .d{display:block}
+.pt-side-foot{font-size:.7rem;color:var(--text-muted);line-height:1.4;padding:.7rem .4rem 0;border-top:1px solid var(--grey-border);margin-top:.6rem}
+.pt-main{flex:1 1 auto;min-width:0}
+.pt-topbar{
+  display:flex;align-items:center;gap:.6rem;height:46px;padding:0 1rem;
+  background:#fff;border-bottom:1px solid var(--grey-border);
+}
+.pt-crumb{flex:1 1 auto;min-width:0;font-size:.84rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pt-crumb b{color:var(--navy);font-weight:800}
+.pt-crumb .cur{color:var(--teal);font-weight:700}
+.pt-tools{display:flex;align-items:center;gap:.3rem;flex:0 0 auto}
+.pt-tool{
+  border:1px solid var(--grey-border);background:#fff;color:var(--navy);
+  border-radius:8px;height:32px;min-width:32px;padding:0 .55rem;
+  display:inline-flex;align-items:center;justify-content:center;gap:.35rem;
+  font-size:.78rem;font-weight:600;text-decoration:none;cursor:pointer;transition:background .15s,border-color .15s;
+}
+.pt-tool:hover{background:var(--teal-light);border-color:var(--teal);color:var(--navy)}
+.pt-tool:disabled{opacity:.4;cursor:default;background:#fff;border-color:var(--grey-border)}
+.pt-stage{position:relative;background:#EDF1F0}
+#ptFrame{display:block;width:100%;border:0;height:calc(100vh - var(--header-h) - 100px);min-height:520px;background:#EDF1F0}
+.pt-loading{
+  position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding-top:18vh;gap:.8rem;background:rgba(237,241,240,.82);color:var(--text-muted);font-size:.9rem;font-weight:600;
+}
+.pt-loading[hidden]{display:none}
+.pt-xlink{
+  display:inline-flex;align-items:center;gap:.4rem;margin-top:.85rem;
+  border:1px solid var(--teal);background:var(--teal-light);color:#0B5563;
+  border-radius:999px;padding:.35rem .9rem;font-size:.8rem;font-weight:700;cursor:pointer;
+}
+.pt-xlink:hover{background:var(--teal);color:#fff}
+.pt-headlink{
+  font-size:.72rem;font-weight:700;color:var(--teal);text-decoration:none;white-space:nowrap;
+  border:1px solid var(--teal);border-radius:999px;padding:.12rem .6rem;
+}
+.pt-headlink:hover{background:var(--teal);color:#fff}
+/* Narrow screens: the sub-menu becomes a scrollable strip above the content */
+@media (max-width:991px){
+  .pt-layout{flex-direction:column;align-items:stretch}
+  .pt-side{width:auto;flex:none;position:static;height:auto;border-right:0;border-bottom:1px solid var(--grey-border);padding:.7rem .8rem .5rem}
+  .pt-side-head{border-bottom:0;padding-bottom:.5rem;margin-bottom:.3rem}
+  .pt-menu-label,.pt-side-foot{display:none}
+  .pt-vtabs{flex-direction:row;overflow-x:auto;overflow-y:visible;gap:.3rem;padding-bottom:.3rem}
+  .pt-vtab{width:auto;flex:0 0 auto;white-space:nowrap;border-left:0;border-bottom:3px solid transparent;border-radius:8px 8px 0 0;padding:.45rem .7rem}
+  .pt-vtab[aria-selected="true"]{border-bottom-color:var(--teal)}
+  .pt-vtab[aria-selected="true"] .d{display:none}
+  .pt-results{width:100%}
+  .pt-tools .lbl{display:none}
+}
 </style>
 </head>
 <body>
@@ -837,6 +943,9 @@ input[type=range]{accent-color:var(--emerald);width:100%}
 <nav class="tab-nav" role="tablist" aria-label="Dashboard sections">
   <button class="tab-btn active" role="tab" aria-selected="true" data-tab="explorer">
     <i class="bi bi-graph-up-arrow"></i><span>Explorer<span class="tab-label-long"> Dashboard</span></span>
+  </button>
+  <button class="tab-btn" role="tab" aria-selected="false" data-tab="policy">
+    <i class="bi bi-calendar3-range"></i><span>Policy<span class="tab-label-long"> Timeline</span></span>
   </button>
   <button class="tab-btn" role="tab" aria-selected="false" data-tab="trend">
     <i class="bi bi-activity"></i><span>Trend<span class="tab-label-long"> Analysis</span></span>
@@ -1073,6 +1182,9 @@ input[type=range]{accent-color:var(--emerald);width:100%}
                 <li><strong>Note:</strong> attribution of emission change to any single policy is indicative and subject to uncertainty.</li>
               </ul>
             </div>
+            <button type="button" class="pt-xlink" id="piTimelineLink" title="See this policy in the detailed Ireland Climate Policy Timeline">
+              <i class="bi bi-calendar3-range"></i><span id="piTimelineLabel">Explore in the Policy Timeline</span><i class="bi bi-arrow-right-short"></i>
+            </button>
           </div>
         </section>
       </div>
@@ -1084,6 +1196,7 @@ input[type=range]{accent-color:var(--emerald);width:100%}
             <span class="panel-num">4</span>
             <h2 class="panel-title">Climate Policy Roadmap · 1992 → 2050</h2>
             <span class="ms-auto text-muted" style="font-size:.72rem">Click a node to inspect its impact</span>
+            <a class="pt-headlink" href="#policy/timeline/" title="Open the year-by-year policy intensity timeline">Detailed timeline <i class="bi bi-arrow-right-short"></i></a>
           </div>
           <div class="panel-body pb-2">
             <div class="tl-phases mb-1">
@@ -1514,6 +1627,59 @@ input[type=range]{accent-color:var(--emerald);width:100%}
 
   </div>
 </div><!-- /tab-streamlit -->
+
+<!-- ================= TAB: POLICY TIMELINE (Ireland Climate Policy Timeline app) =================
+     The full policy dashboard (Overview, Timeline, Categories, Instruments, Policies, OECD scores,
+     Methods, About and every policy profile) is served by the `policies` Django app under /policy/.
+     The left vertical sub-menu selects a section; the section is shown on the right in a frame, so
+     its own pages, charts and filters are preserved unchanged.
+     Deep links: #policy, #policy/timeline/, #policy/policies/<slug>/ ... -->
+<div class="tab-pane" id="tab-policy" role="tabpanel" aria-label="Ireland Climate Policy Timeline">
+  <div class="pt-layout">
+
+    <!-- Left vertical sub-menu -->
+    <aside class="pt-side" aria-label="Policy Timeline menu">
+      <div class="pt-side-head">
+        <span class="pt-mark" aria-hidden="true"><i class="bi bi-calendar3-range"></i></span>
+        <div>
+          <div class="pt-name">Ireland Climate Policy Timeline</div>
+          <div class="pt-subname">34 core policy families &middot; 2000&ndash;2023</div>
+        </div>
+      </div>
+      <div class="pt-search">
+        <i class="bi bi-search" aria-hidden="true"></i>
+        <input id="ptSearch" type="search" placeholder="Find a policy or sector&hellip;" autocomplete="off"
+               role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="ptResults"
+               aria-label="Search the policy timeline">
+        <kbd aria-hidden="true">/</kbd>
+        <ul id="ptResults" class="pt-results" role="listbox" hidden></ul>
+      </div>
+      <div class="pt-menu-label" id="ptMenuLabel">Sections</div>
+      <nav class="pt-vtabs" id="ptSections" role="tablist" aria-orientation="vertical" aria-labelledby="ptMenuLabel"></nav>
+      <div class="pt-side-foot">
+        <i class="bi bi-lightbulb"></i> Hover an underlined term for its definition. Your current page and filters are kept in the address bar, so you can bookmark or share any view.
+      </div>
+    </aside>
+
+    <!-- Selected section -->
+    <section class="pt-main" aria-label="Selected Policy Timeline section">
+      <div class="pt-topbar">
+        <div class="pt-crumb" id="ptCrumb"><b>Policy Timeline</b></div>
+        <div class="pt-tools">
+          <button type="button" class="pt-tool" id="ptBack" title="Back" aria-label="Back" disabled><i class="bi bi-arrow-left"></i></button>
+          <button type="button" class="pt-tool" id="ptFwd" title="Forward" aria-label="Forward" disabled><i class="bi bi-arrow-right"></i></button>
+          <button type="button" class="pt-tool" id="ptReload" title="Reload this section" aria-label="Reload"><i class="bi bi-arrow-clockwise"></i></button>
+          <a class="pt-tool" id="ptPopout" href="/policy/" target="_blank" rel="noopener" title="Open this page on its own in a new browser tab"><i class="bi bi-box-arrow-up-right"></i><span class="lbl">New tab</span></a>
+        </div>
+      </div>
+      <div class="pt-stage">
+        <div class="pt-loading" id="ptLoading"><div class="spinner-border" style="color:var(--teal)" role="status"></div><span>Loading&hellip;</span></div>
+        <iframe id="ptFrame" title="Ireland Climate Policy Timeline"></iframe>
+      </div>
+    </section>
+
+  </div>
+</div><!-- /tab-policy -->
 
 <!-- ================= TAB: FEEDBACK ================= -->
 <div class="tab-pane" id="tab-feedback" role="tabpanel">
@@ -2574,6 +2740,7 @@ const tabButtons = document.querySelectorAll(".tab-nav .tab-btn");
 const tabPanes = {
   explorer: document.getElementById("tab-explorer"),
   trend: document.getElementById("tab-trend"),
+  policy: document.getElementById("tab-policy"),
   streamlit: document.getElementById("tab-streamlit"),
   about: document.getElementById("tab-about"),
   feedback: document.getElementById("tab-feedback"),
@@ -2594,10 +2761,296 @@ function activateTab(name){
   }
   // Lazy-initialise the Trend Analysis dashboard on first visit.
   if (name === "trend") initTrendTab();
+  // Policy Timeline: load the embedded app on first visit and keep #policy/... deep links in sync.
+  if (name === "policy") ptActivate();
+  else if (location.hash.startsWith("#policy")) history.replaceState(null, "", location.pathname + location.search);
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 tabButtons.forEach(b =>
   b.addEventListener("click", () => activateTab(b.dataset.tab)));
+
+/* ---------------------- 9a. Policy Timeline tab ----------------------
+ * Hosts the Ireland Climate Policy Timeline app (Django `policies` app, /policy/).
+ * The left vertical sub-menu lists its sections; clicking one shows that section
+ * on the right (in a frame, so every page keeps its own structure and behaviour).
+ * Also: policy quick-search, back/forward, deep links (#policy/<path>) and sizing. */
+const PT_ROOT = "/policy/";
+const PT_SECTIONS = [
+  { key: "overview",    path: "",             icon: "bi-compass",         label: "Overview",    desc: "Policy river of all 47 series, how the dataset was built, sector × mechanism matrix and policies in force over time." },
+  { key: "timeline",    path: "timeline/",    icon: "bi-bar-chart-steps", label: "Timeline",    desc: "Intensity grid or lifespans with grouping, filters and a year slider. Click a row for a quick view." },
+  { key: "categories",  path: "categories/",  icon: "bi-diagram-3",       label: "Categories",  desc: "Sunburst / treemap, mechanism and sector guides, scoring ladders and a try-the-formula widget." },
+  { key: "instruments", path: "instruments/", icon: "bi-tools",           label: "Instruments", desc: "Each policy mechanism: rationale, use in Ireland, strengths, limitations and literature." },
+  { key: "explorer",    path: "policies/",    icon: "bi-table",           label: "Policies",    desc: "Searchable, sortable table of every series. Open any policy for its full profile." },
+  { key: "capmf",       path: "oecd-scores/", icon: "bi-speedometer2",    label: "OECD scores", desc: "Heatmap of the 56 OECD CAPMF categories, indicator comparison and eligibility decisions." },
+  { key: "method",      path: "method/",      icon: "bi-sliders",         label: "Methods",     desc: "Selection flow, scoring model, 115 candidates, validation checks and data dictionary." },
+  { key: "about",       path: "about/",       icon: "bi-info-circle",     label: "About",       desc: "Scope, data sources, intended use and limitations, and a suggested citation." },
+];
+const pt = {
+  frame: document.getElementById("ptFrame"),
+  loading: document.getElementById("ptLoading"),
+  crumb: document.getElementById("ptCrumb"),
+  search: document.getElementById("ptSearch"),
+  results: document.getElementById("ptResults"),
+  tabs: document.getElementById("ptSections"),
+  back: document.getElementById("ptBack"),
+  fwd: document.getElementById("ptFwd"),
+  popout: document.getElementById("ptPopout"),
+  started: false, stack: [], idx: -1, pending: null,
+  series: null, seriesReq: null, hits: [], sel: -1,
+};
+const ptEsc = t => String(t ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const ptIsActive = () => document.getElementById("tab-policy").classList.contains("active");
+
+/* "#policy/timeline/?x=1" <-> "/policy/timeline/?x=1" */
+const ptPathFromHash = h => PT_ROOT + (h || "").replace(/^#policy\/?/, "");
+const ptHashFromPath = p => "#policy" + (p.startsWith(PT_ROOT) && p.length > PT_ROOT.length ? "/" + p.slice(PT_ROOT.length) : "");
+const ptSectionOf = p => {
+  const rest = (p || "").split(/[?#]/)[0].slice(PT_ROOT.length);
+  const hit = PT_SECTIONS.find(s => s.path && rest.startsWith(s.path));
+  return hit ? hit.key : "overview";
+};
+
+// Left vertical sub-menu
+pt.tabs.innerHTML = PT_SECTIONS.map((s, i) =>
+  `<button type="button" class="pt-vtab" role="tab" id="ptTab-${s.key}" data-key="${s.key}" data-path="${s.path}"
+     aria-selected="${i === 0}" aria-controls="ptFrame" tabindex="${i === 0 ? 0 : -1}" title="${ptEsc(s.desc)}">
+     <i class="bi ${s.icon}" aria-hidden="true"></i><span><span class="t">${s.label}</span><span class="d">${ptEsc(s.desc)}</span></span>
+   </button>`).join("");
+const ptTabBtns = [...pt.tabs.querySelectorAll(".pt-vtab")];
+ptTabBtns.forEach(b => b.addEventListener("click", () => {
+  const path = PT_ROOT + b.dataset.path;
+  ptMarkTab(b.dataset.key);            // highlight immediately; the page confirms on load
+  if (pt.stack[pt.idx] !== path) ptOpen(path);
+}));
+// Arrow keys move between sub-menu items (vertical tablist pattern)
+pt.tabs.addEventListener("keydown", e => {
+  const i = ptTabBtns.indexOf(document.activeElement);
+  if (i < 0) return;
+  const n = ptTabBtns.length;
+  const j = { ArrowDown: i + 1, ArrowRight: i + 1, ArrowUp: i - 1, ArrowLeft: i - 1, Home: 0, End: n - 1 }[e.key];
+  if (j === undefined) return;
+  e.preventDefault();
+  const b = ptTabBtns[(j + n) % n];
+  b.focus(); b.click();
+});
+function ptMarkTab(key){
+  ptTabBtns.forEach(b => {
+    const on = b.dataset.key === key;
+    b.setAttribute("aria-selected", on ? "true" : "false");
+    b.tabIndex = on ? 0 : -1;
+    if (on && window.innerWidth < 992) b.scrollIntoView({ block: "nearest", inline: "nearest" });
+  });
+}
+
+/* The frame fills the viewport below the sticky header, tab bar and the section's top bar;
+   the embedded pages scroll inside it, so their drawers and tooltips work as usual. */
+function ptSizeFrame(){
+  const head = document.querySelector(".app-header"), nav = document.querySelector(".tab-nav");
+  const top = document.querySelector("#tab-policy .pt-topbar");
+  const navH = nav ? nav.offsetHeight : 52;
+  document.documentElement.style.setProperty("--tabnav-h", navH + "px");
+  const used = (head ? head.offsetHeight : 0) + navH + (top ? top.offsetHeight : 0);
+  pt.frame.style.height = Math.max(520, window.innerHeight - used) + "px";
+}
+window.addEventListener("resize", () => { if (pt.started) ptSizeFrame(); });
+
+function ptShowLoading(on){ pt.loading.hidden = !on; }
+
+/* Navigate the frame. `mode` is "push" (new entry), "back" or "fwd". */
+function ptGo(path, mode = "push"){
+  if (!pt.started){ ptActivate(path); return; }
+  pt.pending = mode;
+  ptShowLoading(true);
+  try { pt.frame.contentWindow.location.assign(path); }
+  catch (e) { pt.frame.src = path; }
+}
+
+/* Open a Policy Timeline page from anywhere on the site (switches tab if needed). */
+function ptOpen(path){
+  if (!ptIsActive()){ history.replaceState(null, "", ptHashFromPath(path)); activateTab("policy"); }
+  else ptGo(path);
+}
+
+function ptActivate(path){
+  const target = path || (location.hash.startsWith("#policy") ? ptPathFromHash(location.hash) : null);
+  if (!pt.started){
+    pt.started = true;
+    ptShowLoading(true);
+    pt.pending = "push";
+    ptMarkTab(ptSectionOf(target || PT_ROOT));
+    pt.frame.src = target || PT_ROOT;
+  } else if (target && pt.stack[pt.idx] !== target){
+    ptGo(target);
+  } else if (pt.stack[pt.idx]){
+    history.replaceState(null, "", ptHashFromPath(pt.stack[pt.idx]));
+  }
+  ptSizeFrame();
+  setTimeout(ptSizeFrame, 60);
+}
+
+function ptSyncUI(path, title){
+  const key = ptSectionOf(path);
+  ptMarkTab(key);
+  const sec = PT_SECTIONS.find(s => s.key === key);
+  const page = (title || "").replace(/\s*\|\s*Ireland Climate Policy Timeline\s*$/, "");
+  const extra = page && page !== sec.label && page !== "Ireland Climate Policy Timeline"
+    ? ` &rsaquo; <span class="cur">${ptEsc(page)}</span>` : "";
+  pt.crumb.innerHTML = `Policy Timeline &rsaquo; <b>${sec.label}</b>${extra}`;
+  pt.back.disabled = pt.idx <= 0;
+  pt.fwd.disabled = pt.idx >= pt.stack.length - 1;
+  pt.popout.href = path;
+  if (ptIsActive()) history.replaceState(null, "", ptHashFromPath(path));
+}
+
+// Messages from the embedded app (see policies/templates/policies/base.html)
+window.addEventListener("message", e => {
+  if (e.origin !== location.origin || !e.data || e.data.type !== "policy-nav") return;
+  const { kind, path, title } = e.data;
+  if (kind === "load"){
+    const mode = pt.pending; pt.pending = null;
+    if (mode === "back") pt.idx = Math.max(0, pt.idx - 1);
+    else if (mode === "fwd") pt.idx = Math.min(pt.stack.length - 1, pt.idx + 1);
+    else if (!mode && pt.stack[pt.idx - 1] === path) pt.idx--;   // browser Back inside the frame
+    else if (!mode && pt.stack[pt.idx + 1] === path) pt.idx++;   // browser Forward inside the frame
+    else if (pt.stack[pt.idx] !== path){ pt.stack = pt.stack.slice(0, pt.idx + 1); pt.stack.push(path); pt.idx++; }
+    pt.stack[pt.idx] = path;
+  } else if (pt.idx >= 0){
+    pt.stack[pt.idx] = path;                                     // filters changed on the same page
+  }
+  ptSyncUI(path, title);
+});
+
+pt.frame.addEventListener("load", () => {
+  ptShowLoading(false);
+  try {
+    // Show the loading veil whenever a link inside the frame starts a new page.
+    pt.frame.contentWindow.addEventListener("pagehide", () => ptShowLoading(true));
+    // "/" inside the frame also jumps to the search box.
+    pt.frame.contentDocument.addEventListener("keydown", ptSlashKey);
+  } catch (e) { /* not same-origin: ignore */ }
+});
+pt.back.addEventListener("click", () => { if (pt.idx > 0) ptGo(pt.stack[pt.idx - 1], "back"); });
+pt.fwd.addEventListener("click", () => { if (pt.idx < pt.stack.length - 1) ptGo(pt.stack[pt.idx + 1], "fwd"); });
+document.getElementById("ptReload").addEventListener("click", () => {
+  ptShowLoading(true);
+  pt.pending = "reload";
+  try { pt.frame.contentWindow.location.reload(); } catch (e) { pt.frame.src = pt.frame.src; }
+});
+
+// Deep links (#policy/...) typed in the address bar or used by links on this page
+window.addEventListener("hashchange", () => {
+  if (!location.hash.startsWith("#policy")) return;
+  if (!ptIsActive()) activateTab("policy");
+  else { const t = ptPathFromHash(location.hash); if (pt.stack[pt.idx] !== t) ptGo(t); }
+});
+
+/* ---- Quick search across sections, sectors and policy series ---- */
+function ptLoadSeries(){
+  if (!pt.seriesReq)
+    pt.seriesReq = fetch(PT_ROOT + "api/series/").then(r => r.json()).then(d => (pt.series = d.series)).catch(() => (pt.series = []));
+  return pt.seriesReq;
+}
+const ptNorm = t => (t || "").toLowerCase().replace(/&/g, " and ").normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+
+function ptCloseResults(){ pt.results.hidden = true; pt.search.setAttribute("aria-expanded", "false"); pt.search.removeAttribute("aria-activedescendant"); }
+function ptRenderResults(){
+  const raw = pt.search.value.trim(), q = ptNorm(raw);
+  if (!q || document.activeElement !== pt.search){ ptCloseResults(); return; }
+  const words = q.split(" ");
+  const sec = PT_SECTIONS.filter(s => words.every(w => ptNorm(s.label + " " + s.desc).includes(w)))
+    .map(s => ({ label: s.label, meta: "Section", path: PT_ROOT + s.path, color: "var(--teal)" }));
+  const seen = new Set(), pol = [], sectors = new Set();
+  (pt.series || []).forEach(s => {
+    if (ptNorm(s.sector).includes(q)) sectors.add(s.sector);
+    const hay = ptNorm(`${s.name} ${s.id} ${s.sector} ${s.instrument} ${s.mechanism} ${s.bundle} ${s.capmfCode}`);
+    if (!words.every(w => hay.includes(w))) return;
+    if (seen.has(s.slug)) return; seen.add(s.slug);
+    const n = ptNorm(s.name);
+    pol.push({ label: s.name, meta: `${s.sector} · ${s.instrument} · ${s.start}–${s.end || ""}`,
+               path: PT_ROOT + "policies/" + s.slug + "/", color: "var(--navy)",
+               score: n.startsWith(q) ? 0 : n.includes(q) ? 1 : 2 });
+  });
+  pol.sort((a, b) => a.score - b.score || a.label.localeCompare(b.label));
+  const sct = [...sectors].map(x => ({ label: `All ${x} policies`, meta: "Policies table, filtered by sector",
+               path: PT_ROOT + "policies/?sector=" + encodeURIComponent(x), color: "var(--emerald)" }));
+  const all = [{ label: `Search “${raw}” in the Policies table`, meta: "Full-text search",
+               path: PT_ROOT + "policies/?q=" + encodeURIComponent(raw), color: "var(--amber)" }];
+  pt.hits = [...sec, ...sct, ...pol.slice(0, 12), ...all];
+  pt.sel = 0;
+  pt.results.innerHTML = pt.hits.map((h, i) =>
+    `<li role="option" id="ptOpt${i}" data-i="${i}" aria-selected="${i === pt.sel}"><span class="dot" style="background:${h.color}"></span>` +
+    `<span><span class="nm">${ptEsc(h.label)}</span><br><span class="mt">${ptEsc(h.meta)}</span></span></li>`).join("");
+  pt.results.hidden = false;
+  pt.search.setAttribute("aria-expanded", "true");
+  pt.search.setAttribute("aria-activedescendant", "ptOpt0");
+}
+function ptPick(i){
+  const h = pt.hits[i]; if (!h) return;
+  ptCloseResults();
+  pt.search.value = ""; pt.search.blur();
+  ptOpen(h.path);
+}
+pt.search.addEventListener("focus", () => ptLoadSeries().then(ptRenderResults));
+pt.search.addEventListener("input", () => ptLoadSeries().then(ptRenderResults));
+pt.search.addEventListener("keydown", e => {
+  if (e.key === "ArrowDown" || e.key === "ArrowUp"){
+    e.preventDefault();
+    if (pt.results.hidden || !pt.hits.length) return;
+    pt.sel = (pt.sel + (e.key === "ArrowDown" ? 1 : -1) + pt.hits.length) % pt.hits.length;
+    pt.results.querySelectorAll("li").forEach((li, i) => li.setAttribute("aria-selected", i === pt.sel ? "true" : "false"));
+    const cur = document.getElementById("ptOpt" + pt.sel);
+    if (cur){ cur.scrollIntoView({ block: "nearest" }); pt.search.setAttribute("aria-activedescendant", cur.id); }
+  } else if (e.key === "Enter"){
+    e.preventDefault();
+    if (!pt.results.hidden) ptPick(pt.sel);
+  } else if (e.key === "Escape"){
+    ptCloseResults();
+  }
+});
+pt.results.addEventListener("mousedown", e => {
+  const li = e.target.closest("li[data-i]"); if (li){ e.preventDefault(); ptPick(+li.dataset.i); }
+});
+pt.search.addEventListener("blur", () => setTimeout(ptCloseResults, 120));
+function ptSlashKey(e){
+  if (e.key !== "/" || e.ctrlKey || e.metaKey || e.altKey || !ptIsActive()) return;
+  const t = e.target;
+  if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+  e.preventDefault(); pt.search.focus();
+}
+document.addEventListener("keydown", ptSlashKey);
+
+/* ---- Explorer -> Policy Timeline cross-link (Policy Intelligence Panel) ----
+   Matches the selected roadmap policy to a Policy Timeline series by name. */
+const PT_STOP = new Set(["the","of","and","for","to","a","in","on","eu","ec","act","plan","national","ireland","irelands","s","no","st","1st"]);
+const ptTokens = t => new Set(ptNorm(t).split(" ").filter(w => w.length > 1 && !PT_STOP.has(w)));
+function ptBestMatch(name){
+  const a = ptTokens(name); let best = null, bestScore = 0;
+  (pt.series || []).forEach(s => {
+    const b = ptTokens(s.name); if (!a.size || !b.size) return;
+    let common = 0; a.forEach(w => { if (b.has(w)) common++; });
+    const score = (2 * common) / (a.size + b.size);
+    if (score > bestScore){ bestScore = score; best = s; }
+  });
+  return bestScore >= 0.6 ? best : null;
+}
+function ptUpdateCrossLink(){
+  const name = (document.getElementById("piName").textContent || "").trim();
+  const btn = document.getElementById("piTimelineLink");
+  ptLoadSeries().then(() => {
+    const m = ptBestMatch(name);
+    document.getElementById("piTimelineLabel").textContent =
+      m ? "Open its profile in the Policy Timeline" : "Explore all policies in the Policy Timeline";
+    btn.dataset.path = m ? PT_ROOT + "policies/" + m.slug + "/" : PT_ROOT + "timeline/";
+  });
+}
+document.getElementById("piTimelineLink").addEventListener("click", e => {
+  ptOpen(e.currentTarget.dataset.path || PT_ROOT);
+});
+new MutationObserver(ptUpdateCrossLink).observe(document.getElementById("piName"), { childList: true, characterData: true, subtree: true });
+ptUpdateCrossLink();
+
+// Open straight into the Policy Timeline when the page is loaded with #policy...
+if (location.hash.startsWith("#policy")) activateTab("policy");
 
 /* ---------------------- 9b. Trend Analysis dashboard ----------------------
  * Native port of the former Streamlit "Piecewise Regression Dashboard".

@@ -1,0 +1,51 @@
+{% extends "policies/base.html" %}
+{% load static policy_extras %}
+{% block title %}Policy instruments | Ireland Climate Policy Timeline{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Policy instruments</h1>
+    <p class="lede">Governments reduce greenhouse-gas emissions through a mix of instruments that work in different ways. Some change prices, some set rules, some fund investment and some build institutions. This guide explains each type of instrument in the dataset: its economic rationale, how Ireland has applied it, its known strengths and limitations, and how it is measured here.</p>
+  </div>
+</div>
+
+<section class="panel flush">
+  <div class="table-wrap">
+    <table class="data">
+      <caption class="sr-only">Comparison of policy mechanisms</caption>
+      <thead><tr><th>Mechanism</th><th>Main lever</th><th>Who chooses how to abate</th><th>Bindingness score</th><th>Typical OECD CAPMF indicators</th><th style="text-align:right">Policies</th></tr></thead>
+      <tbody>{% for g in guide %}<tr>
+        <td><a class="pname" href="#{{ g.key }}"><span class="dot-inline" style="background:{{ g.color }}"></span>{{ g.label }}</a></td>
+        <td>{{ g.cmp.0 }}</td><td>{{ g.cmp.1 }}</td><td>{{ g.cmp.2 }}</td><td class="small">{{ g.cmp.3 }}</td><td class="num">{{ g.policies|length }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+</section>
+<p class="note">Bindingness scores follow the study's ordinal rubric: 1.0 for enforced rules and statutory frameworks, 0.75 for prices and statutory obligations, 0.5 for financial incentives and 0.25 for information or voluntary approaches.</p>
+
+<div class="guide-layout section">
+  <nav class="toc" aria-label="Instrument types">
+    <p class="toc-title">Instrument types</p>
+    <ol>{% for g in guide %}<li><a href="#{{ g.key }}"><span class="dot-inline" style="background:{{ g.color }}"></span>{{ g.label }}</a></li>{% endfor %}</ol>
+  </nav>
+  <div>
+    {% for g in guide %}
+    <article class="instrument anchor-link" id="{{ g.key }}" style="--c: {{ g.color }}">
+      <header><h2>{{ g.info.title }}</h2></header>
+      <p class="lead-def">{{ g.info.definition }}</p>
+      <div class="grid-2">
+        <div><h3>Why governments use it</h3><p>{{ g.info.rationale }}</p></div>
+        <div><h3>In Ireland</h3><p>{{ g.info.ireland }}</p></div>
+      </div>
+      <div class="grid-2 pros-cons">
+        <div><h3>Strengths</h3><ul>{% for x in g.info.strengths %}<li>{{ x }}</li>{% endfor %}</ul></div>
+        <div><h3>Limitations</h3><ul>{% for x in g.info.limitations %}<li>{{ x }}</li>{% endfor %}</ul></div>
+      </div>
+      <div class="measure"><h3>How this dataset measures it</h3><p>{{ g.info.measurement }}</p></div>
+      <h3>Policies of this type in the dataset</h3>
+      <ul class="policy-list">{% for p in g.policies %}<li><a href="{% url 'policies:detail' p.s.slug %}">{{ p.s.policy_name }}</a><span>{{ p.s.start_year }}{% if p.s.end_year %}–{{ p.s.end_year }}{% endif %}, {{ p.sectors|join:", " }}</span></li>{% endfor %}</ul>
+      <details class="more"><summary>Key references</summary><ol class="refs">{% for r in g.refs %}<li>{{ r }}</li>{% endfor %}</ol></details>
+    </article>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

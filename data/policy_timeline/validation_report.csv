@@ -1,0 +1,21 @@
+check,result,detail
+01_unique_policy_sector_year,PASS,"One row per canonical policy/residual, sector, year"
+02_no_WAM_or_group_policy,PASS,Historical contributing PaM IDs only; all variant IDs are provenance metadata
+03_required_labels_complete,PASS,All required classification/source labels populated
+04_normalized_bounds,PASS,"Missing allowed only with evidence flags; every numeric value in [0,1]"
+05_raw_observation_citations,PASS,No independent observed implementation series supplied/imported; raw columns intentionally blank
+06_framework_separation,PASS,National framework context is never an L2/L3 bundle
+07_ETS_scope,PASS,All three ETS sector slices tagged ETS
+08_materiality_90pct_quantifiable_sectors,PASS,"See sector_materiality.csv. Zero denominators are NOT_ASSESSABLE, not 100%"
+09_complete_year_grid,PASS,24 years per output policy-sector slice
+10_no_inventory_or_observed_emissions_used,PASS,"Only policy files, prior policy outputs and documented policy sources are read; reported savings are selection evidence only"
+11_product_formula,PASS,Residual rows instead follow the explicitly requested mean-of-member-products rule
+12_zero_primary_intensity_before_start,PASS,Literal equal-weight baseline is retained and separately gated
+13_residual_strict_means,PASS,Fixed denominator; no silent dropping of missing members
+14_CAPMF_no_imputation,PASS,CAPMF values are same-year source values; no backcast or carry-forward
+15_all_candidates_logged,PASS,68 EEA identities plus 47 positive LEV3 categories
+16_every_eligible_PaM_represented,PASS,Core families or explicit residual member lists retain every eligible identity
+17_no_duplicated_child_after_family_merge,PASS,Part L and appliance child records occur only in provenance/selection logs
+18_no_effect_value_in_intensity,PASS,"Intensity calculation uses source score or timing, ordinal scope and bindingness; reported effect enters only selection/metadata"
+19_source_identity_reconciliation,PASS,Both prior ID systems retained through all original single records
+20_zero_negative_preservation,PASS,Zero estimates and later negative projections retained without truncation or forced fallback

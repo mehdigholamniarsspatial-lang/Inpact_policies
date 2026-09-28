@@ -1,0 +1,78 @@
+{% extends "policies/base.html" %}
+{% load policy_extras %}
+{% block title %}About and citation | Ireland Climate Policy Timeline{% endblock %}
+{% block content %}
+<div class="page-head"><div>
+  <h1>About the dataset</h1>
+  <p class="lede">The Ireland Climate Policy Timeline is a structured, annual record of the policies that shaped Ireland's greenhouse-gas emissions between 2000 and 2023. It integrates two established international sources into one consistent panel, so that policy development can be studied across sectors, instruments and time.</p>
+</div></div>
+
+<div class="about-grid">
+  <div class="prose-block">
+    <section>
+      <h2>Scope and unit of analysis</h2>
+      <p>The dataset covers {{ stats.core_families }} core policy families and {{ stats.residual_bundles }} residual sector bundles. Each policy is recorded separately for every sector it affects, giving {{ stats.series }} policy–sector series observed annually from 2000 to 2023 ({{ stats.rows|num:0 }} observations). For each observation, the dataset records the policy's status, its implementation level, and fixed scores for legal scope (coverage) and compulsion (bindingness). These are combined into a relative policy-intensity index.</p>
+    </section>
+
+    <section>
+      <h2>Data sources</h2>
+      <h3>OECD Climate Actions and Policies Measurement Framework (CAPMF)</h3>
+      <p>The CAPMF is a harmonised database that scores the stringency of climate policies on a 0–10 scale for OECD and partner countries from 1990. It covers 130 policy variables, aggregated into 56 policy categories within sectoral, cross-sectoral and international modules. Here it provides annual, comparable measures of how stringent a matched policy type was in Ireland.</p>
+      <h3>EEA database on national policies and measures (PaMs)</h3>
+      <p>EU Member States report their climate and energy policies and measures to the European Commission under Article 18 of the Governance Regulation (EU) 2018/1999. The European Environment Agency publishes these reports as a searchable database. Ireland's records provide policy names, descriptions, instrument types, implementation periods and ex-ante and ex-post estimates of emission savings.</p>
+      <h3>Supplementary official sources</h3>
+      <p>Legal commencement dates and scopes were verified against the Irish Statute Book, Oireachtas records, Revenue, SEAI, the EPA and EU legislation. Every source appears on the relevant policy page and on the Methods page.</p>
+    </section>
+
+    <section>
+      <h2>How the two sources are combined</h2>
+      <p>The two sources are structurally different: the CAPMF is a stringency scoring framework, whereas the EEA database is a registry of individual measures. They are linked at the level of the policy instrument. EEA records define the policies and supply the evidence used to select them. Where an OECD indicator describes the same instrument or its family, its annual score sets the policy's implementation level. Where no indicator applies, a transparent assumed timing profile is used and flagged. Selection follows two rules: measures that together account for 90% of each sector's reported savings, and named instruments anchored in the OECD framework. The full procedure is documented on the <a href="{% url 'policies:method' %}">Methods</a> page.</p>
+    </section>
+
+    <section>
+      <h2>Intended use and limitations</h2>
+      <p>The dataset is designed for descriptive analysis of policy development and as an input to research on policy effectiveness. It is <strong>not</strong> an estimate of emissions avoided. In particular:</p>
+      <ul>
+        <li>The intensity index is a relative composite built from ordinal judgement scores. Its multiplicative form is a stated convention, not an empirically validated weighting.</li>
+        <li>Where no OECD indicator applies, implementation follows assumed timing profiles. These years are flagged and should be tested in sensitivity analyses.</li>
+        <li>Reported savings come from recent assessments and are used only for selection. This introduces retrospective selection bias, which should be considered in causal applications.</li>
+        <li>Frameworks, portfolios and residual bundles overlap with other rows and are not additive.</li>
+        <li>Validation consists of 20 internal consistency checks. Independent expert review of classifications, dates and scores is recommended before use in formal evaluation.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Key literature</h2>
+      <ol class="refs">{% for r in literature %}<li>{{ r }}</li>{% endfor %}</ol>
+    </section>
+  </div>
+
+  <aside>
+    <div class="panel cite">
+      <h3>How to cite</h3>
+      <p class="cite-text">{% if site.authors %}{{ site.authors }} ({{ site.version|slice:"-4:" }}). {% endif %}<i>{{ site.title }}: core greenhouse-gas policy dataset for Ireland, 2000–2023</i>{% if site.project %} ({{ site.project }} research dataset){% endif %}. Version of {{ site.version }}.{% if site.institution %} {{ site.institution }}.{% endif %}{% if site.url %} {{ site.url }}{% endif %}</p>
+      <p class="small muted">Please also cite the underlying sources: the OECD CAPMF (Nachtigall et al., 2022) and the EEA database on national policies and measures.</p>
+      <button class="btn ghost" type="button" id="copy-cite">Copy citation</button>
+    </div>
+    <div class="panel" style="margin-top:18px">
+      <h3>Dataset at a glance</h3>
+      <dl class="kv">
+        <dt>Period</dt><dd>2000–2023, annual</dd>
+        <dt>Policy families</dt><dd>{{ stats.core_families }} core, {{ stats.residual_bundles }} residual bundles</dd>
+        <dt>Series</dt><dd>{{ stats.series }} policy–sector series</dd>
+        <dt>Observations</dt><dd>{{ stats.rows|num:0 }}</dd>
+        <dt>Candidates screened</dt><dd>{{ stats.candidates }}</dd>
+        <dt>Checks passed</dt><dd>{{ stats.checks_passed }} of {{ stats.checks_total }}</dd>
+        <dt>Version</dt><dd>{{ site.version }}</dd>
+        {% if site.contact %}<dt>Contact</dt><dd><a href="mailto:{{ site.contact }}">{{ site.contact }}</a></dd>{% endif %}
+      </dl>
+      <p class="csv-link"><a class="btn" href="{% url 'policies:export_csv' %}">Download the dataset (CSV)</a></p>
+    </div>
+  </aside>
+</div>
+{% endblock %}
+{% block scripts %}<script>
+document.getElementById("copy-cite").addEventListener("click", (e) => {
+  navigator.clipboard.writeText(document.querySelector(".cite-text").innerText).then(() => { e.target.textContent = "Citation copied"; });
+});
+</script>{% endblock %}

@@ -1,0 +1,9 @@
+sector,eligible_pam_units,positive_quantified_units,materiality_units,ranking_total_kt,selected_ranking_kt,achieved_share,zero_estimate_units,missing_estimate_units,negative_estimate_units,assessment,interpretation
+Electricity,3,3,1,5724.94499,5670.91,0.9905614831069319,0,0,0,PASS,Primary-sector positive reported-effect ranking total; neither verified sector mitigation nor an additive national total
+Buildings,26,24,10,5635.618269,5099.009999999999,0.9047827153319209,2,0,0,PASS,Primary-sector positive reported-effect ranking total; neither verified sector mitigation nor an additive national total
+Industry,4,4,3,989.8428,931.023,0.9405766248943772,0,0,0,PASS,Primary-sector positive reported-effect ranking total; neither verified sector mitigation nor an additive national total
+Transport,4,3,3,1566.6640000000002,1566.6640000000002,1.0,1,0,0,PASS,Primary-sector positive reported-effect ranking total; neither verified sector mitigation nor an additive national total
+Agriculture,3,2,2,45.31020849271952,45.31020849271952,1.0,1,0,0,PASS,Primary-sector positive reported-effect ranking total; neither verified sector mitigation nor an additive national total
+LULUCF,1,0,0,0.0,0.0,,1,0,0,NOT_ASSESSABLE_ZERO_DENOMINATOR,Primary-sector positive reported-effect ranking total; neither verified sector mitigation nor an additive national total
+Waste,1,1,1,688.486,688.486,1.0,0,0,0,PASS,Primary-sector positive reported-effect ranking total; neither verified sector mitigation nor an additive national total
+F-gases,1,1,1,102.465,102.465,1.0,0,0,0,PASS,Primary-sector positive reported-effect ranking total; neither verified sector mitigation nor an additive national total
