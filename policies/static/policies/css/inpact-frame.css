@@ -16,6 +16,20 @@ html.embedded .inpact-head, html.embedded .inpact-foot { display: none; }
 .inpact-head-inner { display: flex; align-items: center; gap: 1.5rem; max-width: 1320px; margin: 0 auto; width: 100%; }
 .inpact-brand { flex: 0 0 auto; display: flex; align-items: center; text-decoration: none; }
 .inpact-brand img { height: calc(var(--ih-h) - 38px); width: auto; display: block; }
+/* Big "Back to main dashboard" button beside the INPACT logo */
+.inpact-home {
+  flex: 0 0 auto; display: inline-flex; align-items: center; gap: .75rem;
+  padding: .75rem 1.25rem .75rem 1rem; border-radius: 14px; text-decoration: none;
+  background: linear-gradient(135deg, #00843D, #0E8C8A); color: #fff;
+  box-shadow: 0 6px 16px rgba(0, 132, 61, .28);
+  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+.inpact-home:hover { color: #fff; transform: translateY(-2px); box-shadow: 0 10px 22px rgba(0, 132, 61, .34); filter: brightness(1.05); }
+.inpact-home:focus-visible { outline: 3px solid #E8A33D; outline-offset: 3px; }
+.inpact-home-icon { width: 40px; height: 40px; flex: 0 0 40px; }
+.inpact-home-text { display: flex; flex-direction: column; line-height: 1.1; }
+.inpact-home-kicker { font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; opacity: .88; }
+.inpact-home-label { font-size: 1.15rem; font-weight: 800; white-space: nowrap; }
 .inpact-head-text { flex: 1 1 auto; min-width: 0; padding-left: 1.4rem; border-left: 1px solid #E2E8EE; }
 .inpact-head .inpact-title { font-weight: 800; font-size: 1.4rem; line-height: 1.14; margin: 0; color: #16324F; font-family: inherit; }
 .inpact-head .inpact-title .accent { color: #0E8C8A; }
@@ -32,10 +46,26 @@ html.embedded .inpact-head, html.embedded .inpact-foot { display: none; }
   .inpact-head .inpact-title { font-size: 1.18rem; }
   .inpact-head .inpact-subtitle { font-size: .8rem; }
 }
-@media (max-width: 767px) { .inpact-head-text { display: none; } }
+/* The "Main dashboard" button takes header space, so the title text gives way earlier than on the main page. */
+@media (max-width: 1199px) {
+  .inpact-home { padding: .6rem 1rem .6rem .8rem; }
+  .inpact-home-icon { width: 34px; height: 34px; flex-basis: 34px; }
+  .inpact-home-label { font-size: 1rem; }
+  .inpact-head .inpact-subtitle { display: none; }
+}
+@media (max-width: 991px) {
+  .inpact-head-text { display: none; }
+  .inpact-head-inner { gap: 1rem; }
+  .inpact-home { margin-right: auto; }
+}
 @media (max-width: 575px) {
-  .inpact-head { --ih-h: 92px; }
+  .inpact-head { --ih-h: 92px; padding: 0 .8rem; }
+  .inpact-funder { padding-left: .8rem; }
   .inpact-funder .funded-by { display: none; }
+  .inpact-home { flex-direction: column; gap: .15rem; padding: .45rem .7rem; border-radius: 12px; }
+  .inpact-home-icon { width: 30px; height: 30px; flex-basis: 30px; }
+  .inpact-home-kicker { display: none; }
+  .inpact-home-label { font-size: .72rem; }
 }
 
 /* Footer: Acknowledgements and Disclaimer ----------------------------------------- */

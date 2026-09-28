@@ -211,7 +211,8 @@ The tab has two parts:
   *Policy Timeline › Policies › Carbon Tax*), plus **Back / Forward / Reload**
   for pages visited in the tab and **New tab**, which opens the current view on
   its own. A page opened this way keeps the INPACT header (INPACT logo, title,
-  subtitle and EPA logo, linked as on the main page) and the INPACT
+  subtitle and EPA logo, linked as on the main page), a large **Back to Main
+  dashboard** button beside the INPACT logo, and the INPACT
   *Acknowledgements* and *Disclaimer* footer. The Policy Timeline's own section
   menu sits under the header. Header and footer come from
   `policies/templates/policies/_inpact_header.html`, `_inpact_footer.html` and
