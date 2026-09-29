@@ -77,6 +77,26 @@
     return cur ? cur.dataset.value : null;
   };
 
+  /* Chart text size (A− / A+ buttons from _text_size.html). Remembers the step per chart where
+     storage is available; calls onChange(size) after each change and returns a getter. */
+  App.textSizer = (el, { key, sizes, start }, onChange) => {
+    let idx = Math.max(0, sizes.indexOf(start));
+    try { const saved = sizes.indexOf(Number(localStorage.getItem("text-size:" + key))); if (saved >= 0) idx = saved; } catch (e) {}
+    const sync = () => el.querySelectorAll("button").forEach((b) => {
+      b.disabled = Number(b.dataset.step) < 0 ? idx === 0 : idx === sizes.length - 1;
+    });
+    el.addEventListener("click", (e) => {
+      const b = e.target.closest("button");
+      if (!b || b.disabled) return;
+      idx = Math.max(0, Math.min(sizes.length - 1, idx + Number(b.dataset.step)));
+      try { localStorage.setItem("text-size:" + key, sizes[idx]); } catch (err) {}
+      sync();
+      onChange(sizes[idx]);
+    });
+    sync();
+    return () => sizes[idx];
+  };
+
   /* Chip toggle group; returns a getter for the active set */
   App.chipGroup = (el, items, onChange) => {
     el.innerHTML = items.map((it) => `<button type="button" class="chip" aria-pressed="true" data-value="${App.esc(it.value)}"${it.term ? ` data-term="${it.term}"` : ""}><span class="dot" style="background:${it.color}"></span>${App.esc(it.label)}</button>`).join("");

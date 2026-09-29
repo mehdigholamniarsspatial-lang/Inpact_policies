@@ -7,6 +7,9 @@
   App.seg($("chart-type"), (v) => { chartType = v; drawSun(); });
   App.seg($("guide-toggle"), (v) => { $("guide-mech").hidden = v !== "mech"; $("guide-sector").hidden = v !== "sector"; });
 
+  const fontSize = App.textSizer($("font-size"), { key: "categories", sizes: [10, 12, 14, 16, 18, 20], start: 12 },
+    () => { if (DATA.length) drawSun(); });
+
   const DIM = {
     sector: { key: (s) => s.sector, label: (k) => k, color: App.sectorColor, term: (k) => `sectors.${k}`, order: G.sectorOrder },
     mechanism: { key: (s) => s.mechanism, label: App.mechLabel, color: App.mechColor, term: (k) => `mechanisms.${k}`, order: G.mechanismOrder },
@@ -47,9 +50,13 @@
       marker: { colors, line: { color: "#fff", width: 1.2 } },
       hovertemplate: "<b>%{label}</b><br>%{value} series<extra></extra>",
       insidetextorientation: "radial", maxdepth: chartType === "sunburst" ? 3 : 3, textinfo: "label",
-      tiling: { pad: 2 }, pathbar: { visible: true },
+      tiling: { pad: 2 }, pathbar: { visible: true, textfont: { size: fontSize() } },
+      textfont: { size: fontSize() },
     };
-    Plotly.react("sunburst", [trace], App.plotLayout({ margin: { l: 4, r: 4, t: 4, b: 4 } }), App.plotConfig);
+    const layout = App.plotLayout({ margin: { l: 4, r: 4, t: 4, b: 4 } });
+    layout.font = Object.assign({}, layout.font, { size: fontSize() });
+    layout.hoverlabel = Object.assign({}, layout.hoverlabel, { font: Object.assign({}, layout.hoverlabel.font, { size: fontSize() }) });
+    Plotly.react("sunburst", [trace], layout, App.plotConfig);
     const el = $("sunburst");
     if (!el._bound) {
       el.on("plotly_sunburstclick", onNode); el.on("plotly_treemapclick", onNode);

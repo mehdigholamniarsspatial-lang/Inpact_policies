@@ -19,6 +19,8 @@
     html += "</tr>";
   });
   tbl.innerHTML = html + "</tbody>";
+  const setCellFont = (px) => tbl.style.setProperty("--cell-fs", px + "px");
+  setCellFont(App.textSizer(document.getElementById("matrix-font"), { key: "overview-matrix", sizes: [11, 13, 15, 17, 19, 21], start: 13 }, setCellFont)());
   tbl.addEventListener("mouseover", (e) => {
     const td = e.target.closest("td.has"); if (!td) return;
     const list = matrix[td.dataset.s][td.dataset.m];

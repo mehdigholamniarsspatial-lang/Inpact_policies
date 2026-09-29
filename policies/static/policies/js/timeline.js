@@ -31,6 +31,7 @@
   $("sort").addEventListener("change", (e) => { state.sort = e.target.value; render(); });
   $("q").addEventListener("input", (e) => { state.q = e.target.value.trim().toLowerCase(); render(); });
   $("year").addEventListener("input", (e) => setYear(+e.target.value));
+  const tlFont = App.textSizer($("tl-font"), { key: "timeline", sizes: [11, 12.5, 14, 16, 18, 20], start: 12.5 }, () => render());
 
   let timer = null;
   $("play").addEventListener("click", () => {
@@ -134,9 +135,11 @@
     const el = $("canvas");
     el.innerHTML = "";
     if (!groups.length) { el.innerHTML = '<div class="empty">No policies match these filters. Turn a sector or layer back on, or clear the search box.</div>'; return null; }
+    const k = tlFont() / 12.5;
+    el.style.setProperty("--tl-k", k);
     const W = Math.max(el.clientWidth, 760);
-    const labelW = Math.min(380, Math.max(240, W * 0.33));
-    const right = 14, top = 34, rowH = 22, headH = 34;
+    const labelW = Math.min(380, Math.max(240, W * 0.33)) * Math.min(k, 1.25);
+    const right = 14, top = 34, rowH = Math.round(22 * k), headH = Math.round(34 * k);
     const colW = (W - labelW - right) / years.length;
     let y = top;
     const layout = [];
@@ -154,7 +157,7 @@
     const nodata = defs.append("pattern").attr("id", "nodata").attr("patternUnits", "userSpaceOnUse").attr("width", 4).attr("height", 4).attr("patternTransform", "rotate(-45)");
     nodata.append("rect").attr("width", 4).attr("height", 4).attr("fill", "#fff");
     nodata.append("rect").attr("width", 1).attr("height", 4).attr("fill", "#DCE3E2");
-    return { svg, W, H, labelW, colW, rowH, headH, top, layout, x: (yr) => labelW + (yr - years[0]) * colW };
+    return { svg, W, H, labelW, colW, rowH, headH, top, layout, k, x: (yr) => labelW + (yr - years[0]) * colW };
   }
 
   function drawAxis(f, years, step) {
@@ -181,9 +184,9 @@
       const g = heads.append("g").attr("transform", `translate(0,${l.y})`);
       g.append("rect").attr("x", 0).attr("y", 6).attr("width", f.W).attr("height", f.headH - 8).attr("fill", "#F4F7F6");
       g.append("rect").attr("x", 0).attr("y", 6).attr("width", 4).attr("height", f.headH - 8).attr("fill", groupColor(l.g.key));
-      const t = g.append("text").attr("x", 14).attr("y", f.headH / 2 + 6).attr("class", "tl-group-label").attr("data-term", groupTerm(l.g.key)).text(groupLabel(l.g.key));
+      const t = g.append("text").attr("x", 14).attr("y", f.headH / 2 + 1 + 5 * f.k).attr("class", "tl-group-label").attr("data-term", groupTerm(l.g.key)).text(groupLabel(l.g.key));
       const bb = t.node().getComputedTextLength();
-      g.append("text").attr("x", 14 + bb + 8).attr("y", f.headH / 2 + 6).attr("class", "tl-group-sub").text(`${l.g.rows.length} series`);
+      g.append("text").attr("x", 14 + bb + 8).attr("y", f.headH / 2 + 1 + 5 * f.k).attr("class", "tl-group-sub").text(`${l.g.rows.length} series`);
     });
     const rows = f.svg.append("g");
     f.layout.filter((l) => l.type === "row").forEach((l) => {
@@ -194,10 +197,10 @@
       const extra = state.group === "sector" ? "" : s.sector;
       const since = s.start < 2000 ? `since ${s.start}` : "";
       const side = [since, extra].filter(Boolean).join(", ");
-      const txt = g.append("text").attr("class", "tl-row-label").attr("x", 22).attr("y", f.rowH / 2 + 4).attr("tabindex", 0).text(s.name)
+      const txt = g.append("text").attr("class", "tl-row-label").attr("x", 22).attr("y", f.rowH / 2 + 4 * f.k).attr("tabindex", 0).text(s.name)
         .on("click", () => openDrawer(s)).on("keydown", (e) => { if (e.key === "Enter") openDrawer(s); });
       let sideW = 0;
-      if (side) sideW = g.append("text").attr("x", f.labelW - 8).attr("y", f.rowH / 2 + 4).attr("text-anchor", "end").attr("class", "tl-group-sub").style("font-size", "11px").text(side).node().getComputedTextLength() + 8;
+      if (side) sideW = g.append("text").attr("x", f.labelW - 8).attr("y", f.rowH / 2 + 4 * f.k).attr("text-anchor", "end").attr("class", "tl-group-sub").style("font-size", `${11 * f.k}px`).text(side).node().getComputedTextLength() + 8;
       const avail = f.labelW - 30 - sideW - 8;
       const node = txt.node();
       if (node.getComputedTextLength() > avail) {
@@ -280,7 +283,7 @@
     if (!f) return;
     // shade the pre-window
     f.svg.append("rect").attr("x", f.x(1990)).attr("y", f.top - 4).attr("width", f.x(2000) - f.x(1990)).attr("height", f.H - f.top).attr("fill", "#F4F6F6");
-    f.svg.append("text").attr("x", (f.x(1990) + f.x(2000)) / 2).attr("y", f.H - 6).attr("text-anchor", "middle").attr("class", "tl-group-sub").style("font-size", "11px").text("Before the dataset window");
+    f.svg.append("text").attr("x", (f.x(1990) + f.x(2000)) / 2).attr("y", f.H - 6).attr("text-anchor", "middle").attr("class", "tl-group-sub").style("font-size", `${11 * f.k}px`).text("Before the dataset window");
     drawAxis(f, years, 5);
     const rowsSel = drawLabels(f);
     const hl = hoverRow(f, rowsSel);
@@ -304,10 +307,10 @@
         }
       }
       const label = s.end ? `${s.start}–${s.end}` : `${s.start}–`;
-      const inside = x1 - x0 > 60;
-      const roomRight = f.W - x1 > 48;
+      const inside = x1 - x0 > 60 * f.k;
+      const roomRight = f.W - x1 > 48 * f.k;
       g.append("text").attr("x", inside ? x0 + 6 : roomRight ? x1 + 5 : x0 - 5).attr("text-anchor", inside || roomRight ? "start" : "end")
-        .attr("y", f.rowH / 2 + 4).style("font", "600 11px var(--sans)")
+        .attr("y", f.rowH / 2 + 4 * f.k).style("font", `600 ${11 * f.k}px var(--sans)`)
         .attr("fill", inside ? "#fff" : "#4B5C65").text(label).attr("pointer-events", "none");
     });
     cursor(f, years);

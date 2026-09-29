@@ -21,6 +21,7 @@
         </div></div>
       <div class="control"><span class="label">Chart</span>
         <div class="seg" id="chart-type"><button data-value="sunburst" aria-pressed="true">Sunburst</button><button data-value="treemap" aria-pressed="false">Treemap</button></div></div>
+      {% include "policies/_text_size.html" with id="font-size" %}
     </div>
     <div id="sunburst" style="height:560px"></div>
     <p class="note">Larger segments hold more policy series. Click a segment to zoom in, and the centre to zoom out.</p>

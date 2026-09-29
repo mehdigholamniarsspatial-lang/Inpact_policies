@@ -28,6 +28,7 @@
         <div class="control"><label for="sort">Order within group</label>
           <select id="sort"><option value="start">Start year</option><option value="i2023">Intensity in 2023</option><option value="peak">Peak intensity</option><option value="name">Name</option></select></div>
         <div class="control"><label for="q">Find a policy</label><input type="search" id="q" placeholder="e.g. carbon tax, Part L, ETS"></div>
+        {% include "policies/_text_size.html" with id="tl-font" %}
       </div>
       <div class="row2">
         <div class="control"><span class="label">Sectors <span class="muted small">(Alt-click to show only one)</span></span><div class="chips" id="sector-chips"></div></div>

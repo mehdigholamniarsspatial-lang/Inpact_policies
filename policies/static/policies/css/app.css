@@ -91,6 +91,12 @@ main.wrap { padding-top: 30px; padding-bottom: 40px; }
 .seg button:last-child { border-right: 0; }
 .seg button:hover { background: var(--surface-2); color: var(--ink); }
 .seg button[aria-pressed="true"] { background: var(--atlantic); color: #fff; }
+/* Chart text-size buttons (Categories): "A−" / "A+" like word processors */
+.font-size button { font-family: var(--serif); font-weight: 600; min-width: 44px; line-height: 1; }
+.font-size .a-small { font-size: 13px; }
+.font-size .a-large { font-size: 18px; }
+.chart-tools { justify-content: flex-end; margin-bottom: 8px; }
+.font-size button:disabled { opacity: .4; cursor: default; background: transparent; }
 select, input[type="search"], input[type="text"] {
   font: 14px var(--sans); color: var(--ink); background: var(--surface); border: 1px solid var(--line);
   border-radius: var(--r-sm); padding: 6px 9px; min-height: 33px;
@@ -144,10 +150,10 @@ input[type="search"] { min-width: 230px; }
 @media (max-width: 900px) { .pipeline { grid-template-columns: 1fr 1fr; gap: 18px 0; } .pipeline li:nth-child(3) { border-left: 0; padding-left: 0; } }
 @media (max-width: 560px) { .pipeline { grid-template-columns: 1fr; padding-left: 0; } .pipeline li, .pipeline li + li { border-left: 0; padding: 0; } }
 
-.matrix { width: 100%; border-collapse: separate; border-spacing: 3px; font-size: 13px; }
-.matrix th { font-weight: 600; color: var(--ink-2); font-size: 12px; text-align: left; padding: 4px 6px; vertical-align: bottom; }
+.matrix { --cell-fs: 13px; width: 100%; border-collapse: separate; border-spacing: 3px; font-size: var(--cell-fs); }
+.matrix th { font-weight: 600; color: var(--ink-2); font-size: calc(var(--cell-fs) - 1px); text-align: left; padding: 4px 6px; vertical-align: bottom; }
 .matrix thead th { text-align: center; }
-.matrix td { height: 38px; text-align: center; border-radius: var(--r-sm); background: var(--surface-2); cursor: default; font-weight: 600; min-width: 44px; }
+.matrix td { height: calc(var(--cell-fs) * 2.9); text-align: center; border-radius: var(--r-sm); background: var(--surface-2); cursor: default; font-weight: 600; min-width: calc(var(--cell-fs) * 3.4); }
 .matrix td.has { cursor: pointer; color: #fff; }
 .matrix td.has:hover { outline: 2px solid var(--ink); }
 .matrix th.rowh { white-space: nowrap; }
@@ -179,10 +185,10 @@ input[type="search"] { min-width: 230px; }
 .tl-canvas svg { display: block; }
 .tl-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--ink-2); align-items: center; }
 .tl-legend .sw { display: inline-block; width: 16px; height: 11px; border-radius: 2px; vertical-align: -1px; margin-right: 5px; border: 1px solid rgba(0,0,0,.08); }
-.tl-row-label { font: 500 12.5px var(--sans); fill: var(--ink); cursor: pointer; }
+.tl-row-label { font: 500 calc(12.5px * var(--tl-k, 1)) var(--sans); fill: var(--ink); cursor: pointer; }
 .tl-row-label:hover { fill: var(--atlantic); text-decoration: underline; }
-.tl-group-label { font: 600 13px var(--sans); fill: var(--ink); }
-.tl-group-sub { font: 400 12px var(--sans); fill: var(--ink-2); }
+.tl-group-label { font: 600 calc(13px * var(--tl-k, 1)) var(--sans); fill: var(--ink); }
+.tl-group-sub { font: 400 calc(12px * var(--tl-k, 1)) var(--sans); fill: var(--ink-2); }
 .tl-axis text { font: 500 11px var(--sans); fill: var(--ink-2); }
 .tl-axis line, .tl-axis path { stroke: var(--line); }
 .snapshot { position: sticky; top: 14px; }
