@@ -5,26 +5,26 @@
 <div class="page-head">
   <div>
     <h1>OECD policy-stringency scores</h1>
-    <p class="muted prose">The OECD Climate Actions and Policies Measurement Framework (CAPMF) rates how stringent each type of climate policy is in Ireland, from 0 (none) to 10 (most stringent), every year from 1990 to 2023. It covers {{ level3_count }} policy categories and {{ level4_count }} detailed indicators. This dataset uses the scores to measure how far matched policies were implemented each year.</p>
+    <p class="muted prose">The OECD Climate Actions and Policies Measurement Framework (CAPMF) rates how strict each type of climate policy is in Ireland. Scores run from 0 (none) to 10 (most stringent), every year from 1990 to 2023. It covers {{ level3_count }} policy categories and {{ level4_count }} detailed indicators. This dataset uses the scores to measure how far matched policies were implemented each year.</p>
   </div>
 </div>
 
 <div class="grid-3" style="margin-bottom:22px">
   <div class="panel"><h3>Four levels</h3><p class="small muted">Level 1: sectoral, cross-sectoral and international. Level 2: sector by market-based or other instruments. Level 3: policy categories such as carbon taxes or building codes. Level 4: specific indicators, such as the carbon tax on buildings.</p></div>
   <div class="panel"><h3>Observation flags</h3><p class="small muted"><b>A</b> normal value, <b>E</b> estimated (kept), <b>K</b> included in another category, <b>M</b> cannot exist. K and M values are treated as missing and never filled in from other years.</p></div>
-  <div class="panel"><h3>How the scores are used</h3><p class="small muted">A policy's implementation level is its matched score divided by 10 in the same year. Of 47 source categories with a positive score, 20 were eligible and anchor named policies; the rest were excluded, with the reason recorded below.</p></div>
+  <div class="panel"><h3>How the scores are used</h3><p class="small muted">A matched policy's implementation level is its same-year score divided by 10. 47 categories scored above zero at some point. Of these, 20 were eligible and are linked to a named policy ("OECD anchors"). The rest were excluded; the reasons are listed below.</p></div>
 </div>
 
 <section class="panel">
   <div class="section-head" style="border:0;padding:0;margin-bottom:10px">
-    <h2 style="font-size:22px">Level-3 categories, 1990–2023</h2>
+    <h2 style="font-size:22px">Policy categories (level 3), 1990–2023</h2>
     <div class="controls">
       <div class="control"><span class="label">Show</span>
         <div class="seg" id="show"><button data-value="all" aria-pressed="true">All categories</button><button data-value="used" aria-pressed="false">Used in this dataset</button><button data-value="positive" aria-pressed="false">Ever positive</button></div></div>
     </div>
   </div>
   <div id="heat"></div>
-  <p class="note">Rows are grouped by domain. A dot before the name marks categories that represent policies in this dataset. Blank cells are missing or not applicable. The shaded band marks the dataset window, 2000–2023. Select a row to compare it below.</p>
+  <p class="note">Darker cells mean stricter policy; look for the year each row first turns dark. A dot before a name marks a category used in this dataset. Blank cells are missing or not applicable. The shaded band marks the dataset window, 2000–2023. Select a row to compare it below.</p>
 </section>
 
 <section class="section split">
@@ -37,12 +37,13 @@
     </div>
     <div class="picker" id="picked"></div>
     <div id="lines" style="height:380px;margin-top:8px"></div>
+    <p class="note">Each step up marks a year when the policy became stricter.</p>
   </div>
   <aside class="panel" id="cat-info" aria-live="polite"><h3>Category details</h3><p class="muted small">Select a row in the heatmap or a line in the chart.</p></aside>
 </section>
 
 <section class="section">
-  <div class="section-head"><h2>Eligibility of positive categories</h2><p>Why each OECD category with a positive score was, or was not, used to anchor a policy in the dataset.</p></div>
+  <div class="section-head"><h2>Which OECD categories were used</h2><p>Why each category that scored above zero was, or was not, linked to a policy in this dataset.</p></div>
   <div class="panel flush"><div class="table-wrap"><table class="data" id="elig"><thead><tr><th>Category</th><th>Domain</th><th>First positive</th><th>Decision</th><th>Represented by or reason</th></tr></thead><tbody></tbody></table></div></div>
 </section>
 {% endblock %}

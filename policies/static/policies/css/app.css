@@ -14,6 +14,7 @@
   --cursor: #C4841D;
   --ok: #2F7D4A;
   --warn: #A6611A;
+  --callout-bg: #FBF3E6;
   --serif: "Newsreader", "Iowan Old Style", Georgia, "Times New Roman", serif;
   --sans: "Public Sans", "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif;
   --r-sm: 3px;
@@ -79,7 +80,7 @@ main.wrap { padding-top: 30px; padding-bottom: 40px; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 .split { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr); gap: 24px; align-items: start; }
 @media (max-width: 1000px) { .split, .grid-3 { grid-template-columns: 1fr; } }
-@media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr; } h1 { font-size: 31px; } .page-head { grid-template-columns: 1fr; } }
+@media (max-width: 720px) { .grid-2 { grid-template-columns: minmax(0, 1fr); } h1 { font-size: 31px; } .page-head { grid-template-columns: 1fr; } }
 
 /* Controls ---------------------------------------------------------------------- */
 .controls { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: flex-end; }
@@ -141,6 +142,7 @@ input[type="search"] { min-width: 230px; }
 .pipeline h3 { font-size: 18px; margin: 2px 0 6px; }
 .pipeline p { font-size: 14px; color: var(--ink-2); margin: 0; }
 @media (max-width: 900px) { .pipeline { grid-template-columns: 1fr 1fr; gap: 18px 0; } .pipeline li:nth-child(3) { border-left: 0; padding-left: 0; } }
+@media (max-width: 560px) { .pipeline { grid-template-columns: 1fr; padding-left: 0; } .pipeline li, .pipeline li + li { border-left: 0; padding: 0; } }
 
 .matrix { width: 100%; border-collapse: separate; border-spacing: 3px; font-size: 13px; }
 .matrix th { font-weight: 600; color: var(--ink-2); font-size: 12px; text-align: left; padding: 4px 6px; vertical-align: bottom; }
@@ -161,6 +163,12 @@ input[type="search"] { min-width: 230px; }
 .caveats { border-left: 3px solid var(--cursor); background: var(--surface); padding: 14px 18px; border-radius: 0 var(--r-md) var(--r-md) 0; }
 .caveats ul { margin: 6px 0 0; padding-left: 18px; }
 .caveats li { margin-bottom: 6px; font-size: 14px; }
+
+/* Main caveat box (Overview) */
+.callout { margin-top: 18px; padding: 14px 18px; border: 1px solid var(--warn); border-left-width: 5px; border-radius: var(--r-md); background: var(--callout-bg); color: var(--ink); max-width: 100%; }
+.callout p { margin: 0; font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; }
+.callout p + p { margin-top: 4px; }
+.callout .callout-title { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--warn); }
 
 /* Timeline ------------------------------------------------------------------------ */
 .tl-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }

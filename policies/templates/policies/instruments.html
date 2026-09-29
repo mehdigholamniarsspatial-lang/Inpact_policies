@@ -5,7 +5,7 @@
 <div class="page-head">
   <div>
     <h1>Policy instruments</h1>
-    <p class="lede">Governments reduce greenhouse-gas emissions through a mix of instruments that work in different ways. Some change prices, some set rules, some fund investment and some build institutions. This guide explains each type of instrument in the dataset: its economic rationale, how Ireland has applied it, its known strengths and limitations, and how it is measured here.</p>
+    <p class="lede">Governments reduce greenhouse-gas emissions through a mix of instruments that work in different ways. Some change prices, some set rules, some fund investment and some build institutions. This guide covers each type of instrument in the dataset. It explains why governments use it, how Ireland has applied it, its strengths and limitations, and how it is measured here.</p>
   </div>
 </div>
 
@@ -13,14 +13,14 @@
   <div class="table-wrap">
     <table class="data">
       <caption class="sr-only">Comparison of policy mechanisms</caption>
-      <thead><tr><th>Mechanism</th><th>Main lever</th><th>Who chooses how to abate</th><th>Bindingness score</th><th>Typical OECD CAPMF indicators</th><th style="text-align:right">Policies</th></tr></thead>
+      <thead><tr><th>Mechanism</th><th>Main lever</th><th>Who decides how to cut emissions</th><th>Bindingness score</th><th>Typical OECD CAPMF indicators</th><th style="text-align:right">Policies</th></tr></thead>
       <tbody>{% for g in guide %}<tr>
         <td><a class="pname" href="#{{ g.key }}"><span class="dot-inline" style="background:{{ g.color }}"></span>{{ g.label }}</a></td>
         <td>{{ g.cmp.0 }}</td><td>{{ g.cmp.1 }}</td><td>{{ g.cmp.2 }}</td><td class="small">{{ g.cmp.3 }}</td><td class="num">{{ g.policies|length }}</td></tr>{% endfor %}</tbody>
     </table>
   </div>
 </section>
-<p class="note">Bindingness scores follow the study's ordinal rubric: 1.0 for enforced rules and statutory frameworks, 0.75 for prices and statutory obligations, 0.5 for financial incentives and 0.25 for information or voluntary approaches.</p>
+<p class="note">Bindingness measures how compulsory an instrument is, on a fixed scale set by instrument type. Enforced rules and statutory frameworks score 1.0; prices and statutory obligations 0.75. Financial incentives score 0.5; information or voluntary approaches 0.25.</p>
 
 <div class="guide-layout section">
   <nav class="toc" aria-label="Instrument types">

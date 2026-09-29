@@ -5,38 +5,38 @@
 <div class="page-head">
   <div>
     <h1>Methods and data quality</h1>
-    <p class="lede">This page documents how {{ stats.candidates }} candidate policies were screened and selected, how each policy-year is scored, which assumptions are involved, and how the dataset was checked for internal consistency.</p>
+    <p class="lede">This page explains how {{ stats.candidates }} candidate policies were screened and selected. It also shows how each policy is scored every year, which assumptions are made and how the data were checked.</p>
   </div>
 </div>
 
 <section class="panel">
   <h2 style="font-size:22px">Selection flow</h2>
-  <p class="small muted prose">Both sources feed one core set. EEA policies and OECD categories overlap, because several can describe the same instrument. The {{ flow.eea_core }} selected EEA policies and {{ flow.capmf_core }} eligible OECD categories therefore consolidate into {{ flow.core_families }} policy families. Hover over a flow for its meaning.</p>
+  <p class="small muted prose">Both sources feed one core set. An EEA policy and an OECD category can describe the same instrument. So the {{ flow.eea_core }} selected EEA policies and {{ flow.capmf_core }} eligible OECD categories merge into {{ flow.core_families }} policy families. Follow the flows from left to right to see where each candidate ends up; hover over a flow for details.</p>
   <div id="sankey" style="height:440px"></div>
 </section>
 
 <section class="section">
-  <div class="section-head"><h2>Scoring model</h2><p>Each policy <i>p</i> in sector <i>s</i> and year <i>t</i> is scored as follows.</p></div>
+  <div class="section-head"><h2>How each policy is scored</h2><p>Each policy <i>p</i> in sector <i>s</i> and year <i>t</i> is scored as follows.</p></div>
   <div class="grid-2">
     <div class="panel">
       <p class="formula-display">I<sub>p,s,t</sub> = M<sub>p,s,t</sub> × C<sub>p,s</sub> × B<sub>p</sub></p>
       <dl class="kv">
         <dt>I, policy intensity</dt><dd>Relative index on [0, 1].</dd>
-        <dt>M, implementation</dt><dd>Same-year OECD CAPMF stringency ÷ 10 where a matching indicator exists. Otherwise an assumed profile: M = clip((t − t₀ − lag + 0.5) / ramp, 0, 1), where t₀ is the start year. After expiry with evidence of lasting effects, M decays as 2<sup>−(t − t<sub>end</sub>)/h</sup> from its last operational level, with half-life h.</dd>
-        <dt>C, coverage</dt><dd>Ordinal legal-scope score: 1 (whole sector), 0.5 (major subsector), 0.25 (defined segment), 0.1 (narrow pilot).</dd>
-        <dt>B, bindingness</dt><dd>Ordinal score: 1 (enforced rule or statute), 0.75 (price or obligation), 0.5 (incentive), 0.25 (information or voluntary).</dd>
+        <dt>M, implementation</dt><dd>The same-year OECD CAPMF stringency score ÷ 10, where a matching indicator exists. Otherwise, an assumed ramp-up: M = clip((t − t₀ − lag + 0.5) / ramp, 0, 1), where t₀ is the start year. Some policies keep an effect after they end. For these, M halves every h years (the half-life) from its last level: 2<sup>−(t − t<sub>end</sub>)/h</sup>.</dd>
+        <dt>C, coverage</dt><dd>How much of the sector the policy legally covers. It is an ordinal score (a rank on a fixed scale, not a measurement): 1 (whole sector), 0.5 (major subsector), 0.25 (defined segment), 0.1 (narrow pilot).</dd>
+        <dt>B, bindingness</dt><dd>How compulsory the policy is, as an ordinal score: 1 (enforced rule or statute), 0.75 (price or obligation), 0.5 (incentive), 0.25 (information or voluntary).</dd>
       </dl>
     </div>
     <div class="panel">
       <h3>Aggregation rules</h3>
       <ul class="small" style="padding-left:18px">
-        <li>Residual bundles take the strict mean of their fixed members' intensities; a missing member makes the bundle value missing.</li>
-        <li>Framework (L1) rows are contextual and never added to instruments or programmes.</li>
-        <li>Portfolios and their delivery schemes are alternative representations; use one or the other.</li>
-        <li>No national total index is computed, because rows overlap by design.</li>
+        <li>A residual bundle (one summary row per sector for smaller measures) takes the mean of its members' intensities. If any member is missing, the bundle value is missing too.</li>
+        <li>Framework (L1) rows give context only. Never add them to instruments or programmes.</li>
+        <li>A portfolio and its delivery schemes describe the same policy. Use one or the other, not both.</li>
+        <li>There is no national total index, because rows overlap by design.</li>
       </ul>
       <h3 style="margin-top:14px">Sensitivity index</h3>
-      <p class="small">The equal-weight alternative is the unweighted mean (M + C + B) / 3. A gated version is set to zero before a policy starts. The multiplicative form of the main index follows composite-indicator practice (OECD/JRC, 2008), but its weights are a stated convention rather than an empirical estimate.</p>
+      <p class="small">As a check, an equal-weight index takes the simple average (M + C + B) / 3. A "gated" version of it is set to zero before a policy starts. The main index multiplies its parts, following composite-indicator practice (OECD/JRC, 2008). Its weights are a stated convention, not an empirical estimate.</p>
     </div>
   </div>
 </section>
@@ -56,13 +56,15 @@
 
 <section class="section split">
   <div class="panel">
-    <h3>The 90% materiality rule by sector</h3>
-    <p class="small muted">Within each sector, eligible EEA measures are ranked by their first available reported saving: ex-post 2024, then ex-ante 2025, then ex-ante 2030. They are selected in order until the selection covers 90% of the sector's positive reported total. The shares refer to reported totals, which may overlap, not to realised abatement.</p>
+    <h3>The 90% selection rule by sector</h3>
+    <p class="small muted">Within each sector, eligible EEA measures are ranked by their reported saving. The first available estimate is used: ex-post 2024 (measured after the fact), then ex-ante 2025, then ex-ante 2030 (projected in advance).</p>
+    <p class="small muted">Measures are selected in rank order until they cover 90% of the sector's positive reported total. Each bar shows the share reached in one sector. Shares refer to reported totals, which may overlap, not to actual emission cuts.</p>
     <div id="materiality" style="height:330px"></div>
   </div>
   <div class="panel">
     <h3>Assumed timing profiles</h3>
-    <p class="small muted">When no OECD score matches, implementation follows a hypothetical linear ramp with a mid-year convention. After an expiry with evidence of lasting effects, it halves every half-life. Parameters vary by mechanism class and are scenario assumptions, not estimates.</p>
+    <p class="small muted">When no OECD score matches, implementation rises in a straight line to full strength, counted from mid-year. If a policy ends but its effects last, implementation then halves every half-life. Speeds vary by type of mechanism. They are assumptions, not estimates.</p>
+    <p class="small muted">Move the slider to see how a policy phases in and fades after it ends.</p>
     <div class="control"><label for="t-class">Mechanism class</label><select id="t-class"></select></div>
     <div class="control" style="margin-top:8px"><label for="t-end">Policy ends after <output id="t-end-out">8</output> years <span class="muted">(0 = never)</span></label><input type="range" id="t-end" min="0" max="20" value="8" style="accent-color:var(--cursor)"></div>
     <div id="ramp" style="height:230px"></div>
@@ -70,7 +72,7 @@
 </section>
 
 <section class="section">
-  <div class="section-head"><h2>Validation checks</h2><p>All {{ stats.checks_passed }} of {{ stats.checks_total }} internal consistency checks pass. They verify construction rules and do not substitute for independent expert review.</p></div>
+  <div class="section-head"><h2>Internal consistency checks</h2><p>All {{ stats.checks_passed }} of {{ stats.checks_total }} internal consistency checks pass. They confirm that the dataset follows its own rules. They do not replace independent expert review.</p></div>
   <div class="panel flush"><div class="table-wrap"><table class="data"><thead><tr><th>Check</th><th>Result</th><th>What it verifies</th></tr></thead>
     <tbody>{% for c in checks %}<tr><td style="white-space:nowrap"><b>{{ c.title }}</b></td><td class="{% if c.result == 'PASS' %}pass{% else %}fail{% endif %}">{% if c.result == 'PASS' %}Pass{% else %}{{ c.result }}{% endif %}</td><td>{{ c.detail }}</td></tr>{% endfor %}</tbody></table></div></div>
 </section>
@@ -91,7 +93,7 @@
 </section>
 
 <section class="section">
-  <div class="section-head"><h2>Data dictionary</h2><p>Definitions of all {{ dictionary|length }} variables in the downloadable dataset. Variables 1–36 are the core analytical variables; variables 37–67 document provenance, assumptions and aggregation rules.</p></div>
+  <div class="section-head"><h2>Data dictionary</h2><p>Definitions of all {{ dictionary|length }} variables in the downloadable dataset. Variables 1–36 are the main analysis variables. Variables 37–67 record sources, assumptions and how rows may be combined.</p></div>
   <div class="panel">
     <div class="control" style="margin-bottom:10px"><label for="dict-q">Filter columns</label><input type="search" id="dict-q" placeholder="e.g. intensity, capmf, start"></div>
     <div class="table-wrap" style="max-height:520px;overflow:auto"><table class="data" id="dict"><thead><tr><th>#</th><th>Column</th><th>Unit</th><th>Definition</th></tr></thead>

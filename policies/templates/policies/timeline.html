@@ -5,7 +5,7 @@
 <div class="page-head">
   <div>
     <h1>Policy timeline</h1>
-    <p class="muted prose">Every policy series across 2000–2023. Switch between the intensity grid, which shows how strongly each policy bore on its sector each year, and the lifespan view, which shows when each policy started and ended. Pick a year to see what was in force.</p>
+    <p class="muted prose">Every policy series from 2000 to 2023. A series is one policy in one sector. The intensity grid shows how strongly each policy bore on its sector each year. The lifespan view shows when each policy started and ended. Pick a year to see what was in force.</p>
   </div>
   <a class="btn ghost csv-link" id="export" href="#"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 2v8m0 0 3-3m-3 3L5 7M3 13h10"/></svg>Download filtered CSV</a>
 </div>
@@ -49,11 +49,11 @@
 
 <section class="section grid-2">
   <div>
-    <div class="section-head"><h2>Composition over time</h2><p id="comp-sub">Active series by group.</p></div>
+    <div class="section-head"><h2>Active series over time</h2><p id="comp-sub">See which groups grew as new policies started.</p></div>
     <div class="panel"><div id="comp-chart" style="height:320px"></div></div>
   </div>
   <div>
-    <div class="section-head"><h2>Average intensity by group</h2><p>Mean of the shaded metric across the group's active series. Descriptive only; rows overlap and are not additive.</p></div>
+    <div class="section-head"><h2>Average intensity by group</h2><p>Look for groups whose policies grew stronger over time. Rows overlap, so do not add the lines together.</p></div>
     <div class="panel"><div id="avg-chart" style="height:320px"></div></div>
   </div>
 </section>

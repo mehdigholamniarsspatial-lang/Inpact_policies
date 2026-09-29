@@ -356,7 +356,7 @@
   /* --------------------------------------------------------------- summary charts */
   function drawCharts(groups) {
     const traces = [], avg = [];
-    $("comp-sub").textContent = `Active series by ${state.group}.`;
+    $("comp-sub").textContent = `Active series by ${state.group}: see which groups grew as new policies started.`;
     groups.forEach((g) => {
       const c = groupColor(g.key), name = groupLabel(g.key);
       const color = state.group === "layer" || state.group === "source" ? d3.schemeTableau10[groups.indexOf(g) % 10] : c;

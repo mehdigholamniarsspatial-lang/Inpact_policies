@@ -90,6 +90,7 @@ def overview_stats():
         "origin_outcome": {f"{k[0]}|{k[1]}": v for k, v in origin_outcome.items()},
         "eea_records": m.EeaPam.objects.count(),
         "eea_single": m.EeaPam.objects.exclude(policy_id="").count(),
+        "eea_groups": m.EeaPam.objects.filter(policy_id="").count(),
         "capmf_categories": m.CapmfCategory.objects.filter(level=3).count(),
         "capmf_indicators": m.CapmfCategory.objects.filter(level=4).count(),
         "active_2023": active_2023,

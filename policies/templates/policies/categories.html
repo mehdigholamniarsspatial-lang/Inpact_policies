@@ -5,7 +5,7 @@
 <div class="page-head">
   <div>
     <h1>Policy categories</h1>
-    <p class="muted prose">Each policy is classified along several dimensions: the sector it affects, the mechanism it uses, its layer in the policy hierarchy, and the sources behind it. Pick a hierarchy and click through the rings to see how the categories nest.</p>
+    <p class="muted prose">Each policy is classified in four ways: the sector it affects, the mechanism it uses, its layer and its sources. Choose an arrangement, then click the rings to see how the categories fit inside each other.</p>
   </div>
 </div>
 
@@ -23,7 +23,7 @@
         <div class="seg" id="chart-type"><button data-value="sunburst" aria-pressed="true">Sunburst</button><button data-value="treemap" aria-pressed="false">Treemap</button></div></div>
     </div>
     <div id="sunburst" style="height:560px"></div>
-    <p class="note">Segment size is the number of policy–sector series. Click a segment to zoom in; click the centre to zoom out.</p>
+    <p class="note">Larger segments hold more policy series. Click a segment to zoom in, and the centre to zoom out.</p>
   </div>
   <aside class="panel node-panel" id="node-panel" aria-live="polite">
     <h3>Select a segment</h3>
@@ -46,7 +46,7 @@
     {% endfor %}
   </div>
   <div id="guide-sector" hidden>
-  <p class="note" style="margin:-6px 0 12px">Sector emissions from the EPA final inventory (March 2026). Dashboard sectors aggregate EPA categories: Buildings combines residential, commercial and public services; Industry combines manufacturing combustion and industrial processes; Electricity corresponds to energy industries.</p>
+  <p class="note" style="margin:-6px 0 12px">Sector emissions come from the EPA final inventory (March 2026). Some sectors here combine EPA categories. Buildings combines residential, commercial and public services. Industry combines manufacturing combustion and industrial processes. Electricity corresponds to energy industries.</p>
   <div class="cat-list">
     {% for g in sector_groups %}
     <article class="cat" style="--c: {{ g.color }}" id="sector-{{ g.key|slugify }}">
@@ -60,29 +60,29 @@
 </section>
 
 <section class="section">
-  <div class="section-head"><h2>How each policy is scored</h2><p>Policy intensity multiplies three components. Two are fixed judgement scores per policy; one changes by year.</p></div>
+  <div class="section-head"><h2>How each policy is scored</h2><p>Policy intensity multiplies three scores. Two are fixed for each policy; one changes every year.</p></div>
   <div class="grid-3">
     <div class="panel">
       <h3>Implementation <span class="muted small">(changes by year)</span></h3>
-      <p class="small muted">Where a matching OECD CAPMF score exists, implementation is that score divided by 10. Otherwise an assumed ramp-up from the start year is used, depending on the policy's mechanism class.</p>
+      <p class="small muted">If a matching OECD score exists, implementation is that score divided by 10. Otherwise it follows an assumed ramp-up from the start year. The speed of the ramp-up depends on the type of mechanism.</p>
       <div class="ladder"><div><b>0–1</b><span>OECD stringency ÷ 10, or assumed timing</span></div></div>
     </div>
     <div class="panel">
       <h3>Coverage score <span class="muted small">(fixed)</span></h3>
-      <p class="small muted">How much of the sector the policy reaches. An ordinal judgement, not a measured share of emissions.</p>
+      <p class="small muted">How much of the sector the policy reaches. It is an ordinal score (a rank on a fixed scale), not a measured share of emissions.</p>
       <div class="ladder">{% for v, label in coverage_scores %}<div><b>{{ v }}</b><span>{{ label }}</span></div>{% endfor %}</div>
     </div>
     <div class="panel">
       <h3>Bindingness <span class="muted small">(fixed)</span></h3>
-      <p class="small muted">How compulsory the policy is. A normative score, not observed compliance.</p>
+      <p class="small muted">How compulsory the policy is, from voluntary (0.25) to an enforced rule (1). It is set by the type of instrument, not by observed compliance.</p>
       <div class="ladder">{% for v, label in binding_scores %}<div><b>{{ v }}</b><span>{{ label }}</span></div>{% endfor %}</div>
     </div>
   </div>
 
   <div class="split" style="margin-top:20px">
     <div class="panel">
-      <h3>Scope and bindingness of every policy</h3>
-      <p class="small muted">Each dot is a policy series, sized by its peak intensity. Dots are nudged apart where scores coincide. Click one to open it.</p>
+      <h3>Coverage and bindingness of every policy</h3>
+      <p class="small muted">Policies towards the top right are both broad and compulsory. Each dot is one policy series, sized by its peak intensity. Click a dot to open it.</p>
       <div id="scatter" style="height:420px"></div>
     </div>
     <div class="panel">
