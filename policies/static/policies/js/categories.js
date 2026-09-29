@@ -7,7 +7,7 @@
   App.seg($("chart-type"), (v) => { chartType = v; drawSun(); });
   App.seg($("guide-toggle"), (v) => { $("guide-mech").hidden = v !== "mech"; $("guide-sector").hidden = v !== "sector"; });
 
-  const fontSize = App.textSizer($("font-size"), { key: "categories", sizes: [10, 12, 14, 16, 18, 20], start: 12 },
+  const fontSize = App.textSizer($("font-size"), { key: "categories", sizes: [10, 12, 14, 16, 18, 20], start: 10 },
     () => { if (DATA.length) drawSun(); });
 
   const DIM = {

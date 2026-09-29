@@ -98,7 +98,7 @@ main.wrap { padding-top: 30px; padding-bottom: 40px; }
 .chart-tools { justify-content: flex-end; margin-bottom: 8px; }
 
 /* Categories sunburst / treemap: all text is sized in em from --chart-fs (A− / A+) */
-.sb-wrap { --chart-fs: 12px; font-size: var(--chart-fs); }
+.sb-wrap { --chart-fs: 10px; font-size: var(--chart-fs); }
 .sb-chart { min-height: 400px; }
 .sb-chart svg { display: block; max-width: 100%; height: auto; overflow: visible; font: 600 1em var(--sans); }
 .sb-chart text { font-size: 1em; }
