@@ -23,8 +23,12 @@
         <div class="seg" id="chart-type"><button data-value="sunburst" aria-pressed="true">Sunburst</button><button data-value="treemap" aria-pressed="false">Treemap</button></div></div>
       {% include "policies/_text_size.html" with id="font-size" %}
     </div>
-    <div id="sunburst" style="height:560px"></div>
-    <p class="note">Larger segments hold more policy series. Click a segment to zoom in, and the centre to zoom out.</p>
+    <div class="sb-wrap" id="sb-wrap">
+      <nav class="sb-crumbs" id="sb-crumbs" aria-label="Chart level"></nav>
+      <div class="sb-chart" id="sunburst"></div>
+      <div class="sb-legend" id="sb-legend" aria-label="Chart key"></div>
+    </div>
+    <p class="note">Larger segments hold more policy series. Hover over a segment or label to magnify it; labels of small segments sit outside the ring. Click a segment to zoom in, and the centre to zoom out.</p>
   </div>
   <aside class="panel node-panel" id="node-panel" aria-live="polite">
     <h3>Select a segment</h3>
