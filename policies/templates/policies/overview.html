@@ -34,7 +34,7 @@
     <li><span class="n">1</span><h3>Combine two sources</h3><p>Ireland reported {{ stats.eea_records }} policy records to the EU: {{ stats.eea_single }} individual measures and {{ stats.eea_groups }} group records that summarise others. The OECD scores {{ stats.capmf_categories }} policy categories ({{ stats.capmf_indicators }} detailed indicators) for 1990–2023.</p></li>
     <li><span class="n">2</span><h3>Screen candidates</h3><p>Five eligibility tests screened {{ stats.candidates }} candidate policies, and {{ stats.eligible }} passed. The reason for every decision is recorded.</p></li>
     <li><span class="n">3</span><h3>Select the core</h3><p>The core holds the largest measures, which together reach 90% of each sector's reported savings. It also holds named instruments that the OECD scores ("OECD anchors"). Smaller eligible measures form one residual bundle per sector.</p></li>
-    <li><span class="n">4</span><h3>Score every year</h3><p>Each policy is scored for every sector and year. The score combines how far it is implemented, how much of the sector it covers and how compulsory it is ("bindingness"). The result is a 0–1 policy intensity index.</p></li>
+    <li><span class="n">4</span><h3>Score every year</h3><p>Each policy is scored for every sector and year. The score combines an implementation level (OECD stringency or assumed timing), how much of the sector it covers and how compulsory it is ("bindingness"). The result is a 0–1 policy intensity index.</p></li>
   </ol>
   <p class="note"><a href="{% url 'policies:method' %}">Read the full methodology, selection flow and validation checks</a></p>
 </section>
@@ -45,10 +45,10 @@
     <div class="split" style="gap:28px">
       <div id="emis-chart" style="height:330px"></div>
       <div class="prose small">
-        <p>Agriculture is Ireland's largest source of emissions. Most of it is methane from livestock and nitrous oxide from fertiliser and manure. Yet only three agricultural policy series meet the selection criteria.</p>
+        <p>Agriculture is Ireland's largest source of emissions. Most of it is methane from livestock and nitrous oxide from fertiliser and manure. Yet only two agricultural policies were selected individually; a third series bundles the smaller eligible agricultural measures.</p>
         <p>Energy-related sectors, by contrast, are covered by many overlapping instruments.</p>
         <p>The gap reflects both policy history and the sources used. The OECD framework has no direct stringency scores for agriculture, waste or land use. Keep this in mind when comparing sectors.</p>
-        <p class="note">{{ emissions_source }} National total excluding LULUCF: 54.93 Mt CO₂e. LULUCF was a net source of 3.90 Mt CO₂e.</p>
+        <p class="note">{{ emissions_source }} National total excluding LULUCF: 54.99 Mt CO₂e. LULUCF was a net source of 2.97 Mt CO₂e.</p>
       </div>
     </div>
   </div>

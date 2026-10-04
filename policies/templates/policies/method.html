@@ -24,7 +24,7 @@
         <dt>I, policy intensity</dt><dd>Relative index on [0, 1].</dd>
         <dt>M, implementation</dt><dd>The same-year OECD CAPMF stringency score ÷ 10, where a matching indicator exists. Otherwise, an assumed ramp-up: M = clip((t − t₀ − lag + 0.5) / ramp, 0, 1), where t₀ is the start year. Some policies keep an effect after they end. For these, M halves every h years (the half-life) from its last level: 2<sup>−(t − t<sub>end</sub>)/h</sup>.</dd>
         <dt>C, coverage</dt><dd>How much of the sector the policy legally covers. It is an ordinal score (a rank on a fixed scale, not a measurement): 1 (whole sector), 0.5 (major subsector), 0.25 (defined segment), 0.1 (narrow pilot).</dd>
-        <dt>B, bindingness</dt><dd>How compulsory the policy is, as an ordinal score: 1 (enforced rule or statute), 0.75 (price or obligation), 0.5 (incentive), 0.25 (information or voluntary).</dd>
+        <dt>B, bindingness</dt><dd>How compulsory the policy is, as an ordinal score: 1 (mandatory rule or statute), 0.75 (price or obligation), 0.5 (incentive), 0.25 (information or voluntary). It is a researcher-assigned classification of legal compulsion, not a measure of enforcement, compliance or effectiveness.</dd>
       </dl>
     </div>
     <div class="panel">
@@ -57,7 +57,7 @@
 <section class="section split">
   <div class="panel">
     <h3>The 90% selection rule by sector</h3>
-    <p class="small muted">Within each sector, eligible EEA measures are ranked by their reported saving. The first available estimate is used: ex-post 2024 (measured after the fact), then ex-ante 2025, then ex-ante 2030 (projected in advance).</p>
+    <p class="small muted">Within each sector, eligible EEA measures are ranked by their reported saving. The first available estimate is used: ex-post 2024 (reported estimate of effects after implementation), then ex-ante 2025, then ex-ante 2030 (projected in advance).</p>
     <p class="small muted">Measures are selected in rank order until they cover 90% of the sector's positive reported total. Each bar shows the share reached in one sector. Shares refer to reported totals, which may overlap, not to actual emission cuts.</p>
     <div id="materiality" style="height:330px"></div>
   </div>

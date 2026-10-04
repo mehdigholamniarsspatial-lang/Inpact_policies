@@ -35,7 +35,7 @@ LAYERS = {
 MECHANISMS = {
     "framework": ("#46507A", "Framework", "Sets targets, budgets and institutions rather than prices or rules for emitters."),
     "pricing": ("#0E7C74", "Pricing", "Puts a price on carbon, either through a tax (carbon tax, VRT) or a cap-and-trade system (EU ETS)."),
-    "standards": ("#2F68A8", "Standards", "Mandatory minimum performance for products, vehicles or buildings, e.g. Part L building regulations or car CO\u2082 limits."),
+    "standards": ("#2F68A8", "Standards", "Mandatory minimum performance for products, vehicles or buildings, e.g. Part L building regulations or fleet-average CO\u2082 targets for new cars."),
     "obligations": ("#7B4F96", "Obligations", "Legal duties on companies to deliver an outcome, such as energy savings (EEOS) or biofuel blending."),
     "practice_regulation": ("#8B5A38", "Practice regulation", "Rules on how an activity is carried out, e.g. landfill limits, slurry spreading methods or new licence restrictions."),
     "deployment_support": ("#3D944B", "Deployment support", "Supports to build out clean supply, such as renewable electricity tariffs and auctions (REFIT/RESS)."),
@@ -85,14 +85,14 @@ AGGREGATION_ROLE = {
 
 METRICS = {
     "intensity_index": ("Policy intensity", "0\u20131", "Implementation \u00d7 coverage \u00d7 bindingness. The dataset's main composite: how strongly a policy bears on its sector in a year. A relative index, not tonnes."),
-    "implementation_level": ("Implementation level", "0\u20131", "How far the policy is in place: the OECD score / 10 when matched, otherwise an assumed ramp-up."),
+    "implementation_level": ("Implementation level", "0\u20131", "Implementation proxy: the OECD stringency score / 10 when matched (policy design stringency, not observed compliance), otherwise an assumed ramp-up."),
     "capmf_stringency": ("OECD stringency", "0\u201310", "The raw OECD CAPMF stringency score for the matched category. Blank where there is no usable match."),
     "intensity_index_equal_gated": ("Equal-weight intensity", "0\u20131", "Simple average of implementation, coverage and bindingness, set to zero before the policy starts. A sensitivity check on the main index."),
 }
 
 COVERAGE_SCORES = {1.0: "Whole sector or economy", 0.5: "Major subsector or broad programme",
                    0.25: "Defined technology, cohort or segment", 0.1: "Narrow pilot or niche"}
-BINDINGNESS_SCORES = {1.0: "Enforced rule or statutory framework", 0.75: "Price or statutory obligation",
+BINDINGNESS_SCORES = {1.0: "Mandatory rule or statutory framework", 0.75: "Price or statutory obligation",
                       0.5: "Financial incentive", 0.25: "Information or voluntary"}
 
 FLAG_GROUPS = {
@@ -152,7 +152,7 @@ def as_payload():
 POLICY_SUMMARIES = {
     "CAPMF_ACT_2015": "Ireland's first climate law. It required national mitigation and adaptation plans, annual transition statements to the Oireachtas, and established the Climate Change Advisory Council.",
     "CAPMF_ACT_2021": "Amended the 2015 Act to put Ireland on a legally binding path to climate neutrality by 2050 and a 51% cut by 2030 (from 2018). It introduced five-year carbon budgets, sectoral emissions ceilings and annual Climate Action Plans.",
-    "CAPMF_CARBON_BUDGETS": "Five-year national limits on total greenhouse-gas emissions. The first two budgets (2021\u201325 and 2026\u201330) were approved in 2022; the dataset starts them in 2022, when the programme took effect.",
+    "CAPMF_CARBON_BUDGETS": "Five-year national limits on total greenhouse-gas emissions. The first carbon-budget programme, comprising budgets for 2021\u201325 and 2026\u201330 and a provisional budget for 2031\u201335, was approved in 2022; the dataset starts it in 2022, when the programme took effect on 6 April.",
     "CAPMF_SECTOR_CEILINGS": "Divides the carbon budgets into maximum emissions for each sector of the economy, such as electricity, transport, buildings, industry and agriculture. Agreed by Government in July 2022.",
     "CAPMF_NET_ZERO": "The statutory national objective, set in the 2021 Act, to achieve a climate-neutral economy no later than 2050.",
     "CAPMF_CLIMATE_COUNCIL": "Independent statutory body that advises Government on climate policy, proposes carbon budgets and reviews progress each year.",
@@ -164,5 +164,5 @@ POLICY_SUMMARIES = {
     "CAPMF_MEPS_APPL": "EU ecodesign rules set minimum energy performance for appliances such as fridges, freezers, lighting and air conditioners, taking the least efficient products off the market.",
     "CAPMF_LABEL_APPL": "The EU energy label must be displayed on appliances such as fridges, freezers, lamps and air conditioners, so buyers can compare efficiency.",
     "CAPMF_LABEL_CAR": "New passenger cars must display fuel-consumption and CO\u2082 information at the point of sale (EU Car Labelling Directive 1999/94/EC).",
-    "CAPMF_FOSSIL_LICENCES": "The 2021 Climate Act ended the granting of new licences for oil and gas exploration and extraction.",
+    "CAPMF_FOSSIL_LICENCES": "The 2021 Climate Act restricted the granting of new petroleum authorisations for oil and gas exploration and extraction. Existing authorisations were preserved, and their holders may seek successor authorisations under the statutory saving provisions.",
 }

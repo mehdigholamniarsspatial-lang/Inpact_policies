@@ -49,7 +49,7 @@ INSTRUMENTS = {
         "title": "Carbon pricing: taxes and emissions trading",
         "definition": "Instruments that attach an explicit price to greenhouse-gas emissions. A carbon tax fixes the price and lets the quantity adjust; an emissions trading system fixes the quantity (the cap) and lets the price adjust. Emissions-based vehicle taxation applies the same logic to purchase and ownership taxes.",
         "rationale": "Emissions impose an external cost that market prices do not reflect. A single carbon price corrects this. Each emitter cuts emissions wherever doing so costs less than the price. So the overall cut is achieved at the lowest total cost. It also rewards continuing innovation.",
-        "ireland": "Ireland's carbon tax applies to fossil fuels outside the EU Emissions Trading System (ETS). It began on motor fuels in December 2009, at €15 per tonne of CO₂. Non-transport fuels followed at the same rate in May 2010. The rate rose to €20 in 2012 and, after a long plateau, to €26 in 2020. The Finance Act 2020 legislated annual increases of €7.50 towards €100 per tonne by 2030. Power stations and large industrial installations have been covered by the EU Emissions Trading System since 2005, and aviation since 2012. Vehicle registration tax and motor tax were rebased on CO₂ emissions in 2008.",
+        "ireland": "Ireland's carbon tax applies to fossil fuels outside the EU Emissions Trading System (ETS). It began on motor fuels in December 2009, at €15 per tonne of CO₂. Non-transport fuels followed at the same rate in May 2010. The rate rose to €20 on motor fuels in December 2011 and on other fuels in May 2012. After a long plateau it rose to €26 on motor fuels in October 2019 and on other fuels in May 2020. The Finance Act 2020 legislated annual increases of €7.50 towards €100 per tonne by 2030. Power stations and large industrial installations have been covered by the EU Emissions Trading System since 2005, and aviation since 2012. Vehicle registration tax and motor tax were rebased on CO₂ emissions in 2008.",
         "strengths": ["Cost-effective allocation of abatement across emitters", "Continuous incentive to innovate", "Generates revenue that can offset distributional effects"],
         "limitations": ["Historical price levels were low relative to estimated social costs", "Exemptions and free allocation weaken the signal", "Short-run demand for fuels is price-inelastic", "Regressive effects unless revenue is recycled"],
         "measurement": "Implementation uses OECD price indicators (carbon-tax rate by sector, ETS price, aviation pricing). Pricing rows are split into those inside the EU ETS and those outside it (covered by the EU Effort Sharing Regulation, ESR). Bindingness is scored 0.75 (price or statutory obligation).",
@@ -59,10 +59,10 @@ INSTRUMENTS = {
         "title": "Performance standards and mandatory labelling",
         "definition": "Mandatory minimum energy or emissions performance for buildings, appliances, motors and vehicles, together with compulsory disclosure of that performance through labels.",
         "rationale": "Energy use in durable goods responds weakly to prices because of imperfect information, limited attention and split incentives, for example between landlords and tenants. This is the so-called energy-efficiency gap. Standards remove the least efficient options from the market. Labels reduce search costs for buyers.",
-        "ireland": "Part L of the Building Regulations has been tightened repeatedly for dwellings and other buildings, culminating in Nearly Zero Energy Building (NZEB) requirements. EU ecodesign and energy-labelling rules apply to appliances, lighting and electric motors. New cars must meet EU fleet CO₂ standards, first under Regulation (EC) 443/2009 and then Regulation (EU) 2019/631. They must also carry a CO₂ label at the point of sale.",
+        "ireland": "Part L of the Building Regulations has been tightened repeatedly for dwellings and other buildings, culminating in Nearly Zero Energy Building (NZEB) requirements. EU ecodesign and energy-labelling rules apply to appliances, lighting and electric motors. EU CO₂ standards set fleet-average targets for manufacturers’ newly registered passenger cars, first under Regulation (EC) 443/2009 and then Regulation (EU) 2019/631. They must also carry a CO₂ label at the point of sale.",
         "strengths": ["Predictable performance outcomes", "Effective where price responsiveness is weak", "Drive technology diffusion across the EU single market"],
         "limitations": ["Apply mainly to new stock, so effects accrue slowly with turnover", "Gaps between test-cycle and real-world performance", "Rebound effects", "Generally less cost-effective than an equivalent price signal"],
-        "measurement": "Implementation uses OECD indicators for building energy codes, minimum energy-performance standards and labels. Successive editions of each standard are grouped into one policy family. Bindingness is scored 1.0 (enforced rule). Assumed timing profiles use long ramps reflecting stock turnover.",
+        "measurement": "Implementation uses OECD indicators for building energy codes, minimum energy-performance standards and labels. Successive editions of each standard are grouped into one policy family. Bindingness is scored 1.0 (mandatory rule). Assumed timing profiles use long ramps reflecting stock turnover.",
         "refs": ["JAFFE1994", "ALLCOTT2012", "GOULDER2008"],
     },
     "obligations": {
@@ -72,24 +72,24 @@ INSTRUMENTS = {
         "ireland": "The Energy Efficiency Obligation Scheme (2014), under Article 7 of the EU Energy Efficiency Directive, requires energy suppliers to deliver verified end-use savings. Biofuel support began with excise relief in the mid-2000s; the Biofuels Obligation Scheme took effect in 2010. Large enterprises must carry out energy audits every four years under S.I. 426/2014.",
         "strengths": ["Quantified, verifiable targets", "Flexible and often low-cost delivery", "Does not require public expenditure"],
         "limitations": ["Additionality of reported savings can be uncertain", "Compliance costs are passed through to consumers", "For biofuels, life-cycle and land-use emissions may offset gains"],
-        "measurement": "Most obligation rows are unmatched in the OECD framework and use assumed timing; audits use the OECD energy-efficiency mandate indicator. Bindingness is scored 0.75 for statutory obligations and 1.0 where the duty is directly enforced.",
+        "measurement": "Most obligation rows are unmatched in the OECD framework and use assumed timing; audits use the OECD energy-efficiency mandate indicator. Bindingness is scored 0.75 for statutory obligations and 1.0 where the duty is a directly mandatory rule.",
         "refs": ["ROSENOW2017", "IPCC2022"],
     },
     "practice_regulation": {
         "title": "Regulation of practices and activities",
         "definition": "Rules governing how an emitting activity is carried out, or restricting it outright. Examples include landfill limits, prescribed agricultural techniques and restrictions on new fossil-fuel licensing.",
         "rationale": "Some emissions come from many scattered farm or waste processes, or from long-lived investments. Here, setting rules on practices can be easier to monitor and enforce than pricing each tonne.",
-        "ireland": "The EU Landfill Directive (1999/31/EC) set targets for diverting biodegradable waste from landfill, reinforced nationally by a landfill levy introduced in 2002. Low-emission slurry spreading (trailing shoe, trailing hose or injection) reduces ammonia losses and associated nitrous oxide. The Climate Action and Low Carbon Development (Amendment) Act 2021 ended new licences for oil and gas exploration and extraction.",
+        "ireland": "The EU Landfill Directive (1999/31/EC) set targets for diverting biodegradable waste from landfill, reinforced nationally by a landfill levy introduced in 2002. Low-emission slurry spreading (trailing shoe, trailing hose or injection) reduces ammonia losses and associated nitrous oxide. The Climate Action and Low Carbon Development (Amendment) Act 2021 restricted the granting of new petroleum authorisations. Existing authorisations were preserved, and their holders may seek successor authorisations under the statutory saving provisions.",
         "strengths": ["Directly targets the emitting process", "Relatively easy to verify compliance", "Addresses non-CO₂ gases that are hard to price"],
         "limitations": ["Limited flexibility in how abatement is achieved", "Enforcement over many small actors is resource-intensive", "Supply-side restrictions may shift rather than reduce emissions"],
-        "measurement": "Agriculture and waste practices have no direct OECD stringency indicator, so implementation uses assumed timing. Licensing restrictions use the OECD fossil-fuel extraction ban indicator. Bindingness is scored 1.0 (enforced rule).",
+        "measurement": "Agriculture and waste practices have no direct OECD stringency indicator, so implementation uses assumed timing. Licensing restrictions use the OECD fossil-fuel extraction ban indicator. Bindingness is scored 1.0 (mandatory rule).",
         "refs": ["IPCC2022", "GOULDER2008"],
     },
     "deployment_support": {
         "title": "Deployment support for renewable energy",
         "definition": "Revenue or price support that guarantees returns to renewable generators and heat producers. Examples include feed-in tariffs, auctioned contracts for difference and renewable-heat supports.",
         "rationale": "Early deployment lowers future costs through learning-by-doing, a benefit that investors cannot fully capture. Long-term revenue certainty also lowers the cost of capital for projects with high upfront costs.",
-        "ireland": "Renewable electricity was first supported by the Alternative Energy Requirement competitions. The REFIT feed-in tariff schemes followed from 2006. Since 2020, support comes through competitive auctions under the Renewable Electricity Support Scheme (RESS). Renewables supplied 40.7% of electricity in 2023. Renewable heat is supported through the Support Scheme for Renewable Heat and related measures.",
+        "ireland": "Renewable electricity was first supported by the Alternative Energy Requirement competitions. The REFIT feed-in tariff schemes followed from 2006. The first Renewable Electricity Support Scheme (RESS) auction was held in 2020. RESS awards support through competitive auctions, while existing REFIT support continues under its scheme terms. Renewables supplied 41.0% of electricity generated in 2023. Renewable heat is supported through the Support Scheme for Renewable Heat and related measures.",
         "strengths": ["Rapid scale-up of clean supply", "Lower financing costs through revenue certainty", "Auctions reveal costs and drive prices down"],
         "limitations": ["Costs recovered from consumers through levies", "Poorly designed tariffs can over-compensate", "Grid and planning constraints limit delivery"],
         "measurement": "The renewable-electricity portfolio uses the average of the OECD feed-in-tariff and auction scores as context. The two programmes can coexist, so neither is assumed to replace the other. Renewable heat has no OECD indicator and uses assumed timing. Bindingness is scored 0.5 (financial incentive).",
@@ -134,9 +134,11 @@ POLICY_MILESTONES = {
     "IRL_P0005": [
         (2009, "Carbon tax applied to petrol and diesel at €15 per tonne CO₂ (December)."),
         (2010, "Extended to other liquid and gaseous fuels (non-transport fuels) at €15 per tonne (1 May)."),
-        (2012, "Rate raised to €20 per tonne."),
+        (2011, "Rate raised to €20 per tonne on motor fuels (7 December)."),
+        (2012, "Rate raised to €20 per tonne on other fuels (1 May)."),
         (2013, "Solid fuels (non-transport fuels) brought within the carbon tax, phased in at a lower initial rate."),
-        (2020, "Rate raised to €26 per tonne; the Finance Act 2020 legislated annual rises of €7.50 towards €100 per tonne by 2030."),
+        (2019, "Rate raised to €26 per tonne on motor fuels (9 October)."),
+        (2020, "Rate raised to €26 per tonne on other fuels (1 May); the Finance Act 2020 legislated annual rises of €7.50 towards €100 per tonne by 2030."),
         (2021, "€33.50 per tonne on non-transport fuels (1 May)."),
         (2022, "€41.00 per tonne on non-transport fuels (1 May)."),
         (2023, "€48.50 per tonne on non-transport fuels (1 May)."),
@@ -163,7 +165,7 @@ POLICY_MILESTONES = {
     "IRL_P0026": [
         (2006, "REFIT feed-in tariff introduced for renewable electricity."),
         (2020, "First auction under the Renewable Electricity Support Scheme (RESS 1)."),
-        (2023, "Renewables supply 40.7% of electricity (EPA)."),
+        (2023, "Renewables supply 41.0% of electricity generated (EPA)."),
     ],
     "IRL_P0027": [(2010, "Biofuels Obligation Scheme takes effect, requiring fuel suppliers to include a share of biofuels.")],
     "IRL_P0032": [(2014, "Energy Efficiency Obligation Scheme established under Article 7 of the Energy Efficiency Directive (2012/27/EU).")],
@@ -180,7 +182,7 @@ POLICY_MILESTONES = {
     "CAPMF_ACT_2015": [(2015, "Climate Action and Low Carbon Development Act enacted (10 December).")],
     "CAPMF_CLIMATE_COUNCIL": [(2016, "Climate Change Advisory Council established on a statutory basis (18 January).")],
     "CAPMF_ACT_2021": [(2021, "Climate Action and Low Carbon Development (Amendment) Act enacted (23 July).")],
-    "CAPMF_CARBON_BUDGETS": [(2022, "First two carbon budgets (2021–2025 and 2026–2030) approved and take effect (6 April).")],
+    "CAPMF_CARBON_BUDGETS": [(2022, "The first carbon-budget programme, comprising budgets for 2021–2025 and 2026–2030 and a provisional budget for 2031–2035, came into effect on 6 April.")],
     "CAPMF_SECTOR_CEILINGS": [(2022, "Government agrees sectoral emissions ceilings for the first two budget periods (28 July).")],
 }
 
@@ -189,16 +191,16 @@ POLICY_MILESTONES = {
 # ---------------------------------------------------------------------------
 EMISSIONS_SOURCE = ("Environmental Protection Agency, final greenhouse-gas inventory 1990–2024 (March 2026), "
                     "values for 2023. Dashboard sectors aggregate EPA categories as noted.")
-EMISSIONS_TOTAL_2023 = 54.934
+EMISSIONS_TOTAL_2023 = 54.992
 SECTOR_EMISSIONS_2023 = {
-    "Agriculture": (20.717, "Agriculture"),
-    "Transport": (11.798, "Transport"),
-    "Electricity": (7.860, "Energy Industries (mainly power generation, also refining)"),
-    "Buildings": (6.733, "Residential 5.347 + Commercial services 0.715 + Public services 0.671"),
-    "Industry": (6.307, "Manufacturing combustion 4.152 + Industrial processes 2.155"),
-    "Waste": (0.844, "Waste"),
-    "F-gases": (0.675, "F-gases"),
-    "LULUCF": (3.895, "Net source from land use, land-use change and forestry (excluded from the national total)"),
+    "Agriculture": (20.720, "Agriculture"),
+    "Transport": (11.933, "Transport"),
+    "Electricity": (7.849, "Energy Industries (mainly power generation, also refining)"),
+    "Buildings": (6.567, "Residential 5.230 + Commercial services 0.688 + Public services 0.649"),
+    "Industry": (6.462, "Manufacturing combustion 4.315 + Industrial processes 2.147"),
+    "Waste": (0.853, "Waste"),
+    "F-gases": (0.607, "F-gases"),
+    "LULUCF": (2.965, "Net source from land use, land-use change and forestry (excluded from the national total)"),
 }
 
 # ---------------------------------------------------------------------------
@@ -291,7 +293,7 @@ DICTIONARY = {
     "capmf_stringency": "Same-year OECD CAPMF stringency (0–10); mean of distinct matched codes where several apply. Flags M and K are treated as missing; no values are imputed.",
     "coverage_share": "Ordinal scope score (0.1, 0.25, 0.5, 1). Despite the name, it is not a measured share of activity or emissions.",
     "coverage_rationale": "Justification for the scope score.",
-    "bindingness": "Ordinal bindingness score: 1 enforced rule or statutory framework, 0.75 price or statutory obligation, 0.5 financial incentive, 0.25 information or voluntary.",
+    "bindingness": "Ordinal bindingness score: 1 mandatory rule or statutory framework, 0.75 price or statutory obligation, 0.5 financial incentive, 0.25 information or voluntary.",
     "intensity_index": "Policy intensity = implementation × coverage × bindingness (0–1). For residuals, the strict mean of member intensities. A relative indicator, not a causal effect.",
     "intensity_index_equal": "Unweighted mean of implementation, coverage and bindingness; positive even before a policy starts.",
     "data_quality_flag": "Semicolon-separated quality flags (source conflicts, proxy scope, ordinal judgements, assumed timing, consolidation, residual rules).",
