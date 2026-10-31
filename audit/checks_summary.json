@@ -1,0 +1,138 @@
+{
+  "recomputed": {
+    "unique_ids_including_residuals": 39,
+    "core_families": 34,
+    "series": 47,
+    "rows": 1128,
+    "residual_bundles": 5,
+    "candidates": 115,
+    "eligible": 64,
+    "eea_records": 104,
+    "active_2000": 7,
+    "active_2023": 43
+  },
+  "app_stats": {
+    "core_families": 34,
+    "residual_bundles": 5,
+    "series": 47,
+    "rows": 1128,
+    "years": "2000\u20132023",
+    "candidates": 115,
+    "eligible": 64,
+    "outcome": {
+      "core": 47,
+      "excluded": 51,
+      "residual": 17
+    },
+    "origin_outcome": {
+      "CAPMF_positive_LEV3|core": 20,
+      "CAPMF_positive_LEV3|excluded": 27,
+      "EEA_deduplicated_PaM|core": 27,
+      "EEA_deduplicated_PaM|residual": 17,
+      "EEA_deduplicated_PaM|excluded": 24
+    },
+    "eea_records": 104,
+    "eea_single": 98,
+    "eea_groups": 6,
+    "capmf_categories": 56,
+    "capmf_indicators": 130,
+    "active_2023": 43,
+    "active_2000": 7,
+    "by_source": {
+      "CAPMF": 12,
+      "EEA+CAPMF": 11,
+      "EEA": 16
+    },
+    "checks_passed": 20,
+    "checks_total": 20
+  },
+  "checks": {
+    "status_in_year": 1704,
+    "intensity_range": 1704,
+    "intensity_product": 1584,
+    "lag_years": 1584,
+    "ramp_years": 1584,
+    "half_life_years": 1584,
+    "temporal_weight": 1584,
+    "assumed_implementation": 1068,
+    "same_year_capmf": 418,
+    "capmf_implementation": 418,
+    "residual_mean": 120,
+    "residual_member_list": 120,
+    "annual_grid": 47,
+    "five_eligibility_tests": 115
+  },
+  "discrepancies_by_field": {},
+  "capmf_flags": [
+    [
+      "A",
+      "Normal value"
+    ],
+    [
+      "E",
+      "Estimated value"
+    ],
+    [
+      "K",
+      "Data included in another category"
+    ],
+    [
+      "M",
+      "Missing value; data cannot exist"
+    ]
+  ],
+  "capmf_levels": {
+    "LEV3": 56,
+    "LEV4": 130,
+    "LEV2": 15,
+    "LEV1": 3
+  },
+  "capmf_years": [
+    1990,
+    2023
+  ],
+  "multi_sector": {
+    "IRL_P0032": [
+      "Buildings",
+      "Industry"
+    ],
+    "IRL_P0002": [
+      "Buildings",
+      "Industry"
+    ],
+    "IRL_P0028": [
+      "Buildings",
+      "Industry"
+    ],
+    "IRL_P0003": [
+      "Electricity",
+      "Industry"
+    ],
+    "CAPMF_EU_ETS": [
+      "Electricity",
+      "Industry",
+      "Transport"
+    ],
+    "IRL_P0005": [
+      "Buildings",
+      "Industry",
+      "Transport"
+    ]
+  },
+  "page_checks": 55,
+  "page_failures": [],
+  "residual_core_overlap": [],
+  "protected_files_unchanged": true,
+  "eea_record_types": {
+    "Single": 98,
+    "Group": 6
+  },
+  "source_estimate_priority_mismatches": [],
+  "post_expiry_mismatches": [],
+  "database_differences": 0,
+  "capmf_positive_level3_categories": 47,
+  "category_label_mismatches": [],
+  "proxy_start_mismatches": [],
+  "anchor_missing_series": [],
+  "raw_stringency_out_of_range": 0
+}

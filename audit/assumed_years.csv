@@ -1,0 +1,785 @@
+﻿policy_id,sector,year,status_in_year,implementation_detail,lag_years,ramp_years,half_life_years
+CAPMF_ACT_2015,Cross-sectoral,2000,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2015,Cross-sectoral,2001,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2015,Cross-sectoral,2002,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2015,Cross-sectoral,2003,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2015,Cross-sectoral,2004,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2015,Cross-sectoral,2005,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2015,Cross-sectoral,2006,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2015,Cross-sectoral,2007,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2015,Cross-sectoral,2008,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2015,Cross-sectoral,2009,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2015,Cross-sectoral,2010,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2015,Cross-sectoral,2011,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2015,Cross-sectoral,2012,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2015,Cross-sectoral,2013,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2015,Cross-sectoral,2014,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2000,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2001,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2002,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2003,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2004,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2005,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2006,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2007,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2008,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2009,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2010,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2011,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2012,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2013,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2014,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2015,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2016,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2017,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2018,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2019,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_ACT_2021,Cross-sectoral,2020,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2000,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2001,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2002,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2003,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2004,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2005,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2006,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2007,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2008,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2009,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2010,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2011,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2012,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2013,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2014,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2015,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2016,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2017,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2018,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2019,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2020,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CARBON_BUDGETS,Cross-sectoral,2021,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CLIMATE_COUNCIL,Cross-sectoral,2000,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CLIMATE_COUNCIL,Cross-sectoral,2001,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CLIMATE_COUNCIL,Cross-sectoral,2002,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CLIMATE_COUNCIL,Cross-sectoral,2003,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CLIMATE_COUNCIL,Cross-sectoral,2004,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CLIMATE_COUNCIL,Cross-sectoral,2005,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CLIMATE_COUNCIL,Cross-sectoral,2006,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CLIMATE_COUNCIL,Cross-sectoral,2007,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CLIMATE_COUNCIL,Cross-sectoral,2008,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CLIMATE_COUNCIL,Cross-sectoral,2009,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CLIMATE_COUNCIL,Cross-sectoral,2010,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CLIMATE_COUNCIL,Cross-sectoral,2011,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CLIMATE_COUNCIL,Cross-sectoral,2012,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CLIMATE_COUNCIL,Cross-sectoral,2013,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CLIMATE_COUNCIL,Cross-sectoral,2014,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_CLIMATE_COUNCIL,Cross-sectoral,2015,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2000,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2001,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2002,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2003,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2004,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2005,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2006,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2007,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2008,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2009,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2010,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2011,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2012,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2013,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2014,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2015,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2016,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2017,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2018,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2019,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_NET_ZERO,Cross-sectoral,2020,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2000,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2001,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2002,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2003,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2004,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2005,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2006,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2007,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2008,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2009,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2010,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2011,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2012,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2013,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2014,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2015,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2016,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2017,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2018,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2019,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2020,pre_implementation,structural_zero_before_start,0,1,0
+CAPMF_SECTOR_CEILINGS,Cross-sectoral,2021,pre_implementation,structural_zero_before_start,0,1,0
+IRL_P0068,Agriculture,2000,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0068,Agriculture,2001,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0068,Agriculture,2002,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0068,Agriculture,2003,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0068,Agriculture,2004,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0068,Agriculture,2005,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0068,Agriculture,2006,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0068,Agriculture,2007,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0068,Agriculture,2008,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0068,Agriculture,2009,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0068,Agriculture,2010,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0068,Agriculture,2011,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0068,Agriculture,2012,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0068,Agriculture,2013,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0068,Agriculture,2014,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0068,Agriculture,2015,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0068,Agriculture,2016,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0068,Agriculture,2017,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0068,Agriculture,2018,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0068,Agriculture,2019,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0068,Agriculture,2020,active,Claude_midyear_timing_fallback,1,4,5
+IRL_P0068,Agriculture,2021,active,Claude_midyear_timing_fallback,1,4,5
+IRL_P0068,Agriculture,2022,active,Claude_midyear_timing_fallback,1,4,5
+IRL_P0068,Agriculture,2023,active,Claude_midyear_timing_fallback,1,4,5
+IRL_P0028,Buildings,2000,pre_implementation,structural_zero_before_start,1,5,15
+IRL_P0028,Buildings,2001,pre_implementation,structural_zero_before_start,1,5,15
+IRL_P0028,Buildings,2002,pre_implementation,structural_zero_before_start,1,5,15
+IRL_P0028,Buildings,2003,pre_implementation,structural_zero_before_start,1,5,15
+IRL_P0028,Buildings,2004,pre_implementation,structural_zero_before_start,1,5,15
+IRL_P0028,Buildings,2005,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Buildings,2006,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Buildings,2007,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Buildings,2008,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Buildings,2009,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Buildings,2010,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Buildings,2011,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Buildings,2012,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Buildings,2013,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Buildings,2014,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Buildings,2015,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Buildings,2016,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Buildings,2017,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Buildings,2018,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Buildings,2019,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Buildings,2020,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Buildings,2021,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Buildings,2022,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Buildings,2023,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0032,Buildings,2000,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Buildings,2001,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Buildings,2002,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Buildings,2003,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Buildings,2004,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Buildings,2005,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Buildings,2006,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Buildings,2007,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Buildings,2008,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Buildings,2009,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Buildings,2010,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Buildings,2011,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Buildings,2012,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Buildings,2013,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Buildings,2014,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0032,Buildings,2015,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0032,Buildings,2016,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0032,Buildings,2017,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0032,Buildings,2018,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0032,Buildings,2019,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0032,Buildings,2020,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0032,Buildings,2021,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0032,Buildings,2022,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0032,Buildings,2023,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0005,Buildings,2000,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Buildings,2001,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Buildings,2002,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Buildings,2003,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Buildings,2004,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Buildings,2005,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Buildings,2006,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Buildings,2007,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Buildings,2008,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Buildings,2009,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_PARTL_NONRES,Buildings,2000,pre_implementation,structural_zero_before_start,1,10,30
+CAPMF_PARTL_NONRES,Buildings,2001,pre_implementation,structural_zero_before_start,1,10,30
+CAPMF_PARTL_NONRES,Buildings,2002,pre_implementation,structural_zero_before_start,1,10,30
+CAPMF_PARTL_NONRES,Buildings,2003,pre_implementation,structural_zero_before_start,1,10,30
+CAPMF_PARTL_NONRES,Buildings,2004,pre_implementation,structural_zero_before_start,1,10,30
+IRL_P0013,Buildings,2000,pre_implementation,structural_zero_before_start,0,8,8
+IRL_P0013,Buildings,2001,pre_implementation,structural_zero_before_start,0,8,8
+IRL_P0013,Buildings,2002,pre_implementation,structural_zero_before_start,0,8,8
+IRL_P0013,Buildings,2003,pre_implementation,structural_zero_before_start,0,8,8
+IRL_P0013,Buildings,2004,pre_implementation,structural_zero_before_start,0,8,8
+IRL_P0013,Buildings,2005,pre_implementation,structural_zero_before_start,0,8,8
+IRL_P0013,Buildings,2006,pre_implementation,structural_zero_before_start,0,8,8
+IRL_P0013,Buildings,2007,pre_implementation,structural_zero_before_start,0,8,8
+IRL_P0013,Buildings,2008,active,Claude_midyear_timing_fallback,0,8,8
+IRL_P0013,Buildings,2009,active,Claude_midyear_timing_fallback,0,8,8
+IRL_P0013,Buildings,2010,active,Claude_midyear_timing_fallback,0,8,8
+IRL_P0013,Buildings,2011,active,Claude_midyear_timing_fallback,0,8,8
+IRL_P0013,Buildings,2012,active,Claude_midyear_timing_fallback,0,8,8
+IRL_P0013,Buildings,2013,active,Claude_midyear_timing_fallback,0,8,8
+IRL_P0013,Buildings,2014,active,Claude_midyear_timing_fallback,0,8,8
+IRL_P0013,Buildings,2015,active,Claude_midyear_timing_fallback,0,8,8
+IRL_P0013,Buildings,2016,active,Claude_midyear_timing_fallback,0,8,8
+IRL_P0013,Buildings,2017,active,Claude_midyear_timing_fallback,0,8,8
+IRL_P0013,Buildings,2018,active,Claude_midyear_timing_fallback,0,8,8
+IRL_P0013,Buildings,2019,active,Claude_midyear_timing_fallback,0,8,8
+IRL_P0013,Buildings,2020,active,Claude_midyear_timing_fallback,0,8,8
+IRL_P0013,Buildings,2021,active,Claude_midyear_timing_fallback,0,8,8
+IRL_P0013,Buildings,2022,active,Claude_midyear_timing_fallback,0,8,8
+IRL_P0013,Buildings,2023,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,8,8
+IRL_P0026,Electricity,2000,pre_implementation,structural_zero_before_start,1,5,15
+IRL_P0026,Electricity,2001,pre_implementation,structural_zero_before_start,1,5,15
+IRL_P0026,Electricity,2002,pre_implementation,structural_zero_before_start,1,5,15
+IRL_P0026,Electricity,2003,pre_implementation,structural_zero_before_start,1,5,15
+IRL_P0026,Electricity,2004,pre_implementation,structural_zero_before_start,1,5,15
+IRL_P0026,Electricity,2005,active,Claude_midyear_timing_fallback,1,5,15
+CAPMF_EU_ETS,Electricity,2000,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_EU_ETS,Electricity,2001,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_EU_ETS,Electricity,2002,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_EU_ETS,Electricity,2003,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_EU_ETS,Electricity,2004,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0023,F-gases,2000,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0023,F-gases,2001,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0023,F-gases,2002,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0023,F-gases,2003,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0023,F-gases,2004,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0023,F-gases,2005,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0023,F-gases,2006,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0023,F-gases,2007,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0023,F-gases,2008,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0023,F-gases,2009,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0023,F-gases,2010,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0023,F-gases,2011,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0023,F-gases,2012,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0023,F-gases,2013,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0023,F-gases,2014,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0023,F-gases,2015,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0023,F-gases,2016,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0023,F-gases,2017,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0023,F-gases,2018,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0023,F-gases,2019,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0023,F-gases,2020,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0023,F-gases,2021,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0023,F-gases,2022,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0023,F-gases,2023,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0028,Industry,2000,pre_implementation,structural_zero_before_start,1,5,15
+IRL_P0028,Industry,2001,pre_implementation,structural_zero_before_start,1,5,15
+IRL_P0028,Industry,2002,pre_implementation,structural_zero_before_start,1,5,15
+IRL_P0028,Industry,2003,pre_implementation,structural_zero_before_start,1,5,15
+IRL_P0028,Industry,2004,pre_implementation,structural_zero_before_start,1,5,15
+IRL_P0028,Industry,2005,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Industry,2006,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Industry,2007,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Industry,2008,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Industry,2009,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Industry,2010,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Industry,2011,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Industry,2012,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Industry,2013,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Industry,2014,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Industry,2015,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Industry,2016,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Industry,2017,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Industry,2018,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Industry,2019,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Industry,2020,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Industry,2021,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Industry,2022,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0028,Industry,2023,active,Claude_midyear_timing_fallback,1,5,15
+CAPMF_EE_AUDITS,Industry,2000,pre_implementation,structural_zero_before_start,0,2,2
+CAPMF_EE_AUDITS,Industry,2001,pre_implementation,structural_zero_before_start,0,2,2
+CAPMF_EE_AUDITS,Industry,2002,pre_implementation,structural_zero_before_start,0,2,2
+CAPMF_EE_AUDITS,Industry,2003,pre_implementation,structural_zero_before_start,0,2,2
+CAPMF_EE_AUDITS,Industry,2004,pre_implementation,structural_zero_before_start,0,2,2
+CAPMF_EE_AUDITS,Industry,2005,pre_implementation,structural_zero_before_start,0,2,2
+CAPMF_EE_AUDITS,Industry,2006,pre_implementation,structural_zero_before_start,0,2,2
+CAPMF_EE_AUDITS,Industry,2007,pre_implementation,structural_zero_before_start,0,2,2
+CAPMF_EE_AUDITS,Industry,2008,pre_implementation,structural_zero_before_start,0,2,2
+CAPMF_EE_AUDITS,Industry,2009,pre_implementation,structural_zero_before_start,0,2,2
+CAPMF_EE_AUDITS,Industry,2010,pre_implementation,structural_zero_before_start,0,2,2
+CAPMF_EE_AUDITS,Industry,2011,pre_implementation,structural_zero_before_start,0,2,2
+CAPMF_EE_AUDITS,Industry,2012,pre_implementation,structural_zero_before_start,0,2,2
+CAPMF_EE_AUDITS,Industry,2013,pre_implementation,structural_zero_before_start,0,2,2
+IRL_P0032,Industry,2000,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Industry,2001,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Industry,2002,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Industry,2003,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Industry,2004,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Industry,2005,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Industry,2006,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Industry,2007,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Industry,2008,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Industry,2009,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Industry,2010,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Industry,2011,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Industry,2012,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Industry,2013,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0032,Industry,2014,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0032,Industry,2015,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0032,Industry,2016,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0032,Industry,2017,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0032,Industry,2018,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0032,Industry,2019,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0032,Industry,2020,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0032,Industry,2021,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0032,Industry,2022,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0032,Industry,2023,active,Claude_midyear_timing_fallback,0,3,15
+CAPMF_FOSSIL_LICENCES,Industry,2000,pre_implementation,structural_zero_before_start,1,4,5
+CAPMF_FOSSIL_LICENCES,Industry,2001,pre_implementation,structural_zero_before_start,1,4,5
+CAPMF_FOSSIL_LICENCES,Industry,2002,pre_implementation,structural_zero_before_start,1,4,5
+CAPMF_FOSSIL_LICENCES,Industry,2003,pre_implementation,structural_zero_before_start,1,4,5
+CAPMF_FOSSIL_LICENCES,Industry,2004,pre_implementation,structural_zero_before_start,1,4,5
+CAPMF_FOSSIL_LICENCES,Industry,2005,pre_implementation,structural_zero_before_start,1,4,5
+CAPMF_FOSSIL_LICENCES,Industry,2006,pre_implementation,structural_zero_before_start,1,4,5
+CAPMF_FOSSIL_LICENCES,Industry,2007,pre_implementation,structural_zero_before_start,1,4,5
+CAPMF_FOSSIL_LICENCES,Industry,2008,pre_implementation,structural_zero_before_start,1,4,5
+CAPMF_FOSSIL_LICENCES,Industry,2009,pre_implementation,structural_zero_before_start,1,4,5
+CAPMF_FOSSIL_LICENCES,Industry,2010,pre_implementation,structural_zero_before_start,1,4,5
+CAPMF_FOSSIL_LICENCES,Industry,2011,pre_implementation,structural_zero_before_start,1,4,5
+CAPMF_FOSSIL_LICENCES,Industry,2012,pre_implementation,structural_zero_before_start,1,4,5
+CAPMF_FOSSIL_LICENCES,Industry,2013,pre_implementation,structural_zero_before_start,1,4,5
+CAPMF_FOSSIL_LICENCES,Industry,2014,pre_implementation,structural_zero_before_start,1,4,5
+CAPMF_FOSSIL_LICENCES,Industry,2015,pre_implementation,structural_zero_before_start,1,4,5
+CAPMF_FOSSIL_LICENCES,Industry,2016,pre_implementation,structural_zero_before_start,1,4,5
+CAPMF_FOSSIL_LICENCES,Industry,2017,pre_implementation,structural_zero_before_start,1,4,5
+CAPMF_FOSSIL_LICENCES,Industry,2018,pre_implementation,structural_zero_before_start,1,4,5
+CAPMF_FOSSIL_LICENCES,Industry,2019,pre_implementation,structural_zero_before_start,1,4,5
+CAPMF_FOSSIL_LICENCES,Industry,2020,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0005,Industry,2000,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Industry,2001,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Industry,2002,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Industry,2003,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Industry,2004,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Industry,2005,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Industry,2006,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Industry,2007,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Industry,2008,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Industry,2009,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_EU_ETS,Industry,2000,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_EU_ETS,Industry,2001,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_EU_ETS,Industry,2002,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_EU_ETS,Industry,2003,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_EU_ETS,Industry,2004,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_MEPS_MOTOR,Industry,2000,pre_implementation,structural_zero_before_start,0,8,8
+CAPMF_MEPS_MOTOR,Industry,2001,pre_implementation,structural_zero_before_start,0,8,8
+CAPMF_MEPS_MOTOR,Industry,2002,pre_implementation,structural_zero_before_start,0,8,8
+CAPMF_MEPS_MOTOR,Industry,2003,pre_implementation,structural_zero_before_start,0,8,8
+CAPMF_MEPS_MOTOR,Industry,2004,pre_implementation,structural_zero_before_start,0,8,8
+CAPMF_MEPS_MOTOR,Industry,2005,pre_implementation,structural_zero_before_start,0,8,8
+CAPMF_MEPS_MOTOR,Industry,2006,pre_implementation,structural_zero_before_start,0,8,8
+CAPMF_MEPS_MOTOR,Industry,2007,pre_implementation,structural_zero_before_start,0,8,8
+CAPMF_MEPS_MOTOR,Industry,2008,pre_implementation,structural_zero_before_start,0,8,8
+CAPMF_MEPS_MOTOR,Industry,2009,pre_implementation,structural_zero_before_start,0,8,8
+CAPMF_MEPS_MOTOR,Industry,2010,pre_implementation,structural_zero_before_start,0,8,8
+IRL_P0027,Transport,2000,pre_implementation,structural_zero_before_start,1,5,15
+IRL_P0027,Transport,2001,pre_implementation,structural_zero_before_start,1,5,15
+IRL_P0027,Transport,2002,pre_implementation,structural_zero_before_start,1,5,15
+IRL_P0027,Transport,2003,pre_implementation,structural_zero_before_start,1,5,15
+IRL_P0027,Transport,2004,pre_implementation,structural_zero_before_start,1,5,15
+IRL_P0027,Transport,2005,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0027,Transport,2006,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0027,Transport,2007,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0027,Transport,2008,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0027,Transport,2009,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0027,Transport,2010,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0027,Transport,2011,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0027,Transport,2012,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0027,Transport,2013,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0027,Transport,2014,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0027,Transport,2015,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0027,Transport,2016,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0027,Transport,2017,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0027,Transport,2018,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0027,Transport,2019,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0027,Transport,2020,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0027,Transport,2021,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0027,Transport,2022,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0027,Transport,2023,active,Claude_midyear_timing_fallback,1,5,15
+IRL_P0005,Transport,2000,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Transport,2001,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Transport,2002,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Transport,2003,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Transport,2004,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Transport,2005,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Transport,2006,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Transport,2007,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0005,Transport,2008,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0019,Transport,2000,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0019,Transport,2001,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0019,Transport,2002,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0019,Transport,2003,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0019,Transport,2004,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0019,Transport,2005,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0019,Transport,2006,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0019,Transport,2007,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0019,Transport,2008,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0019,Transport,2009,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0019,Transport,2010,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0019,Transport,2011,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0019,Transport,2012,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0019,Transport,2013,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0019,Transport,2014,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0019,Transport,2015,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0019,Transport,2016,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0019,Transport,2017,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0019,Transport,2018,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0019,Transport,2019,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0019,Transport,2020,active,Claude_midyear_timing_fallback,0,12,10
+IRL_P0019,Transport,2021,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,12,10
+IRL_P0019,Transport,2022,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,12,10
+IRL_P0019,Transport,2023,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,12,10
+CAPMF_EU_ETS,Transport,2000,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_EU_ETS,Transport,2001,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_EU_ETS,Transport,2002,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_EU_ETS,Transport,2003,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_EU_ETS,Transport,2004,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_EU_ETS,Transport,2005,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_EU_ETS,Transport,2006,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_EU_ETS,Transport,2007,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_EU_ETS,Transport,2008,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_EU_ETS,Transport,2009,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_EU_ETS,Transport,2010,pre_implementation,structural_zero_before_start,0,3,1
+CAPMF_EU_ETS,Transport,2011,pre_implementation,structural_zero_before_start,0,3,1
+IRL_P0020,Transport,2000,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0020,Transport,2001,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0020,Transport,2002,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0020,Transport,2003,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0020,Transport,2004,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0020,Transport,2005,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0020,Transport,2006,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0020,Transport,2007,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0020,Transport,2008,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0020,Transport,2009,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0020,Transport,2010,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0020,Transport,2011,pre_implementation,structural_zero_before_start,0,12,10
+IRL_P0024,Waste,2000,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2001,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2002,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2003,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2004,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2005,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2006,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2007,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2008,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2009,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2010,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2011,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2012,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2013,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2014,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2015,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2016,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2017,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2018,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2019,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2020,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2021,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2022,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0024,Waste,2023,active,Claude_midyear_timing_fallback,1,10,10
+IRL_P0101,Agriculture,2000,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2001,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2002,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2003,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2004,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2005,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2006,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2007,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2008,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2009,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2010,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2011,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2012,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2013,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2014,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2015,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2016,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2017,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2018,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2019,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2020,pre_implementation,structural_zero_before_start,1,4,5
+IRL_P0101,Agriculture,2021,active,Claude_midyear_timing_fallback,1,4,5
+IRL_P0101,Agriculture,2022,active,Claude_midyear_timing_fallback,1,4,5
+IRL_P0101,Agriculture,2023,active,Claude_midyear_timing_fallback,1,4,5
+IRL_P0006,Buildings,2000,pre_implementation,structural_zero_before_start,0,2,2
+IRL_P0006,Buildings,2001,pre_implementation,structural_zero_before_start,0,2,2
+IRL_P0006,Buildings,2002,pre_implementation,structural_zero_before_start,0,2,2
+IRL_P0006,Buildings,2003,pre_implementation,structural_zero_before_start,0,2,2
+IRL_P0006,Buildings,2004,pre_implementation,structural_zero_before_start,0,2,2
+IRL_P0006,Buildings,2005,pre_implementation,structural_zero_before_start,0,2,2
+IRL_P0006,Buildings,2006,pre_implementation,structural_zero_before_start,0,2,2
+IRL_P0006,Buildings,2007,pre_implementation,structural_zero_before_start,0,2,2
+IRL_P0006,Buildings,2008,pre_implementation,structural_zero_before_start,0,2,2
+IRL_P0006,Buildings,2009,pre_implementation,structural_zero_before_start,0,2,2
+IRL_P0006,Buildings,2010,pre_implementation,structural_zero_before_start,0,2,2
+IRL_P0006,Buildings,2011,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0006,Buildings,2012,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0006,Buildings,2013,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0006,Buildings,2014,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0006,Buildings,2015,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0006,Buildings,2016,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0006,Buildings,2017,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0006,Buildings,2018,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0006,Buildings,2019,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0006,Buildings,2020,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0006,Buildings,2021,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0006,Buildings,2022,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0006,Buildings,2023,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0002,Buildings,2000,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0002,Buildings,2001,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0002,Buildings,2002,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0002,Buildings,2003,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0002,Buildings,2004,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0002,Buildings,2005,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0002,Buildings,2006,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0002,Buildings,2007,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0002,Buildings,2008,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0002,Buildings,2009,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0017,Buildings,2000,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0017,Buildings,2001,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0017,Buildings,2002,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0017,Buildings,2003,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0017,Buildings,2004,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0017,Buildings,2005,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0017,Buildings,2006,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0017,Buildings,2007,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0017,Buildings,2008,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0017,Buildings,2009,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0017,Buildings,2010,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0031,Buildings,2000,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0031,Buildings,2001,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0031,Buildings,2002,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0031,Buildings,2003,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0031,Buildings,2004,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0031,Buildings,2005,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0031,Buildings,2006,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0031,Buildings,2007,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0031,Buildings,2008,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0031,Buildings,2009,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0031,Buildings,2010,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0031,Buildings,2011,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0003,Electricity,2000,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0003,Electricity,2001,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0003,Electricity,2002,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0003,Electricity,2003,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0003,Electricity,2004,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0003,Electricity,2005,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0003,Electricity,2006,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0003,Electricity,2007,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0003,Electricity,2008,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0003,Electricity,2009,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0003,Electricity,2010,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0003,Electricity,2011,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0003,Electricity,2012,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Electricity,2013,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Electricity,2014,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Electricity,2015,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Electricity,2016,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Electricity,2017,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Electricity,2018,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Electricity,2019,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Electricity,2020,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Electricity,2021,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Electricity,2022,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Electricity,2023,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0001,Industry,2000,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2001,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2002,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2003,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2004,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2005,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2006,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2007,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2008,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2009,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2010,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2011,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2012,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2013,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2014,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2015,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2016,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2017,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2018,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2019,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2020,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2021,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2022,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0001,Industry,2023,active,Claude_midyear_timing_fallback,0,2,2
+IRL_P0002,Industry,2000,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0002,Industry,2001,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0002,Industry,2002,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0002,Industry,2003,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0002,Industry,2004,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0002,Industry,2005,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0002,Industry,2006,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0002,Industry,2007,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0002,Industry,2008,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0002,Industry,2009,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0003,Industry,2000,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0003,Industry,2001,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0003,Industry,2002,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0003,Industry,2003,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0003,Industry,2004,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0003,Industry,2005,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0003,Industry,2006,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0003,Industry,2007,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0003,Industry,2008,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0003,Industry,2009,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0003,Industry,2010,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0003,Industry,2011,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0003,Industry,2012,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Industry,2013,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Industry,2014,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Industry,2015,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Industry,2016,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Industry,2017,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Industry,2018,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Industry,2019,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Industry,2020,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Industry,2021,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Industry,2022,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0003,Industry,2023,post_expiry_residual,endpoint_assumed_times_assumed_half_life,0,3,15
+IRL_P0018,Transport,2000,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0018,Transport,2001,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0018,Transport,2002,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0018,Transport,2003,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0018,Transport,2004,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0018,Transport,2005,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0018,Transport,2006,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0018,Transport,2007,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0018,Transport,2008,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0018,Transport,2009,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0018,Transport,2010,pre_implementation,structural_zero_before_start,0,3,15
+IRL_P0018,Transport,2011,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0018,Transport,2012,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0018,Transport,2013,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0018,Transport,2014,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0018,Transport,2015,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0018,Transport,2016,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0018,Transport,2017,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0018,Transport,2018,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0018,Transport,2019,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0018,Transport,2020,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0018,Transport,2021,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0018,Transport,2022,active,Claude_midyear_timing_fallback,0,3,15
+IRL_P0018,Transport,2023,active,Claude_midyear_timing_fallback,0,3,15
+RES_Agriculture,Agriculture,2000,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2001,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2002,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2003,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2004,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2005,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2006,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2007,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2008,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2009,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2010,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2011,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2012,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2013,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2014,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2015,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2016,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2017,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2018,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2019,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2020,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2021,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2022,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Agriculture,Agriculture,2023,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2000,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2001,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2002,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2003,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2004,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2005,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2006,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2007,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2008,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2009,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2010,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2011,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2012,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2013,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2014,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2015,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2016,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2017,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2018,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2019,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2020,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2021,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2022,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Buildings,Buildings,2023,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2000,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2001,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2002,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2003,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2004,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2005,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2006,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2007,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2008,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2009,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2010,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2011,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2012,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2013,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2014,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2015,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2016,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2017,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2018,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2019,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2020,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2021,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2022,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Electricity,Electricity,2023,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2000,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2001,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2002,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2003,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2004,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2005,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2006,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2007,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2008,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2009,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2010,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2011,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2012,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2013,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2014,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2015,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2016,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2017,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2018,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2019,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2020,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2021,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2022,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_Industry,Industry,2023,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2000,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2001,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2002,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2003,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2004,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2005,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2006,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2007,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2008,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2009,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2010,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2011,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2012,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2013,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2014,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2015,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2016,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2017,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2018,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2019,pre_implementation,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2020,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2021,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2022,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,
+RES_LULUCF,LULUCF,2023,active,Strict mean of fixed member implementations; primary intensity is strict mean of member intensity products,,,

@@ -1,0 +1,5 @@
+﻿policy_id,sector,code,start_year,first_positive,matches
+CAPMF_LABEL_APPL,Buildings,LEV3_LABEL_APPL,1995,1995,True
+CAPMF_MEPS_APPL,Buildings,LEV3_MEPS_APPL,1996,1996,True
+CAPMF_PARTL_RES,Buildings,LEV4_BC_RES,1991,1991,True
+CAPMF_LABEL_CAR,Transport,LEV4_LABEL_CAR,1999,1999,True
