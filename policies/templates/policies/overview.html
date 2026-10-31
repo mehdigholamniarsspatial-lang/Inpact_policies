@@ -1,17 +1,18 @@
 {% extends "policies/base.html" %}
 {% load static policy_extras %}
 {% block title %}Overview | Ireland Climate Policy Timeline{% endblock %}
+{% block policy_subtitle %}Selected greenhouse-gas mitigation policies, 2000–2023{% endblock %}
 {% block content %}
 <section class="hero">
   <div>
     <h1>How Ireland's climate policies built up, year by year</h1>
-    <p class="lede">This site tracks, year by year, {{ stats.core_families }} core policies that aim to cut Ireland's greenhouse-gas emissions and were in force between 2000 and 2023. It combines the policies Ireland reports to the EU (EEA database) with the OECD's policy-stringency scores (CAPMF).</p>
+    <p class="lede">Explore {{ stats.core_families }} selected core policy families addressing Ireland's greenhouse-gas emissions, with annual records for 2000–2023. The dataset combines Ireland's policy reports in the European Environment Agency (EEA) database with scores from the OECD's Climate Actions and Policies Measurement Framework (CAPMF).</p>
     <p>It also includes {{ stats.residual_bundles }} residual bundles: one summary row per sector for smaller measures not listed individually.</p>
     <p><a class="btn" href="{% url 'policies:timeline' %}">Open the timeline</a> <a class="btn ghost" href="{% url 'policies:instruments' %}">Understand the instruments</a></p>
   </div>
   <figure class="hero-figure" style="margin:0">
     <div id="river" aria-label="Every policy series as a strip of 24 years, shaded by intensity" role="img"></div>
-    <figcaption><span>Watch the lines darken as policies take effect: {{ stats.active_2000 }} series were active in 2000 and {{ stats.active_2023 }} in 2023. Hover over a line to name it; click to open it.</span><span id="river-legend"></span></figcaption>
+    <figcaption><span>Darker shading indicates a higher policy intensity index, not measured emissions reductions. The dataset records {{ stats.active_2000 }} active series in 2000 and {{ stats.active_2023 }} in 2023. Hover over a line to name it; click to open it.</span><span id="river-legend"></span></figcaption>
   </figure>
 </section>
 
@@ -25,7 +26,7 @@
 
 <aside class="callout" role="note" aria-label="Main caveat">
   <p class="callout-title">Main caveat</p>
-  <p><b>Policies were selected using recent (2024–2030) assessments, which may bias the results.</b> Policies that still report large savings today are more likely to be included than ones that faded earlier. Keep this in mind, especially in causal analysis.</p>
+  <p><b>Selection draws on reported or projected savings for 2024–2030, creating a retrospective-selection bias.</b> Measures with large recent or projected savings are more likely to be included than earlier measures that have ended or lack comparable estimates. This is a selected policy record, not a complete historical inventory; use caution in causal analysis.</p>
 </aside>
 
 <section class="section">
@@ -33,21 +34,21 @@
   <ol class="pipeline">
     <li><span class="n">1</span><h3>Combine two sources</h3><p>Ireland reported {{ stats.eea_records }} policy records to the EU: {{ stats.eea_single }} individual measures and {{ stats.eea_groups }} group records that summarise others. The OECD scores {{ stats.capmf_categories }} policy categories ({{ stats.capmf_indicators }} detailed indicators) for 1990–2023.</p></li>
     <li><span class="n">2</span><h3>Screen candidates</h3><p>Five eligibility tests screened {{ stats.candidates }} candidate policies, and {{ stats.eligible }} passed. The reason for every decision is recorded.</p></li>
-    <li><span class="n">3</span><h3>Select the core</h3><p>The core holds the largest measures, which together reach 90% of each sector's reported savings. It also holds named instruments that the OECD scores ("OECD anchors"). Smaller eligible measures form one residual bundle per sector.</p></li>
-    <li><span class="n">4</span><h3>Score every year</h3><p>Each policy is scored for every sector and year. The score combines an implementation level (OECD stringency or assumed timing), how much of the sector it covers and how compulsory it is ("bindingness"). The result is a 0–1 policy intensity index.</p></li>
+    <li><span class="n">3</span><h3>Select the core</h3><p>The selection targets at least 90% of positive reported savings among eligible measures in each sector where this can be assessed. No percentage can be calculated for land use, land-use change and forestry (LULUCF), where eligible estimates sum to zero. Named instruments linked to OECD scores ("OECD anchors") are also included. Smaller eligible measures form sector-specific residual bundles.</p></li>
+    <li><span class="n">4</span><h3>Score every year</h3><p>Each selected policy–sector series receives an annual 0–1 intensity index. It multiplies an implementation proxy (OECD stringency or assumed timing) by researcher-assigned ordinal scores for sector coverage and how compulsory the measure is ("bindingness"). These scores describe policy design and scope; they do not measure observed implementation or effectiveness.</p></li>
   </ol>
   <p class="note"><a href="{% url 'policies:method' %}">Read the full methodology, selection flow and validation checks</a></p>
 </section>
 
 <section class="section">
-  <div class="section-head"><h2>Emissions context</h2><p>Compare each sector's 2023 emissions (left) with its number of policy series (right): the largest emitter has few policies.</p></div>
+  <div class="section-head"><h2>Emissions context</h2><p>Compare each sector's 2023 emissions (left) with the number of selected policy series (right). Series counts do not measure policy ambition, effectiveness or the share of emissions addressed.</p></div>
   <div class="panel">
     <div class="split" style="gap:28px">
       <div id="emis-chart" style="height:330px"></div>
       <div class="prose small">
-        <p>Agriculture is Ireland's largest source of emissions. Most of it is methane from livestock and nitrous oxide from fertiliser and manure. Yet only two agricultural policies were selected individually; a third series bundles the smaller eligible agricultural measures.</p>
+        <p>Agriculture was Ireland's largest emitting sector in 2023, mainly through methane from livestock and nitrous oxide from fertiliser and manure. The dataset includes two individually selected agricultural policies and a residual bundle containing a crude-protein reduction measure.</p>
         <p>Energy-related sectors, by contrast, are covered by many overlapping instruments.</p>
-        <p>The gap reflects both policy history and the sources used. The OECD framework has no direct stringency scores for agriculture, waste or land use. Keep this in mind when comparing sectors.</p>
+        <p>Differences in series counts reflect the selection rules and source coverage as well as policy history. The CAPMF extract used here contains no direct sector-specific stringency scores for agriculture, waste or land use. The chart is not a complete inventory of policies in those sectors.</p>
         <p class="note">{{ emissions_source }} National total excluding LULUCF: 54.99 Mt CO₂e. LULUCF was a net source of 2.97 Mt CO₂e.</p>
       </div>
     </div>
@@ -67,18 +68,18 @@
   <div class="section-head"><h2>Four layers of policy</h2><p>Each row sits at one of four levels, from broad laws to smaller measures. The layers overlap, so do not add them together.</p></div>
   <div class="layer-stack layer-grid">
     {% for key, label, short, desc in layers %}
-    <div class="layer-row"><div class="badge">{{ short }}</div><div><h3>{{ label }} <span class="count" data-layer-count="{{ key }}"></span></h3><p>{{ desc }}</p></div></div>
+    <div class="layer-row"><div class="badge">{{ short }}</div><div><h3>{{ label }} <span class="count" data-layer-count="{{ key }}"></span></h3><p>{% if key == "residual" %}One summary row per sector for smaller eligible measures not selected individually. Members are documented in each bundle's profile and are not separate core rows. Bundle scores are averages and must not be added to other policy scores.{% else %}{{ desc }}{% endif %}</p></div></div>
     {% endfor %}
   </div>
 </section>
 
 <section class="section grid-2">
   <div>
-    <div class="section-head"><h2>Policies in force</h2><p>Active series rose from {{ stats.active_2000 }} in 2000 to {{ stats.active_2023 }} in 2023, with all of the growth after 2004.</p></div>
+    <div class="section-head"><h2>Recorded policy activity</h2><p>Series classified as active rose from {{ stats.active_2000 }} in 2000 to {{ stats.active_2023 }} in 2023. These counts follow the dataset's start and end conventions; a recorded start may reflect the first positive OECD score rather than legal commencement.</p></div>
     <div class="panel"><div id="active-chart" style="height:320px"></div></div>
   </div>
   <div>
-    <div class="section-head"><h2>Where implementation values come from</h2><p>Dark bars use OECD scores; orange bars use assumed timing. The orange share shows how much rests on assumptions.</p></div>
+    <div class="section-head"><h2>Sources of the implementation proxy</h2><p>Dark bars use OECD scores; orange bars use assumed timing. Counts include core series from their recorded start, including years of modelled post-expiry effects. Residual bundles are excluded. Coverage and bindingness remain researcher-assigned in both groups.</p></div>
     <div class="panel"><div id="source-chart" style="height:320px"></div></div>
   </div>
 </section>
@@ -87,10 +88,10 @@
   <div class="caveats">
     <h3>How to read the data</h3>
     <ul>
-      <li><b>Intensity is not emissions saved.</b> It is a relative 0–1 index of how strongly a policy bears on its sector. No tonnes are estimated.</li>
+      <li><b>Intensity is not emissions saved.</b> It is a relative 0–1 index combining a policy-design or timing proxy with sector coverage and bindingness. It does not estimate tonnes of emissions avoided.</li>
       <li><b>Reported savings are for selection only.</b> They repeat across years and sectors, so never add them up.</li>
-      <li><b>Some rows overlap.</b> Frameworks, portfolios and residual bundles repeat other rows. Check each policy's "aggregation role" before combining rows.</li>
-      <li><b>Some timing is assumed.</b> Where no OECD score matches, the dataset assumes a gradual ramp-up. These years are hatched on the timeline.</li>
+      <li><b>Rows are not additive.</b> Frameworks and portfolios can overlap with individual measures. Residual members are not listed separately in the core, but their bundle scores are averages, not additional emissions savings. Check each policy's "aggregation role" before combining rows.</li>
+      <li><b>Some timing is assumed.</b> Assumed timing uses ramp-up and, where applicable, post-expiry decay. The timeline hatches assumed years for non-residual series from their recorded start. Residual bundles may mix OECD-derived and assumed values without hatching.</li>
       <li><b>Selection uses recent assessments.</b> See the main caveat at the top of this page.</li>
     </ul>
   </div>

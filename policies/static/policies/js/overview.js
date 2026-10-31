@@ -78,7 +78,7 @@
       .on("click", (e, d) => { location.href = App.policyUrl(d.slug); })
       .on("mouseenter", function (e, d) {
         d3.select(this).selectAll("rect").attr("stroke", "#15252D").attr("stroke-width", 0.6);
-        App.showTip(`<strong>${App.esc(d.name)}</strong>${App.esc(d.sector)}, ${App.esc(App.mechLabel(d.mechanism))}<br>Starts ${d.start}${d.end ? `, ends ${d.end}` : ""}<br>Intensity 2023: ${App.fmt(d.i2023)}`, e);
+        App.showTip(`<strong>${App.esc(d.name)}</strong>${App.esc(d.sector)}, ${App.esc(App.mechLabel(d.mechanism))}<br>Recorded start ${d.start}${d.end ? `, recorded end ${d.end}` : ""}<br>Intensity 2023: ${App.fmt(d.i2023)}`, e);
       })
       .on("mousemove", App.moveTip)
       .on("mouseleave", function () { d3.select(this).selectAll("rect").attr("stroke", null); App.hideTip(); });
@@ -109,7 +109,7 @@
     Plotly.newPlot("active-chart", traces, App.plotLayout({ hovermode: "x unified", yaxis: { title: { text: "Active series" }, gridcolor: "#E4EAE9" }, legend: { orientation: "v", x: 1.02, y: 1, font: { size: 11 } }, margin: { l: 52, r: 120, t: 12, b: 36 } }), App.plotConfig);
   }
 
-  /* Implementation source among active series ---------------------------------- */
+  /* Implementation source from recorded start, including post-expiry years ------ */
   function drawSource(series, years) {
     const count = (fn) => years.map((_, i) => series.filter((s) => s.layer !== "residual" && s.years.status[i] !== "pre_implementation" && fn(s, i)).length);
     const oecd = count((s, i) => s.years.src[i] === "capmf_derived");
@@ -118,6 +118,6 @@
       { type: "bar", name: "OECD CAPMF score", x: years, y: oecd, marker: { color: "#0B5563" }, hovertemplate: "OECD-derived: %{y}<extra></extra>" },
       { type: "bar", name: "Assumed ramp-up or decay", x: years, y: assumed, marker: { color: "#C4841D" }, hovertemplate: "Assumed: %{y}<extra></extra>" },
     ];
-    Plotly.newPlot("source-chart", traces, App.plotLayout({ barmode: "stack", hovermode: "x unified", bargap: 0.18, yaxis: { title: { text: "Active core series" }, gridcolor: "#E4EAE9" } }), App.plotConfig);
+    Plotly.newPlot("source-chart", traces, App.plotLayout({ barmode: "stack", hovermode: "x unified", bargap: 0.18, yaxis: { title: { text: "Core series from recorded start" }, gridcolor: "#E4EAE9" } }), App.plotConfig);
   }
 })();
