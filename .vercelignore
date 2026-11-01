@@ -1,0 +1,14 @@
+# Files the deployed site never reads. Keeping them out of the upload keeps the
+# Vercel Python function under its 500 MB bundle limit.
+
+# Local tooling and editor settings
+.claude/
+.git/
+**/__pycache__/
+
+# Offline audit reports and the scripts that write them
+audit/
+
+# Raw GeoTIFFs: only used locally to regenerate data/RasterPrerendered/
+data/Raster/
+scripts/
