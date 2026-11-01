@@ -272,7 +272,6 @@ input[type=range]{accent-color:var(--emerald);width:100%}
   font-size:.66rem;font-weight:800;background:var(--teal-light);color:var(--teal);
   border:1px solid rgba(14,140,138,.3);
 }
-.unit-badge.tbc{background:#FDF3E3;color:#9A6212;border-color:rgba(232,163,61,.45)}
 .raster-title .rt-flag{margin-top:.25rem;font-size:.62rem;color:#9A6212}
 
 /* ---- Colour-bar legend for the raster overlay ---- */
@@ -284,7 +283,6 @@ input[type=range]{accent-color:var(--emerald);width:100%}
 }
 .raster-colorbar .cb-title{font-weight:800;font-size:.72rem;line-height:1.2}
 .raster-colorbar .cb-unit{font-size:.66rem;color:var(--text-muted);margin-bottom:.35rem}
-.raster-colorbar .cb-unit.tbc{color:#9A6212;font-weight:700}
 .raster-colorbar .cb-source{margin-top:.3rem;padding-top:.3rem;border-top:1px solid var(--grey-border);font-size:.6rem;color:var(--text-muted);line-height:1.3}
 .raster-colorbar .cb-row{display:flex;align-items:stretch;gap:.45rem;height:96px}
 .raster-colorbar .cb-gradient{
@@ -2474,11 +2472,6 @@ document.addEventListener("fullscreenchange", () => setTimeout(() => map.invalid
   const sectorInfo = s => LABELS.sectors[s] || { name: s.replace(/_/g, " "), code: "", order: 99 };
   const paramInfo  = p => LABELS.parameters[p] || { name: p.replace(/^p/, ""), label: p.replace(/^p/, ""),
     group: "Other", unit: null, unit_long: null, unit_status: "unknown", name_confirmed: false };
-  const unitText = info => info.unit
-    || (info.unit_status === "to_confirm" ? "Unit to be confirmed" : "Unit not specified");
-  const unitLong = info => info.unit_long
-    || (info.unit_status === "to_confirm" ? "Unit to be confirmed (not stated in the MapEIre report)"
-                                          : "Unit not specified");
   const layerName = (y, s, p) => `${paramInfo(p).label} — ${sectorInfo(s).name}, ${y}`;
 
   function setStatus(msg, warn){
@@ -2593,7 +2586,6 @@ document.addEventListener("fullscreenchange", () => setTimeout(() => map.invalid
   // Active-layer title card: pollutant, sector, year and unit.
   function buildTitleCard(year, sector, parameter){
     const p = paramInfo(parameter), s = sectorInfo(sector);
-    const tbc = !p.unit;
     const ctrl = L.control({ position:"topright" });
     ctrl.onAdd = () => {
       const div = L.DomUtil.create("div", "raster-title");
@@ -2601,7 +2593,7 @@ document.addEventListener("fullscreenchange", () => setTimeout(() => map.invalid
         <div class="rt-kicker">Gridded emissions · ${esc(year)}</div>
         <div class="rt-name">${esc(p.label)}</div>
         <div class="rt-sector">${s.code ? `<span class="code">${esc(s.code)} · </span>` : ""}${esc(s.name)}</div>
-        <span class="unit-badge${tbc ? " tbc" : ""}" title="${esc(unitLong(p))}">${esc(unitText(p))}</span>
+        ${p.unit ? `<span class="unit-badge" title="${esc(p.unit_long || p.unit)}">${esc(p.unit)}</span>` : ""}
         ${p.name_confirmed === false ? `<div class="rt-flag">Pollutant identity to be confirmed (code “${esc(parameter.replace(/^p/, ""))}”)</div>` : ""}`;
       L.DomEvent.disableClickPropagation(div);
       return div;
@@ -2627,7 +2619,7 @@ document.addEventListener("fullscreenchange", () => setTimeout(() => map.invalid
         .filter(Boolean).join(" · ");
       div.innerHTML = `
         <div class="cb-title">Emission per grid cell</div>
-        <div class="cb-unit${p.unit ? "" : " tbc"}">${esc(p.unit ? unitLong(p) : unitText(p))}</div>
+        ${p.unit ? `<div class="cb-unit">${esc(p.unit_long || p.unit)}</div>` : ""}
         <div class="cb-row">
           <div class="cb-gradient" style="background:${gradient}"></div>
           <div class="cb-ticks">
@@ -2681,7 +2673,7 @@ document.addEventListener("fullscreenchange", () => setTimeout(() => map.invalid
         map.fitBounds(meta.bounds, { padding:[20,20], maxZoom:9 });
         clearBtn.disabled = false;
         const p = paramInfo(parameter);
-        setStatus(`Showing ${label} · ${p.unit ? p.unit_long || p.unit : unitText(p).toLowerCase()}`);
+        setStatus(`Showing ${label}${p.unit ? " · " + (p.unit_long || p.unit) : ""}`);
       })
       .catch(err => {
         if (token === reqToken) setStatus(err.message || "The emission layer could not be loaded.", true);

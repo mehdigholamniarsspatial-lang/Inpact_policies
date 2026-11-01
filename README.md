@@ -164,9 +164,9 @@ request.
 pollutant names with chemical formatting (SF₆, PM₂.₅), pollutant groups and
 units. The MapEIre report states units only for the national maps of PM2.5,
 CO₂, NOx and NH₃ (kt per 1 km cell), so every other pollutant has `"unit": null`
-and the map shows *Unit to be confirmed*. Set the unit there once it is known.
+and the map shows no unit for it. Set the unit there once it is known.
 Files whose sector or pollutant is not in the JSON still appear, with a label
-derived from the file name and *Unit not specified*.
+derived from the file name and no unit.
 `audit/raster_overlay_lookup_PROPOSED.csv` lists every file with its parsed
 fields and the evidence behind each unit.
 
