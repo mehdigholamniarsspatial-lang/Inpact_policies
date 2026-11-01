@@ -251,15 +251,41 @@ input[type=range]{accent-color:var(--emerald);width:100%}
 .raster-clear:disabled{opacity:.45;cursor:not-allowed}
 .raster-status{flex-basis:100%;font-size:.72rem;color:var(--text-muted);min-height:1em}
 .raster-status.warn{color:var(--red);font-weight:600}
+.raster-opacity{flex:0 1 130px;min-width:110px}
+.raster-opacity label{display:flex;justify-content:space-between}
+.raster-opacity label span{font-variant-numeric:tabular-nums;text-transform:none;letter-spacing:0}
+.raster-opacity input{height:31px}
+
+/* ---- Active emission layer: title card (top right of the map) ---- */
+.raster-title{
+  background:rgba(255,255,255,.95);backdrop-filter:blur(6px);
+  border-radius:10px;padding:.5rem .7rem;box-shadow:var(--shadow-md);
+  border:1px solid var(--grey-border);color:var(--navy);
+  max-width:250px;line-height:1.25;
+}
+.raster-title .rt-kicker{font-size:.6rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}
+.raster-title .rt-name{font-size:.86rem;font-weight:800;margin:.1rem 0 .05rem}
+.raster-title .rt-sector{font-size:.7rem;color:var(--text-main)}
+.raster-title .rt-sector .code{color:var(--text-muted)}
+.unit-badge{
+  display:inline-block;margin-top:.3rem;padding:.08rem .45rem;border-radius:999px;
+  font-size:.66rem;font-weight:800;background:var(--teal-light);color:var(--teal);
+  border:1px solid rgba(14,140,138,.3);
+}
+.unit-badge.tbc{background:#FDF3E3;color:#9A6212;border-color:rgba(232,163,61,.45)}
+.raster-title .rt-flag{margin-top:.25rem;font-size:.62rem;color:#9A6212}
 
 /* ---- Colour-bar legend for the raster overlay ---- */
 .raster-colorbar{
   background:rgba(255,255,255,.94);backdrop-filter:blur(6px);
   border-radius:10px;padding:.5rem .6rem;box-shadow:var(--shadow-md);
   border:1px solid var(--grey-border);font-size:.7rem;color:var(--navy);
-  max-width:190px;
+  max-width:200px;
 }
-.raster-colorbar .cb-title{font-weight:800;font-size:.72rem;margin-bottom:.35rem;line-height:1.2}
+.raster-colorbar .cb-title{font-weight:800;font-size:.72rem;line-height:1.2}
+.raster-colorbar .cb-unit{font-size:.66rem;color:var(--text-muted);margin-bottom:.35rem}
+.raster-colorbar .cb-unit.tbc{color:#9A6212;font-weight:700}
+.raster-colorbar .cb-source{margin-top:.3rem;padding-top:.3rem;border-top:1px solid var(--grey-border);font-size:.6rem;color:var(--text-muted);line-height:1.3}
 .raster-colorbar .cb-row{display:flex;align-items:stretch;gap:.45rem;height:96px}
 .raster-colorbar .cb-gradient{
   width:16px;border-radius:4px;border:1px solid rgba(0,0,0,.15);
@@ -1115,22 +1141,26 @@ input[type=range]{accent-color:var(--emerald);width:100%}
           <div class="panel-head">
             <span class="panel-num">2B</span>
             <h2 class="panel-title">Spatial Environmental Mapping</h2>
-            <span class="ms-auto text-muted" style="font-size:.72rem">EPA monitoring network · Esri World Imagery</span>
+            <span class="ms-auto text-muted" style="font-size:.72rem">EPA MapEIre gridded emissions · ICOS stations · Esri World Imagery</span>
           </div>
-          <div class="raster-bar" aria-label="Raster overlay selector">
+          <div class="raster-bar" aria-label="Emission map layer selector">
             <div class="raster-field">
               <label for="rasterYear">Year</label>
               <select class="form-select form-select-sm" id="rasterYear" aria-label="Select year"></select>
             </div>
             <div class="raster-field">
               <label for="rasterSector">Sector</label>
-              <select class="form-select form-select-sm" id="rasterSector" aria-label="Select sector" disabled></select>
+              <select class="form-select form-select-sm" id="rasterSector" aria-label="Select emission sector" disabled></select>
             </div>
             <div class="raster-field">
-              <label for="rasterParam">Parameter</label>
-              <select class="form-select form-select-sm" id="rasterParam" aria-label="Select parameter" disabled></select>
+              <label for="rasterParam">Pollutant</label>
+              <select class="form-select form-select-sm" id="rasterParam" aria-label="Select pollutant" disabled></select>
             </div>
-            <button type="button" class="raster-clear" id="rasterClear" title="Clear raster overlay" disabled>
+            <div class="raster-field raster-opacity">
+              <label for="rasterOpacity">Opacity <span id="rasterOpacityVal">80%</span></label>
+              <input type="range" class="form-range" id="rasterOpacity" min="10" max="100" step="5" value="80" aria-label="Emission layer opacity">
+            </div>
+            <button type="button" class="raster-clear" id="rasterClear" title="Remove the emission layer" disabled>
               <i class="bi bi-x-lg"></i> Clear
             </button>
             <span class="raster-status" id="rasterStatus" role="status"></span>
@@ -2413,45 +2443,95 @@ const FsControl = L.Control.extend({
 map.addControl(new FsControl());
 document.addEventListener("fullscreenchange", () => setTimeout(() => map.invalidateSize(), 250));
 
-/* ------------- 4b. Raster overlay (cascading Year/Sector/Parameter) ------------- */
+/* ------------- 4b. Emission layers (MapEIre gridded emissions: Year/Sector/Pollutant) ------------- */
 (function rasterOverlay(){
   const yearSel   = document.getElementById("rasterYear");
   const sectorSel = document.getElementById("rasterSector");
   const paramSel  = document.getElementById("rasterParam");
   const clearBtn  = document.getElementById("rasterClear");
   const statusEl  = document.getElementById("rasterStatus");
+  const opacityEl = document.getElementById("rasterOpacity");
+  const opacityVal = document.getElementById("rasterOpacityVal");
   if (!yearSel) return;
 
   let CATALOG = {};            // { year: { sector: { parameter: filename } } }
+  // Display labels from /api/rasters/ (data/raster_metadata.json).
+  let LABELS = { sectors:{}, parameters:{}, groups:[], source:{} };
+  let EMPTY = new Set();       // "year|sector|parameter" keys with no non-zero cells
   let overlay = null;          // current L.imageOverlay
   let colorbar = null;         // current legend control
+  let titleCard = null;        // current active-layer title card
+  let opacity = 0.8;
   let reqToken = 0;            // guards against out-of-order async responses
 
   const PLACEHOLDER = txt => { const o = document.createElement("option");
     o.value = ""; o.textContent = txt; o.disabled = true; o.selected = true; return o; };
+
+  const esc = s => String(s ?? "").replace(/[&<>"']/g,
+    c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+
+  // Fallbacks keep unknown files readable if the API returns no label for them.
+  const sectorInfo = s => LABELS.sectors[s] || { name: s.replace(/_/g, " "), code: "", order: 99 };
+  const paramInfo  = p => LABELS.parameters[p] || { name: p.replace(/^p/, ""), label: p.replace(/^p/, ""),
+    group: "Other", unit: null, unit_long: null, unit_status: "unknown", name_confirmed: false };
+  const unitText = info => info.unit
+    || (info.unit_status === "to_confirm" ? "Unit to be confirmed" : "Unit not specified");
+  const unitLong = info => info.unit_long
+    || (info.unit_status === "to_confirm" ? "Unit to be confirmed (not stated in the MapEIre report)"
+                                          : "Unit not specified");
+  const layerName = (y, s, p) => `${paramInfo(p).label} — ${sectorInfo(s).name}, ${y}`;
 
   function setStatus(msg, warn){
     statusEl.textContent = msg || "";
     statusEl.classList.toggle("warn", !!warn);
   }
 
-  // Pretty-print the tiny / large values these rasters carry.
+  // Pretty-print the tiny / large values these rasters carry (2.6 × 10⁻⁵).
+  const SUP = { "-":"⁻", "0":"⁰", "1":"¹", "2":"²", "3":"³", "4":"⁴", "5":"⁵", "6":"⁶", "7":"⁷", "8":"⁸", "9":"⁹" };
   function fmtVal(v){
     if (v === 0) return "0";
     const a = Math.abs(v);
-    if (a < 1e-3 || a >= 1e5) return v.toExponential(2);
+    if (a < 1e-3 || a >= 1e5){
+      const [m, e] = v.toExponential(1).split("e");
+      return `${m} × 10${String(+e).replace(/./g, ch => SUP[ch] || ch)}`;
+    }
     return String(+v.toPrecision(3));
   }
 
-  function fill(select, items, placeholder){
+  function fill(select, items, placeholder, labelOf){
     select.innerHTML = "";
     select.appendChild(PLACEHOLDER(placeholder));
     items.forEach(it => {
       const o = document.createElement("option");
-      o.value = it; o.textContent = it.replace(/_/g, " ");
+      o.value = it; o.textContent = labelOf ? labelOf(it) : it;
       select.appendChild(o);
     });
     select.disabled = items.length === 0;
+  }
+
+  // Pollutants grouped by pollutant group; layers with no data are listed but disabled.
+  function fillParams(year, sector, params){
+    paramSel.innerHTML = "";
+    paramSel.appendChild(PLACEHOLDER("Select pollutant"));
+    const order = LABELS.groups.length ? LABELS.groups : ["Other"];
+    const groups = {};
+    params.forEach(p => { const g = paramInfo(p).group; (groups[g] = groups[g] || []).push(p); });
+    Object.keys(groups)
+      .sort((a, b) => (order.indexOf(a) + 1 || 99) - (order.indexOf(b) + 1 || 99))
+      .forEach(g => {
+        const og = document.createElement("optgroup");
+        og.label = g;
+        groups[g].sort((a, b) => paramInfo(a).label.localeCompare(paramInfo(b).label)).forEach(p => {
+          const o = document.createElement("option");
+          const empty = EMPTY.has(`${year}|${sector}|${p}`);
+          o.value = p;
+          o.textContent = paramInfo(p).label + (empty ? " — no data" : "");
+          o.disabled = empty;
+          og.appendChild(o);
+        });
+        paramSel.appendChild(og);
+      });
+    paramSel.disabled = params.length === 0;
   }
 
   // ---- cascading population ----
@@ -2466,21 +2546,28 @@ document.addEventListener("fullscreenchange", () => setTimeout(() => map.invalid
     sectorSel.disabled = true; resetParams();
   }
   function resetParams(){
-    paramSel.innerHTML = ""; paramSel.appendChild(PLACEHOLDER("Select parameter"));
+    paramSel.innerHTML = ""; paramSel.appendChild(PLACEHOLDER("Select pollutant"));
     paramSel.disabled = true;
   }
 
   yearSel.addEventListener("change", () => {
     const y = yearSel.value;
-    const sectors = y ? Object.keys(CATALOG[y] || {}).sort() : [];
-    fill(sectorSel, sectors, "Select sector");
+    const sectors = y ? Object.keys(CATALOG[y] || {}).sort((a, b) =>
+      (sectorInfo(a).order - sectorInfo(b).order) || sectorInfo(a).name.localeCompare(sectorInfo(b).name)) : [];
+    fill(sectorSel, sectors, "Select sector", s => sectorInfo(s).name);
     resetParams();
   });
 
   sectorSel.addEventListener("change", () => {
     const y = yearSel.value, s = sectorSel.value;
-    const params = (y && s) ? Object.keys((CATALOG[y] || {})[s] || {}).sort() : [];
-    fill(paramSel, params, "Select parameter");
+    const params = (y && s) ? Object.keys((CATALOG[y] || {})[s] || {}) : [];
+    fillParams(y, s, params);
+  });
+
+  opacityEl.addEventListener("input", () => {
+    opacity = +opacityEl.value / 100;
+    opacityVal.textContent = `${opacityEl.value}%`;
+    if (overlay) overlay.setOpacity(opacity);
   });
 
   paramSel.addEventListener("change", () => {
@@ -2499,10 +2586,32 @@ document.addEventListener("fullscreenchange", () => setTimeout(() => map.invalid
   function removeOverlay(){
     if (overlay){ map.removeLayer(overlay); overlay = null; }
     if (colorbar){ map.removeControl(colorbar); colorbar = null; }
+    if (titleCard){ map.removeControl(titleCard); titleCard = null; }
     clearBtn.disabled = true;
   }
 
-  function buildColorbar(meta, title){
+  // Active-layer title card: pollutant, sector, year and unit.
+  function buildTitleCard(year, sector, parameter){
+    const p = paramInfo(parameter), s = sectorInfo(sector);
+    const tbc = !p.unit;
+    const ctrl = L.control({ position:"topright" });
+    ctrl.onAdd = () => {
+      const div = L.DomUtil.create("div", "raster-title");
+      div.innerHTML = `
+        <div class="rt-kicker">Gridded emissions · ${esc(year)}</div>
+        <div class="rt-name">${esc(p.label)}</div>
+        <div class="rt-sector">${s.code ? `<span class="code">${esc(s.code)} · </span>` : ""}${esc(s.name)}</div>
+        <span class="unit-badge${tbc ? " tbc" : ""}" title="${esc(unitLong(p))}">${esc(unitText(p))}</span>
+        ${p.name_confirmed === false ? `<div class="rt-flag">Pollutant identity to be confirmed (code “${esc(parameter.replace(/^p/, ""))}”)</div>` : ""}`;
+      L.DomEvent.disableClickPropagation(div);
+      return div;
+    };
+    return ctrl;
+  }
+
+  function buildColorbar(meta, parameter){
+    const p = paramInfo(parameter);
+    const src = LABELS.source || {};
     const ctrl = L.control({ position:"bottomleft" });
     ctrl.onAdd = () => {
       const div = L.DomUtil.create("div", "raster-colorbar");
@@ -2511,19 +2620,24 @@ document.addEventListener("fullscreenchange", () => setTimeout(() => map.invalid
       // On a log scale the gradient's visual midpoint is the geometric mean.
       const mid = isLog ? Math.sqrt(meta.vmin * meta.vmax)
                         : (meta.vmin + meta.vmax) / 2;
-      const note = isLog ? "Log scale · zero values masked"
-                         : "Rainbow scale · zero values masked";
+      // The colour ramp spans the 2nd–98th percentile; values beyond it clamp.
+      const clipped = meta.data_max > meta.vmax;
+      const note = (isLog ? "Log scale" : "Linear scale") + " · cells with zero emission not shown";
+      const credit = [src.dataset ? `${src.dataset} (${src.credit || ""})` : "", src.resolution]
+        .filter(Boolean).join(" · ");
       div.innerHTML = `
-        <div class="cb-title">${title}</div>
+        <div class="cb-title">Emission per grid cell</div>
+        <div class="cb-unit${p.unit ? "" : " tbc"}">${esc(p.unit ? unitLong(p) : unitText(p))}</div>
         <div class="cb-row">
           <div class="cb-gradient" style="background:${gradient}"></div>
           <div class="cb-ticks">
-            <span>${fmtVal(meta.vmax)}</span>
+            <span>${clipped ? "≥ " : ""}${fmtVal(meta.vmax)}</span>
             <span>${fmtVal(mid)}</span>
-            <span>${fmtVal(meta.vmin)}</span>
+            <span>${meta.data_min < meta.vmin ? "≤ " : ""}${fmtVal(meta.vmin)}</span>
           </div>
         </div>
-        <div class="cb-note">${note}</div>`;
+        <div class="cb-note">${note}${clipped ? `<br>Maximum cell: ${fmtVal(meta.data_max)}${p.unit ? " " + esc(p.unit) : ""}` : ""}</div>
+        ${credit ? `<div class="cb-source">Source: ${esc(credit)}</div>` : ""}`;
       return div;
     };
     return ctrl;
@@ -2532,42 +2646,45 @@ document.addEventListener("fullscreenchange", () => setTimeout(() => map.invalid
   function loadRaster(year, sector, parameter){
     const token = ++reqToken;
     const qs = `year=${encodeURIComponent(year)}&sector=${encodeURIComponent(sector)}&parameter=${encodeURIComponent(parameter)}`;
-    setStatus("Loading raster…");
+    const label = layerName(year, sector, parameter);
+    setStatus(`Loading ${label}…`);
     clearBtn.disabled = false;
 
     fetch(`/api/raster/meta/?${qs}`)
       .then(async r => {
         const contentType = r.headers.get("content-type") || "";
         if (!contentType.includes("application/json")) {
-          throw new Error(`Raster metadata request failed (${r.status}).`);
+          throw new Error(`The emission layer could not be loaded (HTTP ${r.status}).`);
         }
         return r.json();
       })
       .then(meta => {
         if (token !== reqToken) return;            // a newer selection won
-        if (!meta.ok){ setStatus(meta.detail || "Could not load raster.", true); return; }
+        if (!meta.ok){ setStatus(meta.detail || "The emission layer could not be loaded.", true); return; }
 
         removeOverlay();
-        const label = `${parameter} · ${year} ${sector.replace(/_/g, " ")}`;
 
         if (meta.all_zero){
-          setStatus(`${label}: no non-zero values to display (all cells masked).`, true);
+          setStatus(`${label}: no emissions recorded in this layer, so there is nothing to map.`, true);
           map.fitBounds(meta.bounds, { padding:[20,20], maxZoom:9 });
           clearBtn.disabled = false;
           return;
         }
 
         const imgUrl = `/api/raster/image/?${qs}`;
-        overlay = L.imageOverlay(imgUrl, meta.bounds, { opacity:0.8, interactive:false });
+        overlay = L.imageOverlay(imgUrl, meta.bounds, { opacity, interactive:false, alt: label });
         overlay.addTo(map);
-        colorbar = buildColorbar(meta, label);
+        titleCard = buildTitleCard(year, sector, parameter);
+        titleCard.addTo(map);
+        colorbar = buildColorbar(meta, parameter);
         colorbar.addTo(map);
         map.fitBounds(meta.bounds, { padding:[20,20], maxZoom:9 });
         clearBtn.disabled = false;
-        setStatus(`Showing ${label}`);
+        const p = paramInfo(parameter);
+        setStatus(`Showing ${label} · ${p.unit ? p.unit_long || p.unit : unitText(p).toLowerCase()}`);
       })
       .catch(err => {
-        if (token === reqToken) setStatus(err.message || "Could not load raster.", true);
+        if (token === reqToken) setStatus(err.message || "The emission layer could not be loaded.", true);
       });
   }
 
@@ -2577,10 +2694,15 @@ document.addEventListener("fullscreenchange", () => setTimeout(() => map.invalid
     .then(r => r.json())
     .then(data => {
       CATALOG = data.catalog || {};
-      if (!Object.keys(CATALOG).length){ setStatus("No raster files found in data/Raster.", true); return; }
+      LABELS = {
+        sectors: data.sectors || {}, parameters: data.parameters || {},
+        groups: data.groups || [], source: data.source || {}
+      };
+      EMPTY = new Set(data.empty || []);
+      if (!Object.keys(CATALOG).length){ setStatus("No emission map layers are available.", true); return; }
       populateYears();
     })
-    .catch(() => setStatus("Could not load the raster catalogue.", true));
+    .catch(() => setStatus("The list of emission map layers could not be loaded.", true));
 })();
 
 

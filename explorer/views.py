@@ -203,10 +203,14 @@ def raster_catalog(request):
 
         { "2019": { "B_Industry": { "pbenzoA": "2019_B_Industry_pbenzoA.tif" } } }
 
+    plus the display labels (names, groups, units, empty layers) from
+    :func:`rasters.catalog_labels`.
+
     The folder is re-scanned on every call, so files added to ``data/Raster``
     appear automatically with no code change or server restart.
     """
-    return JsonResponse({"catalog": rasters.scan_catalog()})
+    catalog = rasters.scan_catalog()
+    return JsonResponse({"catalog": catalog, **rasters.catalog_labels(catalog)})
 
 
 def _resolve_selection(request):

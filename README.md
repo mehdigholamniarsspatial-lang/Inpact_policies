@@ -86,7 +86,8 @@ INPACT_Combined/
 │   ├── ghg_inventory.csv          # national emissions by gas (Explorer chart + KPIs)
 │   ├── policies.csv               # roadmap policies (Explorer chart markers, roadmap, intelligence panel)
 │   ├── sector_inventory/          # Total/CO2/CH4/N2O by sector (Sector Explorer + Trend Analysis)
-│   ├── Raster/                    # GeoTIFF emission grids  <Year>_<Sector>_<Parameter>.tif
+│   ├── raster_metadata.json       # display names, groups and units for the emission layers
+│   ├── Raster/                    # GeoTIFF emission grids  <Year>_<Sector>_p<Pollutant>.tif
 │   ├── RasterPrerendered/         # PNG + JSON overlays pre-rendered from Raster/ (used on Vercel)
 │   └── policy_timeline/           # Policy Timeline release files
 │       ├── ireland_core_policy_timeline.csv   # main dataset (policy × sector × year)
@@ -132,9 +133,12 @@ The main analytical dashboard.
   confidence band. These are computed from the observed values by the model in
   `index.html`. Policy guide-lines are annotated on the chart.
 * **2B Spatial Environmental Mapping:** Esri World Imagery satellite base map
-  (no API key needed; needs an internet connection). Raster emission overlays
-  are chosen with cascading **Year → Sector → Parameter** dropdowns. The station
-  markers are illustrative placeholders.
+  (no API key needed; needs an internet connection). EPA MapEIre gridded
+  emission layers are chosen with cascading **Year → Sector → Pollutant**
+  dropdowns, with pollutants grouped by type and empty layers marked *no data*.
+  The active layer gets a title card (pollutant, sector, year, unit) and a
+  colour-bar legend with its unit and source; an opacity slider sits in the
+  selector bar. The station markers are illustrative placeholders.
 * **3 Policy Intelligence Panel:** details of the selected roadmap policy. The
   **Open its profile in the Policy Timeline** button goes straight to the
   matching policy in the Policy Timeline tab. Matching is by name. When there
@@ -145,10 +149,26 @@ The main analytical dashboard.
 
 ### Raster overlays
 
-Put GeoTIFFs in `data/Raster/`, named `<Year>_<Sector>_<Parameter>.tif`. For
+The layers are MapEIre national gridded emissions (EPA Ireland / Aarhus
+University): 1 km × 1 km cells in TM65 Irish Grid (EPSG:29902), covering the
+Irish Exclusive Economic Zone.
+
+Put GeoTIFFs in `data/Raster/`, named `<Year>_<Sector>_p<Pollutant>.tif`. For
 example, `2019_B_Industry_pbenzoA.tif` gives Year `2019`, Sector `B_Industry` and
-Parameter `pbenzoA`. The year is the first token and the parameter is the last;
-everything in between is the sector. The folder is re-scanned on every request.
+Parameter `pbenzoA`, and `2015_A_PublicPower_pPM2_5.tif` gives Parameter
+`pPM2_5`. The year is the first token and the parameter starts at the last
+`_p`; everything in between is the sector. The folder is re-scanned on every
+request.
+
+**Names and units** come from `data/raster_metadata.json`: GNFR sector names,
+pollutant names with chemical formatting (SF₆, PM₂.₅), pollutant groups and
+units. The MapEIre report states units only for the national maps of PM2.5,
+CO₂, NOx and NH₃ (kt per 1 km cell), so every other pollutant has `"unit": null`
+and the map shows *Unit to be confirmed*. Set the unit there once it is known.
+Files whose sector or pollutant is not in the JSON still appear, with a label
+derived from the file name and *Unit not specified*.
+`audit/raster_overlay_lookup_PROPOSED.csv` lists every file with its parsed
+fields and the evidence behind each unit.
 
 Each overlay is reprojected to Web-Mercator (sources may be Irish Grid,
 EPSG:29902). It uses a **rainbow** colour map on a **log** scale between the 2nd
@@ -361,7 +381,7 @@ python manage.py load_policy_data --data-dir /path/to/ireland_core_policy_releas
 | Route | Purpose |
 |---|---|
 | `GET /` | The dashboard (all tabs) |
-| `GET /api/rasters/` | Raster catalogue `{year:{sector:{parameter:file}}}` |
+| `GET /api/rasters/` | Layer catalogue `{year:{sector:{parameter:file}}}` plus `sectors`, `parameters` (names, groups, units), `groups`, `source` and `empty` |
 | `GET /api/raster/meta/?year=&sector=&parameter=` | Bounds, value range, colour stops, all-zero flag |
 | `GET /api/raster/image/?year=&sector=&parameter=` | The rendered RGBA PNG overlay |
 | `GET /api/trend/catalog/` | Gases, sectors and year axis for Trend Analysis |

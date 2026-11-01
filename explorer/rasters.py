@@ -89,8 +89,14 @@ RASTER_DIR = BASE_DIR / "data" / "Raster"
 # reprojecting the .tif live, so the overlays behave identically everywhere.
 PRERENDERED_DIR = BASE_DIR / "data" / "RasterPrerendered"
 
+# Display names, groups and units for sectors/pollutants (see that file's _about).
+METADATA_PATH = BASE_DIR / "data" / "raster_metadata.json"
+
 # Only real numeric years are accepted as the first token.
 _YEAR_RE = re.compile(r"^\d{4}$")
+# <Year>_<Sector>_p<Pollutant>. The greedy sector group backtracks to the LAST
+# "_p" so pollutant codes that contain underscores (pPM2_5) stay in one piece.
+_STEM_RE = re.compile(r"^(\d{4})_(.+)_(p[^_].*)$")
 
 # Cache of rendered overlays: key -> rendered dict. Guarded by a lock because
 # Django's dev server / WSGI workers can render concurrently.
@@ -138,12 +144,18 @@ def _rainbow_stops(n: int = 9) -> List[str]:
 # ---------------------------------------------------------------------------
 def parse_filename(name: str) -> Optional[Tuple[str, str, str]]:
     """
-    Split ``2019_B_Industry_pbenzoA.tif`` -> ``("2019", "B_Industry", "pbenzoA")``.
+    Split ``2019_B_Industry_pbenzoA.tif`` -> ``("2019", "B_Industry", "pbenzoA")``
+    and ``2015_A_PublicPower_pPM2_5.tif`` -> ``("2015", "A_PublicPower", "pPM2_5")``.
 
     Returns ``None`` if the stem does not have at least Year/Sector/Parameter
     (i.e. three underscore-separated tokens) or the year token is not 4 digits.
+    Names without a ``_p<Pollutant>`` suffix fall back to "last token is the
+    parameter".
     """
     stem = Path(name).stem
+    m = _STEM_RE.match(stem)
+    if m:
+        return m.group(1), m.group(2), m.group(3)
     parts = stem.split("_")
     if len(parts) < 3:
         return None
@@ -224,6 +236,120 @@ def resolve_path(year: str, sector: str, parameter: str) -> Optional[Path]:
     ).is_file():
         return path
     return None
+
+
+# ---------------------------------------------------------------------------
+# Display labels (names, groups, units)
+# ---------------------------------------------------------------------------
+_META_CACHE: Dict[str, object] = {"mtime": None, "data": {}}
+_EMPTY_CACHE: Dict[str, Tuple[float, bool]] = {}
+
+
+def load_metadata() -> dict:
+    """Return ``data/raster_metadata.json``, re-read whenever the file changes."""
+    import json
+
+    try:
+        mtime = METADATA_PATH.stat().st_mtime
+    except OSError:
+        return {}
+    if _META_CACHE["mtime"] != mtime:
+        try:
+            data = json.loads(METADATA_PATH.read_text(encoding="utf-8"))
+        except ValueError:
+            data = {}
+        _META_CACHE.update(mtime=mtime, data=data)
+    return _META_CACHE["data"]  # type: ignore[return-value]
+
+
+def _humanize(token: str) -> str:
+    """``OtherStationaryComb`` -> ``Other Stationary Comb`` (fallback labels)."""
+    return re.sub(r"(?<=[a-z0-9])(?=[A-Z])", " ", token.replace("_", " ")).strip()
+
+
+def describe_sector(sector: str) -> dict:
+    """Display name, short code and sort order for a sector key such as ``A_PublicPower``."""
+    entry = load_metadata().get("sectors", {}).get(sector)
+    if entry:
+        return {"name": entry["name"], "code": entry.get("code", ""), "order": entry.get("order", 99)}
+    letter, _, rest = sector.partition("_")
+    if rest and len(letter) == 1:
+        return {"name": _humanize(rest), "code": f"GNFR {letter.upper()}", "order": 90}
+    return {"name": _humanize(sector), "code": "", "order": 99}
+
+
+def describe_parameter(parameter: str) -> dict:
+    """
+    Display name, group and unit for a parameter key such as ``pSF6``.
+
+    ``unit_status`` is ``confirmed`` (unit stated in the MapEIre report),
+    ``to_confirm`` (known pollutant, unit not stated) or ``unknown`` (code not
+    in the metadata file; label is derived from the code).
+    """
+    meta = load_metadata()
+    code = parameter[1:] if parameter.startswith("p") else parameter
+    entry = meta.get("pollutants", {}).get(code)
+    if not entry:
+        name = _humanize(code)
+        return {"name": name, "formula": "", "label": name, "group": "Other",
+                "unit": None, "unit_long": None, "unit_status": "unknown",
+                "name_confirmed": False}
+    unit = meta.get("units", {}).get(entry.get("unit") or "")
+    name, formula = entry["name"], entry.get("formula", "")
+    return {
+        "name": name,
+        "formula": formula,
+        "label": f"{name} ({formula})" if formula and formula != name else name,
+        "group": entry.get("group", "Other"),
+        "unit": unit["short"] if unit else None,
+        "unit_long": unit["long"] if unit else None,
+        "unit_status": "confirmed" if unit else "to_confirm",
+        "name_confirmed": entry.get("name_confirmed", True),
+    }
+
+
+def _is_empty(stem: str) -> bool:
+    """True when the pre-rendered overlay for ``stem`` has no non-zero cells."""
+    import json
+
+    meta_path = PRERENDERED_DIR / f"{stem}.json"
+    try:
+        mtime = meta_path.stat().st_mtime
+    except OSError:
+        return False
+    cached = _EMPTY_CACHE.get(stem)
+    if cached and cached[0] == mtime:
+        return cached[1]
+    try:
+        empty = bool(json.loads(meta_path.read_text(encoding="utf-8")).get("all_zero"))
+    except (OSError, ValueError):
+        empty = False
+    _EMPTY_CACHE[stem] = (mtime, empty)
+    return empty
+
+
+def catalog_labels(catalog: Dict[str, Dict[str, Dict[str, str]]]) -> dict:
+    """
+    Labels for everything in ``catalog``: ``sectors`` and ``parameters`` keyed
+    like the catalogue, ``groups`` (display order), ``source`` (dataset credit)
+    and ``empty`` (``"year|sector|parameter"`` keys of all-zero overlays).
+    """
+    meta = load_metadata()
+    sectors, parameters, empty = {}, {}, []
+    for year, by_sector in catalog.items():
+        for sector, params in by_sector.items():
+            sectors.setdefault(sector, describe_sector(sector))
+            for parameter, filename in params.items():
+                parameters.setdefault(parameter, describe_parameter(parameter))
+                if _is_empty(Path(filename).stem):
+                    empty.append(f"{year}|{sector}|{parameter}")
+    return {
+        "sectors": sectors,
+        "parameters": parameters,
+        "groups": meta.get("groups", []) + ["Other"],
+        "source": meta.get("source", {}),
+        "empty": empty,
+    }
 
 
 # ---------------------------------------------------------------------------

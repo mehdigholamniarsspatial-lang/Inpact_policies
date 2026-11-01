@@ -1,0 +1,86 @@
+{
+  "_about": [
+    "Display names, groups and units for the MapEIre emission overlays in data/Raster and data/RasterPrerendered.",
+    "Files are named <Year>_<Sector>_p<Pollutant>; 'sectors' is keyed by the <Sector> part and 'pollutants' by the part after 'p'.",
+    "unit: a key of 'units', or null when the MapEIre report does not state it. Set it once the unit is confirmed and the map shows it everywhere.",
+    "name_confirmed: false marks a pollutant whose code expansion is not stated in the report.",
+    "Unit evidence: EPA Research Report 'MapEIre' (Nielsen et al., 2019), Fig. 3 legends give national totals in kt per 1 km cell for PM2.5, CO2, NOx and NH3; the CO2, NOx and NH3 maxima match these files exactly."
+  ],
+  "source": {
+    "dataset": "MapEIre national gridded emissions",
+    "credit": "EPA Ireland / Aarhus University",
+    "resolution": "1 km × 1 km",
+    "projection": "TM65 Irish Grid (EPSG:29902)",
+    "coverage": "Irish Exclusive Economic Zone"
+  },
+  "units": {
+    "kt": {
+      "short": "kt / km²",
+      "long": "kilotonnes per 1 km × 1 km grid cell"
+    }
+  },
+  "groups": [
+    "Greenhouse gases",
+    "Fluorinated gases",
+    "Acidifying gases",
+    "Ozone precursors",
+    "Particulate matter",
+    "Heavy metals",
+    "Persistent organic pollutants"
+  ],
+  "sectors": {
+    "A_PublicPower":         { "name": "Public power",                     "code": "GNFR A", "order": 1 },
+    "B_Industry":            { "name": "Industry",                         "code": "GNFR B", "order": 2 },
+    "C_OtherStationaryComb": { "name": "Other stationary combustion",      "code": "GNFR C", "order": 3 },
+    "D_Fugitive":            { "name": "Fugitive emissions",               "code": "GNFR D", "order": 4 },
+    "E_Solvents":            { "name": "Solvent use",                      "code": "GNFR E", "order": 5 },
+    "F_RoadTransport":       { "name": "Road transport",                   "code": "GNFR F", "order": 6 },
+    "G_Shipping":            { "name": "Shipping",                         "code": "GNFR G", "order": 7 },
+    "H_Aviation":            { "name": "Aviation",                         "code": "GNFR H", "order": 8 },
+    "I_Offroad":             { "name": "Off-road mobile machinery",        "code": "GNFR I", "order": 9 },
+    "J_Waste":               { "name": "Waste",                            "code": "GNFR J", "order": 10 },
+    "K_AgriLivestock":       { "name": "Agriculture – livestock",          "code": "GNFR K", "order": 11 },
+    "L_AgriOther":           { "name": "Agriculture – other",              "code": "GNFR L", "order": 12 },
+    "O_AviCruise":           { "name": "Aviation – cruise",                "code": "GNFR O", "order": 13 },
+    "P_IntShipping":         { "name": "International shipping",           "code": "GNFR P", "order": 14 },
+    "q_LULUCF":              { "name": "Land use, land-use change and forestry (LULUCF)", "code": "LULUCF", "order": 15 },
+    "NFRTotal":              { "name": "National total – air pollutants",  "code": "NFR total", "order": 20 },
+    "CRFTotal":              { "name": "National total – greenhouse gases", "code": "CRF total", "order": 21 },
+    "CRF_NationalTotal":     { "name": "National total – greenhouse gases", "code": "CRF national total", "order": 22 }
+  },
+  "pollutants": {
+    "CO2":    { "name": "Carbon dioxide",                          "formula": "CO₂",    "group": "Greenhouse gases",              "unit": "kt" },
+    "CH4":    { "name": "Methane",                                 "formula": "CH₄",    "group": "Greenhouse gases",              "unit": null },
+    "N2O":    { "name": "Nitrous oxide",                           "formula": "N₂O",    "group": "Greenhouse gases",              "unit": null },
+    "HFCs":   { "name": "Hydrofluorocarbons",                      "formula": "HFCs",   "group": "Fluorinated gases",             "unit": null },
+    "PFCs":   { "name": "Perfluorocarbons",                        "formula": "PFCs",   "group": "Fluorinated gases",             "unit": null },
+    "SF6":    { "name": "Sulphur hexafluoride",                    "formula": "SF₆",    "group": "Fluorinated gases",             "unit": null },
+    "NF3":    { "name": "Nitrogen trifluoride",                    "formula": "NF₃",    "group": "Fluorinated gases",             "unit": null },
+    "NOx":    { "name": "Nitrogen oxides",                         "formula": "NOₓ",    "group": "Acidifying gases",              "unit": "kt" },
+    "SOx":    { "name": "Sulphur oxides",                          "formula": "SOₓ",    "group": "Acidifying gases",              "unit": null },
+    "NH3":    { "name": "Ammonia",                                 "formula": "NH₃",    "group": "Acidifying gases",              "unit": "kt" },
+    "NMVOC":  { "name": "Non-methane volatile organic compounds",  "formula": "NMVOC",  "group": "Ozone precursors",              "unit": null },
+    "CO":     { "name": "Carbon monoxide",                         "formula": "CO",     "group": "Ozone precursors",              "unit": null },
+    "PM2_5":  { "name": "Fine particulate matter",                 "formula": "PM₂.₅",  "group": "Particulate matter",            "unit": "kt" },
+    "PM10":   { "name": "Particulate matter",                      "formula": "PM₁₀",   "group": "Particulate matter",            "unit": null },
+    "TSP":    { "name": "Total suspended particulates",            "formula": "TSP",    "group": "Particulate matter",            "unit": null },
+    "BC":     { "name": "Black carbon",                            "formula": "BC",     "group": "Particulate matter",            "unit": null },
+    "As":     { "name": "Arsenic",                                 "formula": "As",     "group": "Heavy metals",                  "unit": null },
+    "Cd":     { "name": "Cadmium",                                 "formula": "Cd",     "group": "Heavy metals",                  "unit": null },
+    "Cr":     { "name": "Chromium",                                "formula": "Cr",     "group": "Heavy metals",                  "unit": null },
+    "Cu":     { "name": "Copper",                                  "formula": "Cu",     "group": "Heavy metals",                  "unit": null },
+    "Hg":     { "name": "Mercury",                                 "formula": "Hg",     "group": "Heavy metals",                  "unit": null },
+    "Ni":     { "name": "Nickel",                                  "formula": "Ni",     "group": "Heavy metals",                  "unit": null },
+    "Pb":     { "name": "Lead",                                    "formula": "Pb",     "group": "Heavy metals",                  "unit": null },
+    "Se":     { "name": "Selenium",                                "formula": "Se",     "group": "Heavy metals",                  "unit": null },
+    "Zn":     { "name": "Zinc",                                    "formula": "Zn",     "group": "Heavy metals",                  "unit": null },
+    "DIOX":   { "name": "Dioxins and furans",                      "formula": "PCDD/F", "group": "Persistent organic pollutants", "unit": null },
+    "HCB":    { "name": "Hexachlorobenzene",                       "formula": "HCB",    "group": "Persistent organic pollutants", "unit": null },
+    "PCB":    { "name": "Polychlorinated biphenyls",               "formula": "PCBs",   "group": "Persistent organic pollutants", "unit": null },
+    "PAH":    { "name": "Polycyclic aromatic hydrocarbons (total)", "formula": "PAHs",  "group": "Persistent organic pollutants", "unit": null },
+    "benzoA": { "name": "Benzo(a)pyrene",                          "formula": "B(a)P",  "group": "Persistent organic pollutants", "unit": null, "name_confirmed": false },
+    "benzoB": { "name": "Benzo(b)fluoranthene",                    "formula": "B(b)F",  "group": "Persistent organic pollutants", "unit": null, "name_confirmed": false },
+    "benzoK": { "name": "Benzo(k)fluoranthene",                    "formula": "B(k)F",  "group": "Persistent organic pollutants", "unit": null, "name_confirmed": false },
+    "Indeno": { "name": "Indeno(1,2,3-cd)pyrene",                  "formula": "IcdP",   "group": "Persistent organic pollutants", "unit": null, "name_confirmed": false }
+  }
+}

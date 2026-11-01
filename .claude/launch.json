@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "inpact-django",
+      "runtimeExecutable": "C:/ProgramData/Anaconda3/python.exe",
+      "runtimeArgs": ["manage.py", "runserver", "127.0.0.1:8765", "--noreload"],
+      "port": 8765
+    }
+  ]
+}
