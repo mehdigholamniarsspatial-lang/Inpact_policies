@@ -1150,7 +1150,7 @@ input[type=range]{accent-color:var(--emerald);width:100%}
           <div class="panel-head">
             <span class="panel-num">2B</span>
             <h2 class="panel-title">Spatial Environmental Mapping</h2>
-            <span class="ms-auto text-muted" style="font-size:.72rem">EPA MapEIre and EDGAR gridded emissions · ICOS stations · Esri World Imagery</span>
+            <span class="ms-auto text-muted" style="font-size:.72rem">EPA MapEIre, EDGAR and PARIS inverse-model emissions · ICOS stations · Esri World Imagery</span>
           </div>
           <div class="raster-bar" aria-label="Emission map layer selector">
             <div class="raster-field raster-dataset">
@@ -1158,9 +1158,10 @@ input[type=range]{accent-color:var(--emerald);width:100%}
               <select class="form-select form-select-sm" id="mapDataset" aria-label="Select emission dataset">
                 <option value="mapeire" selected>MapEIre</option>
                 <option value="edgar">EDGAR</option>
+                <option value="inverse">Inverse Model</option>
               </select>
             </div>
-            <div class="raster-group" id="mapeireFields">
+            <div class="raster-group" id="mapeireFields" data-dataset="mapeire">
               <div class="raster-field">
                 <label for="rasterYear">Year</label>
                 <select class="form-select form-select-sm" id="rasterYear" aria-label="Select year"></select>
@@ -1174,7 +1175,29 @@ input[type=range]{accent-color:var(--emerald);width:100%}
                 <select class="form-select form-select-sm" id="rasterParam" aria-label="Select pollutant" disabled></select>
               </div>
             </div>
-            <div class="raster-group" id="edgarFields" hidden>
+            <div class="raster-group" id="inverseFields" data-dataset="inverse" hidden>
+              <div class="raster-field">
+                <label for="invModel">Inverse model</label>
+                <select class="form-select form-select-sm" id="invModel" aria-label="Select inversion system"></select>
+              </div>
+              <div class="raster-field">
+                <label for="invTransport">Transport model</label>
+                <select class="form-select form-select-sm" id="invTransport" aria-label="Select atmospheric transport model" disabled></select>
+              </div>
+              <div class="raster-field">
+                <label for="invGas">Gas</label>
+                <select class="form-select form-select-sm" id="invGas" aria-label="Select greenhouse gas" disabled></select>
+              </div>
+              <div class="raster-field">
+                <label for="invYear">Year</label>
+                <select class="form-select form-select-sm" id="invYear" aria-label="Select year" disabled></select>
+              </div>
+              <div class="raster-field">
+                <label for="invEstimate">Estimate</label>
+                <select class="form-select form-select-sm" id="invEstimate" aria-label="Select prior, posterior or change" disabled></select>
+              </div>
+            </div>
+            <div class="raster-group" id="edgarFields" data-dataset="edgar" hidden>
               <div class="raster-field">
                 <label for="edgarGas">Gas</label>
                 <select class="form-select form-select-sm" id="edgarGas" aria-label="Select greenhouse gas"></select>
@@ -2741,7 +2764,43 @@ document.addEventListener("fullscreenchange", () => setTimeout(() => map.invalid
     .catch(() => setStatus("The list of emission map layers could not be loaded.", true));
 })();
 
-/* ------------- 4c. EDGAR gridded emissions (Gas/Sector/Year/Period) + dataset switch ------------- */
+/* ------------- Shared helpers for the EDGAR and Inverse Model cell layers ------------- */
+const GRID_UI = (() => {
+  const esc = s => String(s ?? "").replace(/[&<>"']/g,
+    c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+  const SUP = { "-":"⁻", "0":"⁰", "1":"¹", "2":"²", "3":"³", "4":"⁴", "5":"⁵", "6":"⁶", "7":"⁷", "8":"⁸", "9":"⁹" };
+  function fmtVal(v){
+    if (v === 0) return "0";
+    const a = Math.abs(v);
+    if (a < 1e-3 || a >= 1e7){
+      const [m, e] = v.toExponential(1).split("e");
+      return `${m} × 10${String(+e).replace(/./g, ch => SUP[ch] || ch)}`;
+    }
+    if (a >= 1000) return Math.round(v).toLocaleString("en-IE");
+    return String(+v.toPrecision(3));
+  }
+  // Same blue -> red rainbow as the MapEIre overlays (HSV hue 240 -> 0).
+  const rainbow = t => `hsl(${Math.round((1 - t) * 240)},100%,50%)`;
+  const STOPS = Array.from({ length: 9 }, (_, i) => rainbow(i / 8));
+  function fill(select, items, placeholder){
+    select.innerHTML = "";
+    if (placeholder){
+      const o = new Option(placeholder, ""); o.disabled = true; o.selected = true;
+      select.appendChild(o);
+    }
+    items.forEach(([value, label]) => select.appendChild(new Option(label, value)));
+  }
+  return { esc, fmtVal, rainbow, STOPS, fill };
+})();
+
+/* ------------- Dataset switch: MapEIre / EDGAR / Inverse Model ------------- */
+document.getElementById("mapDataset")?.addEventListener("change", e => {
+  document.querySelectorAll(".raster-group[data-dataset]")
+    .forEach(g => { g.hidden = g.dataset.dataset !== e.target.value; });
+  document.dispatchEvent(new Event("maplayers:clear"));   // every dataset removes its layer
+});
+
+/* ------------- 4c. EDGAR gridded emissions (Gas/Sector/Year/Period) ------------- */
 (function edgarOverlay(){
   const datasetSel = document.getElementById("mapDataset");
   const gasSel     = document.getElementById("edgarGas");
@@ -2761,24 +2820,7 @@ document.addEventListener("fullscreenchange", () => setTimeout(() => map.invalid
   let opacity = +opacityEl.value / 100;
   let reqToken = 0;
   const renderer = L.canvas({ padding: 0.3 });
-
-  const esc = s => String(s ?? "").replace(/[&<>"']/g,
-    c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
-  const SUP = { "-":"⁻", "0":"⁰", "1":"¹", "2":"²", "3":"³", "4":"⁴", "5":"⁵", "6":"⁶", "7":"⁷", "8":"⁸", "9":"⁹" };
-  function fmtVal(v){
-    if (v === 0) return "0";
-    const a = Math.abs(v);
-    if (a < 1e-3 || a >= 1e7){
-      const [m, e] = v.toExponential(1).split("e");
-      return `${m} × 10${String(+e).replace(/./g, ch => SUP[ch] || ch)}`;
-    }
-    if (a >= 1000) return Math.round(v).toLocaleString("en-IE");
-    return String(+v.toPrecision(3));
-  }
-
-  // Same blue -> red rainbow as the MapEIre overlays (HSV hue 240 -> 0).
-  const rainbow = t => `hsl(${Math.round((1 - t) * 240)},100%,50%)`;
-  const STOPS = Array.from({ length: 9 }, (_, i) => rainbow(i / 8));
+  const { esc, fmtVal, rainbow, STOPS, fill } = GRID_UI;
 
   const setStatus = (msg, warn) => { statusEl.textContent = msg || ""; statusEl.classList.toggle("warn", !!warn); };
   const gasInfo = g => META.gases[g];
@@ -2786,23 +2828,10 @@ document.addEventListener("fullscreenchange", () => setTimeout(() => map.invalid
   const title = sel => `${gasInfo(sel.gas).formula} emissions from ${sectorName(sel.sector).toLowerCase()}`;
   const periodLabel = sel => sel.month === "annual" ? `${sel.year}, annual total` : `${META.months[sel.month - 1]} ${sel.year}`;
 
-  function fill(select, items, placeholder){
-    select.innerHTML = "";
-    if (placeholder){
-      const o = new Option(placeholder, ""); o.disabled = true; o.selected = true;
-      select.appendChild(o);
-    }
-    items.forEach(([value, label]) => select.appendChild(new Option(label, value)));
-  }
-
-  // ---- dataset switch ----
-  datasetSel.addEventListener("change", () => {
-    const edgar = datasetSel.value === "edgar";
-    document.getElementById("mapeireFields").hidden = edgar;
-    document.getElementById("edgarFields").hidden = !edgar;
-    document.dispatchEvent(new Event("maplayers:clear"));   // removes the MapEIre layer
+  // ---- dataset switch: drop this layer; load the catalogue on first use ----
+  document.addEventListener("maplayers:clear", () => {
     clearSelection();
-    if (edgar && !META) loadCatalog();
+    if (datasetSel.value === "edgar" && !META) loadCatalog();
   });
 
   // ---- cascading selectors: Gas -> Sector -> Year -> Period ----
@@ -2990,6 +3019,292 @@ document.addEventListener("fullscreenchange", () => setTimeout(() => map.invalid
         setStatus(`${META.source.dataset}: choose a gas, sector and year.`);
       })
       .catch(() => setStatus("The list of EDGAR layers could not be loaded.", true));
+  }
+})();
+
+/* ------------- 4d. Inverse model (PARIS top-down): Model/Transport/Gas/Year/Estimate ------------- */
+(function inverseOverlay(){
+  const datasetSel   = document.getElementById("mapDataset");
+  const modelSel     = document.getElementById("invModel");
+  const transportSel = document.getElementById("invTransport");
+  const gasSel       = document.getElementById("invGas");
+  const yearSel      = document.getElementById("invYear");
+  const estimateSel  = document.getElementById("invEstimate");
+  const clearBtn     = document.getElementById("rasterClear");
+  const statusEl     = document.getElementById("rasterStatus");
+  const opacityEl    = document.getElementById("rasterOpacity");
+  if (!datasetSel || !modelSel) return;
+
+  const { esc, fmtVal, rainbow, STOPS, fill } = GRID_UI;
+  const ESTIMATES = [["posterior", "Posterior"], ["prior", "Prior"], ["difference", "Difference"]];
+
+  let META = null;             // /api/inverse/ (data/InverseModel/inverse_metadata.json)
+  let cellLayer = null;        // L.featureGroup of inversion-grid cells, built once
+  let rects = [];
+  let current = null;          // { sel, layer } currently drawn
+  let colorbar = null, titleCard = null;
+  let opacity = +opacityEl.value / 100;
+  let reqToken = 0;
+  const renderer = L.canvas({ padding: 0.3 });
+
+  const setStatus = (msg, warn) => { statusEl.textContent = msg || ""; statusEl.classList.toggle("warn", !!warn); };
+  const gasInfo = g => META.gases[g];
+  const runKey = sel => `${sel.model}|${sel.transport}|${sel.gas}`;
+  const signed = v => (v > 0 ? "+" : v < 0 ? "−" : "") + fmtVal(Math.abs(v));
+  const gg = v => `${(+v).toLocaleString("en-IE", { maximumFractionDigits: v < 100 ? 2 : 1 })} Gg`;
+  function title(sel){
+    const f = gasInfo(sel.gas).formula;
+    return sel.estimate === "difference" ? `${f} flux difference (posterior − prior)`
+         : sel.estimate === "prior"  ? `${f} prior flux (${gasInfo(sel.gas).prior})`
+         : `${f} posterior flux`;
+  }
+
+  // Posterior spread / prior spread over Ireland (notebook, Cell 16).
+  function constraint(urr){
+    if (urr > 1)    return ["Posterior spread exceeds the prior: check with the modelling group", true];
+    if (urr >= 0.8) return ["Prior-dominated: the observations add little here", true];
+    if (urr >= 0.5) return ["Moderate observational constraint", false];
+    return ["Strong observational constraint", false];
+  }
+
+  // Blue (posterior below prior) -> white -> red (posterior above prior).
+  const DIV_NEG = [33, 102, 172], DIV_MID = [247, 247, 247], DIV_POS = [178, 24, 43];
+  function diverging(t){                       // t in [-1, 1]
+    const [a, b] = t < 0 ? [DIV_MID, DIV_NEG] : [DIV_MID, DIV_POS];
+    const k = Math.min(Math.abs(t), 1);
+    return `rgb(${a.map((c, i) => Math.round(c + (b[i] - c) * k)).join(",")})`;
+  }
+  const DIV_STOPS = [-1, -0.5, 0, 0.5, 1].map(diverging);
+
+  // ---- dataset switch: drop this layer; load the catalogue on first use ----
+  document.addEventListener("maplayers:clear", () => {
+    clearSelection();
+    if (datasetSel.value === "inverse" && !META) loadCatalog();
+  });
+
+  // ---- cascading selectors: Model -> Transport -> Gas -> Year -> Estimate ----
+  modelSel.addEventListener("change", () => { transportSel.disabled = false; maybeLoad(); });
+  transportSel.addEventListener("change", () => { gasSel.disabled = false; refreshYears(); maybeLoad(); });
+  gasSel.addEventListener("change", () => { refreshYears(); yearSel.disabled = false; maybeLoad(); });
+  yearSel.addEventListener("change", () => { estimateSel.disabled = false; maybeLoad(); });
+  // Prior / Posterior / Difference come from the same response: restyle only.
+  estimateSel.addEventListener("change", () => {
+    const sel = selection();
+    if (current && ["model", "transport", "gas", "year"].every(k => current.sel[k] === sel[k])){
+      current.sel.estimate = sel.estimate; draw();
+    } else maybeLoad();
+  });
+
+  // Years depend on the run (NAME 2013–2024, FLEXPART 2016–2024); keep the
+  // chosen year when the new run has it.
+  function refreshYears(){
+    const run = META.runs[`${modelSel.value}|${transportSel.value}|${gasSel.value}`];
+    if (!run) return;
+    const keep = yearSel.value;
+    fill(yearSel, run.years.slice().reverse().map(y => [String(y), String(y)]), "Select year");
+    if (run.years.includes(+keep)) yearSel.value = keep;
+  }
+
+  function selection(){
+    return { model: modelSel.value, transport: transportSel.value, gas: gasSel.value,
+             year: yearSel.value, estimate: estimateSel.value };
+  }
+  function maybeLoad(){
+    const sel = selection();
+    if (sel.model && sel.transport && sel.gas && sel.year && sel.estimate) loadLayer(sel);
+  }
+
+  opacityEl.addEventListener("input", () => {
+    opacity = +opacityEl.value / 100;
+    if (current) restyle();
+  });
+
+  clearBtn.addEventListener("click", () => { if (datasetSel.value === "inverse") clearSelection(); });
+
+  function clearSelection(){
+    reqToken++;
+    removeLayer();
+    if (META) resetSelectors();
+    if (datasetSel.value === "inverse") setStatus("");
+  }
+
+  function removeLayer(){
+    if (cellLayer && map.hasLayer(cellLayer)) map.removeLayer(cellLayer);
+    if (colorbar){ map.removeControl(colorbar); colorbar = null; }
+    if (titleCard){ map.removeControl(titleCard); titleCard = null; }
+    current = null;
+    if (datasetSel.value === "inverse") clearBtn.disabled = true;
+  }
+
+  function resetSelectors(){
+    fill(modelSel, Object.keys(META.models).map(k => [k, k]), "Select inverse model");
+    [...modelSel.options].forEach(o => { if (o.value) o.title = META.models[o.value]; });
+    fill(transportSel, Object.keys(META.transports).map(k => [k, k]), "Select transport model");
+    [...transportSel.options].forEach(o => { if (o.value) o.title = META.transports[o.value]; });
+    fill(gasSel, Object.entries(META.gases).map(([k, g]) => [k, `${g.formula} · ${g.name}`]), "Select gas");
+    fill(yearSel, [], "Select year");
+    fill(estimateSel, ESTIMATES);
+    estimateSel.value = "posterior";
+    modelSel.disabled = false;
+    transportSel.disabled = gasSel.disabled = yearSel.disabled = estimateSel.disabled = true;
+  }
+
+  // ---- grid (EPSG:4326 cell edges, 0.352° × 0.234°) ----
+  function buildCells(){
+    const g = META.grid;
+    cellLayer = L.featureGroup();
+    rects = [];
+    for (let row = 0; row < g.rows; row++){
+      for (let col = 0; col < g.cols; col++){
+        const north = g.north - row * g.dlat, west = g.west + col * g.dlon;
+        const r = L.rectangle([[north - g.dlat, west], [north, west + g.dlon]],
+          { renderer, stroke: false, fillOpacity: 0, interactive: true });
+        r.cellIndex = rects.length;
+        r.centre = [north - g.dlat / 2, west + g.dlon / 2];
+        r.bindTooltip(() => cellTooltip(r), { sticky: true, direction: "top", className: "edgar-tip" });
+        rects.push(r.addTo(cellLayer));
+      }
+    }
+  }
+
+  const valueOf = (layer, est, i) =>
+    est === "difference" ? layer.posterior[i] - layer.prior[i] : layer[est][i];
+
+  function cellTooltip(r){
+    if (!current) return "";
+    const { sel, layer } = current, i = r.cellIndex;
+    const unit = esc(layer.unit);
+    const prior = layer.prior[i], post = layer.posterior[i], diff = post - prior;
+    const pct = prior > 0 ? ` (${signed(diff / prior * 100)}%)` : "";
+    const frac = layer.country_fraction[i];
+    const head = sel.estimate === "difference"
+      ? `${signed(diff)} ${unit}${pct}`
+      : `${fmtVal(valueOf(layer, sel.estimate, i))} ${unit}`;
+    const [lat, lng] = r.centre;
+    return `<div class="popup-title">${head}</div>
+      <div class="k">${esc(sel.model)} · ${esc(sel.transport)} · ${esc(sel.year)}</div>
+      <div>Posterior <b>${fmtVal(post)}</b> <span class="k">(1σ ${fmtVal(layer.posterior_lo[i])}–${fmtVal(layer.posterior_hi[i])})</span></div>
+      <div>Prior <b>${fmtVal(prior)}</b> <span class="k">(1σ ${fmtVal(layer.prior_lo[i])}–${fmtVal(layer.prior_hi[i])})</span></div>
+      ${sel.estimate !== "difference" ? `<div>Difference <b>${signed(diff)}</b>${pct}</div>` : ""}
+      <div class="k">${frac > 0 ? `${Math.round(frac * 100)}% in ${esc(sel.model)}'s Ireland area` : "Outside the Ireland attribution area"}
+        · ${esc(META.cell_area_km2[i].toFixed(0))} km² · ${lat.toFixed(2)}°N, ${Math.abs(lng).toFixed(2)}°W</div>`;
+  }
+
+  function colourOf(v, est, scale){
+    if (!Number.isFinite(v)) return null;
+    if (est === "difference") return diverging(v / scale.difference.limit);
+    const lo = Math.log10(scale.flux.lo), hi = Math.log10(scale.flux.hi);
+    const t = (Math.log10(Math.min(Math.max(v, scale.flux.lo), scale.flux.hi)) - lo) / (hi - lo);
+    return rainbow(t);
+  }
+
+  // Cells outside the modellers' Ireland attribution area are drawn faded.
+  function restyle(){
+    const { sel, layer } = current;
+    rects.forEach((r, i) => {
+      const colour = colourOf(valueOf(layer, sel.estimate, i), sel.estimate, layer.scale);
+      r.setStyle(colour
+        ? { fillColor: colour, fillOpacity: opacity * (layer.country_fraction[i] > 0 ? 1 : 0.45) }
+        : { fillOpacity: 0 });
+    });
+  }
+
+  // ---- legend + title ----
+  function buildTitleCard(sel, layer){
+    const ctrl = L.control({ position: "topright" });
+    ctrl.onAdd = () => {
+      const div = L.DomUtil.create("div", "raster-title");
+      const gas = gasInfo(sel.gas), f = esc(gas.formula);
+      const diff = layer.total_posterior - layer.total_prior;
+      const [constraintText, warn] = constraint(layer.urr);
+      div.innerHTML = `
+        <div class="rt-kicker">Inverse model · ${esc(sel.year)}</div>
+        <div class="rt-name">${esc(title(sel))}</div>
+        <div class="rt-sector"><span class="code">${esc(sel.model)} · ${esc(sel.transport)} · </span>${esc(gas.name)}</div>
+        <span class="unit-badge" title="Annual mean flux density">${esc(layer.unit)}</span>
+        <div class="rt-total">Ireland posterior: <b>${gg(layer.total_posterior)}</b> ${f} yr⁻¹</div>
+        <div class="rt-total">Prior: <b>${gg(layer.total_prior)}</b> · difference <b>${signed(diff)} Gg</b>
+          (${signed(diff / layer.total_prior * 100)}%)</div>
+        <div class="rt-total">Constraint (σ<sub>post</sub>/σ<sub>prior</sub>): <b>${layer.urr.toFixed(2)}</b></div>
+        <div class="rt-flag"${warn ? "" : ' style="color:var(--emerald-dark)"'}>${esc(constraintText)}</div>`;
+      div.title = gas.represents;
+      L.DomEvent.disableClickPropagation(div);
+      return div;
+    };
+    return ctrl;
+  }
+
+  function buildColorbar(sel, layer){
+    const src = META.source, s = layer.scale;
+    const isDiff = sel.estimate === "difference";
+    const ctrl = L.control({ position: "bottomleft" });
+    ctrl.onAdd = () => {
+      const div = L.DomUtil.create("div", "raster-colorbar");
+      const ticks = isDiff
+        ? [`≥ +${fmtVal(s.difference.limit)}`, "0", `≤ −${fmtVal(s.difference.limit)}`]
+        : [`≥ ${fmtVal(s.flux.hi)}`, fmtVal(Math.sqrt(s.flux.lo * s.flux.hi)), `≤ ${fmtVal(s.flux.lo)}`];
+      div.innerHTML = `
+        <div class="cb-title">${isDiff ? "Posterior − prior flux" : "Flux density"}</div>
+        <div class="cb-unit">${esc(layer.unit)}</div>
+        <div class="cb-row">
+          <div class="cb-gradient" style="background:linear-gradient(to top, ${(isDiff ? DIV_STOPS : STOPS).join(",")})"></div>
+          <div class="cb-ticks">${ticks.map(t => `<span>${t}</span>`).join("")}</div>
+        </div>
+        <div class="cb-zero"><i style="opacity:.45;background:${isDiff ? DIV_STOPS[3] : STOPS[5]}"></i>Outside the Ireland attribution area</div>
+        <div class="cb-note">${isDiff ? "Linear, symmetric" : "Log scale"}, fixed for all models and years ·
+          ${esc(src.aggregation.toLowerCase())}</div>
+        <div class="cb-source">Source: <a href="${esc(src.url)}" target="_blank" rel="noopener">${esc(src.dataset)}</a>,
+          ${esc(src.credit)} · ${esc(src.resolution)}</div>`;
+      L.DomEvent.disableClickPropagation(div);
+      return div;
+    };
+    return ctrl;
+  }
+
+  function draw(){
+    const { sel, layer } = current;
+    restyle();
+    if (titleCard) map.removeControl(titleCard);
+    if (colorbar) map.removeControl(colorbar);
+    titleCard = buildTitleCard(sel, layer); titleCard.addTo(map);
+    colorbar = buildColorbar(sel, layer); colorbar.addTo(map);
+    setStatus(`Showing ${title(sel)}, ${sel.model}–${sel.transport}, ${sel.year} · hover a cell for prior, posterior and uncertainty`);
+  }
+
+  // ---- loading ----
+  function loadLayer(sel){
+    const token = ++reqToken;
+    setStatus(`Loading ${title(sel)}, ${sel.model}–${sel.transport}, ${sel.year}…`);
+    const { estimate, ...query } = sel;
+    fetch(`/api/inverse/layer/?${new URLSearchParams(query)}`)
+      .then(r => r.json())
+      .then(layer => {
+        if (token !== reqToken) return;
+        if (!layer.ok){ setStatus(layer.detail || "The inverse model layer could not be loaded.", true); return; }
+        const first = !current;
+        removeLayer();
+        current = { sel, layer };
+        clearBtn.disabled = false;
+        if (!cellLayer) buildCells();
+        cellLayer.addTo(map);
+        draw();
+        if (first) map.fitBounds(cellLayer.getBounds(), { padding: [10, 10] });
+      })
+      .catch(() => { if (token === reqToken) setStatus("The inverse model layer could not be loaded.", true); });
+  }
+
+  function loadCatalog(){
+    setStatus("Loading inverse model layers…");
+    modelSel.disabled = true;
+    fetch("/api/inverse/")
+      .then(r => r.json())
+      .then(data => {
+        if (!data.ok){ setStatus(data.detail || "Inverse model layers are not available.", true); return; }
+        META = data;
+        resetSelectors();
+        setStatus("PARIS top-down inversions: choose an inverse model, transport model, gas and year.");
+      })
+      .catch(() => setStatus("The list of inverse model layers could not be loaded.", true));
   }
 })();
 

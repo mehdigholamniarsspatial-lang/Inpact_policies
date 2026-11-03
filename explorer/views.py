@@ -20,7 +20,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from . import feedback_store
-from . import edgar, rasters
+from . import edgar, inverse, rasters
 
 logger = logging.getLogger(__name__)
 
@@ -312,6 +312,29 @@ def edgar_layer(request):
         return JsonResponse({"ok": False, "detail": "The EDGAR layer could not be loaded."}, status=500)
     if data is None:
         return JsonResponse({"ok": False, "detail": "Unknown EDGAR selection."}, status=404)
+    resp = JsonResponse({"ok": True, **data}, json_dumps_params={"ensure_ascii": False})
+    resp["Cache-Control"] = "public, max-age=3600"
+    return resp
+
+
+def inverse_catalog(request):
+    """Grid geometry, runs and their years, gases and credits for the inverse-model layers."""
+    data = inverse.catalog()
+    if not data:
+        return JsonResponse({"ok": False, "detail": "Inverse model layers are not available."}, status=503)
+    return JsonResponse({"ok": True, **data}, json_dumps_params={"ensure_ascii": False})
+
+
+def inverse_layer(request):
+    """Prior / posterior cell values, uncertainty range and Ireland totals for one run and year."""
+    q = {k: (request.GET.get(k) or "").strip() for k in ("model", "transport", "gas", "year")}
+    try:
+        data = inverse.layer(**q)
+    except Exception:
+        logger.exception("Failed to load inverse-model layer %s", q)
+        return JsonResponse({"ok": False, "detail": "The inverse model layer could not be loaded."}, status=500)
+    if data is None:
+        return JsonResponse({"ok": False, "detail": "Unknown inverse model selection."}, status=404)
     resp = JsonResponse({"ok": True, **data}, json_dumps_params={"ensure_ascii": False})
     resp["Cache-Control"] = "public, max-age=3600"
     return resp

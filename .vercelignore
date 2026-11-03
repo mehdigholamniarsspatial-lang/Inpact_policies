@@ -13,4 +13,6 @@ audit/
 data/Raster/
 # Raw EDGAR GeoTIFFs: packed into data/EDGAR/ by scripts/build_edgar_grids.py
 geotiff/
+# Raw PARIS inversion GeoTIFFs + notebook: packed into data/InverseModel/ by scripts/build_inverse_grids.py
+InversionModel/
 scripts/
