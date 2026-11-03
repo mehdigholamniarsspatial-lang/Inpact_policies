@@ -11,4 +11,6 @@ audit/
 
 # Raw GeoTIFFs: only used locally to regenerate data/RasterPrerendered/
 data/Raster/
+# Raw EDGAR GeoTIFFs: packed into data/EDGAR/ by scripts/build_edgar_grids.py
+geotiff/
 scripts/

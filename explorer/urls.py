@@ -8,7 +8,9 @@ urlpatterns = [
     path("api/rasters/", views.raster_catalog, name="raster_catalog"),
     path("api/raster/meta/", views.raster_meta, name="raster_meta"),
     path("api/raster/image/", views.raster_image, name="raster_image"),
-    path("api/feedback/", views.submit_feedback, name="submit_feedback"),
+    path("api/edgar/", views.edgar_catalog, name="edgar_catalog"),
+    path("api/edgar/layer/", views.edgar_layer, name="edgar_layer"),
+    path("api/feedback/",views.submit_feedback, name="submit_feedback"),
     path("api/feedback/download/", views.download_feedback, name="download_feedback"),
     # Trend Analysis (piecewise regression) API — ported from the Streamlit app
     path("api/trend/catalog/", trend_views.trend_catalog, name="trend_catalog"),
