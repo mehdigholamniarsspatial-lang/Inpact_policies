@@ -21,6 +21,7 @@ from django.views.decorators.http import require_POST
 
 from . import feedback_store
 from . import edgar, inverse, rasters
+from . import map_export as map_export_mod
 
 logger = logging.getLogger(__name__)
 
@@ -194,6 +195,20 @@ def index(request):
     return HttpResponse(_render_page())
 
 
+def map_page(request):
+    """
+    Serve the Spatial Environmental Mapping panel on its own (the dashboard's
+    "Open in new window" button). Same page, flagged with ``map-standalone`` on
+    ``<html>`` so its CSS shows only the map workspace with a way back.
+    """
+    html = _render_page()
+    html = html.replace('<html lang="en">', '<html lang="en" class="map-standalone">', 1)
+    html = html.replace(
+        "<title>Ireland Greenhouse Gas Policy Impact Explorer</title>",
+        "<title>Spatial Environmental Mapping · Ireland GHG Policy Impact Explorer</title>", 1)
+    return HttpResponse(html)
+
+
 # ---------------------------------------------------------------------------
 # Raster overlay endpoints
 # ---------------------------------------------------------------------------
@@ -336,6 +351,35 @@ def inverse_layer(request):
     if data is None:
         return JsonResponse({"ok": False, "detail": "Unknown inverse model selection."}, status=404)
     resp = JsonResponse({"ok": True, **data}, json_dumps_params={"ensure_ascii": False})
+    resp["Cache-Control"] = "public, max-age=3600"
+    return resp
+
+
+_EXPORT_KEYS = ("dataset", "year", "sector", "parameter", "gas", "month",
+                "model", "transport", "estimate")
+
+
+def map_export(request, fmt):
+    """
+    Download the layer selected on the map as a GeoTIFF (``fmt="geotiff"``) or
+    a JPEG map with legend (``fmt="jpeg"``). Same query as the layer endpoints
+    plus ``dataset`` (mapeire | edgar | inverse).
+    """
+    if fmt not in ("geotiff", "jpeg"):
+        return JsonResponse({"ok": False, "detail": "Format must be geotiff or jpeg."}, status=404)
+    q = {k: (request.GET.get(k) or "").strip() for k in _EXPORT_KEYS}
+    try:
+        layer = map_export_mod.build_layer(q)
+        body, filename = (map_export_mod.geotiff if fmt == "geotiff" else map_export_mod.jpeg)(layer)
+    except map_export_mod.SelectionError as exc:
+        return JsonResponse({"ok": False, "detail": str(exc)}, status=404)
+    except rasters.RasterRenderingUnavailable:
+        return JsonResponse({"ok": False, "detail": "This MapEIre layer is unavailable in this deployment."}, status=503)
+    except Exception:
+        logger.exception("Failed to export map layer %s as %s", q, fmt)
+        return JsonResponse({"ok": False, "detail": "The map could not be exported."}, status=500)
+    resp = HttpResponse(body, content_type="image/tiff" if fmt == "geotiff" else "image/jpeg")
+    resp["Content-Disposition"] = f'attachment; filename="{filename}"'
     resp["Cache-Control"] = "public, max-age=3600"
     return resp
 

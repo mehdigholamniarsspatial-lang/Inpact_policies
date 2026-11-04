@@ -940,6 +940,331 @@ input[type=range]{accent-color:var(--emerald);width:100%}
   .pt-results{width:100%}
   .pt-tools .lbl{display:none}
 }
+
+/* ============ SPATIAL MAPPING IN ITS OWN WINDOW ============
+   /map/ serves this same page with <html class="map-standalone">. Only the map
+   panel stays: the header gains a "Back to main dashboard" button, a toolbar sits
+   above the map, and the layer selector becomes a side panel. The pieces below
+   marked .ms-only are hidden on the dashboard. */
+.map-popout{margin-left:.35rem;flex:0 0 auto;white-space:nowrap}
+.map-popout i{font-size:.85rem}
+.ms-only,.home-btn{display:none}
+.map-side{display:contents}
+
+/* Big "Back to main dashboard" button beside the INPACT logo (as on the Policy Timeline pages) */
+.home-btn{
+  flex:0 0 auto;align-items:center;gap:.75rem;
+  padding:.65rem 1.2rem .65rem .95rem;border-radius:14px;text-decoration:none;
+  background:linear-gradient(135deg,var(--emerald),var(--teal));color:#fff;
+  box-shadow:0 6px 16px rgba(0,132,61,.28);
+  transition:transform .15s ease,box-shadow .15s ease,filter .15s ease;
+}
+.home-btn:hover{color:#fff;transform:translateY(-2px);box-shadow:0 10px 22px rgba(0,132,61,.34);filter:brightness(1.05)}
+.home-btn:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
+.home-btn svg{width:36px;height:36px;flex:0 0 36px}
+.home-btn .hb-text{display:flex;flex-direction:column;line-height:1.1}
+.home-btn .hb-kicker{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;opacity:.88}
+.home-btn .hb-label{font-size:1.1rem;font-weight:800;white-space:nowrap}
+
+html.map-standalone{--header-h:104px;--ms-side-w:360px}
+html.map-standalone,html.map-standalone body{height:100%;overflow:hidden}
+html.map-standalone .home-btn{display:inline-flex}
+html.map-standalone .ms-only{display:block}
+html.map-standalone .tab-nav,
+html.map-standalone .app-footer,
+html.map-standalone #tab-explorer .sidebar,
+html.map-standalone .main-area > :not(.map-row),
+html.map-standalone .map-row > :not(#mapCol),
+html.map-standalone #mapPanel > .panel-head{display:none}
+html.map-standalone .tab-pane:not(#tab-explorer){display:none!important}
+html.map-standalone #tab-explorer{display:block;animation:none}
+html.map-standalone .app-header{box-shadow:0 1px 0 var(--grey-border)}
+html.map-standalone .brand-inpact img{height:calc(var(--header-h) - 30px)}
+html.map-standalone .brand-funder img{height:calc(var(--header-h) - 54px)}
+html.map-standalone .header-text{padding-left:1.2rem}
+html.map-standalone .app-title{font-size:1.25rem}
+html.map-standalone .app-subtitle{font-size:.8rem}
+html.map-standalone .main-area{padding:0;width:100%}
+html.map-standalone .map-row{--bs-gutter-x:0;--bs-gutter-y:0;margin:0}
+html.map-standalone #mapCol{padding:0;margin:0;width:100%}
+
+/* Workspace: toolbar across the top, side panel + map below */
+html.map-standalone #mapPanel{
+  display:grid;grid-template-columns:var(--ms-side-w) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);
+  height:calc(100vh - var(--header-h))!important;height:calc(100dvh - var(--header-h))!important;
+  margin:0;border:0;border-radius:0;box-shadow:none;background:#fff;backdrop-filter:none;position:relative;
+}
+html.map-standalone .ms-bar{
+  grid-column:1 / -1;display:flex;align-items:center;gap:.75rem;
+  padding:.55rem 1.1rem;background:var(--navy);color:#DCE6EE;
+}
+.ms-crumb{display:flex;align-items:center;gap:.45rem;min-width:0;font-size:.82rem;white-space:nowrap}
+.ms-crumb a{color:#9FE8C2;text-decoration:none;font-weight:600}
+.ms-crumb a:hover{color:#fff;text-decoration:underline}
+.ms-crumb .sep{opacity:.55}
+.ms-crumb .cur{color:#fff;font-weight:800;letter-spacing:.02em;overflow:hidden;text-overflow:ellipsis}
+.ms-crumb .bi-globe-europe-africa{font-size:1rem;color:#9FE8C2}
+.ms-layer{
+  display:inline-flex;align-items:center;gap:.4rem;min-width:0;max-width:42%;
+  padding:.2rem .7rem;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);
+  font-size:.75rem;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.ms-layer .d{width:8px;height:8px;border-radius:50%;background:var(--grey-border);flex:0 0 8px}
+.ms-layer.on .d{background:#9FE8C2;box-shadow:0 0 0 3px rgba(159,232,194,.25)}
+.ms-layer span:last-child{overflow:hidden;text-overflow:ellipsis}
+.ms-tools{display:flex;align-items:center;gap:.35rem;margin-left:auto;flex:0 0 auto}
+.ms-tool{
+  height:32px;min-width:32px;padding:0 .65rem;border-radius:8px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:.4rem;
+  border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.06);color:#fff;
+  font-family:inherit;font-size:.78rem;font-weight:600;transition:background .15s,border-color .15s;
+}
+.ms-tool:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.4)}
+.ms-tool:focus-visible{outline:2px solid #9FE8C2;outline-offset:2px}
+.ms-tool[aria-pressed="true"]{background:#9FE8C2;border-color:#9FE8C2;color:var(--navy)}
+.ms-tool.done{background:var(--emerald);border-color:var(--emerald)}
+
+/* Side panel: a compact accordion stepper (1 dataset, 2 layer, 3 display) */
+html.map-standalone .map-side{
+  display:flex;flex-direction:column;grid-column:1;grid-row:2;min-height:0;overflow-y:auto;
+  background:var(--grey-panel);border-right:1px solid var(--grey-border);
+}
+html.map-standalone .ms-steps{padding:.2rem .9rem 0}
+.ms-step{position:relative}
+/* Thin connector from each badge down to the next one */
+.ms-steps .ms-step:not(:last-child)::before{
+  content:"";position:absolute;left:11px;top:calc(.4rem + 27px);bottom:calc(3px - .4rem);width:2px;
+  border-radius:2px;background:var(--grey-border);transition:background .2s;
+}
+.ms-steps .ms-step.is-done:not(:last-child)::before{background:rgba(14,140,138,.45)}
+.ms-step-h{margin:0;font-size:inherit}
+.ms-step-btn{
+  width:100%;display:flex;align-items:center;gap:.7rem;padding:.4rem .15rem .4rem 0;
+  border:0;background:none;text-align:left;cursor:pointer;font-family:inherit;color:var(--navy);border-radius:8px;
+}
+.ms-step-btn:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.ms-step-btn:hover .ms-step-title{color:var(--teal)}
+.ms-badge{
+  position:relative;z-index:1;width:24px;height:24px;flex:0 0 24px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:#fff;border:2px solid #C5D0DA;color:var(--text-muted);font-size:.72rem;font-weight:800;
+  transition:background .2s,border-color .2s,color .2s;
+}
+.ms-badge .bi-check-lg,.ms-badge .bi-info-lg{display:none;font-size:.8rem;line-height:1}
+.ms-step.is-open .ms-badge{border-color:var(--teal);color:var(--teal)}
+.ms-step.is-done .ms-badge{background:var(--teal);border-color:var(--teal);color:#fff}
+.ms-step.is-done .ms-badge .n{display:none}
+.ms-step.is-done .ms-badge .bi-check-lg{display:block}
+.ms-badge.info{border-style:dashed}
+.ms-badge.info .bi-info-lg{display:block}
+.ms-step-txt{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;line-height:1.2}
+.ms-step-title{font-size:.86rem;font-weight:800;transition:color .15s}
+.ms-step-sum{
+  font-size:.72rem;font-weight:600;color:var(--teal);margin-top:.1rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.ms-step-sum.empty{color:var(--text-muted);font-weight:500}
+.ms-step.is-open .ms-step-sum{display:none}
+.ms-chev{flex:0 0 auto;color:var(--text-muted);font-size:.8rem;transition:transform .2s ease}
+.ms-step.is-open .ms-chev{transform:rotate(180deg)}
+/* 200 ms expand / collapse (grid rows 0fr -> 1fr animates to the content height) */
+.ms-step-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .2s ease,visibility .2s;visibility:hidden}
+.ms-step.is-open .ms-step-body{grid-template-rows:1fr;visibility:visible}
+.ms-step-inner{min-height:0;overflow:hidden;padding:0 .15rem 0 calc(24px + .7rem)}
+.ms-step.is-open .ms-step-inner{padding-bottom:.45rem}
+.ms-p{font-size:.72rem;line-height:1.35;color:var(--text-muted);margin:0 0 .35rem}
+
+/* Step 1: slim dataset cards */
+.ms-ds{display:grid;gap:.35rem;padding:2px}
+.ms-ds-card{
+  position:relative;display:block;width:100%;text-align:left;cursor:pointer;
+  padding:.34rem 1.9rem .34rem .6rem;border-radius:9px;border:2px solid var(--grey-border);background:#fff;
+  font-family:inherit;color:var(--text-main);transition:border-color .15s,box-shadow .15s,background .15s;
+}
+.ms-ds-card:hover{border-color:#9FCFCE;background:#FBFEFE}
+.ms-ds-card:focus-visible{outline:3px solid rgba(14,140,138,.35);outline-offset:1px}
+.ms-ds-top{display:flex;align-items:center;gap:.45rem}
+.ms-ds-top i{font-size:17px;line-height:1;color:var(--text-muted)}
+.ms-ds-card .t{font-size:.84rem;font-weight:800;color:var(--navy);line-height:1.2}
+.ms-ds-card .s{display:block;font-size:.7rem;line-height:1.3;color:var(--text-muted);margin-top:.1rem}
+.ms-ds-check{
+  position:absolute;top:.45rem;right:.5rem;width:18px;height:18px;border-radius:50%;
+  display:none;align-items:center;justify-content:center;background:var(--teal);color:#fff;font-size:.78rem;
+}
+.ms-ds-card[aria-checked="true"]{border-color:var(--teal);background:#D6EEEE;box-shadow:0 3px 10px rgba(14,140,138,.18)}
+.ms-ds-card[aria-checked="true"] .ms-ds-top i{color:var(--teal)}
+.ms-ds-card[aria-checked="true"] .ms-ds-check{display:flex}
+
+/* Step 2: the layer dropdowns (the raster bar from the dashboard, moved in here) */
+html.map-standalone .raster-bar{
+  flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:.45rem;
+  padding:2px;border:0;background:transparent;
+}
+html.map-standalone .raster-field,
+html.map-standalone .raster-dataset,
+html.map-standalone .raster-opacity{flex:none;min-width:0;width:100%}
+html.map-standalone .raster-field{gap:.15rem}
+html.map-standalone .raster-field label{font-size:.64rem;color:var(--navy)}
+html.map-standalone .raster-dataset,
+html.map-standalone .raster-clear{display:none}  /* chosen with the cards / Reset selection instead */
+html.map-standalone .raster-field select{height:31px;padding-top:.2rem;padding-bottom:.2rem;font-size:.8rem}
+html.map-standalone .raster-field select:disabled{
+  background-color:#EEF2F5;color:#9AA6B2;border-style:dashed;cursor:not-allowed;opacity:1;
+}
+html.map-standalone .raster-field.is-locked label{color:#9AA6B2}
+.ms-help{display:none;font-size:.66rem;color:var(--text-muted);line-height:1.2}
+.ms-help i{margin-right:.25rem}
+.raster-field.is-locked .ms-help{display:block}
+html.map-standalone .raster-status{flex-basis:auto;font-size:.68rem;line-height:1.35}
+html.map-standalone .raster-status:empty{display:none}
+
+/* Step 3: opacity slider with a teal track and a large handle */
+html.map-standalone .raster-opacity label{align-items:center;font-size:.64rem;color:var(--navy)}
+html.map-standalone .raster-opacity label span{
+  font-size:.74rem;font-weight:800;color:var(--teal);background:var(--teal-light);
+  padding:.05rem .45rem;border-radius:999px;min-width:3.1em;text-align:center;
+}
+html.map-standalone .raster-opacity input[type=range]{
+  -webkit-appearance:none;appearance:none;height:26px;padding:0;background:transparent;cursor:pointer;--pct:80%;
+}
+html.map-standalone .raster-opacity input[type=range]:focus{outline:none;box-shadow:none}
+html.map-standalone .raster-opacity input[type=range]::-webkit-slider-runnable-track{
+  height:6px;border-radius:999px;background:linear-gradient(to right,var(--teal) var(--pct),#D5DEE6 var(--pct));
+}
+html.map-standalone .raster-opacity input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:20px;height:20px;margin-top:-7px;border-radius:50%;
+  background:#fff;border:3px solid var(--teal);box-shadow:0 1px 4px rgba(22,50,79,.3);transition:transform .15s;
+}
+html.map-standalone .raster-opacity input[type=range]:active::-webkit-slider-thumb{transform:scale(1.12)}
+html.map-standalone .raster-opacity input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(14,140,138,.3)}
+html.map-standalone .raster-opacity input[type=range]::-moz-range-track{height:6px;border-radius:999px;background:#D5DEE6}
+html.map-standalone .raster-opacity input[type=range]::-moz-range-progress{height:6px;border-radius:999px;background:var(--teal)}
+html.map-standalone .raster-opacity input[type=range]::-moz-range-thumb{
+  width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid var(--teal);box-shadow:0 1px 4px rgba(22,50,79,.3);
+}
+html.map-standalone .raster-opacity input[type=range]:focus-visible::-moz-range-thumb{box-shadow:0 0 0 4px rgba(14,140,138,.3)}
+
+.ms-reset{
+  align-self:flex-start;margin:.1rem 0 .5rem calc(.9rem + 24px + .7rem);padding:.15rem .1rem;
+  border:0;background:none;font-family:inherit;font-size:.74rem;font-weight:600;color:var(--text-muted);
+  text-decoration:underline;text-underline-offset:2px;cursor:pointer;border-radius:4px;
+}
+.ms-reset:hover{color:var(--teal)}
+.ms-reset:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.ms-reset i{margin-right:.25rem}
+
+/* "About this dataset": one paragraph for the selected dataset; "More details" opens the rest */
+html.map-standalone .ms-about{margin-top:auto;padding:.1rem .9rem .2rem;border-top:1px solid var(--grey-border);background:#fff}
+.ms-info[hidden]{display:none}
+.ms-info-lead{font-size:.74rem;line-height:1.45;color:var(--text-main);margin:0}
+.ms-info-lead b{color:var(--navy)}
+.ms-info-more{display:grid;grid-template-rows:0fr;transition:grid-template-rows .2s ease,visibility .2s;visibility:hidden}
+.ms-info-more > div{min-height:0;overflow:hidden}
+.ms-about.more-open .ms-info-more{grid-template-rows:1fr;visibility:visible}
+.ms-facts{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.22rem .7rem;margin:.55rem 0 0;font-size:.7rem;line-height:1.35}
+.ms-facts dt{font-weight:700;color:var(--text-muted);white-space:nowrap}
+.ms-facts dd{margin:0;color:var(--text-main)}
+.ms-notes{margin:.5rem 0 0;padding-left:1rem;font-size:.68rem;line-height:1.4;color:var(--text-muted)}
+.ms-notes li{margin-bottom:.15rem}
+.ms-info-links{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.5rem}
+.ms-info-links a{
+  display:inline-flex;align-items:center;gap:.35rem;padding:.22rem .6rem;border-radius:999px;
+  border:1px solid rgba(14,140,138,.35);background:var(--teal-light);color:#0B5563;
+  font-size:.7rem;font-weight:700;text-decoration:none;transition:background .15s,color .15s;
+}
+.ms-info-links a:hover{background:var(--teal);color:#fff}
+.ms-info-links a:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.ms-info-links .ext{font-size:.62rem;opacity:.8}
+.ms-more{
+  display:inline-flex;align-items:center;gap:.3rem;margin-top:.45rem;padding:.1rem 0;border:0;background:none;
+  font-family:inherit;font-size:.72rem;font-weight:700;color:var(--teal);cursor:pointer;border-radius:4px;
+}
+.ms-more:hover{text-decoration:underline}
+.ms-more:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.ms-more i{font-size:.7rem;transition:transform .2s ease}
+.ms-more[aria-expanded="true"] i{transform:rotate(180deg)}
+.ms-disclaimer{margin:.45rem 0 0;font-size:.64rem;line-height:1.4;color:var(--text-muted)}
+.ms-disclaimer a{color:var(--teal);font-weight:600}
+@media (prefers-reduced-motion: reduce){.ms-info-more{transition:none}}
+
+/* Download menu (split button: main part = both files, caret = choose one) */
+.ms-dl{position:relative;margin:.1rem 0 .65rem}
+.ms-dl-split{display:flex;border-radius:9px;box-shadow:0 2px 8px rgba(14,140,138,.22)}
+.ms-dl-main,.ms-dl-caret{
+  border:0;background:var(--teal);color:#fff;font-family:inherit;cursor:pointer;
+  display:inline-flex;align-items:center;transition:background .15s,opacity .15s;
+}
+.ms-dl-main{flex:1 1 auto;gap:.45rem;padding:.45rem .75rem;border-radius:9px 0 0 9px;font-size:.8rem;font-weight:800}
+.ms-dl-fmt{margin-left:auto;font-size:.66rem;font-weight:700;padding:.08rem .45rem;border-radius:999px;background:rgba(255,255,255,.2)}
+.ms-dl-caret{padding:0 .6rem;border-radius:0 9px 9px 0;border-left:1px solid rgba(255,255,255,.35);font-size:.75rem}
+.ms-dl-main:hover:not(:disabled),.ms-dl-caret:hover:not(:disabled){background:#0B7573}
+.ms-dl-main:focus-visible,.ms-dl-caret:focus-visible{outline:3px solid rgba(14,140,138,.4);outline-offset:2px}
+.ms-dl-main:disabled,.ms-dl-caret:disabled{background:#B8C4CE;cursor:not-allowed}
+.ms-dl-split:has(:disabled){box-shadow:none}
+.ms-dl-caret[aria-expanded="true"] i{transform:rotate(180deg)}
+.ms-dl-caret i{transition:transform .2s ease}
+.ms-dl.busy .ms-dl-main i{animation:msDlPulse 1s ease-in-out infinite}
+@keyframes msDlPulse{50%{transform:translateY(2px)}}
+.ms-dl-menu{
+  position:absolute;z-index:20;left:0;right:0;top:calc(100% + 4px);list-style:none;margin:0;padding:.3rem;
+  background:#fff;border:1px solid var(--grey-border);border-radius:10px;box-shadow:var(--shadow-lg);
+}
+.ms-dl-menu[hidden]{display:none}
+.ms-dl-menu button{
+  width:100%;display:flex;align-items:flex-start;gap:.6rem;padding:.45rem .55rem;border:0;border-radius:8px;
+  background:none;text-align:left;font-family:inherit;cursor:pointer;color:var(--text-main);
+}
+.ms-dl-menu button:hover,.ms-dl-menu button:focus-visible{background:var(--teal-light);outline:none}
+.ms-dl-menu i{color:var(--teal);font-size:1rem;margin-top:.05rem}
+.ms-dl-menu b{display:block;font-size:.78rem;color:var(--navy)}
+.ms-dl-menu small{display:block;font-size:.68rem;color:var(--text-muted)}
+.ms-dl-status{margin:.3rem 0 0;font-size:.66rem;line-height:1.35;color:var(--text-muted);min-height:1em}
+.ms-dl-status.ok{color:var(--emerald-dark)}
+.ms-dl-status.warn{color:var(--red)}
+@media (prefers-reduced-motion: reduce){.ms-step-body{transition:none}}
+
+html.map-standalone #map{grid-column:2;grid-row:2;height:auto;min-height:0;border-radius:0}
+
+html.map-standalone #mapPanel:fullscreen{height:100vh!important}
+
+/* Side panel hidden: map takes the full width */
+html.map-standalone.ms-side-hidden #mapPanel{grid-template-columns:0 minmax(0,1fr)}
+html.map-standalone.ms-side-hidden .map-side{display:none}
+
+@media (max-width:1199px){
+  html.map-standalone .home-btn{padding:.55rem .95rem .55rem .8rem}
+  html.map-standalone .home-btn svg{width:30px;height:30px;flex-basis:30px}
+  html.map-standalone .home-btn .hb-label{font-size:.98rem}
+  html.map-standalone .app-subtitle{display:none}
+  .ms-tool .lbl{display:none}
+}
+@media (max-width:991px){
+  html.map-standalone{--header-h:92px}
+  html.map-standalone .header-text{display:none}
+  html.map-standalone .home-btn{margin-right:auto}
+  .ms-layer{display:none}
+  /* Side panel slides over the map as a drawer */
+  html.map-standalone #mapPanel,
+  html.map-standalone.ms-side-hidden #mapPanel{grid-template-columns:minmax(0,1fr)}
+  html.map-standalone #map{grid-column:1}
+  html.map-standalone .map-side{
+    position:absolute;z-index:1000;left:0;bottom:0;top:48px;width:min(var(--ms-side-w),88vw);
+    box-shadow:var(--shadow-lg);
+  }
+}
+@media (max-width:575px){
+  html.map-standalone{--header-h:80px}
+  html.map-standalone .app-header{padding:0 .75rem}
+  html.map-standalone .header-inner{gap:.6rem}
+  html.map-standalone .brand-funder{padding-left:.6rem}
+  html.map-standalone .brand-funder .funded-by{display:none}
+  html.map-standalone .home-btn{gap:.45rem;padding:.45rem .7rem;border-radius:12px}
+  html.map-standalone .home-btn svg{width:24px;height:24px;flex-basis:24px}
+  html.map-standalone .home-btn .hb-kicker{display:none}
+  html.map-standalone .home-btn .hb-label{font-size:.8rem}
+  html.map-standalone .ms-bar{padding:.5rem .75rem}
+  .ms-crumb .home-link,.ms-crumb .sep{display:none}
+}
 </style>
 </head>
 <body>
@@ -952,6 +1277,14 @@ input[type=range]{accent-color:var(--emerald);width:100%}
        title="INPACT project page, University of Galway (opens in a new tab)">
       <img src="/static/img/inpact-mark.png"
            alt="INPACT — Investigating National Policy Impacts on Atmospheric Climate Targets">
+    </a>
+    <!-- Shown only when the map is opened on its own (/map/) -->
+    <a class="home-btn" href="/" title="Go to the main INPACT dashboard">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 10.5 12 3l9 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="hb-text"><span class="hb-kicker">Back to</span><span class="hb-label">Main dashboard</span></span>
     </a>
     <div class="header-text">
       <h1 class="app-title"><span class="accent">Ireland</span> Greenhouse Gas Policy Impact Explorer</h1>
@@ -1106,7 +1439,7 @@ input[type=range]{accent-color:var(--emerald);width:100%}
   <!-- ================= MAIN ================= -->
   <main class="main-area">
 
-    <div class="row g-3">
+    <div class="row g-3 map-row">
       <!-- EMISSIONS ANALYSIS -->
       <div class="col-12 col-xxl-7">
         <section class="panel h-100" aria-label="Emissions analysis">
@@ -1145,13 +1478,98 @@ input[type=range]{accent-color:var(--emerald);width:100%}
       </div>
 
       <!-- MAP -->
-      <div class="col-12 col-xxl-5">
-        <section class="panel h-100" aria-label="Spatial environmental mapping">
+      <div class="col-12 col-xxl-5" id="mapCol">
+        <section class="panel h-100" id="mapPanel" aria-label="Spatial environmental mapping">
           <div class="panel-head">
             <span class="panel-num">2B</span>
             <h2 class="panel-title">Spatial Environmental Mapping</h2>
             <span class="ms-auto text-muted" style="font-size:.72rem">EPA MapEIre, EDGAR and PARIS inverse-model emissions · ICOS stations · Esri World Imagery</span>
+            <a class="pt-tool map-popout" id="mapPopout" href="/map/" target="_blank" rel="noopener"
+               title="Open the map on its own in a new browser window, keeping the current view and dataset">
+              <i class="bi bi-box-arrow-up-right"></i><span class="lbl">New window</span>
+            </a>
           </div>
+          <!-- Toolbar of the map's own window (/map/) -->
+          <div class="ms-bar ms-only" role="toolbar" aria-label="Map tools">
+            <nav class="ms-crumb" aria-label="Breadcrumb">
+              <a class="home-link" href="/">Main dashboard</a><span class="sep">/</span>
+              <i class="bi bi-globe-europe-africa" aria-hidden="true"></i>
+              <span class="cur">Spatial Environmental Mapping</span>
+            </nav>
+            <span class="ms-layer" id="msLayer" title="Emission layer on the map"><span class="d"></span><span id="msLayerText">No emission layer selected</span></span>
+            <div class="ms-tools">
+              <button type="button" class="ms-tool" id="msSideToggle" aria-pressed="true" aria-controls="mapSide" title="Show or hide the layer panel">
+                <i class="bi bi-layout-sidebar"></i><span class="lbl">Layers</span>
+              </button>
+              <button type="button" class="ms-tool" id="msResetView" title="Zoom back to the whole of Ireland">
+                <i class="bi bi-crosshair"></i><span class="lbl">Reset view</span>
+              </button>
+              <button type="button" class="ms-tool" id="msCopyLink" title="Copy a link to this map view">
+                <i class="bi bi-link-45deg"></i><span class="lbl">Copy link</span>
+              </button>
+              <button type="button" class="ms-tool" id="msFullscreen" title="Full screen">
+                <i class="bi bi-arrows-fullscreen"></i><span class="lbl">Full screen</span>
+              </button>
+            </div>
+          </div>
+          <div class="map-side" id="mapSide">
+          <!-- Stepper of the map's own window. On /map/ the script moves the raster bar
+               into step 2 and the opacity field into step 3. -->
+          <div class="ms-steps ms-only" id="msSteps">
+            <section class="ms-step is-open" data-step="1">
+              <h3 class="ms-step-h">
+                <button type="button" class="ms-step-btn" id="msStep1Btn" aria-expanded="true" aria-controls="msStep1Body">
+                  <span class="ms-badge"><span class="n">1</span><i class="bi bi-check-lg"></i></span>
+                  <span class="ms-step-txt"><span class="ms-step-title">Choose a dataset</span><span class="ms-step-sum" id="msSum1"></span></span>
+                  <i class="bi bi-chevron-down ms-chev" aria-hidden="true"></i>
+                </button>
+              </h3>
+              <div class="ms-step-body" id="msStep1Body" role="region" aria-labelledby="msStep1Btn"><div class="ms-step-inner">
+                <p class="ms-p">Three independent views of where Ireland&rsquo;s emissions come from.</p>
+                <div class="ms-ds" role="radiogroup" aria-label="Emission dataset">
+                  <button type="button" class="ms-ds-card" role="radio" data-ds="mapeire">
+                    <span class="ms-ds-top"><i class="bi bi-grid-3x3" aria-hidden="true"></i><span class="t">MapEIre</span></span>
+                    <span class="s">EPA gridded air-pollutant emissions by sector, 1&nbsp;km grid.</span>
+                    <span class="ms-ds-check" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
+                  </button>
+                  <button type="button" class="ms-ds-card" role="radio" data-ds="edgar">
+                    <span class="ms-ds-top"><i class="bi bi-layers" aria-hidden="true"></i><span class="t">EDGAR</span></span>
+                    <span class="s">EC JRC bottom-up CO&#8322;, CH&#8324;, N&#8322;O by sector, 0.1&deg; grid.</span>
+                    <span class="ms-ds-check" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
+                  </button>
+                  <button type="button" class="ms-ds-card" role="radio" data-ds="inverse">
+                    <span class="ms-ds-top"><i class="bi bi-broadcast" aria-hidden="true"></i><span class="t">Inverse model</span></span>
+                    <span class="s">PARIS top-down CH&#8324;, N&#8322;O from atmospheric observations.</span>
+                    <span class="ms-ds-check" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
+                  </button>
+                </div>
+              </div></div>
+            </section>
+            <section class="ms-step is-open" data-step="2">
+              <h3 class="ms-step-h">
+                <button type="button" class="ms-step-btn" id="msStep2Btn" aria-expanded="true" aria-controls="msStep2Body">
+                  <span class="ms-badge"><span class="n">2</span><i class="bi bi-check-lg"></i></span>
+                  <span class="ms-step-txt"><span class="ms-step-title">Select the layer</span><span class="ms-step-sum" id="msSum2"></span></span>
+                  <i class="bi bi-chevron-down ms-chev" aria-hidden="true"></i>
+                </button>
+              </h3>
+              <div class="ms-step-body" id="msStep2Body" role="region" aria-labelledby="msStep2Btn"><div class="ms-step-inner" id="msStep2Inner">
+              </div></div>
+            </section>
+            <section class="ms-step is-open" data-step="3">
+              <h3 class="ms-step-h">
+                <button type="button" class="ms-step-btn" id="msStep3Btn" aria-expanded="true" aria-controls="msStep3Body">
+                  <span class="ms-badge"><span class="n">3</span><i class="bi bi-check-lg"></i></span>
+                  <span class="ms-step-txt"><span class="ms-step-title">Adjust the display</span><span class="ms-step-sum" id="msSum3"></span></span>
+                  <i class="bi bi-chevron-down ms-chev" aria-hidden="true"></i>
+                </button>
+              </h3>
+              <div class="ms-step-body" id="msStep3Body" role="region" aria-labelledby="msStep3Btn"><div class="ms-step-inner" id="msStep3Inner"></div></div>
+            </section>
+          </div>
+          <button type="button" class="ms-reset ms-only" id="msReset" title="Remove the emission layer and clear the dropdowns of this dataset">
+            <i class="bi bi-arrow-counterclockwise"></i>Reset selection
+          </button>
           <div class="raster-bar" aria-label="Emission map layer selector">
             <div class="raster-field raster-dataset">
               <label for="mapDataset">Dataset</label>
@@ -1224,6 +1642,110 @@ input[type=range]{accent-color:var(--emerald);width:100%}
             </button>
             <span class="raster-status" id="rasterStatus" role="status"></span>
           </div>
+          <div class="ms-about ms-only">
+            <!-- About the selected dataset: one paragraph, "More details" opens the rest -->
+            <section class="ms-step is-open" data-step="about">
+              <h3 class="ms-step-h">
+                <button type="button" class="ms-step-btn" id="msAboutBtn" aria-expanded="true" aria-controls="msAboutBody">
+                  <span class="ms-badge info"><i class="bi bi-info-lg"></i></span>
+                  <span class="ms-step-txt"><span class="ms-step-title">About this dataset</span><span class="ms-step-sum" id="msSumAbout"></span></span>
+                  <i class="bi bi-chevron-down ms-chev" aria-hidden="true"></i>
+                </button>
+              </h3>
+              <div class="ms-step-body" id="msAboutBody" role="region" aria-labelledby="msAboutBtn"><div class="ms-step-inner">
+
+                <!-- Download the layer on the map: GeoTIFF (data) + JPEG (map with legend) -->
+                <div class="ms-dl" id="msDl">
+                  <div class="ms-dl-split">
+                    <button type="button" class="ms-dl-main" id="msDlBoth" disabled aria-describedby="msDlStatus">
+                      <i class="bi bi-download"></i><span>Download map</span><span class="ms-dl-fmt">GeoTIFF + JPEG</span>
+                    </button>
+                    <button type="button" class="ms-dl-caret" id="msDlCaret" disabled aria-haspopup="menu" aria-expanded="false" aria-controls="msDlMenu" title="More download options">
+                      <i class="bi bi-chevron-down"></i>
+                    </button>
+                  </div>
+                  <ul class="ms-dl-menu" id="msDlMenu" role="menu" aria-label="Download options" hidden>
+                    <li role="none"><button type="button" role="menuitem" data-fmt="both"><i class="bi bi-files"></i><span><b>GeoTIFF + JPEG</b><small>Both files at once</small></span></button></li>
+                    <li role="none"><button type="button" role="menuitem" data-fmt="geotiff"><i class="bi bi-grid-3x3-gap"></i><span><b>GeoTIFF</b><small>Cell values for GIS (QGIS, ArcGIS)</small></span></button></li>
+                    <li role="none"><button type="button" role="menuitem" data-fmt="jpeg"><i class="bi bi-image"></i><span><b>JPEG map</b><small>With legend, title and source</small></span></button></li>
+                  </ul>
+                  <p class="ms-dl-status" id="msDlStatus" role="status">Show a layer on the map to download it.</p>
+                </div>
+
+                <div class="ms-info" data-ds="mapeire">
+                  <p class="ms-info-lead"><b>MapEIre</b> maps Ireland&rsquo;s national emission inventory onto a 1&nbsp;km grid, so each layer shows where one pollutant from one sector is emitted. It was produced for the EPA by Aarhus University and covers greenhouse gases, air pollutants, heavy metals and persistent organic pollutants.</p>
+                  <div class="ms-info-more" id="msInfoMoreMapeire"><div>
+                    <dl class="ms-facts">
+                      <dt>Provider</dt><dd>EPA Ireland / Aarhus University</dd>
+                      <dt>Resolution</dt><dd>1&nbsp;km &times; 1&nbsp;km</dd>
+                      <dt>Projection</dt><dd>TM65 Irish Grid (EPSG:29902)</dd>
+                      <dt>Coverage</dt><dd>Irish Exclusive Economic Zone</dd>
+                      <dt>Years here</dt><dd>2015 and 2019</dd>
+                      <dt>Contents</dt><dd>33 pollutants in 7 groups, by NFR / CRF sector</dd>
+                    </dl>
+                    <ul class="ms-notes">
+                      <li>Units are shown only where the MapEIre report states them.</li>
+                      <li>Layers are drawn as images, so hovering shows no cell values; use the colour bar instead.</li>
+                    </ul>
+                  </div></div>
+                  <div class="ms-info-links">
+                    <a href="https://www.epa.ie/publications/research/air/Research_Report_317" target="_blank" rel="noopener"><i class="bi bi-file-earmark-text"></i>EPA Research Report 317<i class="bi bi-box-arrow-up-right ext"></i></a>
+                  </div>
+                </div>
+
+                <div class="ms-info" data-ds="edgar" hidden>
+                  <p class="ms-info-lead"><b>EDGAR</b>, the Emissions Database for Global Atmospheric Research, is the European Commission&rsquo;s bottom-up inventory. Emissions are calculated from activity statistics and emission factors for each country and sector, then spread over a 0.1&deg; grid with spatial proxies.</p>
+                  <div class="ms-info-more" id="msInfoMoreEdgar"><div>
+                    <dl class="ms-facts">
+                      <dt>Release</dt><dd>EDGAR Community GHG Database (EDGAR_2025_GHG)</dd>
+                      <dt>Provider</dt><dd>European Commission JRC / IEA</dd>
+                      <dt>Resolution</dt><dd>0.1&deg; &times; 0.1&deg; (&asymp; 11 &times; 7&nbsp;km)</dd>
+                      <dt>Coverage</dt><dd>Republic of Ireland: cells whose centre lies inside the Natural Earth boundary</dd>
+                      <dt>Years</dt><dd>2000&ndash;2024, annual totals or monthly</dd>
+                      <dt>Contents</dt><dd>CO&#8322;, CH&#8324; and N&#8322;O across 8 sectors</dd>
+                    </dl>
+                    <ul class="ms-notes">
+                      <li>Values are mass of each gas, not CO&#8322;-equivalent.</li>
+                      <li>The spatial pattern is modelled from proxies; do not read single cells as facility data.</li>
+                      <li>Monthly values are annual totals split with sector profiles, not monthly observations.</li>
+                      <li>Recent years are EDGAR fast-track estimates.</li>
+                    </ul>
+                  </div></div>
+                  <div class="ms-info-links">
+                    <a href="https://edgar.jrc.ec.europa.eu/dataset_ghg2025" target="_blank" rel="noopener"><i class="bi bi-database"></i>EDGAR GHG 2025 dataset<i class="bi bi-box-arrow-up-right ext"></i></a>
+                  </div>
+                </div>
+
+                <div class="ms-info" data-ds="inverse" hidden>
+                  <p class="ms-info-lead"><b>Inverse model</b> layers are top-down estimates from the Horizon Europe PARIS project. Three inversion systems (ELRIS, InTEM, RHIME) combine atmospheric measurements with transport models (FLEXPART, NAME) to correct a prior emission map, giving posterior CH&#8324; and N&#8322;O fluxes.</p>
+                  <div class="ms-info-more" id="msInfoMoreInverse"><div>
+                    <dl class="ms-facts">
+                      <dt>Dataset</dt><dd>PARIS harmonised inverse modelling results for European non-CO&#8322; GHG emissions</dd>
+                      <dt>Provider</dt><dd>Horizon Europe PARIS project, via ICOS Carbon Portal (CC&nbsp;BY&nbsp;4.0)</dd>
+                      <dt>Resolution</dt><dd>0.352&deg; &times; 0.234&deg; (&asymp; 23 &times; 26&nbsp;km, &asymp; 600&nbsp;km&sup2; per cell)</dd>
+                      <dt>Coverage</dt><dd>Ireland plus a 20&nbsp;km buffer</dd>
+                      <dt>Aggregation</dt><dd>Day-weighted calendar-year mean of monthly fluxes</dd>
+                      <dt>Uncertainty</dt><dd>15.9th&ndash;84.1st percentiles (1&sigma;-equivalent range)</dd>
+                    </dl>
+                    <ul class="ms-notes">
+                      <li>Cell-scale structure inside Ireland mostly reflects the prior, not the observations.</li>
+                      <li>The Ireland mask is the modellers&rsquo; country fraction (includes offshore cells), so totals reconcile with their published national figures.</li>
+                      <li>The dataset creators ask to be contacted before use in publications (A. Manning, Met Office; S. Henne, Empa).</li>
+                    </ul>
+                  </div></div>
+                  <div class="ms-info-links">
+                    <a href="https://doi.org/10.18160/GR1Q-6SK4" target="_blank" rel="noopener"><i class="bi bi-database"></i>Dataset DOI 10.18160/GR1Q-6SK4<i class="bi bi-box-arrow-up-right ext"></i></a>
+                  </div>
+                </div>
+
+                <button type="button" class="ms-more" id="msInfoMoreBtn" aria-expanded="false">
+                  <span class="lbl">More details</span><i class="bi bi-chevron-down"></i>
+                </button>
+                <p class="ms-disclaimer">Basemap: Esri World Imagery &middot; stations: ICOS Ireland. The EPA data disclaimer on the <a href="/">main dashboard</a> applies to all layers.</p>
+              </div></div>
+            </section>
+          </div>
+          </div><!-- /map-side -->
           <div id="map"></div>
         </section>
       </div>
@@ -3748,8 +4270,289 @@ document.getElementById("piTimelineLink").addEventListener("click", e => {
 new MutationObserver(ptUpdateCrossLink).observe(document.getElementById("piName"), { childList: true, characterData: true, subtree: true });
 ptUpdateCrossLink();
 
+/* ---------------------- 9a. Map in its own window (/map/) ----------------------
+ * The dashboard's "Open in new window" button opens /map/?lat=&lng=&z=&ds= so the
+ * new window starts on the same view and dataset. On /map/ the URL follows the
+ * map, so "Copy link" (or the address bar) always shares the current view. */
+const MAP_HOME = { center: [53.35, -8.0], zoom: 7 };
+const MAP_STANDALONE = document.documentElement.classList.contains("map-standalone");
+
+function mapStateQuery(){
+  const c = map.getCenter();
+  return new URLSearchParams({
+    lat: c.lat.toFixed(4), lng: c.lng.toFixed(4), z: String(map.getZoom()),
+    ds: document.getElementById("mapDataset").value
+  }).toString();
+}
+
+document.getElementById("mapPopout").addEventListener("click", e => {
+  e.currentTarget.href = "/map/?" + mapStateQuery();
+});
+
+if (MAP_STANDALONE) (function mapWindow(){
+  const root = document.documentElement;
+  const datasetSel = document.getElementById("mapDataset");
+  const cards = [...document.querySelectorAll(".ms-ds-card")];
+  const sideBtn = document.getElementById("msSideToggle");
+  const fsBtn = document.getElementById("msFullscreen");
+  const copyBtn = document.getElementById("msCopyLink");
+  const layerChip = document.getElementById("msLayer");
+  const layerText = document.getElementById("msLayerText");
+  const narrow = window.matchMedia("(max-width: 991px)");
+  const resize = () => setTimeout(() => map.invalidateSize(), 60);
+
+  // Start from the view / dataset handed over by the dashboard (or a shared link)
+  const q = new URLSearchParams(location.search);
+  const lat = parseFloat(q.get("lat")), lng = parseFloat(q.get("lng")), z = parseInt(q.get("z"), 10);
+  if (isFinite(lat) && isFinite(lng) && isFinite(z)) map.setView([lat, lng], z, { animate: false });
+  if ([...datasetSel.options].some(o => o.value === q.get("ds")) && datasetSel.value !== q.get("ds")) {
+    datasetSel.value = q.get("ds");
+    datasetSel.dispatchEvent(new Event("change"));
+  }
+  resize();
+
+  // ---- Side-panel stepper: 1 dataset, 2 layer, 3 display ----
+  // The dashboard's raster bar becomes step 2 and its opacity field step 3.
+  const mapEl = document.getElementById("map");
+  const rasterBar = document.querySelector("#mapPanel .raster-bar");
+  const opacityEl = document.getElementById("rasterOpacity");
+  document.getElementById("msStep2Inner").appendChild(rasterBar);
+  document.getElementById("msStep3Inner").appendChild(opacityEl.closest(".raster-opacity"));
+  const steps = Object.fromEntries([...document.querySelectorAll("#mapSide .ms-step")].map(s => [s.dataset.step, s]));
+  const [sum1, sum2, sum3] = ["msSum1", "msSum2", "msSum3"].map(id => document.getElementById(id));
+
+  const setOpen = (step, open) => {
+    step.classList.toggle("is-open", open);
+    step.querySelector(".ms-step-btn").setAttribute("aria-expanded", String(open));
+  };
+  Object.values(steps).forEach(s =>
+    s.querySelector(".ms-step-btn").addEventListener("click", () => setOpen(s, !s.classList.contains("is-open"))));
+
+  // Header summaries (shown when a step is collapsed) and the checkmark badges
+  const optText = sel => { const o = sel.selectedOptions[0]; return o && o.value ? o.textContent.split(" · ")[0].trim() : ""; };
+  function syncSteps(){
+    sum1.textContent = cards.find(c => c.dataset.ds === datasetSel.value)?.querySelector(".t").textContent || "";
+    steps[1].classList.add("is-done");
+    const group = rasterBar.querySelector(`.raster-group[data-dataset="${datasetSel.value}"]`);
+    const parts = group ? [...group.querySelectorAll("select")].filter(s => !s.disabled).map(optText).filter(Boolean) : [];
+    sum2.textContent = parts.length ? parts.join(" · ") : "Not selected yet";
+    sum2.classList.toggle("empty", !parts.length);
+    const layerOn = !!mapEl.querySelector(".raster-title");
+    steps[2].classList.toggle("is-done", layerOn);
+    steps[3].classList.toggle("is-done", layerOn);
+    sum3.textContent = `Opacity ${opacityEl.value}%`;
+    // About this dataset: show the selected dataset's text
+    sumAbout.textContent = sum1.textContent;
+    infoBlocks.forEach(b => { b.hidden = b.dataset.ds !== datasetSel.value; });
+    const more = infoBlocks.find(b => !b.hidden)?.querySelector(".ms-info-more");
+    if (more) moreBtn.setAttribute("aria-controls", more.id);
+    // Download menu: available while a layer is on the map
+    if (dlBoth.disabled === layerOn && !dlBox.classList.contains("busy")) {
+      dlBoth.disabled = dlCaret.disabled = !layerOn;
+      if (!layerOn) closeDlMenu();
+      setDlStatus(layerOn ? "Downloads the layer on the map: GeoTIFF data and a JPEG map with legend."
+                          : "Show a layer on the map to download it.");
+    }
+  }
+
+  // "More details" opens the full facts, notes and links of the selected dataset
+  const aboutBox = document.querySelector("#mapSide .ms-about");
+  const infoBlocks = [...aboutBox.querySelectorAll(".ms-info")];
+  const moreBtn = document.getElementById("msInfoMoreBtn");
+  const sumAbout = document.getElementById("msSumAbout");
+  moreBtn.addEventListener("click", () => {
+    const open = !aboutBox.classList.contains("more-open");
+    aboutBox.classList.toggle("more-open", open);
+    moreBtn.setAttribute("aria-expanded", String(open));
+    moreBtn.querySelector(".lbl").textContent = open ? "Fewer details" : "More details";
+  });
+
+  // ---- Download the selected layer (server builds the files: /api/map/export/<geotiff|jpeg>/) ----
+  const dlBox = document.getElementById("msDl");
+  const dlBoth = document.getElementById("msDlBoth");
+  const dlCaret = document.getElementById("msDlCaret");
+  const dlMenu = document.getElementById("msDlMenu");
+  const dlStatus = document.getElementById("msDlStatus");
+  const dlItems = [...dlMenu.querySelectorAll("[role=menuitem]")];
+  const EXPORT_FIELDS = {
+    mapeire: { year: "rasterYear", sector: "rasterSector", parameter: "rasterParam" },
+    edgar:   { gas: "edgarGas", sector: "edgarSector", year: "edgarYear", month: "edgarMonth" },
+    inverse: { model: "invModel", transport: "invTransport", gas: "invGas", year: "invYear", estimate: "invEstimate" },
+  };
+  function setDlStatus(msg, kind){
+    dlStatus.textContent = msg;
+    dlStatus.className = "ms-dl-status" + (kind ? " " + kind : "");
+  }
+  function exportQuery(){
+    const ds = datasetSel.value;
+    const q = new URLSearchParams({ dataset: ds });
+    Object.entries(EXPORT_FIELDS[ds]).forEach(([k, id]) => q.set(k, document.getElementById(id).value));
+    return q;
+  }
+  async function fetchFile(fmt, q){
+    const res = await fetch(`/api/map/export/${fmt}/?${q}`);
+    if (!res.ok) {
+      let detail = `HTTP ${res.status}`;
+      try { detail = (await res.json()).detail || detail; } catch (e) {}
+      throw new Error(detail);
+    }
+    const name = /filename="([^"]+)"/.exec(res.headers.get("Content-Disposition") || "")?.[1] || `map.${fmt === "jpeg" ? "jpg" : "tif"}`;
+    return { name, blob: await res.blob() };
+  }
+  function saveFile({ name, blob }){
+    const url = URL.createObjectURL(blob);
+    const a = Object.assign(document.createElement("a"), { href: url, download: name });
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
+  async function download(fmt){
+    closeDlMenu();
+    if (dlBox.classList.contains("busy")) return;
+    const fmts = fmt === "both" ? ["geotiff", "jpeg"] : [fmt];
+    const q = exportQuery();
+    dlBox.classList.add("busy"); dlBoth.disabled = dlCaret.disabled = true;
+    setDlStatus(fmts.length > 1 ? "Preparing the GeoTIFF and the JPEG…" : `Preparing the ${fmt === "jpeg" ? "JPEG" : "GeoTIFF"}…`);
+    try {
+      const files = await Promise.all(fmts.map(f => fetchFile(f, q)));   // both built in parallel
+      files.forEach(saveFile);
+      setDlStatus(`Downloaded ${files.map(f => f.name).join(" and ")}`, "ok");
+    } catch (err) {
+      setDlStatus(`Download failed: ${err.message}`, "warn");
+    } finally {
+      dlBox.classList.remove("busy");
+      dlBoth.disabled = dlCaret.disabled = !mapEl.querySelector(".raster-title");
+    }
+  }
+  function openDlMenu(){
+    dlMenu.hidden = false; dlCaret.setAttribute("aria-expanded", "true");
+    dlItems[0].focus();
+  }
+  function closeDlMenu(focusCaret){
+    if (dlMenu.hidden) return;
+    dlMenu.hidden = true; dlCaret.setAttribute("aria-expanded", "false");
+    if (focusCaret) dlCaret.focus();
+  }
+  dlBoth.addEventListener("click", () => download("both"));
+  dlCaret.addEventListener("click", () => dlMenu.hidden ? openDlMenu() : closeDlMenu());
+  dlItems.forEach((item, i) => {
+    item.addEventListener("click", () => download(item.dataset.fmt));
+    item.addEventListener("keydown", e => {
+      const d = { ArrowDown: 1, ArrowUp: -1 }[e.key];
+      if (d) { e.preventDefault(); dlItems[(i + d + dlItems.length) % dlItems.length].focus(); }
+      else if (e.key === "Escape" || e.key === "Tab") closeDlMenu(e.key === "Escape");
+    });
+  });
+  document.addEventListener("click", e => { if (!dlBox.contains(e.target)) closeDlMenu(); });
+
+  // Step 2: a lock + "Select a … first" hint under each dropdown that is not available yet
+  const article = w => /^[aeiou]/i.test(w) ? "an" : "a";
+  rasterBar.querySelectorAll(".raster-group").forEach(group => {
+    const fields = [...group.querySelectorAll(".raster-field")];
+    fields.forEach((f, i) => {
+      const sel = f.querySelector("select");
+      const prev = fields[i - 1]?.querySelector("label").textContent.trim().toLowerCase();
+      const help = document.createElement("span");
+      help.className = "ms-help"; help.id = sel.id + "Help";
+      help.innerHTML = '<i class="bi bi-lock" aria-hidden="true"></i>' + (prev ? `Select ${article(prev)} ${prev} first` : "Loading options&hellip;");
+      f.appendChild(help);
+      sel.setAttribute("aria-describedby", help.id);
+      const sync = () => { f.classList.toggle("is-locked", sel.disabled); syncSteps(); };
+      new MutationObserver(sync).observe(sel, { attributes: true, attributeFilter: ["disabled"], childList: true });
+      sel.addEventListener("change", syncSteps);
+      sync();
+    });
+  });
+
+  // Step 1: dataset cards drive the (hidden) dataset select; arrow keys move within the group
+  const pickDataset = ds => {
+    if (datasetSel.value === ds) return;
+    datasetSel.value = ds;
+    datasetSel.dispatchEvent(new Event("change"));
+  };
+  const syncCards = () => cards.forEach(c => {
+    const on = c.dataset.ds === datasetSel.value;
+    c.setAttribute("aria-checked", String(on));
+    c.tabIndex = on ? 0 : -1;
+  });
+  cards.forEach((c, i) => {
+    c.addEventListener("click", () => { pickDataset(c.dataset.ds); setOpen(steps[1], false); setOpen(steps[2], true); });
+    c.addEventListener("keydown", e => {
+      const d = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+      if (!d) return;
+      e.preventDefault();
+      const next = cards[(i + d + cards.length) % cards.length];
+      next.focus(); pickDataset(next.dataset.ds);
+    });
+  });
+  syncCards();
+  // Arriving with a dataset already picked on the dashboard: start on step 2
+  if (q.get("ds") && q.get("ds") !== "mapeire") setOpen(steps[1], false);
+
+  // Step 3: teal fill of the slider track follows the value
+  const syncOpacity = () => {
+    const pct = (opacityEl.value - opacityEl.min) / (opacityEl.max - opacityEl.min) * 100;
+    opacityEl.style.setProperty("--pct", pct + "%");
+    syncSteps();
+  };
+  opacityEl.addEventListener("input", syncOpacity);
+  syncOpacity();
+
+  document.getElementById("msReset").addEventListener("click", () => {
+    document.dispatchEvent(new Event("maplayers:clear"));   // every dataset clears its dropdowns
+    setOpen(steps[2], true);
+  });
+
+  const syncUrl = () => history.replaceState(null, "", location.pathname + "?" + mapStateQuery());
+  map.on("moveend", syncUrl);
+  datasetSel.addEventListener("change", () => { syncCards(); syncSteps(); syncUrl(); });
+
+  // Layer panel: open beside the map on wide screens, a drawer (closed at first) on narrow ones
+  const setSide = open => {
+    root.classList.toggle("ms-side-hidden", !open);
+    sideBtn.setAttribute("aria-pressed", String(open));
+    resize();
+  };
+  setSide(!narrow.matches);
+  narrow.addEventListener("change", e => setSide(!e.matches));
+  sideBtn.addEventListener("click", () => setSide(root.classList.contains("ms-side-hidden")));
+
+  document.getElementById("msResetView").addEventListener("click", () => map.flyTo(MAP_HOME.center, MAP_HOME.zoom, { duration: .8 }));
+
+  copyBtn.addEventListener("click", async () => {
+    const label = copyBtn.querySelector(".lbl"), icon = copyBtn.querySelector("i");
+    try { await navigator.clipboard.writeText(location.href); }
+    catch (err) { window.prompt("Copy this link:", location.href); return; }
+    copyBtn.classList.add("done"); icon.className = "bi bi-check2"; label.textContent = "Copied";
+    setTimeout(() => { copyBtn.classList.remove("done"); icon.className = "bi bi-link-45deg"; label.textContent = "Copy link"; }, 1800);
+  });
+
+  // Full screen takes the whole map workspace (toolbar and panel included)
+  fsBtn.addEventListener("click", () => {
+    if (!document.fullscreenElement) document.getElementById("mapPanel").requestFullscreen?.();
+    else document.exitFullscreen?.();
+  });
+  document.addEventListener("fullscreenchange", () => {
+    const on = !!document.fullscreenElement;
+    fsBtn.setAttribute("aria-pressed", String(on));
+    fsBtn.querySelector("i").className = on ? "bi bi-fullscreen-exit" : "bi bi-arrows-fullscreen";
+    fsBtn.querySelector(".lbl").textContent = on ? "Exit full screen" : "Full screen";
+  });
+
+  // Toolbar chip and stepper mirror the active layer's title card on the map
+  const syncLayer = () => {
+    syncSteps();
+    const card = mapEl.querySelector(".raster-title");
+    const name = card?.querySelector(".rt-name")?.textContent.trim();
+    layerChip.classList.toggle("on", !!name);
+    layerText.textContent = name || "No emission layer selected";
+    layerChip.title = name ? card.textContent.replace(/\s+/g, " ").trim() : "Emission layer on the map";
+  };
+  new MutationObserver(syncLayer).observe(mapEl.querySelector(".leaflet-control-container"), { childList: true, subtree: true });
+  syncLayer();
+})();
+
 // Open straight into the Policy Timeline when the page is loaded with #policy...
-if (location.hash.startsWith("#policy")) activateTab("policy");
+if (!MAP_STANDALONE && location.hash.startsWith("#policy")) activateTab("policy");
 
 /* ---------------------- 9b. Trend Analysis dashboard ----------------------
  * Native port of the former Streamlit "Piecewise Regression Dashboard".
