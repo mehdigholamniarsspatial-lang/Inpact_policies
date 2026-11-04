@@ -43,21 +43,58 @@ def _bbox(q: dict):
     return min(s, n), min(w, e), max(s, n), max(w, e)
 
 
-def _pick(q: dict, centres_lat: np.ndarray, centres_lng: np.ndarray, pixel_index) -> np.ndarray:
-    """Positions (into the value arrays) of the selected cells."""
+MAX_VERTICES = 300
+
+
+def _polygon(text: str) -> np.ndarray:
+    """``poly=lat,lng;lat,lng;...`` → (k, 2) array of vertices."""
+    try:
+        pts = np.array([[float(v) for v in p.split(",")] for p in text.split(";") if p.strip()], dtype="float64")
+    except ValueError:
+        raise SelectionError("Invalid polygon.")
+    if pts.ndim != 2 or pts.shape[1] != 2 or not 3 <= len(pts) <= MAX_VERTICES or not np.isfinite(pts).all():
+        raise SelectionError(f"A polygon needs 3 to {MAX_VERTICES} vertices.")
+    return pts
+
+
+def _in_polygon(lat: np.ndarray, lng: np.ndarray, pts: np.ndarray) -> np.ndarray:
+    """Even-odd ray casting of the cell centres against the polygon."""
+    inside = np.zeros(lat.shape, dtype=bool)
+    j = len(pts) - 1
+    for i in range(len(pts)):
+        (yi, xi), (yj, xj) = pts[i], pts[j]
+        if yi != yj:
+            crosses = (yi > lat) != (yj > lat)
+            inside ^= crosses & (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi)
+        j = i
+    return inside
+
+
+def _pick(q: dict, centres_lat: np.ndarray, centres_lng: np.ndarray, pixel_index):
+    """Positions (into the value arrays) of the selected cells, and whether the region fell back to one cell."""
     where = q.get("where")
     if where == "whole":
-        return np.arange(centres_lat.size)
+        return np.arange(centres_lat.size), False
     if where == "region":
-        s, w, n, e = _bbox(q)
-        sel = np.flatnonzero((centres_lat >= s) & (centres_lat <= n) & (centres_lng >= w) & (centres_lng <= e))
-        if not sel.size:
-            raise SelectionError("No grid cell centre lies inside this region; draw a larger one.")
-        return sel
+        if q.get("poly"):
+            pts = _polygon(q["poly"])
+            sel = np.flatnonzero(_in_polygon(centres_lat, centres_lng, pts))
+            centre = pts.mean(axis=0)
+        else:
+            s, w, n, e = _bbox(q)
+            sel = np.flatnonzero((centres_lat >= s) & (centres_lat <= n) & (centres_lng >= w) & (centres_lng <= e))
+            centre = ((s + n) / 2, (w + e) / 2)
+        if sel.size:
+            return sel, False
+        # Smaller than one cell of this dataset (e.g. the 25 km inverse grid): use the cell at its centre
+        pos = pixel_index(float(centre[0]), float(centre[1]))
+        if pos is None:
+            raise SelectionError("No grid cell of this dataset lies inside the region; draw it over Ireland.")
+        return np.array([pos]), True
     pos = pixel_index(_num(q, "lat"), _num(q, "lng"))
     if pos is None:
         raise SelectionError("This point is outside the dataset's Ireland cells; click on Ireland.")
-    return np.array([pos])
+    return np.array([pos]), False
 
 
 def _combine(block: np.ndarray, agg: str) -> list:
@@ -87,7 +124,7 @@ def _edgar(q: dict) -> Optional[dict]:
             return None
         return lookup.get(r * g["cols"] + c)
 
-    sel = _pick(q, lat, lng, pixel_index)
+    sel, fallback = _pick(q, lat, lng, pixel_index)
     grid = edgar._load_grid(gas, sector)
     years = meta["years"]
     formula = meta["gases"][gas]["formula"]
@@ -104,7 +141,7 @@ def _edgar(q: dict) -> Optional[dict]:
     agg = q.get("agg") or "mean"
     return {
         "t": t, "labels": labels, "values": _combine(block.astype("float64"), agg),
-        "unit": unit, "formula": formula, "n_cells": int(sel.size),
+        "unit": unit, "formula": formula, "n_cells": int(sel.size), "fallback": fallback,
         "cell": _edgar_cell(g, int(cells[sel[0]])) if q.get("where") == "pixel" else None,
         "title": f"EDGAR {formula} · {meta['sectors'][sector]['name']}" + (" · monthly" if step == "monthly" else ""),
     }
@@ -137,7 +174,7 @@ def _inverse(q: dict) -> Optional[dict]:
             return None
         return lookup.get(r * g["cols"] + c)
 
-    sel = _pick(q, lat, lng, pixel_index)
+    sel, fallback = _pick(q, lat, lng, pixel_index)
     cells = ireland[sel]
     grid = inverse._load_grid(model, transport, gas)
     n_years = len(run["years"])
@@ -150,7 +187,7 @@ def _inverse(q: dict) -> Optional[dict]:
     out = {
         "t": [float(y) for y in run["years"]], "labels": [str(y) for y in run["years"]],
         "values": _combine(block.astype("float64"), agg),
-        "unit": meta["unit"].format(gas=formula), "formula": formula, "n_cells": int(sel.size),
+        "unit": meta["unit"].format(gas=formula), "formula": formula, "n_cells": int(sel.size), "fallback": fallback,
         "cell": None,
         "title": f"Inverse {formula} · {model} {transport} · {estimate.capitalize()}",
     }

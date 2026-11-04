@@ -333,7 +333,7 @@ def edgar_layer(request):
     return resp
 
 
-_TS_KEYS = ("dataset", "where", "agg", "gas", "sector", "step", "model", "transport", "estimate",
+_TS_KEYS = ("dataset", "where", "agg", "gas", "sector", "step", "model", "transport", "estimate", "poly",
             "lat", "lng", "s", "w", "n", "e")
 
 

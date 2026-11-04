@@ -1334,60 +1334,119 @@ html.map-standalone.ms-compare .raster-bar > .cmp-col-head{display:flex}
   html.map-standalone.ms-compare{--ms-side-w:460px}
   .cmp-kv{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
-/* ---- Time series mode: same layout as compare, graph panel on the right ---- */
-html.map-standalone.ms-ts{--cmp-res-w:420px}
+/* ---- Time series mode: same layout as compare; area, graph, layers and statistics on the right ---- */
+html.map-standalone.ms-ts{--cmp-res-w:440px}
 html.map-standalone.ms-ts #mapPanel{grid-template-columns:var(--ms-side-w) minmax(0,1fr) var(--cmp-res-w)}
 html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minmax(0,1fr) var(--cmp-res-w)}
-.ts-results[hidden],.ts-graph[hidden],.ts-lock[hidden],.ts-draw[hidden],.ts-opt[hidden],.ts-scale[hidden]{display:none!important}
-.ts-sec + .ts-sec{margin-top:.95rem;padding-top:.8rem;border-top:1px dashed var(--grey-border)}
-.ts-n{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--navy);color:#fff;font-size:.6rem;margin-right:.35rem;vertical-align:1px}
-.ts-where{display:flex;width:100%}
-.ts-where button{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:.3rem;padding:.38rem .4rem}
-.cmp-seg button:disabled{cursor:not-allowed;opacity:.55}
+.ts-results[hidden],.ts-addbox[hidden],.ts-x[hidden],.ts-warn[hidden]{display:none!important}
+.ts-results{background:#F4F6F9}
+.ts-results .cmp-res-body{display:flex;flex-direction:column;gap:.65rem;padding:.7rem .75rem 1rem}
+.ts-head{display:flex;align-items:flex-start;justify-content:space-between;gap:.6rem;background:#fff}
+.ts-gas-pill{flex:none;display:inline-flex;align-items:center;gap:.3rem;margin-top:.15rem;padding:.22rem .6rem;border-radius:999px;background:var(--navy);color:#fff;font-size:.7rem;font-weight:800;white-space:nowrap}
+.ts-card{background:#fff;border:1px solid var(--grey-border);border-radius:12px;padding:.7rem .8rem;box-shadow:0 1px 2px rgba(22,50,79,.05)}
+.ts-card-h{display:flex;align-items:center;gap:.4rem;margin:0 0 .55rem;font-size:.68rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--navy)}
+.ts-card-h > i{color:var(--teal);font-size:.85rem}
+.ts-right{margin-left:auto}
+.ts-chip{display:inline-flex;align-items:center;gap:.25rem;padding:.06rem .45rem;border-radius:999px;background:var(--grey-panel);color:var(--text-muted);font-size:.6rem;font-weight:700;letter-spacing:.01em;text-transform:none}
+.ts-seg{display:flex;width:100%}
+.ts-seg button{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:.3rem;padding:.4rem .4rem}
+.cmp-seg button:disabled{cursor:not-allowed;opacity:.5}
 .cmp-seg button[aria-checked="true"]:disabled{opacity:.85}
-.ts-lock{margin:.35rem 0 0;font-size:.66rem;color:var(--text-muted);display:flex;gap:.3rem;align-items:center}
-.ts-loc{margin-top:.5rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.4rem .55rem;border-radius:8px;background:var(--grey-panel);font-size:.74rem;color:var(--text-main);min-height:34px}
+.ts-sub{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem .6rem;margin-top:.55rem}
+.ts-sub .cmp-mode-lbl{margin:0}
+.ts-sub .cmp-seg button{padding:.26rem .6rem;font-size:.71rem}
+.ts-btn{display:inline-flex;align-items:center;gap:.3rem;border:1px solid var(--teal);border-radius:7px;background:#fff;color:#0B5563;font-family:inherit;font-size:.72rem;font-weight:700;padding:.26rem .65rem;cursor:pointer;white-space:nowrap}
+.ts-btn:hover,.ts-btn[aria-pressed="true"]{background:var(--teal);color:#fff}
+.ts-btn:focus-visible,.ts-add:focus-visible,.ts-export button:focus-visible,.ts-export select:focus-visible,.ts-rm:focus-visible,.ts-link:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.ts-loc{margin-top:.55rem;display:flex;align-items:flex-start;gap:.4rem;padding:.42rem .55rem;border-radius:8px;background:var(--grey-panel);font-size:.72rem;line-height:1.4;color:var(--text-main)}
+.ts-loc > i{color:var(--text-muted);margin-top:.05rem}
 .ts-loc.set{background:var(--teal-light)}
-.ts-draw{flex:none;display:inline-flex;align-items:center;gap:.3rem;border:1px solid var(--teal);border-radius:7px;background:#fff;color:#0B5563;font-family:inherit;font-size:.7rem;font-weight:700;padding:.22rem .55rem;cursor:pointer}
-.ts-draw:hover,.ts-draw[aria-pressed="true"]{background:var(--teal);color:#fff}
-.ts-def{font-size:.76rem;color:var(--text-main);padding:.4rem .55rem;border:1px dashed var(--grey-border);border-radius:8px;background:#fff;line-height:1.35}
-.ts-def small{display:block;font-size:.64rem;color:var(--text-muted)}
-.ts-def.warn{border-color:rgba(192,57,43,.45);color:var(--red)}
-.ts-opts{display:flex;flex-wrap:wrap;gap:.55rem 1rem;margin-top:.55rem}
-.ts-scale{display:flex;gap:.45rem;align-items:flex-start;margin-top:.6rem;font-size:.74rem;cursor:pointer;color:var(--text-main)}
-.ts-scale input{margin-top:.15rem;accent-color:var(--teal);width:15px;height:15px;flex:none}
-.ts-scale small{display:block;font-size:.64rem;color:var(--text-muted);line-height:1.35;font-weight:400}
-.ts-scale.off{opacity:.55;cursor:not-allowed}
-.ts-add{margin-top:.65rem;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:.35rem;border:0;border-radius:8px;background:var(--teal);color:#fff;font-family:inherit;font-size:.8rem;font-weight:800;padding:.5rem .8rem;cursor:pointer}
-.ts-add:hover:not(:disabled){filter:brightness(.94)}
-.ts-add:disabled{background:#B9C6CF;cursor:not-allowed}
-.ts-add:focus-visible,.ts-draw:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
-.ts-chart{height:270px}
-.ts-list{list-style:none;margin:.6rem 0 .6rem;padding:0;display:grid;gap:.3rem}
-.ts-list li{display:flex;align-items:flex-start;gap:.45rem;padding:.35rem .45rem;border-radius:8px;background:var(--grey-panel);font-size:.72rem;line-height:1.3}
-.ts-sw{flex:none;width:14px;height:4px;border-radius:2px;margin-top:.45rem}
-.ts-list .nm{flex:1;min-width:0}
-.ts-list .nm b{display:block;color:var(--navy);font-weight:800}
-.ts-list .nm small{display:block;color:var(--text-muted);font-size:.64rem}
+.ts-loc.set > i{color:var(--teal)}
+.ts-loc.drawing{background:#FFF6E6}
+.ts-loc.drawing > i{color:#B7791F}
+.ts-loc.warn{background:#FDECEA;color:#8E2A1F}
+.ts-loc.warn > i{color:var(--red)}
+.ts-loc kbd{font-family:inherit;font-size:.62rem;font-weight:700;padding:0 .25rem;border:1px solid var(--grey-border);border-bottom-width:2px;border-radius:4px;background:#fff;color:var(--text-main)}
+/* graph */
+.ts-bar{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem .9rem;margin-bottom:.55rem}
+.ts-switch{position:relative;display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;font-weight:700;color:var(--text-main);cursor:pointer;user-select:none;margin:0}
+.ts-switch input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.ts-switch .tr{width:28px;height:16px;border-radius:999px;background:#C9D2DB;position:relative;transition:background .15s;flex:none}
+.ts-switch .tr::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+.ts-switch input:checked + .tr{background:var(--teal)}
+.ts-switch input:checked + .tr::after{transform:translateX(12px)}
+.ts-switch input:focus-visible + .tr{outline:2px solid var(--navy);outline-offset:2px}
+.ts-switch.off{cursor:not-allowed;color:var(--text-muted)}
+.ts-switch.off .tr{opacity:.5}
+.ts-export{margin-left:auto;display:inline-flex;align-items:stretch;border:1px solid var(--teal);border-radius:8px;overflow:hidden;background:#fff}
+.ts-export button{border:0;background:#fff;color:#0B5563;font-family:inherit;font-size:.72rem;font-weight:700;padding:.28rem .55rem;cursor:pointer;display:inline-flex;align-items:center;gap:.3rem}
+.ts-export button:hover:not(:disabled){background:var(--teal);color:#fff}
+.ts-export select{border:0;border-left:1px solid var(--teal);background:#F2FBFA;color:#0B5563;font-family:inherit;font-size:.7rem;font-weight:700;padding:0 .25rem;cursor:pointer}
+.ts-export .csv{border-left:1px solid var(--teal)}
+.ts-export button:disabled,.ts-export select:disabled{opacity:.45;cursor:not-allowed;background:#fff}
+.ts-chart{position:relative;height:290px}
+.ts-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem;padding:1rem;border:1px dashed var(--grey-border);border-radius:10px;background:#FAFBFC;color:var(--text-muted);font-size:.74rem;text-align:center}
+.ts-empty[hidden]{display:none}
+.ts-empty > i{font-size:2rem;color:#B9C6CF;line-height:1}
+.ts-empty > b{color:var(--navy);font-size:.84rem}
+.ts-empty ol{margin:.25rem 0 0;padding-left:1.1rem;text-align:left;line-height:1.5}
+/* layers in the plot */
+.ts-list{list-style:none;margin:0;padding:0;display:grid;gap:.35rem}
+.ts-list li{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;align-items:start;gap:.5rem;padding:.45rem .5rem;border:1px solid var(--grey-border);border-radius:9px;background:#fff;transition:background .15s}
+.ts-list li:hover{background:#FAFBFC}
+.ts-list li.off .nm,.ts-list li.off .ts-sw{opacity:.45}
+.ts-list input[type=checkbox]{margin-top:.12rem;accent-color:var(--teal);width:15px;height:15px;cursor:pointer}
+.ts-sw{width:18px;height:4px;border-radius:2px;margin-top:.5rem}
+.ts-list .nm{min-width:0}
+.ts-list .nm b{display:block;color:var(--navy);font-weight:800;font-size:.74rem;line-height:1.3}
+.ts-list .nm small{display:block;color:var(--text-muted);font-size:.64rem;line-height:1.35}
 .ts-list .nm .warn{color:var(--red)}
-.ts-tag{display:inline-block;font-size:.58rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;padding:0 .3rem;border-radius:4px;background:#fff;border:1px solid var(--grey-border);color:var(--text-muted);margin-left:.25rem;vertical-align:1px}
+.ts-tags{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.2rem}
+.ts-tag{display:inline-block;font-size:.58rem;font-weight:800;letter-spacing:.02em;padding:.02rem .35rem;border-radius:4px;background:#fff;border:1px solid var(--grey-border);color:var(--text-muted);font-variant-numeric:tabular-nums}
 .ts-tag.sc{border-color:rgba(232,163,61,.7);color:#8A5A12;background:#FFF6E6}
-.ts-rm{flex:none;border:0;background:none;color:var(--text-muted);padding:0 .15rem;cursor:pointer;font-size:.85rem;line-height:1}
-.ts-rm:hover,.ts-rm:focus-visible{color:var(--red);outline:none}
-.ts-actions{display:flex;flex-wrap:wrap;gap:.45rem}
-.ts-actions .cmp-csv{margin-top:0}
-.ts-clear{border-color:var(--grey-border);color:var(--text-muted)}
-.ts-clear:hover{background:var(--red);border-color:var(--red);color:#fff}
+.ts-tag.ref{border-color:var(--navy);color:var(--navy);background:#EEF3F8}
+.ts-rm{border:0;background:none;color:var(--text-muted);padding:.1rem .2rem;border-radius:5px;cursor:pointer;font-size:.8rem;line-height:1}
+.ts-rm:hover{color:#fff;background:var(--red)}
+.ts-list .ts-list-empty{display:block;border-style:dashed;color:var(--text-muted);font-size:.72rem;line-height:1.45;background:#FAFBFC}
+.ts-link{border:0;background:none;color:var(--text-muted);font-family:inherit;font-size:.66rem;font-weight:700;text-transform:none;letter-spacing:0;cursor:pointer;text-decoration:underline;padding:0}
+.ts-link:hover{color:var(--red)}
+/* statistics */
+.ts-stats table{width:100%;border-collapse:collapse;font-size:.7rem;font-variant-numeric:tabular-nums;table-layout:fixed}
+.ts-stats th{font-size:.57rem;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);font-weight:800;text-align:right;padding:.2rem .25rem;border-bottom:1px solid var(--grey-border)}
+.ts-stats th:first-child{width:38%}
+.ts-stats th:first-child,.ts-stats td:first-child{text-align:left}
+.ts-stats td{padding:.32rem .25rem;border-bottom:1px dashed var(--grey-border);text-align:right;color:var(--text-main);vertical-align:top}
+.ts-stats td small{display:block;font-size:.6rem;color:var(--text-muted)}
+.ts-stats td:first-child b{display:flex;align-items:center;gap:.35rem;color:var(--navy);font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ts-stats td:first-child .ts-sw{margin:0;flex:none}
+.ts-stats .up{color:#B2182B;font-weight:700}.ts-stats .down{color:#2166AC;font-weight:700}
+/* left panel: Add to plot */
+.ts-addbox{margin-top:.75rem;padding:.7rem .75rem .6rem;border:1px solid rgba(14,140,138,.45);border-radius:12px;background:linear-gradient(180deg,#EEF9F8,#fff 60%)}
+.ts-addbox-h{display:flex;align-items:center;gap:.4rem;font-size:.7rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--navy);margin-bottom:.45rem}
+.ts-addbox-h i{color:var(--teal);font-size:.9rem}
+.ts-def{font-size:.76rem;color:var(--text-main);padding:.42rem .55rem;border:1px solid var(--grey-border);border-radius:8px;background:#fff;line-height:1.35}
+.ts-def small{display:block;font-size:.64rem;color:var(--text-muted)}
+.ts-def.muted{color:var(--text-muted);border-style:dashed}
+.ts-warn{margin-top:.5rem;padding:.5rem .6rem;border-radius:8px;background:#FDECEA;border:1px solid rgba(192,57,43,.35);color:#8E2A1F;font-size:.7rem;line-height:1.45}
+.ts-warn > i{margin-right:.25rem}
+.ts-warn .ts-warn-acts{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.4rem}
+.ts-warn button{border:1px solid rgba(142,42,31,.4);border-radius:6px;background:#fff;color:#8E2A1F;font-family:inherit;font-size:.68rem;font-weight:700;padding:.18rem .5rem;cursor:pointer}
+.ts-warn button:hover{background:#8E2A1F;color:#fff}
+.ts-add{margin-top:.6rem;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:.35rem;border:0;border-radius:8px;background:var(--teal);color:#fff;font-family:inherit;font-size:.8rem;font-weight:800;padding:.5rem .8rem;cursor:pointer;box-shadow:0 1px 2px rgba(14,140,138,.3)}
+.ts-add:hover:not(:disabled){filter:brightness(.94)}
+.ts-add:disabled{background:#B9C6CF;box-shadow:none;cursor:not-allowed}
+.ts-addbox .cmp-msg:empty{display:none}
+.ts-addbox-note{margin:.45rem 0 0;font-size:.62rem;color:var(--text-muted);line-height:1.35}
 #map.ts-drawing,#map.ts-drawing .leaflet-interactive,#map.ts-picking,#map.ts-picking .leaflet-interactive{cursor:crosshair!important}
 @media (max-width:1279px){
   html.map-standalone.ms-ts{--ms-side-w:400px}
-  html.map-standalone.ms-ts #mapPanel{grid-template-columns:var(--ms-side-w) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) minmax(0,50%)}
+  html.map-standalone.ms-ts #mapPanel{grid-template-columns:var(--ms-side-w) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) minmax(0,52%)}
   html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minmax(0,1fr)}
   html.map-standalone.ms-ts .map-side{grid-row:2 / 4}
 }
 @media (max-width:991px){
   html.map-standalone.ms-ts #mapPanel,
-  html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) minmax(0,55%)}
+  html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) minmax(0,58%)}
   html.map-standalone.ms-ts .map-side{grid-row:auto}
   html.map-standalone.ms-ts{--ms-side-w:460px}
 }
@@ -1738,6 +1797,22 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                   </div>
                   <p class="cmp-msg" id="cmpMsg" role="status"></p>
                 </div>
+                <!-- Time series mode: add the layer chosen above to the plot on the right -->
+                <div class="ts-addbox" id="tsAddBox" hidden>
+                  <div class="ts-addbox-h"><i class="bi bi-graph-up"></i>Time series plot</div>
+                  <div class="ts-def" id="tsDef"></div>
+                  <div class="ts-sub ts-x" id="tsStepBox" hidden>
+                    <span class="cmp-mode-lbl">Time step</span>
+                    <div class="cmp-seg" role="radiogroup" aria-label="EDGAR time step" id="tsStep">
+                      <button type="button" role="radio" aria-checked="true" data-step="annual">Annual</button>
+                      <button type="button" role="radio" aria-checked="false" data-step="monthly">Monthly</button>
+                    </div>
+                  </div>
+                  <div class="ts-warn" id="tsGasWarn" role="alert" hidden></div>
+                  <button type="button" class="ts-add" id="tsAdd" disabled><i class="bi bi-plus-lg"></i><span>Add to plot</span></button>
+                  <p class="cmp-msg" id="tsMsg" role="status"></p>
+                  <p class="ts-addbox-note">The plot uses every year of the layer; the year and period above only set the map.</p>
+                </div>
               </div></div>
             </section>
             <section class="ms-step is-open" data-step="3">
@@ -1941,58 +2016,74 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
               <p class="cmp-empty">Choose layer A and layer B in the panel on the left. The statistics of B − A appear here.</p>
             </div>
           </aside>
-          <!-- Time series mode: values of a pixel / region / the whole grid over time -->
+          <!-- Time series mode: area, graph, the layers in the plot ("basket") and their statistics -->
           <aside class="cmp-results ts-results ms-only" id="tsResults" aria-label="Time series" hidden>
-            <div class="cmp-res-head">
-              <div><div class="ms-kicker">Time series</div><div class="cmp-res-title" id="tsTitle">Values over time</div></div>
+            <div class="cmp-res-head ts-head">
+              <div><div class="ms-kicker">Time series</div><div class="cmp-res-title" id="tsTitle">Pixel time series</div></div>
+              <span class="ts-gas-pill" id="tsGasPill" title="Gas of the layers in the plot" hidden></span>
             </div>
             <div class="cmp-res-body">
-              <section class="ts-sec">
-                <h4 class="cmp-sec-h"><span class="ts-n">1</span>Where</h4>
-                <div class="cmp-seg ts-where" role="radiogroup" aria-label="Spatial selection" id="tsWhere">
+              <section class="ts-card" aria-labelledby="tsAreaH">
+                <h4 class="ts-card-h" id="tsAreaH"><i class="bi bi-geo-alt"></i>Area
+                  <span class="ts-chip ts-right" id="tsLock" title="Remove all layers from the plot to choose another area type" hidden><i class="bi bi-lock-fill"></i>Fixed for this plot</span></h4>
+                <div class="cmp-seg ts-seg" role="radiogroup" aria-label="Area type" id="tsWhere">
                   <button type="button" role="radio" aria-checked="true" data-where="pixel"><i class="bi bi-crosshair2"></i>Pixel</button>
                   <button type="button" role="radio" aria-checked="false" data-where="region"><i class="bi bi-bounding-box"></i>Region</button>
                   <button type="button" role="radio" aria-checked="false" data-where="whole"><i class="bi bi-map"></i>Whole image</button>
                 </div>
-                <p class="ts-lock" id="tsLock" hidden><i class="bi bi-lock-fill"></i>Fixed for this graph. Clear the graph to choose another option.</p>
-                <div class="ts-loc" id="tsLoc">
-                  <span class="ts-loc-txt" id="tsLocTxt">Click a cell on the map.</span>
-                  <button type="button" class="ts-draw" id="tsDraw" aria-pressed="false" hidden><i class="bi bi-pencil-square"></i>Draw region</button>
-                </div>
-              </section>
-              <section class="ts-sec">
-                <h4 class="cmp-sec-h"><span class="ts-n">2</span>Add a series</h4>
-                <div class="ts-def" id="tsDef"></div>
-                <div class="ts-opts">
-                  <div class="ts-opt" id="tsAggBox">
-                    <span class="cmp-mode-lbl">Combine cells by</span>
-                    <div class="cmp-seg" role="radiogroup" aria-label="Combine the cells of the region by" id="tsAgg">
-                      <button type="button" role="radio" aria-checked="true" data-agg="mean">Mean</button>
-                      <button type="button" role="radio" aria-checked="false" data-agg="median">Median</button>
-                    </div>
+                <div class="ts-sub ts-x" id="tsRegionTools" hidden>
+                  <span class="cmp-mode-lbl">Shape</span>
+                  <div class="cmp-seg" role="radiogroup" aria-label="Region shape" id="tsShape">
+                    <button type="button" role="radio" aria-checked="true" data-shape="rect"><i class="bi bi-square"></i> Rectangle</button>
+                    <button type="button" role="radio" aria-checked="false" data-shape="poly"><i class="bi bi-pentagon"></i> Polygon</button>
                   </div>
-                  <div class="ts-opt" id="tsStepBox">
-                    <span class="cmp-mode-lbl">Time step</span>
-                    <div class="cmp-seg" role="radiogroup" aria-label="EDGAR time step" id="tsStep">
-                      <button type="button" role="radio" aria-checked="true" data-step="annual">Annual</button>
-                      <button type="button" role="radio" aria-checked="false" data-step="monthly">Monthly</button>
-                    </div>
+                  <button type="button" class="ts-btn ts-right" id="tsDraw" aria-pressed="false"><i class="bi bi-pencil"></i><span>Draw</span></button>
+                </div>
+                <div class="ts-loc" id="tsLoc"><i class="bi bi-info-circle" aria-hidden="true"></i><span id="tsLocTxt">Click a cell on the map.</span></div>
+                <div class="ts-sub ts-x" id="tsAggBox" hidden>
+                  <span class="cmp-mode-lbl">Combine cells by</span>
+                  <div class="cmp-seg" role="radiogroup" aria-label="Combine the cells of the area by" id="tsAgg">
+                    <button type="button" role="radio" aria-checked="true" data-agg="mean">Mean</button>
+                    <button type="button" role="radio" aria-checked="false" data-agg="median">Median</button>
                   </div>
                 </div>
-                <label class="ts-scale" id="tsScaleBox"><input type="checkbox" id="tsScale">
-                  <span><b>Scale to the previous series</b><small id="tsScaleHint">Fits this series into the range of the one above it, so lines of different size or unit can be compared by shape.</small></span>
-                </label>
-                <button type="button" class="ts-add" id="tsAdd" disabled><i class="bi bi-plus-lg"></i><span>Plot series</span></button>
-                <p class="cmp-msg" id="tsMsg" role="status"></p>
               </section>
-              <section class="ts-sec ts-graph" id="tsGraph" hidden>
-                <div class="cmp-chart ts-chart"><canvas id="tsChart" role="img" aria-label="Time series graph"></canvas></div>
-                <ul class="ts-list" id="tsList" aria-label="Series on the graph"></ul>
-                <div class="ts-actions">
-                  <button type="button" class="cmp-csv" id="tsCsv"><i class="bi bi-filetype-csv"></i>Download data (CSV)</button>
-                  <button type="button" class="cmp-csv ts-clear" id="tsClear"><i class="bi bi-trash3"></i>Clear graph</button>
+
+              <section class="ts-card" aria-label="Time series graph">
+                <div class="ts-bar">
+                  <label class="ts-switch" id="tsScaleBox" title="Map every other layer's minimum–maximum onto the first ticked layer">
+                    <input type="checkbox" id="tsScale"><span class="tr" aria-hidden="true"></span>Scale to first layer</label>
+                  <label class="ts-switch ts-x" id="tsBandBox" hidden title="Inverse model 1σ-equivalent range of the pixel">
+                    <input type="checkbox" id="tsBand" checked><span class="tr" aria-hidden="true"></span>Uncertainty</label>
+                  <div class="ts-export" role="group" aria-label="Download the graph">
+                    <button type="button" id="tsPng" title="Download the graph as a PNG image" disabled><i class="bi bi-image"></i>PNG</button>
+                    <select id="tsDpi" aria-label="PNG resolution" title="Resolution of the PNG" disabled>
+                      <option value="90">90 dpi</option><option value="200">200 dpi</option><option value="300" selected>300 dpi</option>
+                    </select>
+                    <button type="button" class="csv" id="tsCsv" title="Download the values as CSV" aria-label="Download the values as CSV" disabled><i class="bi bi-filetype-csv"></i></button>
+                  </div>
+                </div>
+                <div class="ts-chart">
+                  <canvas id="tsChart" role="img" aria-label="Time series graph"></canvas>
+                  <div class="ts-empty" id="tsEmpty">
+                    <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
+                    <b>No layers in the plot yet</b>
+                    <ol><li>Choose the area above (pixel, region or whole image).</li>
+                        <li>Select a layer on the left and click <b>Add to plot</b>.</li></ol>
+                  </div>
                 </div>
                 <p class="cmp-note" id="tsNote"></p>
+              </section>
+
+              <section class="ts-card" aria-labelledby="tsListH">
+                <h4 class="ts-card-h" id="tsListH"><i class="bi bi-stack"></i>Layers in the plot <span class="ts-chip" id="tsCount">0</span>
+                  <button type="button" class="ts-link ts-right ts-x" id="tsClear" hidden>Remove all</button></h4>
+                <ul class="ts-list" id="tsList" aria-label="Layers in the plot"></ul>
+              </section>
+
+              <section class="ts-card ts-x" id="tsStatsCard" aria-labelledby="tsStatsH" hidden>
+                <h4 class="ts-card-h" id="tsStatsH"><i class="bi bi-table"></i>Statistics <span class="ts-chip">original values</span></h4>
+                <div class="ts-stats" id="tsStats"></div>
               </section>
             </div>
           </aside>
@@ -5328,65 +5419,79 @@ if (MAP_STANDALONE) (function mapWindow(){
   })();
 
   // ---- Time series of a pixel, a region or the whole grid (EDGAR and the inverse model) ----
-  // The series is defined by the layer chosen on the left (year / month are ignored); the
-  // spatial option is fixed once the first series is on the graph, and every series follows
-  // the same pixel or region when it moves.
+  // The left panel's layer is added to the plot ("basket") on the right with Add to plot.
+  // A plot holds one gas; the area type is fixed while it has layers, and every layer
+  // follows the same pixel or region when it moves.
   const ts = (() => {
     const $ = id => document.getElementById(id);
-    const btn = $("msTs"), panel = $("tsResults"), titleEl = $("tsTitle");
-    const whereSeg = $("tsWhere"), lockEl = $("tsLock"), locBox = $("tsLoc"), locTxt = $("tsLocTxt"), drawBtn = $("tsDraw");
-    const defEl = $("tsDef"), aggBox = $("tsAggBox"), aggSeg = $("tsAgg"), stepBox = $("tsStepBox"), stepSeg = $("tsStep");
-    const scaleBox = $("tsScaleBox"), scaleEl = $("tsScale"), scaleHint = $("tsScaleHint");
-    const addBtn = $("tsAdd"), msgEl = $("tsMsg"), graph = $("tsGraph"), listEl = $("tsList"), noteEl = $("tsNote");
+    const btn = $("msTs"), panel = $("tsResults"), titleEl = $("tsTitle"), gasPill = $("tsGasPill");
+    const whereSeg = $("tsWhere"), lockEl = $("tsLock"), regionTools = $("tsRegionTools"), shapeSeg = $("tsShape");
+    const drawBtn = $("tsDraw"), locBox = $("tsLoc"), locTxt = $("tsLocTxt"), aggBox = $("tsAggBox"), aggSeg = $("tsAgg");
+    const scaleEl = $("tsScale"), scaleBox = $("tsScaleBox"), bandEl = $("tsBand"), bandBox = $("tsBandBox");
+    const pngBtn = $("tsPng"), dpiSel = $("tsDpi"), csvBtn = $("tsCsv"), emptyEl = $("tsEmpty"), noteEl = $("tsNote");
+    const listEl = $("tsList"), countEl = $("tsCount"), clearBtn = $("tsClear"), statsCard = $("tsStatsCard"), statsEl = $("tsStats");
+    const addBox = $("tsAddBox"), defEl = $("tsDef"), stepBox = $("tsStepBox"), stepSeg = $("tsStep");
+    const gasWarn = $("tsGasWarn"), addBtn = $("tsAdd"), msgEl = $("tsMsg");
     const { esc, fmtVal } = GRID_UI;
     const COLOURS = ["#0E8C8A", "#E8A33D", "#16324F", "#B2182B", "#6A4C93", "#2166AC", "#7A8B2E", "#C2185B"];
-    const ESTIMATES = { prior: "Prior", posterior: "Posterior", difference: "Difference (posterior − prior)" };
-    const SCALE_HINT = scaleHint.textContent;
-    const st = { active: false, where: "pixel", agg: "mean", step: "annual", loc: null, series: [], chart: null,
-                 cache: new Map(), token: 0, drawMode: false, drag: null, colour: 0, busy: false, sticky: false };
+    const GASES = { CH4: ["CH₄", "Methane"], N2O: ["N₂O", "Nitrous oxide"], CO2: ["CO₂", "Carbon dioxide"] };
+    const F = g => GASES[g]?.[0] || g;
+    const ESTIMATES = { prior: "Prior", posterior: "Posterior", difference: "Difference" };
+    const GAS_SELECT = { edgar: "edgarGas", inverse: "invGas" };
+    const st = { active: false, where: "pixel", shape: "rect", agg: "mean", step: "annual", loc: null, layers: [],
+                 chart: null, cache: new Map(), token: 0, drawMode: false, drag: null, poly: null, colour: 0, seq: 0,
+                 busy: false, areaWarn: "" };
     map.createPane("tsPane").style.zIndex = 430;
     const marks = L.layerGroup();
     const LINE = { pane: "tsPane", color: "#0B5563", weight: 2, interactive: false };
-
     const seg = (box, attr, value) =>
       box.querySelectorAll(`[data-${attr}]`).forEach(b => b.setAttribute("aria-checked", String(b.dataset[attr] === value)));
     const lngTxt = (v, d) => `${Math.abs(v).toFixed(d)}°${v < 0 ? "W" : "E"}`;
     const hexA = (h, a) => h + Math.round(a * 255).toString(16).padStart(2, "0");
     const finite = vs => vs.filter(v => v != null && Number.isFinite(v));
     const mean = xs => xs.reduce((s, x) => s + x, 0) / xs.length;
-    function setMsg(text, warn){ msgEl.textContent = text || ""; msgEl.classList.toggle("warn", !!warn); st.sticky = !!warn; }
+    function setMsg(text, warn){ msgEl.textContent = text || ""; msgEl.classList.toggle("warn", !!warn); }
 
-    // ---- the series to add: the layer chosen in the left panel ----
+    // ---- the layer to add: the one chosen in the left panel ----
     const ds = () => datasetSel.value;
-    const val = id => document.getElementById(id).value;
+    const val = id => $(id).value;
     const optText = id => { const s = $(id), o = s.selectedOptions[0]; return o && o.value ? o.textContent.split(" · ")[0].trim() : s.value; };
     function currentDef(){
       if (ds() === "edgar") {
         const gas = val("edgarGas"), sector = val("edgarSector");
-        if (!gas || !sector) return { missing: "Choose a gas and a sector under “Select the layer” in the left panel." };
+        if (!gas || !sector) return { missing: "Choose a gas and a sector above to add an EDGAR layer." };
         return { dataset: "edgar", gas, sector, step: st.step };
       }
       if (ds() === "inverse") {
         const model = val("invModel"), transport = val("invTransport"), gas = val("invGas"), e = val("invEstimate");
-        if (!model || !transport || !gas) return { missing: "Choose an inverse model, a transport model and a gas under “Select the layer” in the left panel." };
+        if (!model || !transport || !gas) return { missing: "Choose an inverse model, a transport model and a gas above." };
         return { dataset: "inverse", model, transport, gas, estimate: ESTIMATES[e] ? e : "posterior" };
       }
-      return { missing: "Time series are available for EDGAR and the Inverse model: choose one of them in step 1 on the left." };
+      return { missing: "Time series are available for EDGAR and the Inverse model: choose one of them in step 1." };
     }
-    function defHtml(d){
-      if (d.dataset === "edgar")
-        return `<b>EDGAR</b> · ${esc(optText("edgarGas"))} · ${esc(optText("edgarSector"))}<small>${d.step === "monthly" ? "Monthly values" : "Annual totals"}, every year of the dataset</small>`;
-      return `<b>Inverse model</b> · ${esc(d.model)} ${esc(d.transport)} · ${esc(optText("invGas"))}<small>${esc(ESTIMATES[d.estimate])}, every year of the run</small>`;
+    function shortName(def){
+      if (def.dataset === "edgar") return `EDGAR ${optText("edgarSector")}${def.step === "monthly" ? " (monthly)" : ""}`;
+      return `${def.model} ${def.transport} ${ESTIMATES[def.estimate]}`;
     }
-    const aggText = s => st.where === "pixel" ? "Single pixel"
-      : `${st.where === "region" ? "Region" : "Whole image"} ${s.agg} of ${s.data ? s.data.n_cells : "?"} cells`;
+    function defHtml(def){
+      if (def.dataset === "edgar")
+        return `<b>EDGAR · ${esc(F(def.gas))} · ${esc(optText("edgarSector"))}</b><small>${def.step === "monthly" ? "Monthly values" : "Annual totals"}, every year of the dataset</small>`;
+      return `<b>Inverse model · ${esc(F(def.gas))} · ${esc(def.model)} ${esc(def.transport)}</b><small>${esc(ESTIMATES[def.estimate])} flux, every year of the run</small>`;
+    }
+    const keyOf = def => JSON.stringify(def);
+    const plotGas = () => st.layers[0]?.def.gas || null;
+    const aggText = l => st.where === "pixel" ? "Single pixel"
+      : l.data?.fallback ? "Region smaller than one cell: the cell at its centre"
+      : `${st.where === "region" ? "Region" : "Whole image"} ${st.agg} of ${l.data ? l.data.n_cells : "…"} cells`;
 
     // ---- data ----
     const locReady = () => st.where === "whole" || !!st.loc;
-    function fetchSeries(def, agg){
-      const q = new URLSearchParams({ ...def, where: st.where, agg });
-      if (st.where === "pixel") { q.set("lat", st.loc.lat.toFixed(5)); q.set("lng", st.loc.lng.toFixed(5)); }
-      else if (st.where === "region") ["s", "w", "n", "e"].forEach(k => q.set(k, st.loc[k].toFixed(4)));
+    function fetchSeries(def){
+      const q = new URLSearchParams({ ...def, where: st.where, agg: st.agg });
+      const L0 = st.loc;
+      if (st.where === "pixel") { q.set("lat", L0.lat.toFixed(5)); q.set("lng", L0.lng.toFixed(5)); }
+      else if (st.where === "region" && L0.type === "rect") ["s", "w", "n", "e"].forEach(k => q.set(k, L0[k].toFixed(4)));
+      else if (st.where === "region") q.set("poly", L0.pts.map(([a, b]) => `${a.toFixed(4)},${b.toFixed(4)}`).join(";"));
       const url = `/api/map/timeseries/?${q}`;
       if (!st.cache.has(url)) {
         const p = fetch(url).then(async r => {
@@ -5402,249 +5507,456 @@ if (MAP_STANDALONE) (function mapWindow(){
     async function add(){
       const def = currentDef();
       if (def.missing || !locReady() || st.busy) return;
-      const agg = st.where === "pixel" ? "mean" : st.agg;
-      const key = JSON.stringify([def, agg]);
-      if (st.series.some(s => s.key === key)) return setMsg("This series is already on the graph.", true);
-      const scaled = st.series.length > 0 && scaleEl.checked;
-      st.busy = true; syncAdd(); setMsg("Loading the series…");
+      if (plotGas() && def.gas !== plotGas()) return;
+      if (st.layers.some(l => l.key === keyOf(def))) return;
+      st.busy = true; syncAdd(); setMsg("Loading the time series…");
       try {
-        const data = await fetchSeries(def, agg);
-        st.series.push({ key, def, agg, scaled, data, error: null, title: data.title, unit: data.unit,
-                         colour: COLOURS[st.colour++ % COLOURS.length] });
+        const data = await fetchSeries(def);
+        st.layers.push({ id: ++st.seq, key: keyOf(def), def, data, error: null, on: true, short: shortName(def),
+                         unit: data.unit, colour: COLOURS[st.colour++ % COLOURS.length] });
         setMsg("");
-        render(); drawMarks();
+        render();
       } catch (err) {
         setMsg(err.message, true);
       } finally {
         st.busy = false; syncAdd();
       }
     }
-    // The pixel or region moved: every series follows it
+    // The area moved (or the aggregation changed): every layer follows it
     async function refetchAll(){
-      const tok = ++st.token, list = st.series.slice();
-      if (!list.length) return;
-      setMsg("Updating the graph for the new location…");
-      const res = await Promise.all(list.map(s => fetchSeries(s.def, s.agg).then(d => ({ d }), e => ({ e: e.message }))));
+      const tok = ++st.token, list = st.layers.slice();
+      if (!list.length) return render();
+      st.areaWarn = ""; syncLoc();
+      const res = await Promise.all(list.map(l => fetchSeries(l.def).then(d => ({ d }), e => ({ e: e.message }))));
       if (tok !== st.token) return;
-      list.forEach((s, i) => { s.data = res[i].d || null; s.error = res[i].e || null; });
-      setMsg(list.some(s => s.error) ? "Some series have no data at this location (see the list below the graph)." : "", list.some(s => s.error));
-      render(); drawMarks();
+      list.forEach((l, i) => { l.data = res[i].d || null; l.error = res[i].e || null; });
+      render();
     }
 
-    // ---- scaling: y' = a·y + b maps a series' range onto the series above it ----
+    // ---- scaling: every ticked layer's min–max is mapped onto the first ticked layer ----
+    const visible = () => st.layers.filter(l => l.on && l.data);
     function computeScales(){
-      let ref = null;                          // displayed values of the previous series with data
-      st.series.forEach(s => {
-        s.tf = { a: 1, b: 0 };
-        if (!s.data) return;
-        const v = finite(s.data.values);
-        if (s.scaled && ref && v.length && ref.length) {
-          const vmin = Math.min(...v), vmax = Math.max(...v), rmin = Math.min(...ref), rmax = Math.max(...ref);
-          if (vmax > vmin && rmax > rmin) { s.tf.a = (rmax - rmin) / (vmax - vmin); s.tf.b = rmin - s.tf.a * vmin; }
-          else if (mean(v)) s.tf.a = mean(ref) / mean(v);
-        }
-        ref = v.map(y => s.tf.a * y + s.tf.b);
+      const vis = visible(), ref = vis[0];
+      st.layers.forEach(l => { l.tf = { a: 1, b: 0, ref: l === ref }; });
+      if (!ref || !scaleEl.checked) return;
+      const r = finite(ref.data.values), rmin = Math.min(...r), rmax = Math.max(...r);
+      vis.slice(1).forEach(l => {
+        const v = finite(l.data.values);
+        if (!v.length || !r.length) return;
+        const vmin = Math.min(...v), vmax = Math.max(...v);
+        if (vmax > vmin && rmax > rmin) { l.tf.a = (rmax - rmin) / (vmax - vmin); l.tf.b = rmin - l.tf.a * vmin; }
+        else if (mean(v)) l.tf.a = mean(r) / mean(v);
       });
     }
+    const scaling = () => scaleEl.checked && visible().length > 1;
+    const isScaled = l => scaling() && l.on && !l.tf?.ref;
+    const scaleTxt = tf => `×${fmtVal(tf.a)}${Math.abs(tf.b) > 0 ? ` ${tf.b < 0 ? "−" : "+"} ${fmtVal(Math.abs(tf.b))}` : ""}`;
+    const legendLabel = l => !scaling() ? l.short : l.tf.ref ? `${l.short} (reference)` : `${l.short} (${scaleTxt(l.tf)})`;
 
-    // ---- graph ----
-    function render(){
-      if (st.chart) { st.chart.destroy(); st.chart = null; }
-      graph.hidden = !st.series.length;
-      lock();
-      if (!st.series.length) { listEl.innerHTML = ""; noteEl.textContent = ""; return; }
+    // ---- graph (the same config draws the panel chart and the PNG export) ----
+    function chartConfig(exp){
       computeScales();
-      const datasets = [], xs = [], lineY = [];
-      st.series.forEach(s => {
-        if (!s.data) return;
-        const d = s.data, { a, b } = s.tf, tf = y => (y == null ? null : a * y + b);
-        xs.push(...d.t);
-        lineY.push(...finite(d.values).map(tf));
-        if (d.lo && d.hi && !s.scaled) {          // 1σ range of a single inverse-model cell
+      const vis = visible(), datasets = [], xs = [], lineY = [];
+      const mixed = !scaling() && new Set(vis.map(l => l.unit)).size > 1;   // units go in the legend then
+      vis.forEach(l => {
+        const d = l.data, { a, b } = l.tf, tf = y => (y == null ? null : a * y + b), sc = isScaled(l);
+        xs.push(...d.t); lineY.push(...finite(d.values).map(tf));
+        if (bandEl.checked && d.lo && d.hi && !sc) {          // 1σ range of a single inverse-model cell
           datasets.push({ data: d.t.map((x, j) => ({ x, y: tf(d.lo[j]) })), borderWidth: 0, pointRadius: 0, fill: false, _band: true, order: 2 });
           datasets.push({ data: d.t.map((x, j) => ({ x, y: tf(d.hi[j]) })), borderWidth: 0, pointRadius: 0, fill: "-1",
-                          backgroundColor: hexA(s.colour, 0.16), _band: true, order: 2 });
+                          backgroundColor: hexA(l.colour, 0.15), _band: true, order: 2 });
         }
         datasets.push({
+          label: mixed ? `${l.short} [${l.unit}]` : legendLabel(l), _l: l, order: 1,
           data: d.t.map((x, j) => ({ x, y: tf(d.values[j]), raw: d.values[j], label: d.labels[j] })),
-          borderColor: s.colour, backgroundColor: s.colour, borderWidth: 2, borderDash: s.scaled ? [6, 3] : [],
-          pointRadius: d.t.length > 60 ? 0 : 2.5, pointHoverRadius: 4, tension: 0, clip: 6, _s: s, order: 1,
+          borderColor: l.colour, backgroundColor: l.colour, borderWidth: exp ? 2.2 : 2, borderDash: sc ? [6, 3] : [],
+          pointRadius: d.t.length > 60 ? 0 : (exp ? 2.8 : 2.4), pointHoverRadius: 4, tension: 0, clip: 6,
         });
       });
       let xmin = Math.floor(Math.min(...xs)), xmax = Math.ceil(Math.max(...xs));
       if (!(xmax > xmin)) { xmin -= 1; xmax += 1; }
       const span = xmax - xmin, step = span > 16 ? 4 : span > 8 ? 2 : 1;
-      const base = st.series.find(s => s.data && !s.scaled) || st.series.find(s => s.data);
-      // With several lines the axis fits the lines; a wide uncertainty band is clipped instead of flattening them
       let yr = {};
-      if (st.series.length > 1 && lineY.length) {
+      if (vis.length > 1 && lineY.length) {   // fit the lines; a wide uncertainty band is clipped rather than flattening them
         const lo = Math.min(...lineY), hi = Math.max(...lineY), pad = (hi - lo) * 0.08 || Math.abs(hi) * 0.1 || 1;
         yr = { min: lo >= 0 ? Math.max(0, lo - pad) : lo - pad, max: hi + pad };
       }
-      st.chart = new Chart($("tsChart"), {
+      const ref = vis[0], fs = exp ? 11 : 9;
+      const yTitle = !ref ? "" : scaling() ? `${ref.unit} (scaled to ${ref.short})` : mixed ? "Value (units in the legend)" : ref.unit;
+      const grid = { color: "rgba(22,50,79,.07)" };
+      return {
         type: "line",
         data: { datasets },
         options: {
-          animation: false, maintainAspectRatio: false,
+          responsive: !exp, maintainAspectRatio: false, animation: false,
+          ...(exp ? { devicePixelRatio: exp.dpr } : {}),
+          layout: { padding: exp ? { top: 4, right: 18, bottom: 26, left: 6 } : { top: 2 } },
           interaction: { mode: "nearest", axis: "x", intersect: false },
           plugins: {
-            legend: { display: false },
+            legend: {
+              position: "bottom",
+              labels: { boxWidth: 16, boxHeight: 3, padding: exp ? 12 : 8, font: { size: exp ? 11 : 9.5 }, color: "#2B3A4A",
+                        filter: it => !datasets[it.datasetIndex]._band },
+              onClick: exp ? null : (e, item) => { const l = datasets[item.datasetIndex]._l; if (l) { l.on = false; render(); } },
+            },
+            title: { display: !!exp, text: exp?.title, align: "start", color: "#16324F", font: { size: 16, weight: "700" }, padding: { bottom: 2 } },
+            subtitle: { display: !!exp, text: exp?.subtitle, align: "start", color: "#5B6B7A", font: { size: 11 }, padding: { bottom: 12 } },
             tooltip: {
               filter: it => !it.dataset._band,
               callbacks: {
                 title: items => items[0]?.raw.label || "",
                 label: it => {
-                  const s = it.dataset._s, r = it.raw.raw;
-                  return `${s.title}: ${r == null ? "no data" : fmtVal(r) + " " + s.unit}${s.scaled ? " (scaled on the graph)" : ""}`;
+                  const l = it.dataset._l, r = it.raw.raw;
+                  return `${l.short}: ${r == null ? "no data" : `${fmtVal(r)} ${l.unit}`}${isScaled(l) ? ` (plotted ${scaleTxt(l.tf)})` : ""}`;
                 },
               },
             },
           },
           scales: {
-            x: { type: "linear", min: xmin, max: xmax, ticks: { stepSize: step, callback: v => String(Math.round(v)), font: { size: 9 } },
-                 grid: { color: "rgba(22,50,79,.06)" } },
-            y: { ...yr, title: { display: true, text: base?.unit || "", font: { size: 9 } },
-                 ticks: { font: { size: 9 }, callback: v => fmtVal(v), maxTicksLimit: 7 }, grid: { color: "rgba(22,50,79,.08)" } },
+            x: { type: "linear", min: xmin, max: xmax, grid, title: { display: !!exp, text: "Year", font: { size: fs } },
+                 ticks: { stepSize: step, callback: v => String(Math.round(v)), font: { size: fs }, color: "#4A5A6A" } },
+            y: { ...yr, grid, title: { display: true, text: yTitle, font: { size: fs } },
+                 ticks: { font: { size: fs }, color: "#4A5A6A", callback: v => fmtVal(v), maxTicksLimit: 7 } },
           },
         },
-      });
-      listEl.innerHTML = st.series.map((s, i) => `<li>
-          <span class="ts-sw" style="background:${s.scaled ? `repeating-linear-gradient(90deg,${s.colour} 0 5px,transparent 5px 8px)` : s.colour}"></span>
-          <span class="nm"><b>${esc(s.title)}</b>
-            <small>${esc(aggText(s))} · ${esc(s.unit)}${s.scaled ? `<span class="ts-tag sc" title="Drawn as value × ${fmtVal(s.tf.a)} ${s.tf.b < 0 ? "−" : "+"} ${fmtVal(Math.abs(s.tf.b))} to fit the series above">Scaled</span>` : ""}</small>
-            ${s.error ? `<small class="warn">${esc(s.error)}</small>` : ""}</span>
-          <button type="button" class="ts-rm" data-rm="${i}" title="Remove from the graph" aria-label="Remove ${esc(s.title)}"><i class="bi bi-x-lg"></i></button>
-        </li>`).join("");
-      listEl.querySelectorAll("[data-rm]").forEach(b => b.addEventListener("click", () => {
-        st.series.splice(+b.dataset.rm, 1);
-        if (!st.series.length) st.colour = 0;
-        render(); drawMarks(); syncAdd();
-      }));
-      const units = new Set(st.series.filter(s => s.data && !s.scaled).map(s => s.unit));
-      noteEl.textContent = [
-        st.where === "pixel" ? "Values of the grid cell under the point; EDGAR and inverse-model cells differ in size."
-                             : "At each time step the cells inside are combined with the mean or median shown in the list.",
-        st.series.some(s => s.scaled) ? "Dashed lines are scaled to fit the series above them; the tooltip and the CSV give the original values." : "",
-        st.series.some(s => s.data?.lo) ? "Shaded band: the inverse model's 1σ-equivalent range for this cell." : "",
-        units.size > 1 ? "Unscaled series with different units share the axis: tick “Scale to the previous series” when adding them." : "",
-      ].filter(Boolean).join(" ");
+        plugins: exp ? [{
+          id: "tsPaper",
+          beforeDraw(c){ const { ctx, width, height } = c; ctx.save(); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, width, height); ctx.restore(); },
+          afterDraw(c){
+            const { ctx, height } = c; ctx.save();
+            ctx.fillStyle = "#6B7B8A"; ctx.font = "10px 'Source Sans 3', Arial, sans-serif"; ctx.textBaseline = "bottom";
+            ctx.fillText(exp.source, 8, height - 6); ctx.restore();
+          },
+        }] : [],
+      };
     }
 
-    // ---- map: pixel click, region box, outlines ----
+    function render(){
+      if (st.chart) { st.chart.destroy(); st.chart = null; }
+      const vis = visible(), n = st.layers.length;
+      emptyEl.hidden = vis.length > 0;
+      emptyEl.querySelector("b").textContent = n ? "No layer is ticked" : "No layers in the plot yet";
+      if (vis.length) st.chart = new Chart($("tsChart"), chartConfig());
+      else computeScales();
+      // header, lock, toolbar
+      const g = plotGas();
+      gasPill.hidden = !g;
+      if (g) gasPill.innerHTML = `<i class="bi bi-droplet-half"></i>${esc(F(g))} · ${esc(GASES[g]?.[1] || "")}`;
+      whereSeg.querySelectorAll("button").forEach(b => { b.disabled = n > 0; });
+      lockEl.hidden = !n;
+      countEl.textContent = String(n);
+      clearBtn.hidden = !n;
+      pngBtn.disabled = dpiSel.disabled = csvBtn.disabled = !vis.length;
+      scaleEl.disabled = vis.length < 2;
+      scaleBox.classList.toggle("off", vis.length < 2);
+      scaleBox.title = vis.length < 2 ? "Tick at least two layers to scale them" : "Map every other layer's minimum–maximum onto the first ticked layer";
+      bandBox.hidden = !vis.some(l => l.data.lo && !isScaled(l));
+      // basket
+      listEl.innerHTML = n ? st.layers.map(l => {
+        const sc = isScaled(l), tags = [
+          scaling() && l.tf.ref && l.on ? `<span class="ts-tag ref" title="Other layers are scaled to this one">Reference</span>` : "",
+          sc ? `<span class="ts-tag sc" title="Plotted as value ${esc(scaleTxt(l.tf))}">Scale ${esc(scaleTxt(l.tf))}</span>` : "",
+        ].join("");
+        return `<li class="${l.on ? "" : "off"}">
+          <input type="checkbox" data-on="${l.id}" ${l.on ? "checked" : ""} aria-label="Show ${esc(l.short)} on the graph">
+          <span class="ts-sw" style="background:${sc ? `repeating-linear-gradient(90deg,${l.colour} 0 5px,transparent 5px 8px)` : l.colour}"></span>
+          <span class="nm"><b>${esc(l.short)}</b><small>${esc(l.def.dataset === "edgar" ? "EDGAR" : "Inverse model")} · ${esc(aggText(l))} · ${esc(l.unit)}</small>
+            ${l.error ? `<small class="warn"><i class="bi bi-exclamation-triangle"></i> ${esc(l.error)}</small>` : ""}
+            ${tags ? `<span class="ts-tags">${tags}</span>` : ""}</span>
+          <button type="button" class="ts-rm" data-rm="${l.id}" title="Remove from the plot" aria-label="Remove ${esc(l.short)} from the plot"><i class="bi bi-trash3"></i></button>
+        </li>`;
+      }).join("") : `<li class="ts-list-empty">Layers you add with <b>Add to plot</b> in the left panel appear here. Tick or untick them to show or hide them on the graph.</li>`;
+      listEl.querySelectorAll("[data-on]").forEach(c => c.addEventListener("change", () => {
+        const l = st.layers.find(x => x.id === +c.dataset.on); if (l) { l.on = c.checked; render(); }
+      }));
+      listEl.querySelectorAll("[data-rm]").forEach(b => b.addEventListener("click", () => {
+        st.layers = st.layers.filter(x => x.id !== +b.dataset.rm);
+        if (!st.layers.length) st.colour = 0;
+        render(); syncAdd();
+      }));
+      renderStats(vis);
+      const units = new Set(vis.map(l => l.unit));
+      noteEl.textContent = !vis.length ? "" : [
+        st.where === "pixel" ? "Values of the grid cell under the point; EDGAR (0.1°) and inverse-model (≈ 25 km) cells differ in size." : "",
+        scaling() ? "Dashed lines are scaled so their minimum–maximum matches the reference layer; the legend shows each scale, the tooltip, statistics and CSV give original values." : "",
+        !scaling() && units.size > 1 ? "The ticked layers have different units: switch on “Scale to first layer” to compare their shape." : "",
+        vis.some(l => l.data.lo) && bandEl.checked ? "Shaded band: the inverse model's 1σ-equivalent range for the pixel." : "",
+      ].filter(Boolean).join(" ");
+      drawMarks();
+    }
+
+    function renderStats(vis){
+      statsCard.hidden = !vis.length;
+      if (!vis.length) return;
+      const pct = v => Number.isFinite(v) ? `${v > 0 ? "+" : v < 0 ? "−" : ""}${Math.abs(v).toFixed(1)}%` : "–";
+      const rows = vis.map(l => {
+        const d = l.data, pts = d.t.map((x, j) => [x, d.values[j], d.labels[j]]).filter(p => p[1] != null && Number.isFinite(p[1]));
+        if (pts.length < 2) return `<tr><td><b><span class="ts-sw" style="background:${l.colour}"></span>${esc(l.short)}</b></td><td colspan="3">Not enough values</td></tr>`;
+        const ys = pts.map(p => p[1]), m = mean(ys), mx = mean(pts.map(p => p[0]));
+        let sxy = 0, sxx = 0;
+        pts.forEach(([x, y]) => { sxy += (x - mx) * (y - m); sxx += (x - mx) ** 2; });
+        const slope = sxx ? sxy / sxx : 0, trend = m ? slope / m * 100 : NaN;
+        const first = pts[0], last = pts.at(-1), change = first[1] ? (last[1] - first[1]) / Math.abs(first[1]) * 100 : NaN;
+        const cls = v => v > 0 ? "up" : v < 0 ? "down" : "";
+        return `<tr>
+          <td><b title="${esc(l.short)}"><span class="ts-sw" style="background:${l.colour}"></span>${esc(l.short)}</b></td>
+          <td>${fmtVal(m)}<small>${fmtVal(Math.min(...ys))} – ${fmtVal(Math.max(...ys))}</small></td>
+          <td><span class="${cls(trend)}">${pct(trend)}</span><small title="${esc(l.unit)} per year">${slope < 0 ? "−" : "+"}${fmtVal(Math.abs(slope))}/yr</small></td>
+          <td><span class="${cls(change)}">${pct(change)}</span><small>${esc(first[2])}–${esc(last[2])}</small></td>
+        </tr>`;
+      }).join("");
+      statsEl.innerHTML = `<table><thead><tr><th>Layer</th><th>Mean<br>(range)</th><th>Trend<br>per year</th><th>Change<br>first–last</th></tr></thead><tbody>${rows}</tbody></table>
+        <p class="cmp-note">Trend: least-squares slope as % of the mean per year. Units as in the layer list.</p>`;
+    }
+
+    // ---- downloads ----
+    const CRC = (() => { const t = new Uint32Array(256);
+      for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; }
+      return t; })();
+    const crc32 = bytes => { let c = 0xFFFFFFFF; for (const b of bytes) c = CRC[(c ^ b) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+    // Write the resolution into the PNG (pHYs chunk) so image and print software see the chosen dpi
+    function pngWithDpi(buf, dpi){
+      const src = new Uint8Array(buf), parts = [src.subarray(0, 8)];
+      const ppm = Math.round(dpi / 0.0254), phys = new Uint8Array(21), dv = new DataView(phys.buffer);
+      dv.setUint32(0, 9); phys.set([0x70, 0x48, 0x59, 0x73], 4); dv.setUint32(8, ppm); dv.setUint32(12, ppm); phys[16] = 1;
+      dv.setUint32(17, crc32(phys.subarray(4, 17)));
+      for (let p = 8; p < src.length;) {
+        const len = new DataView(src.buffer, src.byteOffset + p, 4).getUint32(0), type = String.fromCharCode(...src.subarray(p + 4, p + 8));
+        const chunk = src.subarray(p, p + 12 + len);
+        if (type !== "pHYs") parts.push(chunk);
+        if (type === "IHDR") parts.push(phys);
+        p += 12 + len;
+      }
+      return new Blob(parts, { type: "image/png" });
+    }
+    function locationText(){
+      const L0 = st.loc;
+      if (st.where === "whole") return `Whole image (all Ireland cells), ${st.agg} of the cells`;
+      if (st.where === "pixel") return `Pixel at ${L0.lat.toFixed(3)}°N, ${lngTxt(L0.lng, 3)}`;
+      return (L0.type === "rect" ? `Rectangle ${L0.s.toFixed(2)}–${L0.n.toFixed(2)}°N, ${lngTxt(L0.w, 2)} to ${lngTxt(L0.e, 2)}`
+                                 : `Polygon of ${L0.pts.length} points`) + `, ${st.agg} of the cells`;
+    }
+    function sourceText(vis){
+      const s = [];
+      if (vis.some(l => l.def.dataset === "edgar")) s.push("EDGAR_2025_GHG (EC JRC / IEA)");
+      if (vis.some(l => l.def.dataset === "inverse")) s.push("PARIS inverse models via ICOS Carbon Portal (doi:10.18160/GR1Q-6SK4)");
+      return `Source: ${s.join("; ")} · Ireland GHG Policy Impact Explorer`;
+    }
+    async function exportPng(){
+      const vis = visible();
+      if (!vis.length) return;
+      const dpi = +dpiSel.value, W = 960, H = 560;          // 10 × 5.8 in at any dpi
+      const box = document.createElement("div");
+      box.style.cssText = `position:fixed;left:-20000px;top:0;width:${W}px;height:${H}px`;
+      const cv = document.createElement("canvas");
+      cv.width = W; cv.height = H; cv.style.width = W + "px"; cv.style.height = H + "px";
+      box.appendChild(cv); document.body.appendChild(box);
+      const label = pngBtn.innerHTML;
+      pngBtn.disabled = true; pngBtn.innerHTML = '<i class="bi bi-hourglass-split"></i>PNG';
+      try {
+        const chart = new Chart(cv, chartConfig({
+          dpr: dpi / 96,
+          title: `${F(plotGas())} time series · ${titleEl.textContent.replace(" time series", "")}`,
+          subtitle: `${locationText()}${scaling() ? " · layers scaled to the reference layer (min–max)" : ""}`,
+          source: sourceText(vis),
+        }));
+        const blob = await new Promise(r => cv.toBlob(r, "image/png"));
+        chart.destroy();
+        const out = pngWithDpi(await blob.arrayBuffer(), dpi);
+        const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(out), download: `time_series_${plotGas()}_${st.where}_${dpi}dpi.png` });
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      } finally {
+        box.remove(); pngBtn.innerHTML = label; pngBtn.disabled = false;
+      }
+    }
+    function csv(){
+      const times = new Map(), vis = st.layers.filter(l => l.data);
+      vis.forEach(l => l.data.t.forEach((x, j) => { if (!times.has(x)) times.set(x, l.data.labels[j]); }));
+      const xs = [...times.keys()].sort((a, b) => a - b), q = v => `"${String(v).replace(/"/g, '""')}"`;
+      const rows = [["Gas", F(plotGas())], ["Area", locationText()], [],
+        ["Time", ...vis.map(l => `${l.short} - ${aggText(l)} (${l.unit})`)],
+        ...xs.map(x => [times.get(x), ...vis.map(l => {
+          const j = l.data.t.indexOf(x);
+          return j >= 0 && l.data.values[j] != null ? l.data.values[j] : "";
+        })])];
+      const blob = new Blob(["﻿" + rows.map(r => r.map(q).join(",")).join("\r\n")], { type: "text/csv" });
+      const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: `time_series_${plotGas()}_${st.where}.csv` });
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    }
+
+    // ---- map: pixel click, rectangle drag, polygon clicks ----
     function drawMarks(){
       marks.clearLayers();
       if (!st.active || !st.loc || st.where === "whole") return;
+      const L0 = st.loc, area = { ...LINE, dashArray: "6 4", fillColor: "#0E8C8A", fillOpacity: 0.1 };
       if (st.where === "pixel") {
         const seen = new Set();
-        st.series.forEach(s => {
-          const c = s.data?.cell;
+        st.layers.forEach(l => {
+          const c = l.data?.cell;
           if (c && !seen.has(String(c))) { seen.add(String(c)); marks.addLayer(L.rectangle(c, { ...LINE, fill: false, dashArray: "4 3" })); }
         });
-        marks.addLayer(L.circleMarker([st.loc.lat, st.loc.lng], { pane: "tsPane", radius: 5, color: "#fff", weight: 2, fillColor: "#0B5563", fillOpacity: 1, interactive: false }));
-      } else {
-        marks.addLayer(L.rectangle([[st.loc.s, st.loc.w], [st.loc.n, st.loc.e]], { ...LINE, dashArray: "6 4", fillColor: "#0E8C8A", fillOpacity: 0.08 }));
+        marks.addLayer(L.circleMarker([L0.lat, L0.lng], { pane: "tsPane", radius: 5, color: "#fff", weight: 2, fillColor: "#0B5563", fillOpacity: 1, interactive: false }));
+      } else if (!st.drawMode) {
+        marks.addLayer(L0.type === "rect" ? L.rectangle([[L0.s, L0.w], [L0.n, L0.e]], area) : L.polygon(L0.pts, area));
       }
       marks.addTo(map);
     }
-    function setLoc(loc){ st.loc = loc; setMsg(""); syncLoc(); drawMarks(); syncAdd(); refetchAll(); }
+    function setLoc(loc){ st.loc = loc; st.areaWarn = ""; syncLoc(); drawMarks(); syncAdd(); refetchAll(); }
+    function clearDraft(){
+      if (st.drag) { map.removeLayer(st.drag.rect); st.drag = null; }
+      if (st.poly) { [st.poly.line, st.poly.rubber, st.poly.dots].forEach(x => map.removeLayer(x)); st.poly = null; }
+    }
     function setDraw(on){
+      clearDraft();
       st.drawMode = on;
       drawBtn.setAttribute("aria-pressed", String(on));
       mapEl.classList.toggle("ts-drawing", on);
-      if (on) { map.dragging.disable(); map.boxZoom.disable(); } else { map.dragging.enable(); map.boxZoom.enable(); }
+      map.dragging[on && st.shape === "rect" ? "disable" : "enable"]();
+      map.boxZoom[on ? "disable" : "enable"]();
+      map.doubleClickZoom[on && st.shape === "poly" ? "disable" : "enable"]();
+      if (on && st.shape === "poly") {
+        st.poly = { pts: [], line: L.polyline([], LINE).addTo(map),
+                    rubber: L.polyline([], { ...LINE, dashArray: "4 4", opacity: 0.7 }).addTo(map), dots: L.layerGroup().addTo(map) };
+      }
+      drawMarks(); syncLoc();
+    }
+    function addVertex(ll){
+      const P = st.poly, cur = map.latLngToContainerPoint(ll);
+      if (P.pts.length) {
+        if (map.latLngToContainerPoint(P.pts.at(-1)).distanceTo(cur) < 5) return;     // 2nd click of a double-click
+        if (P.pts.length >= 3 && map.latLngToContainerPoint(P.pts[0]).distanceTo(cur) < 10) return finishPoly();
+      }
+      P.pts.push(ll); P.line.setLatLngs(P.pts);
+      P.dots.addLayer(L.circleMarker(ll, { pane: "tsPane", radius: P.pts.length === 1 ? 5.5 : 3.5, color: "#0B5563", weight: 2,
+                                           fillColor: P.pts.length === 1 ? "#E8A33D" : "#fff", fillOpacity: 1, interactive: false }));
       syncLoc();
     }
+    function finishPoly(){
+      const pts = st.poly?.pts || [];
+      if (pts.length < 3) { st.areaWarn = "A polygon needs at least three points."; return syncLoc(); }
+      const loc = { type: "poly", pts: pts.map(p => [p.lat, p.lng]) };
+      setDraw(false); setLoc(loc);
+    }
     map.on("click", e => {
-      if (st.active && st.where === "pixel") setLoc({ lat: e.latlng.lat, lng: e.latlng.lng });
+      if (!st.active) return;
+      if (st.drawMode && st.shape === "poly") addVertex(e.latlng);
+      else if (st.where === "pixel") setLoc({ lat: e.latlng.lat, lng: e.latlng.lng });
     });
+    map.on("dblclick", () => { if (st.active && st.poly) finishPoly(); });
     map.on("mousedown", e => {
-      if (!st.active || !st.drawMode) return;
+      if (!st.active || !st.drawMode || st.shape !== "rect") return;
       st.drag = { start: e.latlng, rect: L.rectangle([e.latlng, e.latlng], { ...LINE, dashArray: "6 4", fillColor: "#0E8C8A", fillOpacity: 0.14 }).addTo(map) };
     });
-    map.on("mousemove", e => { if (st.drag) st.drag.rect.setBounds(L.latLngBounds(st.drag.start, e.latlng)); });
+    map.on("mousemove", e => {
+      if (st.drag) st.drag.rect.setBounds(L.latLngBounds(st.drag.start, e.latlng));
+      const P = st.poly;
+      if (P && P.pts.length) P.rubber.setLatLngs([P.pts.at(-1), e.latlng, ...(P.pts.length >= 2 ? [P.pts[0]] : [])]);
+    });
     document.addEventListener("mouseup", () => {
       if (!st.drag) return;
       const b = st.drag.rect.getBounds();
       map.removeLayer(st.drag.rect); st.drag = null;
       if (b.getNorth() - b.getSouth() < 0.02 || b.getEast() - b.getWest() < 0.02) {
-        return setMsg("Drag on the map to draw a box (a single click is too small for a region).", true);
+        st.areaWarn = "Too small: press and drag on the map to draw the rectangle."; return syncLoc();
       }
       setDraw(false);
-      setLoc({ s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() });
+      setLoc({ type: "rect", s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() });
     });
     document.addEventListener("keydown", e => {
-      if (e.key !== "Escape" || !st.drawMode) return;
-      if (st.drag) { map.removeLayer(st.drag.rect); st.drag = null; }
-      setDraw(false);
+      if (!st.active || !st.drawMode) return;
+      if (e.key === "Escape") setDraw(false);
+      else if (st.poly && e.key === "Enter") { e.preventDefault(); finishPoly(); }
+      else if (st.poly && e.key === "Backspace" && st.poly.pts.length && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName)) {
+        e.preventDefault();
+        st.poly.pts.pop(); st.poly.line.setLatLngs(st.poly.pts);
+        const dots = st.poly.dots.getLayers(); if (dots.length) st.poly.dots.removeLayer(dots.at(-1));
+        st.poly.rubber.setLatLngs([]); syncLoc();
+      }
     });
     drawBtn.addEventListener("click", () => setDraw(!st.drawMode));
 
     // ---- panel state ----
-    function lock(){
-      const on = st.series.length > 0;
-      whereSeg.querySelectorAll("button").forEach(b => { b.disabled = on; });
-      lockEl.hidden = !on;
-    }
     function syncLoc(){
-      drawBtn.hidden = st.where !== "region";
-      drawBtn.lastChild.textContent = st.drawMode ? "Cancel" : st.loc ? "Redraw" : "Draw region";
-      const L0 = st.loc;
-      locTxt.textContent =
-          st.where === "whole" ? "Every Ireland cell of the dataset."
-        : st.where === "pixel" ? (L0 ? `Pixel at ${L0.lat.toFixed(3)}°N, ${lngTxt(L0.lng, 3)}. Click elsewhere to move it.` : "Click a cell on the map.")
-        : st.drawMode ? "Drag a box on the map (Esc to cancel)."
-        : L0 ? `Region ${L0.s.toFixed(2)}–${L0.n.toFixed(2)}°N, ${lngTxt(L0.w, 2)} to ${lngTxt(L0.e, 2)}`
-        : "Click “Draw region”, then drag a box on the map.";
-      locBox.classList.toggle("set", st.where === "whole" || (!!L0 && !st.drawMode));
+      const L0 = st.loc, region = st.where === "region";
+      regionTools.hidden = !region;
+      aggBox.hidden = st.where === "pixel";
+      drawBtn.querySelector("span").textContent = st.drawMode ? "Cancel" : L0 && region ? "Redraw" : "Draw";
+      drawBtn.querySelector("i").className = st.drawMode ? "bi bi-x-lg" : "bi bi-pencil";
+      let html, cls = "";
+      if (st.areaWarn) { html = esc(st.areaWarn); cls = "warn"; }
+      else if (st.where === "whole") { html = "Every Ireland cell of each dataset."; cls = "set"; }
+      else if (st.where === "pixel") {
+        html = L0 ? `Pixel at <b>${L0.lat.toFixed(3)}°N, ${lngTxt(L0.lng, 3)}</b>. Click elsewhere on the map to move it.` : "Click a cell on the map to choose the pixel.";
+        cls = L0 ? "set" : "";
+      } else if (st.drawMode && st.shape === "rect") { html = "Press and drag on the map to draw the rectangle. <kbd>Esc</kbd> cancels."; cls = "drawing"; }
+      else if (st.drawMode) {
+        const k = st.poly?.pts.length || 0;
+        html = `Click on the map to add points${k ? ` (${k} so far)` : ""}. Finish with a double-click, <kbd>Enter</kbd> or a click on the first point · <kbd>Backspace</kbd> undoes · <kbd>Esc</kbd> cancels.`;
+        cls = "drawing";
+      } else if (L0) {
+        html = L0.type === "rect" ? `Rectangle <b>${L0.s.toFixed(2)}–${L0.n.toFixed(2)}°N, ${lngTxt(L0.w, 2)} to ${lngTxt(L0.e, 2)}</b>`
+                                  : `Polygon of <b>${L0.pts.length} points</b>`;
+        cls = "set";
+      } else html = "Choose Rectangle or Polygon and click <b>Draw</b>.";
+      locTxt.innerHTML = html;
+      locBox.className = "ts-loc" + (cls ? " " + cls : "");
       mapEl.classList.toggle("ts-picking", st.active && st.where === "pixel");
       titleEl.textContent = { pixel: "Pixel time series", region: "Region time series", whole: "Whole-image time series" }[st.where];
     }
     function syncAdd(){
-      const def = currentDef(), first = !st.series.length;
+      addBox.hidden = !st.active;
+      if (!st.active) return;
+      const def = currentDef(), g = plotGas();
       defEl.innerHTML = def.missing ? esc(def.missing) : defHtml(def);
-      defEl.classList.toggle("warn", !!def.missing);
-      aggBox.hidden = st.where === "pixel";
+      defEl.classList.toggle("muted", !!def.missing);
       stepBox.hidden = ds() !== "edgar";
-      scaleEl.disabled = first;
-      scaleBox.classList.toggle("off", first);
-      scaleHint.textContent = first ? "Available once a series is on the graph." : SCALE_HINT;
-      addBtn.lastChild.textContent = first ? "Plot series" : "Add to graph";
-      addBtn.disabled = !!def.missing || !locReady() || st.busy;
-      if (!st.sticky && !st.busy) setMsg(!def.missing && !locReady()
-        ? (st.where === "pixel" ? "Click a cell on the map to choose the pixel." : "Draw a region on the map first.") : "");
+      const wrongGas = !def.missing && g && def.gas !== g;
+      gasWarn.hidden = !wrongGas;
+      if (wrongGas) {
+        const sel = $(GAS_SELECT[ds()]), canSwitch = [...sel.options].some(o => o.value === g);
+        gasWarn.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i>The plot shows <b>${esc(F(g))}</b>, and layers can only be overlaid for the same gas.
+          ${canSwitch ? `Choose ${esc(F(g))} here, or` : `This dataset has no ${esc(F(g))} layers:`} remove the ${esc(F(g))} layers from the plot to start a ${esc(F(def.gas))} plot.
+          <span class="ts-warn-acts">${canSwitch ? `<button type="button" data-act="switch">Use ${esc(F(g))}</button>` : ""}<button type="button" data-act="clear">Remove the ${esc(F(g))} layers</button></span>`;
+        gasWarn.querySelector('[data-act="switch"]')?.addEventListener("click", () => { sel.value = g; sel.dispatchEvent(new Event("change")); });
+        gasWarn.querySelector('[data-act="clear"]').addEventListener("click", clearAll);
+      }
+      const dup = !def.missing && st.layers.some(l => l.key === keyOf(def));
+      addBtn.disabled = !!def.missing || wrongGas || dup || !locReady() || st.busy;
+      addBtn.querySelector("span").textContent = st.busy ? "Adding…" : dup ? "Already in the plot" : "Add to plot";
+      addBtn.querySelector("i").className = dup ? "bi bi-check2" : "bi bi-plus-lg";
+      if (!st.busy && !msgEl.classList.contains("warn"))
+        setMsg(!def.missing && !wrongGas && !locReady() ? `First choose the area in the Time series panel: ${st.where === "pixel" ? "click a pixel on the map" : "draw a region on the map"}.` : "");
     }
-    function csv(){
-      const times = new Map();
-      st.series.forEach(s => s.data?.t.forEach((x, j) => { if (!times.has(x)) times.set(x, s.data.labels[j]); }));
-      const xs = [...times.keys()].sort((a, b) => a - b), q = v => `"${String(v).replace(/"/g, '""')}"`;
-      const rows = [["Location", locTxt.textContent], [],
-        ["Time", ...st.series.map(s => `${s.title} - ${aggText(s)} (${s.unit})`)],
-        ...xs.map(x => [times.get(x), ...st.series.map(s => {
-          const j = s.data ? s.data.t.indexOf(x) : -1;
-          return j >= 0 && s.data.values[j] != null ? s.data.values[j] : "";
-        })])];
-      const blob = new Blob(["﻿" + rows.map(r => r.map(q).join(",")).join("\r\n")], { type: "text/csv" });
-      const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: `time_series_${st.where}.csv` });
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-    }
+    function clearAll(){ st.layers = []; st.colour = 0; st.token++; setMsg(""); render(); syncAdd(); }
 
     whereSeg.querySelectorAll("[data-where]").forEach(b => b.addEventListener("click", () => {
-      if (st.series.length || st.where === b.dataset.where) return;
+      if (st.layers.length || st.where === b.dataset.where) return;
       st.where = b.dataset.where; seg(whereSeg, "where", st.where);
-      st.loc = null; marks.clearLayers(); setMsg("");
-      setDraw(st.where === "region");          // a region starts with drawing
+      st.loc = null; st.areaWarn = "";
+      setDraw(st.where === "region");                    // a region starts with drawing
       syncAdd();
     }));
-    aggSeg.querySelectorAll("[data-agg]").forEach(b => b.addEventListener("click", () => { st.agg = b.dataset.agg; seg(aggSeg, "agg", st.agg); }));
+    shapeSeg.querySelectorAll("[data-shape]").forEach(b => b.addEventListener("click", () => {
+      st.shape = b.dataset.shape; seg(shapeSeg, "shape", st.shape); st.areaWarn = "";
+      setDraw(true);
+    }));
+    aggSeg.querySelectorAll("[data-agg]").forEach(b => b.addEventListener("click", () => {
+      if (st.agg === b.dataset.agg) return;
+      st.agg = b.dataset.agg; seg(aggSeg, "agg", st.agg); refetchAll();
+    }));
     stepSeg.querySelectorAll("[data-step]").forEach(b => b.addEventListener("click", () => { st.step = b.dataset.step; seg(stepSeg, "step", st.step); syncAdd(); }));
     addBtn.addEventListener("click", add);
-    $("tsClear").addEventListener("click", () => { st.series = []; st.colour = 0; st.token++; setMsg(""); render(); drawMarks(); syncAdd(); });
-    $("tsCsv").addEventListener("click", csv);
-    // The left panel's layer is the next series: keep the "Add a series" box in step with it
+    clearBtn.addEventListener("click", clearAll);
+    scaleEl.addEventListener("change", render);
+    bandEl.addEventListener("change", render);
+    pngBtn.addEventListener("click", exportPng);
+    csvBtn.addEventListener("click", csv);
+    // The left panel's layer is the next one to add: keep the box in step with it
     ["edgarGas", "edgarSector", "invModel", "invTransport", "invGas", "invEstimate"].forEach(id => {
       const el = $(id);
-      el.addEventListener("change", () => { if (st.active) { st.sticky = false; syncAdd(); } });
+      el.addEventListener("change", () => { if (st.active) { setMsg(""); syncAdd(); } });
       new MutationObserver(() => st.active && syncAdd()).observe(el, { childList: true, attributes: true, attributeFilter: ["disabled"] });
     });
 
@@ -5656,28 +5968,29 @@ if (MAP_STANDALONE) (function mapWindow(){
       st.active = true; root.classList.add("ms-ts");
       btn.setAttribute("aria-pressed", "true");
       panel.hidden = false;
+      setOpen(steps[2], true);
+      if (root.classList.contains("ms-side-hidden")) setSide(true);
       if (st.where === "region" && !st.loc) setDraw(true);
-      syncLoc(); syncAdd(); render(); drawMarks();
+      syncLoc(); syncAdd(); render();
       refit();
     }
     function exit(){
-      if (st.drag) { map.removeLayer(st.drag.rect); st.drag = null; }
       setDraw(false);
       st.active = false; root.classList.remove("ms-ts");
       btn.setAttribute("aria-pressed", "false");
-      panel.hidden = true;
+      panel.hidden = true; addBox.hidden = true;
       marks.remove(); mapEl.classList.remove("ts-picking");
       syncButton(); refit();
     }
     function syncButton(){
       const ok = ds() !== "mapeire";
-      btn.disabled = !ok && !st.active;       // stays open on MapEIre so the graph is not lost
+      btn.disabled = !ok && !st.active;       // stays open on MapEIre so the plot is not lost
       btn.title = ok || st.active ? "Plot the time series of a pixel, a region or the whole of Ireland"
                                   : "Time series are available for EDGAR and the Inverse model (MapEIre has one or two years, as images)";
     }
     btn.addEventListener("click", () => st.active ? exit() : enter());
     document.addEventListener("mapmode:enter", e => { if (e.detail !== "ts" && st.active) exit(); });
-    datasetSel.addEventListener("change", () => { syncButton(); if (st.active) { st.sticky = false; syncAdd(); } });
+    datasetSel.addEventListener("change", () => { syncButton(); if (st.active) { setMsg(""); syncAdd(); } });
     syncButton();
 
     return { get active(){ return st.active; } };
