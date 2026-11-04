@@ -1231,6 +1231,114 @@ html.map-standalone #mapPanel:fullscreen{height:100vh!important}
 html.map-standalone.ms-side-hidden #mapPanel{grid-template-columns:0 minmax(0,1fr)}
 html.map-standalone.ms-side-hidden .map-side{display:none}
 
+/* ---- Compare mode: layer A | layer B in the panel, a narrower map, results on the right ---- */
+html.map-standalone.ms-compare{--ms-side-w:480px;--cmp-res-w:380px}
+html.map-standalone.ms-compare #mapPanel{grid-template-columns:var(--ms-side-w) minmax(0,1fr) var(--cmp-res-w)}
+html.map-standalone.ms-compare.ms-side-hidden #mapPanel{grid-template-columns:0 minmax(0,1fr) var(--cmp-res-w)}
+.cmp-results[hidden],.cmp-col[hidden],.cmp-mode[hidden]{display:none!important}
+html.map-standalone .cmp-results{
+  grid-column:3;grid-row:2;min-height:0;overflow-y:auto;display:flex;flex-direction:column;
+  background:#fff;border-left:1px solid var(--grey-border);
+}
+html.map-standalone.ms-compare #msStep2Inner{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:.7rem;align-items:start}
+html.map-standalone.ms-compare #msStep2Inner > .raster-bar{grid-column:1}
+html.map-standalone.ms-compare #msStep2Inner > .cmp-col{grid-column:2}
+html.map-standalone.ms-compare #msStep2Inner > .cmp-mode{grid-column:1 / -1}
+.raster-bar > .cmp-col-head{display:none}
+html.map-standalone.ms-compare .raster-bar > .cmp-col-head{display:flex}
+.cmp-col{display:flex;flex-direction:column;gap:.45rem;padding:2px}
+.cmp-col-head{display:flex;align-items:center;gap:.4rem;font-size:.74rem;font-weight:800;color:var(--navy);min-height:18px}
+.cmp-tag{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:5px;font-size:.66rem;font-weight:800;color:#fff;background:var(--navy)}
+.cmp-tag.b{background:var(--teal)}
+.cmp-fields{display:flex;flex-direction:column;gap:.45rem}
+.cmp-fields .raster-field select{height:31px;font-size:.8rem;padding-top:.2rem;padding-bottom:.2rem}
+.cmp-locked{font-size:.78rem;color:var(--text-main);padding:.32rem .5rem;border:1px dashed var(--grey-border);border-radius:6px;background:#F4F6F8}
+.cmp-locked small{display:block;font-size:.64rem;color:var(--text-muted)}
+.cmp-mode{margin-top:.6rem;padding-top:.55rem;border-top:1px dashed var(--grey-border)}
+.cmp-mode-lbl{display:block;font-size:.64rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--navy);margin-bottom:.3rem}
+.cmp-seg{display:inline-flex;border:1px solid var(--grey-border);border-radius:8px;overflow:hidden;background:#fff}
+.cmp-seg button{border:0;background:none;font-family:inherit;font-size:.75rem;font-weight:700;color:var(--text-muted);padding:.3rem .8rem;cursor:pointer}
+.cmp-seg button+button{border-left:1px solid var(--grey-border)}
+.cmp-seg button[aria-checked="true"]{background:var(--teal);color:#fff}
+.cmp-seg button:focus-visible{outline:2px solid var(--teal);outline-offset:-2px}
+.cmp-msg{margin:.4rem 0 0;font-size:.68rem;line-height:1.35;color:var(--text-muted);min-height:1em}
+.cmp-msg.warn{color:var(--red);font-weight:600}
+.ms-tool:disabled{opacity:.45;cursor:not-allowed}
+
+/* Hide layer A on the map while the difference layer is shown */
+#map.cmp-on .leaflet-overlay-pane{visibility:hidden}
+#map.cmp-on .raster-title:not(.cmp-card),#map.cmp-on .raster-colorbar:not(.cmp-card){display:none}
+
+/* Results panel */
+.cmp-res-head{padding:.8rem 1rem .6rem;border-bottom:1px solid var(--grey-border);background:var(--grey-panel)}
+.cmp-res-title{font-size:.9rem;font-weight:800;color:var(--navy);line-height:1.25;margin-top:.1rem}
+.cmp-res-body{padding:.75rem 1rem 1rem}
+.cmp-empty{font-size:.78rem;color:var(--text-muted);line-height:1.45;margin:.2rem 0}
+.cmp-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.4rem}
+.cmp-card{border:1px solid var(--grey-border);border-radius:9px;padding:.45rem .5rem;background:#fff;min-width:0}
+.cmp-card .k{font-size:.6rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--text-muted)}
+.cmp-card .v{font-size:.92rem;font-weight:800;color:var(--navy);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmp-card .s{font-size:.64rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmp-card.diff{border-color:rgba(14,140,138,.45);background:var(--teal-light)}
+.cmp-card .v.up{color:#B2182B}.cmp-card .v.down{color:#2166AC}
+.cmp-sec{margin-top:.85rem}
+.cmp-sec-h{font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--navy);margin:0 0 .35rem}
+.cmp-kv{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.3rem}
+.cmp-kv div{background:var(--grey-panel);border-radius:7px;padding:.3rem .35rem;text-align:center;min-width:0}
+.cmp-kv b{display:block;font-size:.8rem;color:var(--navy);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmp-kv span{font-size:.6rem;color:var(--text-muted)}
+.cmp-chart{position:relative;height:150px}
+.cmp-chart.tall{height:220px}
+.cmp-share{display:flex;height:12px;border-radius:999px;overflow:hidden;background:var(--grey-border)}
+.cmp-share i{display:block;height:100%}
+.cmp-share-key{display:flex;justify-content:space-between;gap:.4rem;margin-top:.25rem;font-size:.66rem;color:var(--text-muted)}
+.cmp-share-key b{color:var(--text-main)}
+.cmp-table{width:100%;border-collapse:collapse;font-size:.72rem}
+.cmp-table td{padding:.22rem .1rem;border-bottom:1px dashed var(--grey-border)}
+.cmp-table td:last-child{text-align:right;font-weight:700;color:var(--navy);font-variant-numeric:tabular-nums}
+.cmp-table td small{display:block;font-weight:400;color:var(--text-muted);font-size:.62rem}
+.cmp-top{list-style:none;margin:0;padding:0;display:grid;gap:.2rem}
+.cmp-top button{
+  width:100%;display:flex;justify-content:space-between;gap:.5rem;border:0;border-radius:6px;background:var(--grey-panel);
+  padding:.25rem .45rem;font-family:inherit;font-size:.7rem;color:var(--text-main);cursor:pointer;text-align:left;
+}
+.cmp-top button:hover,.cmp-top button:focus-visible{background:var(--teal-light);outline:none}
+.cmp-top b{font-variant-numeric:tabular-nums}
+.cmp-top .up b{color:#B2182B}.cmp-top .down b{color:#2166AC}
+.cmp-two{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.cmp-more-btn{margin-top:.9rem}
+.cmp-more{display:grid;grid-template-rows:0fr;transition:grid-template-rows .2s ease,visibility .2s;visibility:hidden}
+.cmp-more > div{min-height:0;overflow:hidden}
+.cmp-more.open{grid-template-rows:1fr;visibility:visible}
+.cmp-csv{
+  margin-top:.8rem;display:inline-flex;align-items:center;gap:.35rem;border:1px solid var(--teal);border-radius:8px;
+  background:#fff;color:#0B5563;font-family:inherit;font-size:.72rem;font-weight:700;padding:.3rem .7rem;cursor:pointer;
+}
+.cmp-csv:hover{background:var(--teal);color:#fff}
+.cmp-note{font-size:.64rem;color:var(--text-muted);line-height:1.4;margin:.5rem 0 0}
+@media (prefers-reduced-motion: reduce){.cmp-more{transition:none}}
+/* Medium screens: results move under the map */
+@media (max-width:1279px){
+  html.map-standalone.ms-compare{--ms-side-w:440px}
+  html.map-standalone.ms-compare #mapPanel{grid-template-columns:var(--ms-side-w) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) minmax(0,44%)}
+  html.map-standalone.ms-compare.ms-side-hidden #mapPanel{grid-template-columns:0 minmax(0,1fr)}
+  html.map-standalone.ms-compare .map-side{grid-row:2 / 4}
+  html.map-standalone .cmp-results{grid-column:2;grid-row:3;border-left:0;border-top:1px solid var(--grey-border)}
+}
+/* Phones / narrow: the layer panel is a drawer; map on top, results below */
+@media (max-width:991px){
+  html.map-standalone.ms-compare #mapPanel,
+  html.map-standalone.ms-compare.ms-side-hidden #mapPanel{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) minmax(0,46%)}
+  html.map-standalone.ms-compare .map-side{grid-row:auto}
+  html.map-standalone .cmp-results{grid-column:1}
+  html.map-standalone.ms-compare{--ms-side-w:460px}
+  .cmp-kv{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:575px){
+  #map .raster-colorbar.cmp-card .cb-note{display:none}
+  #map .raster-colorbar.cmp-card .cb-row{height:70px}
+}
+
 @media (max-width:1199px){
   html.map-standalone .home-btn{padding:.55rem .95rem .55rem .8rem}
   html.map-standalone .home-btn svg{width:30px;height:30px;flex-basis:30px}
@@ -1501,6 +1609,9 @@ html.map-standalone.ms-side-hidden .map-side{display:none}
               <button type="button" class="ms-tool" id="msSideToggle" aria-pressed="true" aria-controls="mapSide" title="Show or hide the layer panel">
                 <i class="bi bi-layout-sidebar"></i><span class="lbl">Layers</span>
               </button>
+              <button type="button" class="ms-tool" id="msCompare" aria-pressed="false" aria-controls="cmpColB cmpResults" title="Compare two layers of the same dataset: the map shows B − A">
+                <i class="bi bi-layout-split"></i><span class="lbl">Compare</span>
+              </button>
               <button type="button" class="ms-tool" id="msResetView" title="Zoom back to the whole of Ireland">
                 <i class="bi bi-crosshair"></i><span class="lbl">Reset view</span>
               </button>
@@ -1554,6 +1665,19 @@ html.map-standalone.ms-side-hidden .map-side{display:none}
                 </button>
               </h3>
               <div class="ms-step-body" id="msStep2Body" role="region" aria-labelledby="msStep2Btn"><div class="ms-step-inner" id="msStep2Inner">
+                <!-- Compare mode: layer B (same dataset and gas as A), filled in by the script -->
+                <div class="cmp-col" id="cmpColB" hidden>
+                  <div class="cmp-col-head"><span class="cmp-tag b">B</span>Layer B</div>
+                  <div class="cmp-fields" id="cmpFieldsB"></div>
+                </div>
+                <div class="cmp-mode" id="cmpModeBox" hidden>
+                  <span class="cmp-mode-lbl">Map shows B − A as</span>
+                  <div class="cmp-seg" role="radiogroup" aria-label="Difference shown as">
+                    <button type="button" role="radio" aria-checked="true" data-mode="abs">Absolute</button>
+                    <button type="button" role="radio" aria-checked="false" data-mode="pct">% change</button>
+                  </div>
+                  <p class="cmp-msg" id="cmpMsg" role="status"></p>
+                </div>
               </div></div>
             </section>
             <section class="ms-step is-open" data-step="3">
@@ -1748,6 +1872,15 @@ html.map-standalone.ms-side-hidden .map-side{display:none}
           </div>
           </div><!-- /map-side -->
           <div id="map"></div>
+          <!-- Compare mode: statistics of the difference map -->
+          <aside class="cmp-results ms-only" id="cmpResults" aria-label="Comparison results" hidden>
+            <div class="cmp-res-head">
+              <div><div class="ms-kicker">Comparison results</div><div class="cmp-res-title" id="cmpResTitle">B − A</div></div>
+            </div>
+            <div class="cmp-res-body" id="cmpResBody">
+              <p class="cmp-empty">Choose layer A and layer B in the panel on the left. The statistics of B − A appear here.</p>
+            </div>
+          </aside>
         </section>
       </div>
     </div>
@@ -4317,7 +4450,7 @@ if (MAP_STANDALONE) (function mapWindow(){
   const mapEl = document.getElementById("map");
   const rasterBar = document.querySelector("#mapPanel .raster-bar");
   const opacityEl = document.getElementById("rasterOpacity");
-  document.getElementById("msStep2Inner").appendChild(rasterBar);
+  document.getElementById("msStep2Inner").prepend(rasterBar);   // before the compare column B
   document.getElementById("msStep3Inner").appendChild(opacityEl.closest(".raster-opacity"));
   const steps = Object.fromEntries([...document.querySelectorAll("#mapSide .ms-step")].map(s => [s.dataset.step, s]));
   const [sum1, sum2, sum3] = ["msSum1", "msSum2", "msSum3"].map(id => document.getElementById(id));
@@ -4388,6 +4521,10 @@ if (MAP_STANDALONE) (function mapWindow(){
     const ds = datasetSel.value;
     const q = new URLSearchParams({ dataset: ds });
     Object.entries(EXPORT_FIELDS[ds]).forEach(([k, id]) => q.set(k, document.getElementById(id).value));
+    if (cmp.result) {                      // compare mode: export the difference map B − A
+      q.set("compare", "1"); q.set("mode", cmp.result.mode);
+      Object.entries(cmp.result.selB).forEach(([k, v]) => q.set(`b_${k}`, v));
+    }
     return q;
   }
   async function fetchFile(fmt, q){
@@ -4539,10 +4676,544 @@ if (MAP_STANDALONE) (function mapWindow(){
     fsBtn.querySelector(".lbl").textContent = on ? "Exit full screen" : "Full screen";
   });
 
+  // ---- Compare two layers of the same dataset: the map shows B − A ----
+  const cmp = (() => {
+    const btn = document.getElementById("msCompare");
+    const colB = document.getElementById("cmpColB");
+    const fieldsB = document.getElementById("cmpFieldsB");
+    const modeBox = document.getElementById("cmpModeBox");
+    const msgEl = document.getElementById("cmpMsg");
+    const results = document.getElementById("cmpResults");
+    const resBody = document.getElementById("cmpResBody");
+    const resTitle = document.getElementById("cmpResTitle");
+    const { esc, fmtVal, fill } = GRID_UI;
+    const signed = v => (v > 0 ? "+" : v < 0 ? "−" : "") + fmtVal(Math.abs(v));
+    const ESTIMATE_NAMES = { prior: "Prior", posterior: "Posterior" };
+    const st = { active: false, mode: "abs", meta: {}, metaP: {}, cache: new Map(), result: null,
+                 token: 0, buildTok: 0, touched: false, layer: null, rects: {}, card: null, bar: null,
+                 charts: [], moreOpen: false, timer: null };
+    let B = {};                                  // layer B inputs by key (select, or span when locked)
+
+    map.createPane("cmpPane").style.zIndex = 420;
+    const renderer = L.canvas({ padding: 0.3, pane: "cmpPane" });
+    const headA = document.createElement("div");
+    headA.className = "cmp-col-head"; headA.innerHTML = '<span class="cmp-tag">A</span>Layer A';
+    rasterBar.prepend(headA);
+
+    // Same blue -> white -> red ramp as the inverse model's Difference view
+    const NEG = [33, 102, 172], MID = [247, 247, 247], POS = [178, 24, 43];
+    function diverging(t){
+      const [a, b] = t < 0 ? [MID, NEG] : [MID, POS], k = Math.min(Math.abs(t), 1);
+      return `rgb(${a.map((c, i) => Math.round(c + (b[i] - c) * k)).join(",")})`;
+    }
+
+    // ---- statistics helpers ----
+    const mean = xs => xs.reduce((s, x) => s + x, 0) / xs.length;
+    function quantile(sorted, p){
+      if (!sorted.length) return NaN;
+      const h = (sorted.length - 1) * p, lo = Math.floor(h);
+      return sorted[lo] + (sorted[Math.min(lo + 1, sorted.length - 1)] - sorted[lo]) * (h - lo);
+    }
+    function pearson(x, y){
+      const mx = mean(x), my = mean(y);
+      let sxy = 0, sxx = 0, syy = 0;
+      x.forEach((xi, i) => { const dx = xi - mx, dy = y[i] - my; sxy += dx * dy; sxx += dx * dx; syy += dy * dy; });
+      return sxx > 0 && syy > 0 ? sxy / Math.sqrt(sxx * syy) : NaN;
+    }
+    function ranks(xs){                          // average ranks for ties
+      const idx = xs.map((v, i) => [v, i]).sort((a, b) => a[0] - b[0]), r = new Array(xs.length);
+      for (let i = 0; i < idx.length;) {
+        let j = i; while (j + 1 < idx.length && idx[j + 1][0] === idx[i][0]) j++;
+        for (let k = i; k <= j; k++) r[idx[k][1]] = (i + j) / 2 + 1;
+        i = j + 1;
+      }
+      return r;
+    }
+    function describe(vals){
+      const s = vals.slice().sort((a, b) => a - b), n = s.length;
+      if (!n) return { n: 0 };
+      const m = mean(s), sd = n > 1 ? Math.sqrt(s.reduce((t, x) => t + (x - m) ** 2, 0) / (n - 1)) : 0;
+      const q1 = quantile(s, 0.25), q3 = quantile(s, 0.75);
+      const skew = sd > 0 ? s.reduce((t, x) => t + ((x - m) / sd) ** 3, 0) / n : 0;
+      return { n, mean: m, sd, min: s[0], max: s[n - 1], q1, median: quantile(s, 0.5), q3, iqr: q3 - q1,
+               p5: quantile(s, 0.05), p95: quantile(s, 0.95), skew };
+    }
+
+    // ---- layer selections ----
+    const ds = () => datasetSel.value;
+    const selA = () => Object.fromEntries(Object.entries(EXPORT_FIELDS[ds()]).map(([k, id]) => [k, document.getElementById(id).value]));
+    const complete = sel => Object.values(sel).every(Boolean);
+    function selB(){
+      const a = selA(), out = {};
+      Object.keys(EXPORT_FIELDS[ds()]).forEach(k => { out[k] = k === "gas" ? a.gas : (B[k]?.value || ""); });
+      return out;
+    }
+    function label(sel){
+      const M = st.meta[ds()];
+      if (ds() === "edgar") {
+        const period = sel.month === "annual" ? sel.year : `${M.months[sel.month - 1]} ${sel.year}`;
+        return `${M.sectors[sel.sector].name}, ${period}`;
+      }
+      return `${sel.model} ${sel.transport} ${ESTIMATE_NAMES[sel.estimate] || sel.estimate} ${sel.year}`;
+    }
+    function catalog(name){
+      if (!st.metaP[name]) st.metaP[name] = fetch(`/api/${name}/`).then(r => r.json()).then(m => (st.meta[name] = m));
+      return st.metaP[name];
+    }
+
+    // ---- layer B column (same dataset; the gas is locked to layer A's) ----
+    function field(key, text){
+      const f = document.createElement("div");
+      f.className = "raster-field";
+      f.innerHTML = `<label for="cmpB_${key}">${text}</label><select class="form-select form-select-sm" id="cmpB_${key}"></select>`;
+      fieldsB.appendChild(f);
+      const s = f.querySelector("select");
+      s.addEventListener("change", () => { st.touched = true; if (ds() === "inverse") refreshYearsB(); schedule(); });
+      return s;
+    }
+    function locked(text){
+      const f = document.createElement("div");
+      f.className = "raster-field";
+      f.innerHTML = `<label>${text}</label><div class="cmp-locked"><span></span><small>Same as layer A</small></div>`;
+      fieldsB.appendChild(f);
+      return f.querySelector("span");
+    }
+    async function buildB(){
+      const tok = ++st.buildTok, name = ds();
+      if (name === "mapeire") return;
+      const M = await catalog(name);
+      if (tok !== st.buildTok || name !== ds()) return;
+      fieldsB.innerHTML = ""; B = {}; st.touched = false; st.builtFor = name;
+      if (name === "edgar") {
+        B.gas = locked("Gas");
+        B.sector = field("sector", "Sector");
+        fill(B.sector, Object.entries(M.sectors).sort((a, b) => a[1].order - b[1].order).map(([k, s]) => [k, s.name]), "Select sector");
+        B.year = field("year", "Year");
+        fill(B.year, M.years.slice().reverse().map(y => [String(y), String(y)]), "Select year");
+        B.month = field("month", "Period");
+      } else {
+        B.model = field("model", "Inverse model");
+        fill(B.model, Object.keys(M.models).map(k => [k, k]), "Select inverse model");
+        B.transport = field("transport", "Transport model");
+        fill(B.transport, Object.keys(M.transports).map(k => [k, k]), "Select transport model");
+        B.gas = locked("Gas");
+        B.year = field("year", "Year");
+        fill(B.year, [], "Select year");
+        B.estimate = field("estimate", "Estimate");
+        fill(B.estimate, [["posterior", "Posterior"], ["prior", "Prior"]]);
+      }
+      syncFromA();
+    }
+    function refreshYearsB(){
+      const M = st.meta.inverse, a = selA();
+      const run = M?.runs[`${B.model.value}|${B.transport.value}|${a.gas}`];
+      const keep = B.year.value;
+      fill(B.year, run ? run.years.slice().reverse().map(y => [String(y), String(y)]) : [], "Select year");
+      if (run?.years.includes(+keep)) B.year.value = keep;
+      B.year.disabled = !run;
+    }
+    // Keep B in step with A: gas, EDGAR period type, and a first copy of A's choices
+    function syncFromA(){
+      const name = ds(), M = st.meta[name], a = selA();
+      if (!M || !B.gas) return;
+      B.gas.textContent = a.gas ? `${M.gases[a.gas].formula} · ${M.gases[a.gas].name}` : "Choose layer A's gas first";
+      const prefill = !st.touched && complete(a);
+      if (name === "edgar") {
+        const annual = !a.month || a.month === "annual", keep = B.month.value;
+        fill(B.month, annual ? [["annual", "Annual"]] : M.months.map((m, i) => [String(i + 1), m]));
+        B.month.disabled = annual;
+        if (!annual) B.month.value = keep && keep !== "annual" ? keep : a.month;
+        if (prefill) { B.sector.value = a.sector; B.year.value = a.year; if (!annual) B.month.value = a.month; }
+      } else {
+        if (prefill) { B.model.value = a.model; B.transport.value = a.transport; }
+        refreshYearsB();
+        if (prefill) { B.year.value = a.year; B.estimate.value = a.estimate === "prior" ? "prior" : "posterior"; }
+      }
+    }
+
+    function setMsg(text, warn){ msgEl.textContent = text || ""; msgEl.classList.toggle("warn", !!warn); }
+    function schedule(){ clearTimeout(st.timer); st.timer = setTimeout(run, 60); }
+
+    function layerUrl(name, sel){
+      const keys = name === "edgar" ? ["gas", "sector", "year", "month"] : ["model", "transport", "gas", "year"];
+      return `/api/${name}/layer/?${new URLSearchParams(keys.map(k => [k, sel[k]]))}`;
+    }
+    function getLayer(name, sel){
+      const url = layerUrl(name, sel);
+      if (!st.cache.has(url)) st.cache.set(url, fetch(url).then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))));
+      return st.cache.get(url);
+    }
+
+    async function run(){
+      if (!st.active) return;
+      const name = ds(), a = selA(), b = selB();
+      if (!complete(a)) { clearResult(); return setMsg("Complete layer A first; layer B then starts as a copy of it."); }
+      if (name === "inverse" && a.estimate === "difference") {
+        clearResult(); return setMsg("Set layer A's Estimate to Prior or Posterior to compare.", true);
+      }
+      if (!complete(b)) { clearResult(); return setMsg("Choose the remaining fields of layer B."); }
+      const tok = ++st.token;
+      setMsg("Loading both layers…");
+      let la, lb;
+      try { [la, lb] = await Promise.all([getLayer(name, a), getLayer(name, b)]); }
+      catch (err) { if (tok === st.token) setMsg(`The layers could not be loaded (${err.message}).`, true); return; }
+      if (tok !== st.token || !st.active || name !== ds()) return;
+      st.result = compute(name, a, b, la, lb);
+      draw(); renderResults();
+      setMsg(st.result.identical ? "Layers A and B are the same: change a field in layer B." : "");
+    }
+
+    function compute(name, a, b, la, lb){
+      const M = st.meta[name], mode = st.mode, formula = M.gases[a.gas].formula;
+      let av, bv, inc, geo, totA, totB, totUnit, loA, hiA, loB, hiB;
+      if (name === "edgar") {
+        const g = M.grid;
+        av = la.values; bv = lb.values; inc = av.map(() => true);
+        geo = g.cells.map(idx => {
+          const n = g.north - Math.floor(idx / g.cols) * g.res, w = g.west + (idx % g.cols) * g.res;
+          return [[n - g.res, w], [n, w + g.res]];
+        });
+        totA = la.total; totB = lb.total; totUnit = `t ${formula}`;
+      } else {
+        const g = M.grid, num = v => (v == null ? NaN : v);
+        av = la[a.estimate].map(num); bv = lb[b.estimate].map(num);
+        loA = la[`${a.estimate}_lo`]; hiA = la[`${a.estimate}_hi`]; loB = lb[`${b.estimate}_lo`]; hiB = lb[`${b.estimate}_hi`];
+        inc = av.map((v, i) => Number.isFinite(v) && Number.isFinite(bv[i]) && la.country_fraction[i] > 0 && lb.country_fraction[i] > 0);
+        geo = av.map((_, i) => {
+          const n = g.north - Math.floor(i / g.cols) * g.dlat, w = g.west + (i % g.cols) * g.dlon;
+          return [[n - g.dlat, w], [n, w + g.dlon]];
+        });
+        totA = la[`total_${a.estimate}`]; totB = lb[`total_${b.estimate}`]; totUnit = `Gg ${formula} yr⁻¹`;
+      }
+      const posA = av.filter((v, i) => inc[i] && v > 0);
+      const thr = posA.length ? 0.01 * mean(posA) : Infinity;   // % change only where A is not ~0
+      const cells = [];
+      av.forEach((va, i) => {
+        if (!inc[i]) return;
+        const d = bv[i] - va, p = va > thr ? d / va * 100 : NaN;
+        cells.push({ i, a: va, b: bv[i], d, p, v: mode === "pct" ? p : d, bounds: geo[i],
+                     sig: loA ? (loB[i] > hiA[i] || hiB[i] < loA[i]) : null });
+      });
+      const used = cells.filter(c => Number.isFinite(c.v));
+      const stats = describe(used.map(c => c.v));
+      const absSorted = used.map(c => Math.abs(c.v)).sort((x, y) => x - y);
+      const lim = quantile(absSorted, 0.98) || absSorted.at(-1) || 1;
+      const scale = Math.max(...cells.map(c => Math.max(Math.abs(c.a), Math.abs(c.b))), 0);
+      const eps = scale * 1e-9;
+      const up = cells.filter(c => c.d > eps).length, down = cells.filter(c => c.d < -eps).length;
+      const A = cells.map(c => c.a), Bv = cells.map(c => c.b), D = cells.map(c => c.d);
+      const sumA = A.reduce((s, x) => s + x, 0);
+      const byV = used.slice().sort((x, y) => y.v - x.v);
+      return {
+        dataset: name, mode, selA: a, selB: b, labelA: label(a), labelB: label(b), formula,
+        unit: la.unit, valueUnit: mode === "pct" ? "%" : la.unit, cells, used, stats, lim,
+        totals: { a: totA, b: totB, unit: totUnit },
+        share: { up, down, same: cells.length - up - down, n: cells.length },
+        agree: cells.length > 2 ? {
+          r: pearson(A, Bv), rho: pearson(ranks(A), ranks(Bv)),
+          rmsd: Math.sqrt(mean(D.map(x => x * x))), mad: mean(D.map(Math.abs)),
+          nmb: sumA ? D.reduce((s, x) => s + x, 0) / sumA * 100 : NaN,
+        } : null,
+        sig: loA ? cells.filter(c => c.sig).length : null,
+        excluded: cells.length - used.length,
+        top: { up: byV.filter(c => c.v > 0).slice(0, 5), down: byV.filter(c => c.v < 0).reverse().slice(0, 5) },
+        identical: up === 0 && down === 0,
+      };
+    }
+
+    // ---- map layer ----
+    const where = c => {
+      const [[s, w], [n, e]] = c.bounds, lat = (s + n) / 2, lng = (w + e) / 2;
+      return `${lat.toFixed(2)}°N, ${Math.abs(lng).toFixed(2)}°W`;
+    };
+    function tooltip(c){
+      const R = st.result, u = esc(R.unit);
+      return `<div class="popup-title">${signed(c.d)} ${u}${Number.isFinite(c.p) ? ` (${c.p > 0 ? "+" : ""}${c.p.toFixed(1)}%)` : ""}</div>
+        <div>B <b>${fmtVal(c.b)}</b> <span class="k">${esc(R.labelB)}</span></div>
+        <div>A <b>${fmtVal(c.a)}</b> <span class="k">${esc(R.labelA)}</span></div>
+        ${c.sig != null ? `<div class="k">${c.sig ? "1σ ranges do not overlap" : "Within the 1σ uncertainty ranges"}</div>` : ""}
+        <div class="k">Cell centre ${where(c)}</div>`;
+    }
+    function restyle(){
+      if (!st.layer) return;
+      const op = +opacityEl.value / 100, R = st.result;
+      R.used.forEach(c => st.rects[c.i]?.setStyle({ fillColor: diverging(c.v / R.lim), fillOpacity: op }));
+    }
+    function removeMapLayer(){
+      if (st.layer) { map.removeLayer(st.layer); st.layer = null; st.rects = {}; }
+      if (st.card) { map.removeControl(st.card); st.card = null; }
+      if (st.bar) { map.removeControl(st.bar); st.bar = null; }
+      mapEl.classList.remove("cmp-on");
+    }
+    function draw(){
+      removeMapLayer();
+      const R = st.result;
+      st.layer = L.featureGroup();
+      R.used.forEach(c => {
+        const r = L.rectangle(c.bounds, { renderer, stroke: false, fillOpacity: 0 });
+        r.bindTooltip(() => tooltip(c), { sticky: true, direction: "top", className: "edgar-tip" });
+        st.rects[c.i] = r; st.layer.addLayer(r);
+      });
+      st.layer.addTo(map); restyle();
+      mapEl.classList.add("cmp-on");
+      const pct = R.mode === "pct";
+      st.card = L.control({ position: "topright" });
+      st.card.onAdd = () => {
+        const div = L.DomUtil.create("div", "raster-title cmp-card");
+        div.innerHTML = `<div class="rt-kicker">${R.dataset === "edgar" ? "EDGAR" : "Inverse model"} · compare</div>
+          <div class="rt-name">${esc(R.formula)} ${pct ? "% change" : "difference"} B − A</div>
+          <div class="rt-sector"><span class="code">B · </span>${esc(R.labelB)}</div>
+          <div class="rt-sector"><span class="code">A · </span>${esc(R.labelA)}</div>
+          <span class="unit-badge">${esc(R.valueUnit)}</span>`;
+        L.DomEvent.disableClickPropagation(div);
+        return div;
+      };
+      st.card.addTo(map);
+      st.bar = L.control({ position: "bottomleft" });
+      st.bar.onAdd = () => {
+        const div = L.DomUtil.create("div", "raster-colorbar cmp-card");
+        const stops = [-1, -0.5, 0, 0.5, 1].map(diverging).join(",");
+        div.innerHTML = `<div class="cb-title">B − A${pct ? " (%)" : ""}</div>
+          <div class="cb-unit">${esc(R.valueUnit)}</div>
+          <div class="cb-row"><div class="cb-gradient" style="background:linear-gradient(to top, ${stops})"></div>
+            <div class="cb-ticks"><span>≥ +${fmtVal(R.lim)}</span><span>0</span><span>≤ −${fmtVal(R.lim)}</span></div></div>
+          <div class="cb-note">Red: higher in B · blue: lower in B<br>Scale ±98th percentile of |B − A|${pct ? " · cells where A is below 1% of its mean are left out" : ""}</div>`;
+        L.DomEvent.disableClickPropagation(div);
+        return div;
+      };
+      st.bar.addTo(map);
+    }
+
+    // ---- results panel ----
+    function destroyCharts(){ st.charts.forEach(c => c.destroy()); st.charts = []; }
+    function clearResult(){
+      st.result = null; removeMapLayer(); destroyCharts();
+      resTitle.textContent = "B − A";
+      resBody.innerHTML = '<p class="cmp-empty">Choose layer A and layer B in the panel on the left. The statistics of B − A appear here.</p>';
+    }
+    const fv = (v, unit) => Number.isFinite(v) ? `${fmtVal(v)}${unit ? " " + esc(unit) : ""}` : "–";
+    const fs = (v, unit) => Number.isFinite(v) ? `${signed(v)}${unit ? " " + esc(unit) : ""}` : "–";
+    function renderResults(){
+      destroyCharts();
+      const R = st.result, s = R.stats, t = R.totals, vu = R.valueUnit, pct = R.mode === "pct";
+      const dt = t.b - t.a, dtp = t.a ? dt / t.a * 100 : NaN;
+      const share = k => R.share.n ? R.share[k] / R.share.n * 100 : 0;
+      const row = (k, v, note) => `<tr><td>${k}${note ? `<small>${note}</small>` : ""}</td><td>${v}</td></tr>`;
+      const topList = (list, cls) => list.length ? `<ul class="cmp-top">${list.map(c =>
+          `<li><button type="button" class="${cls}" data-cell="${c.i}" title="Zoom to this cell"><span>${where(c)}</span><b>${fs(c.v)}</b></button></li>`).join("")}</ul>`
+        : '<p class="cmp-note">None</p>';
+      resTitle.textContent = `${R.formula}: ${R.labelB} − ${R.labelA}`;
+      resBody.innerHTML = `
+        <div class="cmp-cards">
+          <div class="cmp-card"><div class="k">Total A</div><div class="v">${fmtVal(t.a)}</div><div class="s" title="${esc(R.labelA)}">${esc(t.unit)}</div></div>
+          <div class="cmp-card"><div class="k">Total B</div><div class="v">${fmtVal(t.b)}</div><div class="s" title="${esc(R.labelB)}">${esc(t.unit)}</div></div>
+          <div class="cmp-card diff"><div class="k">B − A</div><div class="v ${dt > 0 ? "up" : dt < 0 ? "down" : ""}">${signed(dt)}</div>
+            <div class="s">${Number.isFinite(dtp) ? `${dtp > 0 ? "+" : ""}${dtp.toFixed(1)}%` : ""} ${esc(t.unit)}</div></div>
+        </div>
+        <section class="cmp-sec">
+          <h4 class="cmp-sec-h">Cell ${pct ? "% change" : "difference"} B − A <span style="text-transform:none;font-weight:600;color:var(--text-muted)">(${esc(vu)})</span></h4>
+          <div class="cmp-kv">
+            <div><b>${fs(s.mean)}</b><span>Mean</span></div><div><b>${fs(s.median)}</b><span>Median</span></div>
+            <div><b>${fv(s.sd)}</b><span>Std dev</span></div><div><b>${fs(s.min)}</b><span>Min</span></div>
+            <div><b>${fs(s.max)}</b><span>Max</span></div>
+          </div>
+        </section>
+        <section class="cmp-sec">
+          <h4 class="cmp-sec-h">Distribution of cell differences</h4>
+          <div class="cmp-chart"><canvas id="cmpHist" role="img" aria-label="Histogram of cell differences"></canvas></div>
+        </section>
+        <section class="cmp-sec">
+          <h4 class="cmp-sec-h">Cells that changed</h4>
+          <div class="cmp-share" role="img" aria-label="${share("up").toFixed(0)}% higher in B, ${share("down").toFixed(0)}% lower, ${share("same").toFixed(0)}% unchanged">
+            <i style="width:${share("down")}%;background:#2166AC"></i><i style="width:${share("same")}%;background:#C9D2DB"></i><i style="width:${share("up")}%;background:#B2182B"></i>
+          </div>
+          <div class="cmp-share-key"><span>Lower in B <b>${share("down").toFixed(1)}%</b></span><span>Same <b>${share("same").toFixed(1)}%</b></span><span>Higher in B <b>${share("up").toFixed(1)}%</b></span></div>
+        </section>
+        <button type="button" class="ms-more cmp-more-btn" id="cmpMoreBtn" aria-expanded="${st.moreOpen}" aria-controls="cmpMore">
+          <span class="lbl">${st.moreOpen ? "Fewer statistics" : "More statistics"}</span><i class="bi bi-chevron-down"></i>
+        </button>
+        <div class="cmp-more${st.moreOpen ? " open" : ""}" id="cmpMore"><div>
+          <section class="cmp-sec">
+            <h4 class="cmp-sec-h">Full distribution</h4>
+            <table class="cmp-table"><tbody>
+              ${row("Cells", `${s.n}`, R.excluded ? `${R.excluded} left out (A below 1% of its mean)` : (R.dataset === "inverse" ? "Inside both models' Ireland areas" : "All Ireland cells"))}
+              ${row("Q1 (25th percentile)", fs(s.q1, vu))}${row("Q3 (75th percentile)", fs(s.q3, vu))}
+              ${row("Interquartile range", fv(s.iqr, vu))}
+              ${row("5th percentile", fs(s.p5, vu))}${row("95th percentile", fs(s.p95, vu))}
+              ${row("Skewness", Number.isFinite(s.skew) ? s.skew.toFixed(2) : "–", "0 = symmetric; > 0 = long tail of increases")}
+            </tbody></table>
+          </section>
+          ${R.agree ? `<section class="cmp-sec">
+            <h4 class="cmp-sec-h">Agreement between A and B</h4>
+            <table class="cmp-table"><tbody>
+              ${row("Pearson r", R.agree.r.toFixed(3), "Same spatial pattern (1 = identical)")}
+              ${row("Spearman ρ", R.agree.rho.toFixed(3), "Same ranking of cells")}
+              ${row("RMSD", fv(R.agree.rmsd, R.unit), "Root-mean-square difference")}
+              ${row("Mean absolute difference", fv(R.agree.mad, R.unit))}
+              ${row("Normalised mean bias", Number.isFinite(R.agree.nmb) ? `${R.agree.nmb > 0 ? "+" : ""}${R.agree.nmb.toFixed(1)}%` : "–", "Σ(B − A) / ΣA")}
+              ${R.sig != null ? row("Cells beyond the uncertainty", `${R.sig} of ${R.share.n} (${(R.sig / R.share.n * 100).toFixed(0)}%)`, "1σ ranges of A and B do not overlap") : ""}
+            </tbody></table>
+          </section>` : ""}
+          <section class="cmp-sec">
+            <h4 class="cmp-sec-h">A against B, one point per cell</h4>
+            <div class="cmp-chart tall"><canvas id="cmpScatter" role="img" aria-label="Scatter plot of layer A against layer B"></canvas></div>
+          </section>
+          <section class="cmp-sec cmp-two">
+            <div><h4 class="cmp-sec-h">Largest increases</h4>${topList(R.top.up, "up")}</div>
+            <div><h4 class="cmp-sec-h">Largest decreases</h4>${topList(R.top.down, "down")}</div>
+          </section>
+          <button type="button" class="cmp-csv" id="cmpCsv"><i class="bi bi-filetype-csv"></i>Download statistics (CSV)</button>
+          <p class="cmp-note">Differences are B − A per grid cell${R.dataset === "inverse" ? ", inside both models' Ireland attribution areas" : ""}. Totals for the inverse model are the modellers' Ireland totals.</p>
+        </div></div>`;
+      histogram();
+      if (st.moreOpen) scatter();
+      const moreBtn = document.getElementById("cmpMoreBtn"), more = document.getElementById("cmpMore");
+      moreBtn.addEventListener("click", () => {
+        st.moreOpen = !more.classList.contains("open");
+        more.classList.toggle("open", st.moreOpen);
+        moreBtn.setAttribute("aria-expanded", String(st.moreOpen));
+        moreBtn.querySelector(".lbl").textContent = st.moreOpen ? "Fewer statistics" : "More statistics";
+        if (st.moreOpen && !st.charts.some(c => c.canvas.id === "cmpScatter")) scatter();
+      });
+      resBody.querySelectorAll("[data-cell]").forEach(b => b.addEventListener("click", () => {
+        const r = st.rects[b.dataset.cell];
+        if (!r) return;
+        map.fitBounds(r.getBounds(), { maxZoom: 9 });
+        r.openTooltip(r.getBounds().getCenter());
+      }));
+      document.getElementById("cmpCsv").addEventListener("click", csv);
+    }
+
+    function histogram(){
+      // Bins span the 2nd–98th percentile of the cells; the end bins also hold the tails
+      const R = st.result, vals = R.used.map(c => c.v), L0 = R.lim, nb = 24;
+      const sorted = vals.slice().sort((x, y) => x - y);
+      let lo = quantile(sorted, 0.02), hi = quantile(sorted, 0.98);
+      if (!(hi > lo)) { lo = (sorted[0] ?? 0) - 1; hi = (sorted.at(-1) ?? 0) + 1; }
+      const w = (hi - lo) / nb, counts = new Array(nb).fill(0);
+      vals.forEach(v => { counts[Math.min(nb - 1, Math.max(0, Math.floor((v - lo) / w)))]++; });
+      const centres = counts.map((_, i) => lo + (i + 0.5) * w);
+      const marks = [[0, "#16324F", "0"], [R.stats.mean, "#E8A33D", "mean"], [R.stats.median, "#0E8C8A", "median"]];
+      st.charts.push(new Chart(document.getElementById("cmpHist"), {
+        type: "bar",
+        data: { labels: centres.map(c => fmtVal(c)), datasets: [{ data: counts, backgroundColor: centres.map(c => diverging(c / L0)), borderColor: "rgba(22,50,79,.25)", borderWidth: 1, barPercentage: 1, categoryPercentage: 1 }] },
+        options: {
+          animation: false, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { callbacks: {
+            title: items => {
+              const i = items[0].dataIndex;
+              return i === 0 ? `${signed(lo + w)} or less` : i === nb - 1 ? `${signed(hi - w)} or more`
+                             : `${signed(lo + i * w)} to ${signed(lo + (i + 1) * w)}`;
+            },
+            label: item => `${item.raw} cells` } } },
+          scales: { x: { ticks: { maxTicksLimit: 5, font: { size: 9 } }, grid: { display: false } },
+                    y: { ticks: { font: { size: 9 }, precision: 0 }, title: { display: true, text: "Cells", font: { size: 9 } } } },
+        },
+        plugins: [{ id: "cmpMarks", afterDatasetsDraw(chart){
+          const { ctx, chartArea: a } = chart;
+          marks.forEach(([v, colour, text], k) => {
+            if (v < lo || v > hi) return;                 // e.g. 0 when every cell went down
+            const x = a.left + (v - lo) / (hi - lo) * (a.right - a.left);
+            ctx.save(); ctx.strokeStyle = colour; ctx.lineWidth = 1.5; ctx.setLineDash(k ? [4, 3] : []);
+            ctx.beginPath(); ctx.moveTo(x, a.top); ctx.lineTo(x, a.bottom); ctx.stroke();
+            ctx.fillStyle = colour; ctx.font = "600 9px 'Source Sans 3', sans-serif"; ctx.textAlign = "center";
+            ctx.fillText(text, x, a.top + 9 + k * 10); ctx.restore();
+          });
+        } }],
+      }));
+    }
+    function scatter(){
+      const R = st.result, pts = R.cells.map(c => ({ x: c.a, y: c.b }));
+      const lo = Math.min(...pts.map(p => Math.min(p.x, p.y))), hi = Math.max(...pts.map(p => Math.max(p.x, p.y)));
+      st.charts.push(new Chart(document.getElementById("cmpScatter"), {
+        type: "scatter",
+        data: { datasets: [
+          { data: pts, pointRadius: 2, pointBackgroundColor: "rgba(14,140,138,.55)", pointBorderWidth: 0 },
+          { type: "line", data: [{ x: lo, y: lo }, { x: hi, y: hi }], borderColor: "#16324F", borderDash: [5, 4], borderWidth: 1.2, pointRadius: 0 },
+        ] },
+        options: {
+          animation: false, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { filter: item => item.datasetIndex === 0,
+            callbacks: { label: item => `A ${fmtVal(item.raw.x)} · B ${fmtVal(item.raw.y)}` } } },
+          scales: {
+            x: { title: { display: true, text: `A (${R.unit})`, font: { size: 9 } }, ticks: { maxTicksLimit: 5, font: { size: 9 } } },
+            y: { title: { display: true, text: `B (${R.unit})`, font: { size: 9 } }, ticks: { maxTicksLimit: 5, font: { size: 9 } } },
+          },
+        },
+      }));
+    }
+    function csv(){
+      const R = st.result, s = R.stats, q = v => `"${String(v).replace(/"/g, '""')}"`;
+      const rows = [["Statistic", "Value", "Unit"],
+        ["Dataset", R.dataset === "edgar" ? "EDGAR" : "PARIS inverse model", ""], ["Layer A", R.labelA, ""], ["Layer B", R.labelB, ""],
+        ["Gas", R.formula, ""], ["Difference", R.mode === "pct" ? "(B - A) / A x 100" : "B - A", R.valueUnit],
+        ["Total A", R.totals.a, R.totals.unit], ["Total B", R.totals.b, R.totals.unit], ["Total B - A", R.totals.b - R.totals.a, R.totals.unit],
+        ["Cells", s.n, ""], ["Cells left out", R.excluded, ""],
+        ...["mean", "median", "sd", "min", "max", "q1", "q3", "iqr", "p5", "p95"].map(k => [k, s[k], R.valueUnit]),
+        ["skewness", s.skew, ""],
+        ["Cells higher in B", R.share.up, ""], ["Cells lower in B", R.share.down, ""], ["Cells unchanged", R.share.same, ""],
+        ...(R.agree ? [["Pearson r", R.agree.r, ""], ["Spearman rho", R.agree.rho, ""], ["RMSD", R.agree.rmsd, R.unit],
+                       ["Mean absolute difference", R.agree.mad, R.unit], ["Normalised mean bias", R.agree.nmb, "%"]] : []),
+        ...(R.sig != null ? [["Cells whose 1-sigma ranges do not overlap", R.sig, ""]] : [])];
+      const blob = new Blob(["﻿" + rows.map(r => r.map(q).join(",")).join("\r\n")], { type: "text/csv" });
+      const name = `${R.dataset === "edgar" ? "EDGAR" : "PARIS"}_${R.selA.gas}_compare_${R.mode}_stats.csv`;
+      const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: name });
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    }
+
+    // ---- entering / leaving compare mode ----
+    // The map changes width with the layout: re-fit Ireland once it has its new size
+    const IRELAND = [[51.4, -10.7], [55.45, -5.4]];
+    const refit = () => setTimeout(() => { map.invalidateSize(); map.fitBounds(IRELAND, { animate: false }); }, 80);
+    function enter(){
+      st.active = true; root.classList.add("ms-compare");
+      btn.setAttribute("aria-pressed", "true");
+      colB.hidden = modeBox.hidden = results.hidden = false;
+      setOpen(steps[2], true);
+      if (root.classList.contains("ms-side-hidden")) setSide(true);
+      // Coming back to the same dataset keeps layer B's choices
+      if (st.builtFor === ds() && B.gas) { syncFromA(); schedule(); }
+      else buildB().then(schedule);
+      refit();
+    }
+    function exit(){
+      st.active = false; st.token++; clearResult(); setMsg("");
+      root.classList.remove("ms-compare");
+      btn.setAttribute("aria-pressed", "false");
+      colB.hidden = modeBox.hidden = results.hidden = true;
+      refit();
+    }
+    function syncButton(){
+      const ok = ds() !== "mapeire";
+      btn.disabled = !ok;
+      btn.title = ok ? "Compare two layers of the same dataset: the map shows B − A"
+                     : "Comparison is available for EDGAR and the Inverse model (MapEIre is published as images, not values)";
+      if (!ok && st.active) exit();
+    }
+    btn.addEventListener("click", () => st.active ? exit() : enter());
+    // A new dataset, or Reset selection, starts layer B again from a copy of A
+    const restart = () => { st.builtFor = null; if (st.active) { clearResult(); buildB().then(schedule); } };
+    datasetSel.addEventListener("change", () => { syncButton(); restart(); });
+    document.addEventListener("maplayers:clear", restart);
+    // Layer A changes: keep B in step and recompute
+    ["edgar", "inverse"].forEach(name => Object.values(EXPORT_FIELDS[name]).forEach(id =>
+      document.getElementById(id).addEventListener("change", () => { if (st.active && ds() === name) { syncFromA(); schedule(); } })));
+    modeBox.querySelectorAll("[data-mode]").forEach(b => b.addEventListener("click", () => {
+      st.mode = b.dataset.mode;
+      modeBox.querySelectorAll("[data-mode]").forEach(x => x.setAttribute("aria-checked", String(x === b)));
+      schedule();
+    }));
+    opacityEl.addEventListener("input", restyle);
+    syncButton();
+
+    return { get result(){ return st.result; } };
+  })();
+
   // Toolbar chip and stepper mirror the active layer's title card on the map
   const syncLayer = () => {
     syncSteps();
-    const card = mapEl.querySelector(".raster-title");
+    const card = mapEl.querySelector(".raster-title.cmp-card") || mapEl.querySelector(".raster-title");
     const name = card?.querySelector(".rt-name")?.textContent.trim();
     layerChip.classList.toggle("on", !!name);
     layerText.textContent = name || "No emission layer selected";

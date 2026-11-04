@@ -355,8 +355,9 @@ def inverse_layer(request):
     return resp
 
 
-_EXPORT_KEYS = ("dataset", "year", "sector", "parameter", "gas", "month",
-                "model", "transport", "estimate")
+_LAYER_KEYS = ("year", "sector", "parameter", "gas", "month", "model", "transport", "estimate")
+# Plus a second layer (b_*) and the difference mode when comparing two layers
+_EXPORT_KEYS = ("dataset", "compare", "mode", *_LAYER_KEYS, *(f"b_{k}" for k in _LAYER_KEYS))
 
 
 def map_export(request, fmt):

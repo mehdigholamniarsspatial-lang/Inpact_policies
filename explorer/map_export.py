@@ -324,8 +324,147 @@ def _mapeire_layer(q: dict) -> Layer:
     return layer
 
 
+# ---------------------------------------------------------------------------
+# Comparison: layer B − layer A of the same dataset (EDGAR or inverse model)
+# ---------------------------------------------------------------------------
+_EDGAR_KEYS = ("gas", "sector", "year", "month")
+_INVERSE_KEYS = ("model", "transport", "gas", "year", "estimate")
+
+
+def _edgar_label(meta: dict, sel: dict) -> str:
+    period = sel["year"] if sel["month"] == "annual" else f"{edgar.MONTHS[int(sel['month']) - 1]} {sel['year']}"
+    return f"{meta['sectors'][sel['sector']]['name']}, {period}"
+
+
+def _inverse_label(sel: dict) -> str:
+    return f"{sel['model']} {sel['transport']} {sel['estimate']} {sel['year']}"
+
+
+def _quantile(sorted_vals: np.ndarray, p: float) -> float:
+    return float(np.quantile(sorted_vals, p)) if sorted_vals.size else float("nan")
+
+
+def _compare_layer(q: dict) -> Layer:
+    """
+    Difference map B − A (``mode`` "abs") or (B − A) / A in % (``mode`` "pct").
+    Both layers come from the same dataset and gas; EDGAR layers must both be
+    annual or both monthly. The page computes the same numbers for its panel.
+    """
+    ds, mode = q.get("dataset", ""), q.get("mode", "abs")
+    keys = _EDGAR_KEYS if ds == "edgar" else _INVERSE_KEYS if ds == "inverse" else None
+    if keys is None:
+        raise SelectionError("Comparison is available for EDGAR and the inverse model only.")
+    if mode not in ("abs", "pct"):
+        raise SelectionError("Unknown difference mode.")
+    sel_a = {k: q.get(k, "") for k in keys}
+    sel_b = {k: q.get(f"b_{k}", "") for k in keys}
+    if sel_a["gas"] != sel_b["gas"]:
+        raise SelectionError("Both layers must be the same gas.")
+
+    if ds == "edgar":
+        if (sel_a["month"] == "annual") != (sel_b["month"] == "annual"):
+            raise SelectionError("Compare annual with annual, or month with month.")
+        la, lb = edgar.layer(**sel_a), edgar.layer(**sel_b)
+        if la is None or lb is None:
+            raise SelectionError("Unknown EDGAR selection.")
+        meta = edgar.load_metadata()
+        grid = meta["grid"]
+        a, b = np.asarray(la["values"], float), np.asarray(lb["values"], float)
+        include = np.ones(a.size, bool)
+        geo = [(grid["west"] + (i % grid["cols"]) * grid["res"], grid["north"] - (i // grid["cols"]) * grid["res"],
+                grid["res"], grid["res"]) for i in grid["cells"]]
+        tot_a, tot_b, tot_unit = la["total"], lb["total"], f"t {meta['gases'][sel_a['gas']]['formula']}"
+        unit, formula = la["unit"], meta["gases"][sel_a["gas"]]["formula"]
+        label_a, label_b = _edgar_label(meta, sel_a), _edgar_label(meta, sel_b)
+        src = meta["source"]
+        source = f"{src['dataset']} · {src['credit']} · {src['url']}"
+        stem_a = f"{sel_a['sector']}-{sel_a['year']}" + ("" if sel_a["month"] == "annual" else f"m{int(sel_a['month']):02d}")
+        stem_b = f"{sel_b['sector']}-{sel_b['year']}" + ("" if sel_b["month"] == "annual" else f"m{int(sel_b['month']):02d}")
+        tif_rows, tif_cols, tif_geo = grid["rows"], grid["cols"], (grid["west"], grid["north"], grid["res"], grid["res"])
+        flat_index = np.asarray(grid["cells"])
+    elif ds == "inverse":
+        if sel_a["estimate"] not in ("prior", "posterior") or sel_b["estimate"] not in ("prior", "posterior"):
+            raise SelectionError("Compare prior or posterior estimates.")
+        la = inverse.layer(*(sel_a[k] for k in _INVERSE_KEYS[:4]))
+        lb = inverse.layer(*(sel_b[k] for k in _INVERSE_KEYS[:4]))
+        if la is None or lb is None:
+            raise SelectionError("Unknown inverse model selection.")
+        meta = inverse.load_metadata()
+        grid = meta["grid"]
+        num = lambda v: np.array([np.nan if x is None else x for x in v], float)  # noqa: E731
+        a, b = num(la[sel_a["estimate"]]), num(lb[sel_b["estimate"]])
+        fa, fb = np.asarray(la["country_fraction"], float), np.asarray(lb["country_fraction"], float)
+        include = np.isfinite(a) & np.isfinite(b) & (fa > 0) & (fb > 0)
+        geo = [(grid["west"] + (i % grid["cols"]) * grid["dlon"], grid["north"] - (i // grid["cols"]) * grid["dlat"],
+                grid["dlon"], grid["dlat"]) for i in range(a.size)]
+        tot_a, tot_b = la[f"total_{sel_a['estimate']}"], lb[f"total_{sel_b['estimate']}"]
+        formula = meta["gases"][sel_a["gas"]]["formula"]
+        tot_unit, unit = f"Gg {formula} yr⁻¹", la["unit"]
+        label_a, label_b = _inverse_label(sel_a), _inverse_label(sel_b)
+        src = meta["source"]
+        source = f"{src['dataset']} · {src['credit']} · doi:{src['doi']}"
+        stem_a = f"{sel_a['model']}-{sel_a['transport']}-{sel_a['estimate']}-{sel_a['year']}"
+        stem_b = f"{sel_b['model']}-{sel_b['transport']}-{sel_b['estimate']}-{sel_b['year']}"
+        tif_rows, tif_cols, tif_geo = grid["rows"], grid["cols"], (grid["west"], grid["north"], grid["dlon"], grid["dlat"])
+        flat_index = np.arange(a.size)
+
+    d = b - a
+    if mode == "pct":
+        pos = a[include & (a > 0)]
+        thr = 0.01 * pos.mean() if pos.size else np.inf
+        with np.errstate(divide="ignore", invalid="ignore"):
+            v = np.where(include & (a > thr), d / a * 100, np.nan)
+    else:
+        v = np.where(include, d, np.nan)
+    finite = np.isfinite(v)
+    vals = np.sort(v[finite])
+    lim = _quantile(np.abs(vals), 0.98) if vals.size else 1.0
+    lim = lim if lim > 0 else (float(np.abs(vals).max()) if vals.size and np.abs(vals).max() > 0 else 1.0)
+
+    cells = []
+    for (w, n, dx, dy), val in zip(geo, v):
+        if np.isfinite(val):
+            cells.append((w, n - dy, w + dx, n, diverging(val / lim)))
+
+    arr = np.full(tif_rows * tif_cols, NODATA, dtype=np.float32)
+    arr[flat_index] = np.where(finite, v, NODATA).astype(np.float32)
+
+    diff_tot = tot_b - tot_a
+    value_unit = "%" if mode == "pct" else unit
+    r = float(np.corrcoef(a[include], b[include])[0, 1]) if include.sum() > 2 and np.std(a[include]) > 0 and np.std(b[include]) > 0 else float("nan")
+    facts = [
+        ("Total A", f"{fmt(tot_a)} {tot_unit}"),
+        ("Total B", f"{fmt(tot_b)} {tot_unit}"),
+        ("B − A", f"{'+' if diff_tot >= 0 else '−'}{fmt(abs(diff_tot))} {tot_unit}"
+                  + (f" ({diff_tot / tot_a * 100:+.1f}%)" if tot_a else "")),
+        ("Cell mean", f"{fmt(float(vals.mean())) if vals.size else '–'} {value_unit}"),
+        ("Cell median", f"{fmt(_quantile(vals, 0.5)) if vals.size else '–'} {value_unit}"),
+        ("Pearson r (A, B)", f"{r:.3f}" if np.isfinite(r) else "–"),
+        ("Cells", f"{int(finite.sum())}" + (" (A below 1% of its mean excluded)" if mode == "pct" else "")),
+    ]
+    what = "% change" if mode == "pct" else "difference"
+    legend = Legend(
+        title=f"{formula} · B − A" + (" (%)" if mode == "pct" else ""), unit=value_unit, kind="diverging",
+        lo=-lim, hi=lim,
+        ticks=[(0, f"≤ −{fmt(lim)}"), (0.25, f"−{fmt(lim / 2)}"), (0.5, "0"), (0.75, f"+{fmt(lim / 2)}"), (1, f"≥ +{fmt(lim)}")],
+        note=f"A: {label_a} · B: {label_b} · scale ±98th percentile of |B − A|",
+    )
+    name = "EDGAR" if ds == "edgar" else "PARIS inverse model"
+    return Layer(
+        stem=_slug("EDGAR" if ds == "edgar" else "PARIS", sel_a["gas"], "diff", stem_b, "minus", stem_a, mode),
+        title=f"{name} · {formula} {what}: B − A",
+        subtitle=f"B: {label_b}  −  A: {label_a}   [{value_unit}]",
+        legend=legend, source=source, facts=facts, cells=cells,
+        tif_values=arr.reshape(tif_rows, tif_cols), tif_geo=tif_geo,
+        tif_meta={"DATASET": name, "LAYER_A": label_a, "LAYER_B": label_b, "GAS": formula,
+                  "VALUE": "B − A" if mode == "abs" else "(B − A) / A × 100", "UNITS": value_unit, "SOURCE": source},
+    )
+
+
 def build_layer(q: dict) -> Layer:
     dataset = q.get("dataset", "")
+    if q.get("compare") == "1":
+        return _compare_layer(q)
     if dataset == "edgar":
         return _edgar_layer(q)
     if dataset == "inverse":
