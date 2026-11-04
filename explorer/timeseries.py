@@ -9,7 +9,9 @@ one layer definition and one spatial selection:
 * ``where=whole``  – every Ireland cell of the dataset
 
 For a region or the whole grid the cells are combined per time step with
-``agg=mean`` or ``agg=median``. Inputs are checked against the metadata, never
+``agg=mean``, ``agg=median`` or ``agg=sum`` (the total of the cells: EDGAR cells
+are already totals per cell; inverse-model fluxes are multiplied by the cell
+area and Ireland's share of the cell, giving t yr⁻¹). Inputs are checked against the metadata, never
 used to build a path directly.
 """
 from __future__ import annotations
@@ -20,7 +22,7 @@ import numpy as np
 
 from . import edgar, inverse
 
-AGGREGATES = {"mean": np.nanmean, "median": np.nanmedian}
+AGGREGATES = {"mean": np.nanmean, "median": np.nanmedian, "sum": np.nansum}
 WHERE = ("pixel", "region", "whole")
 
 
@@ -97,6 +99,11 @@ def _pick(q: dict, centres_lat: np.ndarray, centres_lng: np.ndarray, pixel_index
     return np.array([pos]), False
 
 
+def _agg(q: dict) -> str:
+    """How the cells are combined; a single pixel is its own value."""
+    return "mean" if q.get("where") == "pixel" else (q.get("agg") or "mean")
+
+
 def _combine(block: np.ndarray, agg: str) -> list:
     """``block`` is time × cells; returns one value per time step (None where nothing is finite)."""
     out = []
@@ -138,7 +145,9 @@ def _edgar(q: dict) -> Optional[dict]:
         t = [round(y + m / 12, 4) for y in years for m in range(12)]   # Jan at the year tick, like annual points
         labels = [f"{edgar.MONTHS[m]} {y}" for y in years for m in range(12)]
         unit = f"t {formula} per 0.1° cell per month"
-    agg = q.get("agg") or "mean"
+    agg = _agg(q)
+    if agg == "sum":
+        unit = f"t {formula} per {'month' if step == 'monthly' else 'year'} (total of the cells)"
     return {
         "t": t, "labels": labels, "values": _combine(block.astype("float64"), agg),
         "unit": unit, "formula": formula, "n_cells": int(sel.size), "fallback": fallback,
@@ -182,12 +191,18 @@ def _inverse(q: dict) -> Optional[dict]:
         block = grid["posterior"][:n_years, cells] - grid["prior"][:n_years, cells]
     else:
         block = grid[estimate][:n_years, cells]
-    agg = q.get("agg") or "mean"
+    agg = _agg(q)
     formula = meta["gases"][gas]["formula"]
+    unit = meta["unit"].format(gas=formula)
+    block = block.astype("float64")
+    if agg == "sum":   # kg km⁻² yr⁻¹ × km² × Ireland share of the cell → t yr⁻¹
+        weight = np.asarray(meta["cell_area_km2"], dtype="float64")[cells] * frac[cells] / 1000.0
+        block = block * weight
+        unit = f"t {formula} yr⁻¹ (total of the cells)"
     out = {
         "t": [float(y) for y in run["years"]], "labels": [str(y) for y in run["years"]],
-        "values": _combine(block.astype("float64"), agg),
-        "unit": meta["unit"].format(gas=formula), "formula": formula, "n_cells": int(sel.size), "fallback": fallback,
+        "values": _combine(block, agg),
+        "unit": unit, "formula": formula, "n_cells": int(sel.size), "fallback": fallback,
         "cell": None,
         "title": f"Inverse {formula} · {model} {transport} · {estimate.capitalize()}",
     }
