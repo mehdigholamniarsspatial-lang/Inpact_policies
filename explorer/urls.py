@@ -16,6 +16,8 @@ urlpatterns = [
     path("api/inverse/layer/", views.inverse_layer, name="inverse_layer"),
     # Download of the selected map layer: GeoTIFF data or a JPEG map with legend
     path("api/map/export/<str:fmt>/", views.map_export, name="map_export"),
+    # Time series of a pixel, region or the whole grid (map window's Time series panel)
+    path("api/map/timeseries/", views.map_timeseries, name="map_timeseries"),
     path("api/feedback/", views.submit_feedback, name="submit_feedback"),
     path("api/feedback/download/", views.download_feedback, name="download_feedback"),
     # Trend Analysis (piecewise regression) API — ported from the Streamlit app

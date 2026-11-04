@@ -1334,6 +1334,63 @@ html.map-standalone.ms-compare .raster-bar > .cmp-col-head{display:flex}
   html.map-standalone.ms-compare{--ms-side-w:460px}
   .cmp-kv{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
+/* ---- Time series mode: same layout as compare, graph panel on the right ---- */
+html.map-standalone.ms-ts{--cmp-res-w:420px}
+html.map-standalone.ms-ts #mapPanel{grid-template-columns:var(--ms-side-w) minmax(0,1fr) var(--cmp-res-w)}
+html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minmax(0,1fr) var(--cmp-res-w)}
+.ts-results[hidden],.ts-graph[hidden],.ts-lock[hidden],.ts-draw[hidden],.ts-opt[hidden],.ts-scale[hidden]{display:none!important}
+.ts-sec + .ts-sec{margin-top:.95rem;padding-top:.8rem;border-top:1px dashed var(--grey-border)}
+.ts-n{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--navy);color:#fff;font-size:.6rem;margin-right:.35rem;vertical-align:1px}
+.ts-where{display:flex;width:100%}
+.ts-where button{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:.3rem;padding:.38rem .4rem}
+.cmp-seg button:disabled{cursor:not-allowed;opacity:.55}
+.cmp-seg button[aria-checked="true"]:disabled{opacity:.85}
+.ts-lock{margin:.35rem 0 0;font-size:.66rem;color:var(--text-muted);display:flex;gap:.3rem;align-items:center}
+.ts-loc{margin-top:.5rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.4rem .55rem;border-radius:8px;background:var(--grey-panel);font-size:.74rem;color:var(--text-main);min-height:34px}
+.ts-loc.set{background:var(--teal-light)}
+.ts-draw{flex:none;display:inline-flex;align-items:center;gap:.3rem;border:1px solid var(--teal);border-radius:7px;background:#fff;color:#0B5563;font-family:inherit;font-size:.7rem;font-weight:700;padding:.22rem .55rem;cursor:pointer}
+.ts-draw:hover,.ts-draw[aria-pressed="true"]{background:var(--teal);color:#fff}
+.ts-def{font-size:.76rem;color:var(--text-main);padding:.4rem .55rem;border:1px dashed var(--grey-border);border-radius:8px;background:#fff;line-height:1.35}
+.ts-def small{display:block;font-size:.64rem;color:var(--text-muted)}
+.ts-def.warn{border-color:rgba(192,57,43,.45);color:var(--red)}
+.ts-opts{display:flex;flex-wrap:wrap;gap:.55rem 1rem;margin-top:.55rem}
+.ts-scale{display:flex;gap:.45rem;align-items:flex-start;margin-top:.6rem;font-size:.74rem;cursor:pointer;color:var(--text-main)}
+.ts-scale input{margin-top:.15rem;accent-color:var(--teal);width:15px;height:15px;flex:none}
+.ts-scale small{display:block;font-size:.64rem;color:var(--text-muted);line-height:1.35;font-weight:400}
+.ts-scale.off{opacity:.55;cursor:not-allowed}
+.ts-add{margin-top:.65rem;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:.35rem;border:0;border-radius:8px;background:var(--teal);color:#fff;font-family:inherit;font-size:.8rem;font-weight:800;padding:.5rem .8rem;cursor:pointer}
+.ts-add:hover:not(:disabled){filter:brightness(.94)}
+.ts-add:disabled{background:#B9C6CF;cursor:not-allowed}
+.ts-add:focus-visible,.ts-draw:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.ts-chart{height:270px}
+.ts-list{list-style:none;margin:.6rem 0 .6rem;padding:0;display:grid;gap:.3rem}
+.ts-list li{display:flex;align-items:flex-start;gap:.45rem;padding:.35rem .45rem;border-radius:8px;background:var(--grey-panel);font-size:.72rem;line-height:1.3}
+.ts-sw{flex:none;width:14px;height:4px;border-radius:2px;margin-top:.45rem}
+.ts-list .nm{flex:1;min-width:0}
+.ts-list .nm b{display:block;color:var(--navy);font-weight:800}
+.ts-list .nm small{display:block;color:var(--text-muted);font-size:.64rem}
+.ts-list .nm .warn{color:var(--red)}
+.ts-tag{display:inline-block;font-size:.58rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;padding:0 .3rem;border-radius:4px;background:#fff;border:1px solid var(--grey-border);color:var(--text-muted);margin-left:.25rem;vertical-align:1px}
+.ts-tag.sc{border-color:rgba(232,163,61,.7);color:#8A5A12;background:#FFF6E6}
+.ts-rm{flex:none;border:0;background:none;color:var(--text-muted);padding:0 .15rem;cursor:pointer;font-size:.85rem;line-height:1}
+.ts-rm:hover,.ts-rm:focus-visible{color:var(--red);outline:none}
+.ts-actions{display:flex;flex-wrap:wrap;gap:.45rem}
+.ts-actions .cmp-csv{margin-top:0}
+.ts-clear{border-color:var(--grey-border);color:var(--text-muted)}
+.ts-clear:hover{background:var(--red);border-color:var(--red);color:#fff}
+#map.ts-drawing,#map.ts-drawing .leaflet-interactive,#map.ts-picking,#map.ts-picking .leaflet-interactive{cursor:crosshair!important}
+@media (max-width:1279px){
+  html.map-standalone.ms-ts{--ms-side-w:400px}
+  html.map-standalone.ms-ts #mapPanel{grid-template-columns:var(--ms-side-w) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) minmax(0,50%)}
+  html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minmax(0,1fr)}
+  html.map-standalone.ms-ts .map-side{grid-row:2 / 4}
+}
+@media (max-width:991px){
+  html.map-standalone.ms-ts #mapPanel,
+  html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) minmax(0,55%)}
+  html.map-standalone.ms-ts .map-side{grid-row:auto}
+  html.map-standalone.ms-ts{--ms-side-w:460px}
+}
 @media (max-width:575px){
   #map .raster-colorbar.cmp-card .cb-note{display:none}
   #map .raster-colorbar.cmp-card .cb-row{height:70px}
@@ -1612,6 +1669,9 @@ html.map-standalone.ms-compare .raster-bar > .cmp-col-head{display:flex}
               <button type="button" class="ms-tool" id="msCompare" aria-pressed="false" aria-controls="cmpColB cmpResults" title="Compare two layers of the same dataset: the map shows B − A">
                 <i class="bi bi-layout-split"></i><span class="lbl">Compare</span>
               </button>
+              <button type="button" class="ms-tool" id="msTs" aria-pressed="false" aria-controls="tsResults" title="Plot the time series of a pixel, a region or the whole of Ireland">
+                <i class="bi bi-graph-up"></i><span class="lbl">Time series</span>
+              </button>
               <button type="button" class="ms-tool" id="msResetView" title="Zoom back to the whole of Ireland">
                 <i class="bi bi-crosshair"></i><span class="lbl">Reset view</span>
               </button>
@@ -1879,6 +1939,61 @@ html.map-standalone.ms-compare .raster-bar > .cmp-col-head{display:flex}
             </div>
             <div class="cmp-res-body" id="cmpResBody">
               <p class="cmp-empty">Choose layer A and layer B in the panel on the left. The statistics of B − A appear here.</p>
+            </div>
+          </aside>
+          <!-- Time series mode: values of a pixel / region / the whole grid over time -->
+          <aside class="cmp-results ts-results ms-only" id="tsResults" aria-label="Time series" hidden>
+            <div class="cmp-res-head">
+              <div><div class="ms-kicker">Time series</div><div class="cmp-res-title" id="tsTitle">Values over time</div></div>
+            </div>
+            <div class="cmp-res-body">
+              <section class="ts-sec">
+                <h4 class="cmp-sec-h"><span class="ts-n">1</span>Where</h4>
+                <div class="cmp-seg ts-where" role="radiogroup" aria-label="Spatial selection" id="tsWhere">
+                  <button type="button" role="radio" aria-checked="true" data-where="pixel"><i class="bi bi-crosshair2"></i>Pixel</button>
+                  <button type="button" role="radio" aria-checked="false" data-where="region"><i class="bi bi-bounding-box"></i>Region</button>
+                  <button type="button" role="radio" aria-checked="false" data-where="whole"><i class="bi bi-map"></i>Whole image</button>
+                </div>
+                <p class="ts-lock" id="tsLock" hidden><i class="bi bi-lock-fill"></i>Fixed for this graph. Clear the graph to choose another option.</p>
+                <div class="ts-loc" id="tsLoc">
+                  <span class="ts-loc-txt" id="tsLocTxt">Click a cell on the map.</span>
+                  <button type="button" class="ts-draw" id="tsDraw" aria-pressed="false" hidden><i class="bi bi-pencil-square"></i>Draw region</button>
+                </div>
+              </section>
+              <section class="ts-sec">
+                <h4 class="cmp-sec-h"><span class="ts-n">2</span>Add a series</h4>
+                <div class="ts-def" id="tsDef"></div>
+                <div class="ts-opts">
+                  <div class="ts-opt" id="tsAggBox">
+                    <span class="cmp-mode-lbl">Combine cells by</span>
+                    <div class="cmp-seg" role="radiogroup" aria-label="Combine the cells of the region by" id="tsAgg">
+                      <button type="button" role="radio" aria-checked="true" data-agg="mean">Mean</button>
+                      <button type="button" role="radio" aria-checked="false" data-agg="median">Median</button>
+                    </div>
+                  </div>
+                  <div class="ts-opt" id="tsStepBox">
+                    <span class="cmp-mode-lbl">Time step</span>
+                    <div class="cmp-seg" role="radiogroup" aria-label="EDGAR time step" id="tsStep">
+                      <button type="button" role="radio" aria-checked="true" data-step="annual">Annual</button>
+                      <button type="button" role="radio" aria-checked="false" data-step="monthly">Monthly</button>
+                    </div>
+                  </div>
+                </div>
+                <label class="ts-scale" id="tsScaleBox"><input type="checkbox" id="tsScale">
+                  <span><b>Scale to the previous series</b><small id="tsScaleHint">Fits this series into the range of the one above it, so lines of different size or unit can be compared by shape.</small></span>
+                </label>
+                <button type="button" class="ts-add" id="tsAdd" disabled><i class="bi bi-plus-lg"></i><span>Plot series</span></button>
+                <p class="cmp-msg" id="tsMsg" role="status"></p>
+              </section>
+              <section class="ts-sec ts-graph" id="tsGraph" hidden>
+                <div class="cmp-chart ts-chart"><canvas id="tsChart" role="img" aria-label="Time series graph"></canvas></div>
+                <ul class="ts-list" id="tsList" aria-label="Series on the graph"></ul>
+                <div class="ts-actions">
+                  <button type="button" class="cmp-csv" id="tsCsv"><i class="bi bi-filetype-csv"></i>Download data (CSV)</button>
+                  <button type="button" class="cmp-csv ts-clear" id="tsClear"><i class="bi bi-trash3"></i>Clear graph</button>
+                </div>
+                <p class="cmp-note" id="tsNote"></p>
+              </section>
             </div>
           </aside>
         </section>
@@ -5167,6 +5282,7 @@ if (MAP_STANDALONE) (function mapWindow(){
     const IRELAND = [[51.4, -10.7], [55.45, -5.4]];
     const refit = () => setTimeout(() => { map.invalidateSize(); map.fitBounds(IRELAND, { animate: false }); }, 80);
     function enter(){
+      document.dispatchEvent(new CustomEvent("mapmode:enter", { detail: "compare" }));
       st.active = true; root.classList.add("ms-compare");
       btn.setAttribute("aria-pressed", "true");
       colB.hidden = modeBox.hidden = results.hidden = false;
@@ -5192,6 +5308,7 @@ if (MAP_STANDALONE) (function mapWindow(){
       if (!ok && st.active) exit();
     }
     btn.addEventListener("click", () => st.active ? exit() : enter());
+    document.addEventListener("mapmode:enter", e => { if (e.detail !== "compare" && st.active) exit(); });
     // A new dataset, or Reset selection, starts layer B again from a copy of A
     const restart = () => { st.builtFor = null; if (st.active) { clearResult(); buildB().then(schedule); } };
     datasetSel.addEventListener("change", () => { syncButton(); restart(); });
@@ -5208,6 +5325,362 @@ if (MAP_STANDALONE) (function mapWindow(){
     syncButton();
 
     return { get result(){ return st.result; } };
+  })();
+
+  // ---- Time series of a pixel, a region or the whole grid (EDGAR and the inverse model) ----
+  // The series is defined by the layer chosen on the left (year / month are ignored); the
+  // spatial option is fixed once the first series is on the graph, and every series follows
+  // the same pixel or region when it moves.
+  const ts = (() => {
+    const $ = id => document.getElementById(id);
+    const btn = $("msTs"), panel = $("tsResults"), titleEl = $("tsTitle");
+    const whereSeg = $("tsWhere"), lockEl = $("tsLock"), locBox = $("tsLoc"), locTxt = $("tsLocTxt"), drawBtn = $("tsDraw");
+    const defEl = $("tsDef"), aggBox = $("tsAggBox"), aggSeg = $("tsAgg"), stepBox = $("tsStepBox"), stepSeg = $("tsStep");
+    const scaleBox = $("tsScaleBox"), scaleEl = $("tsScale"), scaleHint = $("tsScaleHint");
+    const addBtn = $("tsAdd"), msgEl = $("tsMsg"), graph = $("tsGraph"), listEl = $("tsList"), noteEl = $("tsNote");
+    const { esc, fmtVal } = GRID_UI;
+    const COLOURS = ["#0E8C8A", "#E8A33D", "#16324F", "#B2182B", "#6A4C93", "#2166AC", "#7A8B2E", "#C2185B"];
+    const ESTIMATES = { prior: "Prior", posterior: "Posterior", difference: "Difference (posterior − prior)" };
+    const SCALE_HINT = scaleHint.textContent;
+    const st = { active: false, where: "pixel", agg: "mean", step: "annual", loc: null, series: [], chart: null,
+                 cache: new Map(), token: 0, drawMode: false, drag: null, colour: 0, busy: false, sticky: false };
+    map.createPane("tsPane").style.zIndex = 430;
+    const marks = L.layerGroup();
+    const LINE = { pane: "tsPane", color: "#0B5563", weight: 2, interactive: false };
+
+    const seg = (box, attr, value) =>
+      box.querySelectorAll(`[data-${attr}]`).forEach(b => b.setAttribute("aria-checked", String(b.dataset[attr] === value)));
+    const lngTxt = (v, d) => `${Math.abs(v).toFixed(d)}°${v < 0 ? "W" : "E"}`;
+    const hexA = (h, a) => h + Math.round(a * 255).toString(16).padStart(2, "0");
+    const finite = vs => vs.filter(v => v != null && Number.isFinite(v));
+    const mean = xs => xs.reduce((s, x) => s + x, 0) / xs.length;
+    function setMsg(text, warn){ msgEl.textContent = text || ""; msgEl.classList.toggle("warn", !!warn); st.sticky = !!warn; }
+
+    // ---- the series to add: the layer chosen in the left panel ----
+    const ds = () => datasetSel.value;
+    const val = id => document.getElementById(id).value;
+    const optText = id => { const s = $(id), o = s.selectedOptions[0]; return o && o.value ? o.textContent.split(" · ")[0].trim() : s.value; };
+    function currentDef(){
+      if (ds() === "edgar") {
+        const gas = val("edgarGas"), sector = val("edgarSector");
+        if (!gas || !sector) return { missing: "Choose a gas and a sector under “Select the layer” in the left panel." };
+        return { dataset: "edgar", gas, sector, step: st.step };
+      }
+      if (ds() === "inverse") {
+        const model = val("invModel"), transport = val("invTransport"), gas = val("invGas"), e = val("invEstimate");
+        if (!model || !transport || !gas) return { missing: "Choose an inverse model, a transport model and a gas under “Select the layer” in the left panel." };
+        return { dataset: "inverse", model, transport, gas, estimate: ESTIMATES[e] ? e : "posterior" };
+      }
+      return { missing: "Time series are available for EDGAR and the Inverse model: choose one of them in step 1 on the left." };
+    }
+    function defHtml(d){
+      if (d.dataset === "edgar")
+        return `<b>EDGAR</b> · ${esc(optText("edgarGas"))} · ${esc(optText("edgarSector"))}<small>${d.step === "monthly" ? "Monthly values" : "Annual totals"}, every year of the dataset</small>`;
+      return `<b>Inverse model</b> · ${esc(d.model)} ${esc(d.transport)} · ${esc(optText("invGas"))}<small>${esc(ESTIMATES[d.estimate])}, every year of the run</small>`;
+    }
+    const aggText = s => st.where === "pixel" ? "Single pixel"
+      : `${st.where === "region" ? "Region" : "Whole image"} ${s.agg} of ${s.data ? s.data.n_cells : "?"} cells`;
+
+    // ---- data ----
+    const locReady = () => st.where === "whole" || !!st.loc;
+    function fetchSeries(def, agg){
+      const q = new URLSearchParams({ ...def, where: st.where, agg });
+      if (st.where === "pixel") { q.set("lat", st.loc.lat.toFixed(5)); q.set("lng", st.loc.lng.toFixed(5)); }
+      else if (st.where === "region") ["s", "w", "n", "e"].forEach(k => q.set(k, st.loc[k].toFixed(4)));
+      const url = `/api/map/timeseries/?${q}`;
+      if (!st.cache.has(url)) {
+        const p = fetch(url).then(async r => {
+          const j = await r.json().catch(() => ({}));
+          if (!r.ok) throw new Error(j.detail || `HTTP ${r.status}`);
+          return j;
+        });
+        p.catch(() => st.cache.delete(url));
+        st.cache.set(url, p);
+      }
+      return st.cache.get(url);
+    }
+    async function add(){
+      const def = currentDef();
+      if (def.missing || !locReady() || st.busy) return;
+      const agg = st.where === "pixel" ? "mean" : st.agg;
+      const key = JSON.stringify([def, agg]);
+      if (st.series.some(s => s.key === key)) return setMsg("This series is already on the graph.", true);
+      const scaled = st.series.length > 0 && scaleEl.checked;
+      st.busy = true; syncAdd(); setMsg("Loading the series…");
+      try {
+        const data = await fetchSeries(def, agg);
+        st.series.push({ key, def, agg, scaled, data, error: null, title: data.title, unit: data.unit,
+                         colour: COLOURS[st.colour++ % COLOURS.length] });
+        setMsg("");
+        render(); drawMarks();
+      } catch (err) {
+        setMsg(err.message, true);
+      } finally {
+        st.busy = false; syncAdd();
+      }
+    }
+    // The pixel or region moved: every series follows it
+    async function refetchAll(){
+      const tok = ++st.token, list = st.series.slice();
+      if (!list.length) return;
+      setMsg("Updating the graph for the new location…");
+      const res = await Promise.all(list.map(s => fetchSeries(s.def, s.agg).then(d => ({ d }), e => ({ e: e.message }))));
+      if (tok !== st.token) return;
+      list.forEach((s, i) => { s.data = res[i].d || null; s.error = res[i].e || null; });
+      setMsg(list.some(s => s.error) ? "Some series have no data at this location (see the list below the graph)." : "", list.some(s => s.error));
+      render(); drawMarks();
+    }
+
+    // ---- scaling: y' = a·y + b maps a series' range onto the series above it ----
+    function computeScales(){
+      let ref = null;                          // displayed values of the previous series with data
+      st.series.forEach(s => {
+        s.tf = { a: 1, b: 0 };
+        if (!s.data) return;
+        const v = finite(s.data.values);
+        if (s.scaled && ref && v.length && ref.length) {
+          const vmin = Math.min(...v), vmax = Math.max(...v), rmin = Math.min(...ref), rmax = Math.max(...ref);
+          if (vmax > vmin && rmax > rmin) { s.tf.a = (rmax - rmin) / (vmax - vmin); s.tf.b = rmin - s.tf.a * vmin; }
+          else if (mean(v)) s.tf.a = mean(ref) / mean(v);
+        }
+        ref = v.map(y => s.tf.a * y + s.tf.b);
+      });
+    }
+
+    // ---- graph ----
+    function render(){
+      if (st.chart) { st.chart.destroy(); st.chart = null; }
+      graph.hidden = !st.series.length;
+      lock();
+      if (!st.series.length) { listEl.innerHTML = ""; noteEl.textContent = ""; return; }
+      computeScales();
+      const datasets = [], xs = [], lineY = [];
+      st.series.forEach(s => {
+        if (!s.data) return;
+        const d = s.data, { a, b } = s.tf, tf = y => (y == null ? null : a * y + b);
+        xs.push(...d.t);
+        lineY.push(...finite(d.values).map(tf));
+        if (d.lo && d.hi && !s.scaled) {          // 1σ range of a single inverse-model cell
+          datasets.push({ data: d.t.map((x, j) => ({ x, y: tf(d.lo[j]) })), borderWidth: 0, pointRadius: 0, fill: false, _band: true, order: 2 });
+          datasets.push({ data: d.t.map((x, j) => ({ x, y: tf(d.hi[j]) })), borderWidth: 0, pointRadius: 0, fill: "-1",
+                          backgroundColor: hexA(s.colour, 0.16), _band: true, order: 2 });
+        }
+        datasets.push({
+          data: d.t.map((x, j) => ({ x, y: tf(d.values[j]), raw: d.values[j], label: d.labels[j] })),
+          borderColor: s.colour, backgroundColor: s.colour, borderWidth: 2, borderDash: s.scaled ? [6, 3] : [],
+          pointRadius: d.t.length > 60 ? 0 : 2.5, pointHoverRadius: 4, tension: 0, clip: 6, _s: s, order: 1,
+        });
+      });
+      let xmin = Math.floor(Math.min(...xs)), xmax = Math.ceil(Math.max(...xs));
+      if (!(xmax > xmin)) { xmin -= 1; xmax += 1; }
+      const span = xmax - xmin, step = span > 16 ? 4 : span > 8 ? 2 : 1;
+      const base = st.series.find(s => s.data && !s.scaled) || st.series.find(s => s.data);
+      // With several lines the axis fits the lines; a wide uncertainty band is clipped instead of flattening them
+      let yr = {};
+      if (st.series.length > 1 && lineY.length) {
+        const lo = Math.min(...lineY), hi = Math.max(...lineY), pad = (hi - lo) * 0.08 || Math.abs(hi) * 0.1 || 1;
+        yr = { min: lo >= 0 ? Math.max(0, lo - pad) : lo - pad, max: hi + pad };
+      }
+      st.chart = new Chart($("tsChart"), {
+        type: "line",
+        data: { datasets },
+        options: {
+          animation: false, maintainAspectRatio: false,
+          interaction: { mode: "nearest", axis: "x", intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              filter: it => !it.dataset._band,
+              callbacks: {
+                title: items => items[0]?.raw.label || "",
+                label: it => {
+                  const s = it.dataset._s, r = it.raw.raw;
+                  return `${s.title}: ${r == null ? "no data" : fmtVal(r) + " " + s.unit}${s.scaled ? " (scaled on the graph)" : ""}`;
+                },
+              },
+            },
+          },
+          scales: {
+            x: { type: "linear", min: xmin, max: xmax, ticks: { stepSize: step, callback: v => String(Math.round(v)), font: { size: 9 } },
+                 grid: { color: "rgba(22,50,79,.06)" } },
+            y: { ...yr, title: { display: true, text: base?.unit || "", font: { size: 9 } },
+                 ticks: { font: { size: 9 }, callback: v => fmtVal(v), maxTicksLimit: 7 }, grid: { color: "rgba(22,50,79,.08)" } },
+          },
+        },
+      });
+      listEl.innerHTML = st.series.map((s, i) => `<li>
+          <span class="ts-sw" style="background:${s.scaled ? `repeating-linear-gradient(90deg,${s.colour} 0 5px,transparent 5px 8px)` : s.colour}"></span>
+          <span class="nm"><b>${esc(s.title)}</b>
+            <small>${esc(aggText(s))} · ${esc(s.unit)}${s.scaled ? `<span class="ts-tag sc" title="Drawn as value × ${fmtVal(s.tf.a)} ${s.tf.b < 0 ? "−" : "+"} ${fmtVal(Math.abs(s.tf.b))} to fit the series above">Scaled</span>` : ""}</small>
+            ${s.error ? `<small class="warn">${esc(s.error)}</small>` : ""}</span>
+          <button type="button" class="ts-rm" data-rm="${i}" title="Remove from the graph" aria-label="Remove ${esc(s.title)}"><i class="bi bi-x-lg"></i></button>
+        </li>`).join("");
+      listEl.querySelectorAll("[data-rm]").forEach(b => b.addEventListener("click", () => {
+        st.series.splice(+b.dataset.rm, 1);
+        if (!st.series.length) st.colour = 0;
+        render(); drawMarks(); syncAdd();
+      }));
+      const units = new Set(st.series.filter(s => s.data && !s.scaled).map(s => s.unit));
+      noteEl.textContent = [
+        st.where === "pixel" ? "Values of the grid cell under the point; EDGAR and inverse-model cells differ in size."
+                             : "At each time step the cells inside are combined with the mean or median shown in the list.",
+        st.series.some(s => s.scaled) ? "Dashed lines are scaled to fit the series above them; the tooltip and the CSV give the original values." : "",
+        st.series.some(s => s.data?.lo) ? "Shaded band: the inverse model's 1σ-equivalent range for this cell." : "",
+        units.size > 1 ? "Unscaled series with different units share the axis: tick “Scale to the previous series” when adding them." : "",
+      ].filter(Boolean).join(" ");
+    }
+
+    // ---- map: pixel click, region box, outlines ----
+    function drawMarks(){
+      marks.clearLayers();
+      if (!st.active || !st.loc || st.where === "whole") return;
+      if (st.where === "pixel") {
+        const seen = new Set();
+        st.series.forEach(s => {
+          const c = s.data?.cell;
+          if (c && !seen.has(String(c))) { seen.add(String(c)); marks.addLayer(L.rectangle(c, { ...LINE, fill: false, dashArray: "4 3" })); }
+        });
+        marks.addLayer(L.circleMarker([st.loc.lat, st.loc.lng], { pane: "tsPane", radius: 5, color: "#fff", weight: 2, fillColor: "#0B5563", fillOpacity: 1, interactive: false }));
+      } else {
+        marks.addLayer(L.rectangle([[st.loc.s, st.loc.w], [st.loc.n, st.loc.e]], { ...LINE, dashArray: "6 4", fillColor: "#0E8C8A", fillOpacity: 0.08 }));
+      }
+      marks.addTo(map);
+    }
+    function setLoc(loc){ st.loc = loc; setMsg(""); syncLoc(); drawMarks(); syncAdd(); refetchAll(); }
+    function setDraw(on){
+      st.drawMode = on;
+      drawBtn.setAttribute("aria-pressed", String(on));
+      mapEl.classList.toggle("ts-drawing", on);
+      if (on) { map.dragging.disable(); map.boxZoom.disable(); } else { map.dragging.enable(); map.boxZoom.enable(); }
+      syncLoc();
+    }
+    map.on("click", e => {
+      if (st.active && st.where === "pixel") setLoc({ lat: e.latlng.lat, lng: e.latlng.lng });
+    });
+    map.on("mousedown", e => {
+      if (!st.active || !st.drawMode) return;
+      st.drag = { start: e.latlng, rect: L.rectangle([e.latlng, e.latlng], { ...LINE, dashArray: "6 4", fillColor: "#0E8C8A", fillOpacity: 0.14 }).addTo(map) };
+    });
+    map.on("mousemove", e => { if (st.drag) st.drag.rect.setBounds(L.latLngBounds(st.drag.start, e.latlng)); });
+    document.addEventListener("mouseup", () => {
+      if (!st.drag) return;
+      const b = st.drag.rect.getBounds();
+      map.removeLayer(st.drag.rect); st.drag = null;
+      if (b.getNorth() - b.getSouth() < 0.02 || b.getEast() - b.getWest() < 0.02) {
+        return setMsg("Drag on the map to draw a box (a single click is too small for a region).", true);
+      }
+      setDraw(false);
+      setLoc({ s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() });
+    });
+    document.addEventListener("keydown", e => {
+      if (e.key !== "Escape" || !st.drawMode) return;
+      if (st.drag) { map.removeLayer(st.drag.rect); st.drag = null; }
+      setDraw(false);
+    });
+    drawBtn.addEventListener("click", () => setDraw(!st.drawMode));
+
+    // ---- panel state ----
+    function lock(){
+      const on = st.series.length > 0;
+      whereSeg.querySelectorAll("button").forEach(b => { b.disabled = on; });
+      lockEl.hidden = !on;
+    }
+    function syncLoc(){
+      drawBtn.hidden = st.where !== "region";
+      drawBtn.lastChild.textContent = st.drawMode ? "Cancel" : st.loc ? "Redraw" : "Draw region";
+      const L0 = st.loc;
+      locTxt.textContent =
+          st.where === "whole" ? "Every Ireland cell of the dataset."
+        : st.where === "pixel" ? (L0 ? `Pixel at ${L0.lat.toFixed(3)}°N, ${lngTxt(L0.lng, 3)}. Click elsewhere to move it.` : "Click a cell on the map.")
+        : st.drawMode ? "Drag a box on the map (Esc to cancel)."
+        : L0 ? `Region ${L0.s.toFixed(2)}–${L0.n.toFixed(2)}°N, ${lngTxt(L0.w, 2)} to ${lngTxt(L0.e, 2)}`
+        : "Click “Draw region”, then drag a box on the map.";
+      locBox.classList.toggle("set", st.where === "whole" || (!!L0 && !st.drawMode));
+      mapEl.classList.toggle("ts-picking", st.active && st.where === "pixel");
+      titleEl.textContent = { pixel: "Pixel time series", region: "Region time series", whole: "Whole-image time series" }[st.where];
+    }
+    function syncAdd(){
+      const def = currentDef(), first = !st.series.length;
+      defEl.innerHTML = def.missing ? esc(def.missing) : defHtml(def);
+      defEl.classList.toggle("warn", !!def.missing);
+      aggBox.hidden = st.where === "pixel";
+      stepBox.hidden = ds() !== "edgar";
+      scaleEl.disabled = first;
+      scaleBox.classList.toggle("off", first);
+      scaleHint.textContent = first ? "Available once a series is on the graph." : SCALE_HINT;
+      addBtn.lastChild.textContent = first ? "Plot series" : "Add to graph";
+      addBtn.disabled = !!def.missing || !locReady() || st.busy;
+      if (!st.sticky && !st.busy) setMsg(!def.missing && !locReady()
+        ? (st.where === "pixel" ? "Click a cell on the map to choose the pixel." : "Draw a region on the map first.") : "");
+    }
+    function csv(){
+      const times = new Map();
+      st.series.forEach(s => s.data?.t.forEach((x, j) => { if (!times.has(x)) times.set(x, s.data.labels[j]); }));
+      const xs = [...times.keys()].sort((a, b) => a - b), q = v => `"${String(v).replace(/"/g, '""')}"`;
+      const rows = [["Location", locTxt.textContent], [],
+        ["Time", ...st.series.map(s => `${s.title} - ${aggText(s)} (${s.unit})`)],
+        ...xs.map(x => [times.get(x), ...st.series.map(s => {
+          const j = s.data ? s.data.t.indexOf(x) : -1;
+          return j >= 0 && s.data.values[j] != null ? s.data.values[j] : "";
+        })])];
+      const blob = new Blob(["﻿" + rows.map(r => r.map(q).join(",")).join("\r\n")], { type: "text/csv" });
+      const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: `time_series_${st.where}.csv` });
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    }
+
+    whereSeg.querySelectorAll("[data-where]").forEach(b => b.addEventListener("click", () => {
+      if (st.series.length || st.where === b.dataset.where) return;
+      st.where = b.dataset.where; seg(whereSeg, "where", st.where);
+      st.loc = null; marks.clearLayers(); setMsg("");
+      setDraw(st.where === "region");          // a region starts with drawing
+      syncAdd();
+    }));
+    aggSeg.querySelectorAll("[data-agg]").forEach(b => b.addEventListener("click", () => { st.agg = b.dataset.agg; seg(aggSeg, "agg", st.agg); }));
+    stepSeg.querySelectorAll("[data-step]").forEach(b => b.addEventListener("click", () => { st.step = b.dataset.step; seg(stepSeg, "step", st.step); syncAdd(); }));
+    addBtn.addEventListener("click", add);
+    $("tsClear").addEventListener("click", () => { st.series = []; st.colour = 0; st.token++; setMsg(""); render(); drawMarks(); syncAdd(); });
+    $("tsCsv").addEventListener("click", csv);
+    // The left panel's layer is the next series: keep the "Add a series" box in step with it
+    ["edgarGas", "edgarSector", "invModel", "invTransport", "invGas", "invEstimate"].forEach(id => {
+      const el = $(id);
+      el.addEventListener("change", () => { if (st.active) { st.sticky = false; syncAdd(); } });
+      new MutationObserver(() => st.active && syncAdd()).observe(el, { childList: true, attributes: true, attributeFilter: ["disabled"] });
+    });
+
+    // ---- entering / leaving ----
+    const IRELAND = [[51.4, -10.7], [55.45, -5.4]];
+    const refit = () => setTimeout(() => { map.invalidateSize(); map.fitBounds(IRELAND, { animate: false }); }, 80);
+    function enter(){
+      document.dispatchEvent(new CustomEvent("mapmode:enter", { detail: "ts" }));
+      st.active = true; root.classList.add("ms-ts");
+      btn.setAttribute("aria-pressed", "true");
+      panel.hidden = false;
+      if (st.where === "region" && !st.loc) setDraw(true);
+      syncLoc(); syncAdd(); render(); drawMarks();
+      refit();
+    }
+    function exit(){
+      if (st.drag) { map.removeLayer(st.drag.rect); st.drag = null; }
+      setDraw(false);
+      st.active = false; root.classList.remove("ms-ts");
+      btn.setAttribute("aria-pressed", "false");
+      panel.hidden = true;
+      marks.remove(); mapEl.classList.remove("ts-picking");
+      syncButton(); refit();
+    }
+    function syncButton(){
+      const ok = ds() !== "mapeire";
+      btn.disabled = !ok && !st.active;       // stays open on MapEIre so the graph is not lost
+      btn.title = ok || st.active ? "Plot the time series of a pixel, a region or the whole of Ireland"
+                                  : "Time series are available for EDGAR and the Inverse model (MapEIre has one or two years, as images)";
+    }
+    btn.addEventListener("click", () => st.active ? exit() : enter());
+    document.addEventListener("mapmode:enter", e => { if (e.detail !== "ts" && st.active) exit(); });
+    datasetSel.addEventListener("change", () => { syncButton(); if (st.active) { st.sticky = false; syncAdd(); } });
+    syncButton();
+
+    return { get active(){ return st.active; } };
   })();
 
   // Toolbar chip and stepper mirror the active layer's title card on the map

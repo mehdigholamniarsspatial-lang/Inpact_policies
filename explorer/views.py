@@ -21,6 +21,7 @@ from django.views.decorators.http import require_POST
 
 from . import feedback_store
 from . import edgar, inverse, rasters
+from . import timeseries
 from . import map_export as map_export_mod
 
 logger = logging.getLogger(__name__)
@@ -327,6 +328,27 @@ def edgar_layer(request):
         return JsonResponse({"ok": False, "detail": "The EDGAR layer could not be loaded."}, status=500)
     if data is None:
         return JsonResponse({"ok": False, "detail": "Unknown EDGAR selection."}, status=404)
+    resp = JsonResponse({"ok": True, **data}, json_dumps_params={"ensure_ascii": False})
+    resp["Cache-Control"] = "public, max-age=3600"
+    return resp
+
+
+_TS_KEYS = ("dataset", "where", "agg", "gas", "sector", "step", "model", "transport", "estimate",
+            "lat", "lng", "s", "w", "n", "e")
+
+
+def map_timeseries(request):
+    """Time series of one EDGAR / inverse-model layer at a pixel, a region or the whole of Ireland."""
+    q = {k: (request.GET.get(k) or "").strip() for k in _TS_KEYS}
+    try:
+        data = timeseries.series(q)
+    except timeseries.SelectionError as err:
+        return JsonResponse({"ok": False, "detail": str(err)}, status=422)
+    except Exception:
+        logger.exception("Failed to build time series %s", q)
+        return JsonResponse({"ok": False, "detail": "The time series could not be built."}, status=500)
+    if data is None:
+        return JsonResponse({"ok": False, "detail": "Unknown time series selection."}, status=404)
     resp = JsonResponse({"ok": True, **data}, json_dumps_params={"ensure_ascii": False})
     resp["Cache-Control"] = "public, max-age=3600"
     return resp
