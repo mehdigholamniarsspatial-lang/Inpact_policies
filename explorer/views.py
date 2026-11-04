@@ -203,7 +203,9 @@ def map_page(request):
     ``<html>`` so its CSS shows only the map workspace with a way back.
     """
     html = _render_page()
-    html = html.replace('<html lang="en">', '<html lang="en" class="map-standalone">', 1)
+    # ?embed=1: shown in the dashboard's Spatial Mapping tab, under its own header and menu
+    cls = "map-standalone map-embed" if request.GET.get("embed") == "1" else "map-standalone"
+    html = html.replace('<html lang="en">', f'<html lang="en" class="{cls}">', 1)
     html = html.replace(
         "<title>Ireland Greenhouse Gas Policy Impact Explorer</title>",
         "<title>Spatial Environmental Mapping · Ireland GHG Policy Impact Explorer</title>", 1)

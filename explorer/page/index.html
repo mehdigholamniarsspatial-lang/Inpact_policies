@@ -941,6 +941,18 @@ input[type=range]{accent-color:var(--emerald);width:100%}
   .pt-tools .lbl{display:none}
 }
 
+/* ============ SPATIAL MAPPING TAB (map workspace in a frame under the menu bar) ============ */
+.sm-stage{position:relative;background:#EDF1F0}
+#smFrame{display:block;width:100%;border:0;background:#EDF1F0;
+  height:calc(100vh - var(--header-h) - var(--tabnav-h, 52px));
+  height:calc(100dvh - var(--header-h) - var(--tabnav-h, 52px));min-height:480px}
+
+/* The workspace inside that frame (/map/?embed=1): no page header, the dashboard's is above it */
+html.map-standalone.map-embed{--header-h:0px}
+html.map-embed .app-header,
+html.map-embed .ms-crumb .home-link,
+html.map-embed .ms-crumb .home-link + .sep{display:none!important}
+
 /* ============ SPATIAL MAPPING IN ITS OWN WINDOW ============
    /map/ serves this same page with <html class="map-standalone">. Only the map
    panel stays: the header gains a "Back to main dashboard" button, a toolbar sits
@@ -1532,6 +1544,9 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
   </button>
   <button class="tab-btn" role="tab" aria-selected="false" data-tab="policy">
     <i class="bi bi-calendar3-range"></i><span>Policy<span class="tab-label-long"> Timeline</span></span>
+  </button>
+  <button class="tab-btn" role="tab" aria-selected="false" data-tab="mapping">
+    <i class="bi bi-globe-europe-africa"></i><span>Spatial<span class="tab-label-long"> Mapping</span></span>
   </button>
   <button class="tab-btn" role="tab" aria-selected="false" data-tab="trend">
     <i class="bi bi-activity"></i><span>Trend<span class="tab-label-long"> Analysis</span></span>
@@ -2618,6 +2633,16 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
 
   </div>
 </div><!-- /tab-policy -->
+
+<!-- ================= TAB: SPATIAL MAPPING =================
+     The Spatial Environmental Mapping workspace (/map/, the same page as "New window")
+     shown in a frame under the menu bar. ?embed=1 hides its own header. Deep link: #mapping -->
+<div class="tab-pane" id="tab-mapping" role="tabpanel" aria-label="Spatial Environmental Mapping">
+  <div class="sm-stage">
+    <div class="pt-loading" id="smLoading"><div class="spinner-border" style="color:var(--teal)" role="status"></div><span>Loading the map&hellip;</span></div>
+    <iframe id="smFrame" title="Spatial Environmental Mapping" allow="fullscreen; clipboard-write" allowfullscreen></iframe>
+  </div>
+</div><!-- /tab-mapping -->
 
 <!-- ================= TAB: FEEDBACK ================= -->
 <div class="tab-pane" id="tab-feedback" role="tabpanel">
@@ -4305,6 +4330,7 @@ const tabPanes = {
   streamlit: document.getElementById("tab-streamlit"),
   about: document.getElementById("tab-about"),
   feedback: document.getElementById("tab-feedback"),
+  mapping: document.getElementById("tab-mapping"),
 };
 
 function activateTab(name){
@@ -4325,10 +4351,33 @@ function activateTab(name){
   // Policy Timeline: load the embedded app on first visit and keep #policy/... deep links in sync.
   if (name === "policy") ptActivate();
   else if (location.hash.startsWith("#policy")) history.replaceState(null, "", location.pathname + location.search);
+  // Spatial Mapping: load the map workspace on first visit; #mapping links straight to it.
+  if (name === "mapping") smActivate();
+  else if (location.hash === "#mapping") history.replaceState(null, "", location.pathname + location.search);
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 tabButtons.forEach(b =>
   b.addEventListener("click", () => activateTab(b.dataset.tab)));
+
+/* Spatial Mapping tab: the /map/ workspace in a frame sized to fill the screen under the menu bar.
+   It starts on the dashboard map's current view and dataset. */
+function smActivate(){
+  const nav = document.querySelector(".tab-nav");
+  if (nav) document.documentElement.style.setProperty("--tabnav-h", nav.offsetHeight + "px");
+  if (location.hash !== "#mapping") history.replaceState(null, "", location.pathname + location.search + "#mapping");
+  const frame = document.getElementById("smFrame");
+  if (frame.dataset.loaded) return;
+  frame.dataset.loaded = "1";
+  let q = "";
+  try { q = "&" + mapStateQuery(); } catch (e) { /* dashboard map not ready yet */ }
+  frame.addEventListener("load", () => { document.getElementById("smLoading").hidden = true; }, { once: true });
+  frame.src = "/map/?embed=1" + q;
+}
+window.addEventListener("resize", () => {
+  const nav = document.querySelector(".tab-nav");
+  if (nav && tabPanes.mapping.classList.contains("active"))
+    document.documentElement.style.setProperty("--tabnav-h", nav.offsetHeight + "px");
+});
 
 /* ---------------------- 9a. Policy Timeline tab ----------------------
  * Hosts the Ireland Climate Policy Timeline app (Django `policies` app, /policy/).
@@ -4846,7 +4895,9 @@ if (MAP_STANDALONE) (function mapWindow(){
     setOpen(steps[2], true);
   });
 
-  const syncUrl = () => history.replaceState(null, "", location.pathname + "?" + mapStateQuery());
+  const EMBED = root.classList.contains("map-embed");
+  const syncUrl = () => history.replaceState(null, "", location.pathname + "?" + (EMBED ? "embed=1&" : "") + mapStateQuery());
+  if (EMBED) document.querySelectorAll('#mapPanel a[href="/"]').forEach(a => { a.target = "_top"; });
   map.on("moveend", syncUrl);
   datasetSel.addEventListener("change", () => { syncCards(); syncSteps(); syncUrl(); });
 
@@ -4864,8 +4915,10 @@ if (MAP_STANDALONE) (function mapWindow(){
 
   copyBtn.addEventListener("click", async () => {
     const label = copyBtn.querySelector(".lbl"), icon = copyBtn.querySelector("i");
-    try { await navigator.clipboard.writeText(location.href); }
-    catch (err) { window.prompt("Copy this link:", location.href); return; }
+    // The link opens the map on its own (/map/), also when copied from the dashboard's Spatial Mapping tab
+    const link = location.origin + "/map/?" + mapStateQuery();
+    try { await navigator.clipboard.writeText(link); }
+    catch (err) { window.prompt("Copy this link:", link); return; }
     copyBtn.classList.add("done"); icon.className = "bi bi-check2"; label.textContent = "Copied";
     setTimeout(() => { copyBtn.classList.remove("done"); icon.className = "bi bi-link-45deg"; label.textContent = "Copy link"; }, 1800);
   });
@@ -6011,6 +6064,7 @@ if (MAP_STANDALONE) (function mapWindow(){
 
 // Open straight into the Policy Timeline when the page is loaded with #policy...
 if (!MAP_STANDALONE && location.hash.startsWith("#policy")) activateTab("policy");
+if (!MAP_STANDALONE && location.hash === "#mapping") activateTab("mapping");
 
 /* ---------------------- 9b. Trend Analysis dashboard ----------------------
  * Native port of the former Streamlit "Piecewise Regression Dashboard".
