@@ -1449,6 +1449,25 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
 .ts-add:disabled{background:#B9C6CF;box-shadow:none;cursor:not-allowed}
 .ts-addbox .cmp-msg:empty{display:none}
 .ts-addbox-note{margin:.45rem 0 0;font-size:.62rem;color:var(--text-muted);line-height:1.35}
+/* numbered steps of the time series box: 1 dataset, 2 layer, 3 area, 4 add */
+.ts-steps{list-style:none;margin:.2rem 0 0;padding:0}
+.ts-st{position:relative;display:grid;grid-template-columns:22px minmax(0,1fr);gap:.55rem;padding-bottom:.8rem}
+.ts-st:last-child{padding-bottom:0}
+.ts-st:not(:last-child)::before{content:"";position:absolute;left:10px;top:25px;bottom:3px;width:2px;border-radius:1px;background:var(--grey-border)}
+.ts-st.done:not(:last-child)::before{background:var(--teal)}
+.ts-n{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;background:#fff;border:2px solid #B9C6CF;color:var(--text-muted);transition:background .15s,border-color .15s}
+.ts-n .bi{display:none;font-size:.78rem}
+.ts-st.done .ts-n{background:var(--teal);border-color:var(--teal);color:#fff}
+.ts-st.done .ts-n .bi{display:inline}.ts-st.done .ts-n .k{display:none}
+.ts-st.cur .ts-n{border-color:var(--teal);color:#0B5563;box-shadow:0 0 0 3px rgba(14,140,138,.18)}
+.ts-st-b{min-width:0}
+.ts-st-t{display:flex;align-items:center;gap:.4rem;min-height:22px;margin-bottom:.3rem;font-size:.75rem;font-weight:800;color:var(--navy)}
+.ts-st.cur .ts-st-t{color:#0B5563}
+.ts-st-d{font-size:.72rem;color:var(--text-main);line-height:1.35}
+.ts-st-d.muted{color:var(--text-muted)}
+.ts-st .ts-loc{margin-top:.45rem}
+.ts-st .ts-add{margin-top:.1rem}
+.ts-lock-chip[hidden]{display:none!important}
 #map.ts-drawing,#map.ts-drawing .leaflet-interactive,#map.ts-picking,#map.ts-picking .leaflet-interactive{cursor:crosshair!important}
 @media (max-width:1279px){
   html.map-standalone.ms-ts{--ms-side-w:400px}
@@ -1814,19 +1833,65 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                 </div>
                 <!-- Time series mode: add the layer chosen above to the plot on the right -->
                 <div class="ts-addbox" id="tsAddBox" hidden>
-                  <div class="ts-addbox-h"><i class="bi bi-graph-up"></i>Time series plot</div>
-                  <div class="ts-def" id="tsDef"></div>
-                  <div class="ts-sub ts-x" id="tsStepBox" hidden>
-                    <span class="cmp-mode-lbl">Time step</span>
-                    <div class="cmp-seg" role="radiogroup" aria-label="EDGAR time step" id="tsStep">
-                      <button type="button" role="radio" aria-checked="true" data-step="annual">Annual</button>
-                      <button type="button" role="radio" aria-checked="false" data-step="monthly">Monthly</button>
-                    </div>
-                  </div>
-                  <div class="ts-warn" id="tsGasWarn" role="alert" hidden></div>
-                  <button type="button" class="ts-add" id="tsAdd" disabled><i class="bi bi-plus-lg"></i><span>Add to plot</span></button>
-                  <p class="cmp-msg" id="tsMsg" role="status"></p>
-                  <p class="ts-addbox-note">The plot uses every year of the layer; the year and period above only set the map.</p>
+                  <div class="ts-addbox-h"><i class="bi bi-graph-up"></i>Time series plot<span class="ts-chip ts-right">4 steps</span></div>
+                  <ol class="ts-steps" aria-label="Steps to add a layer to the time series plot">
+                    <li class="ts-st" id="tsSt1">
+                      <span class="ts-n" aria-hidden="true"><span class="k">1</span><i class="bi bi-check-lg"></i></span>
+                      <div class="ts-st-b">
+                        <div class="ts-st-t">Choose the dataset</div>
+                        <div class="ts-st-d" id="tsDsTxt"></div>
+                      </div>
+                    </li>
+                    <li class="ts-st" id="tsSt2">
+                      <span class="ts-n" aria-hidden="true"><span class="k">2</span><i class="bi bi-check-lg"></i></span>
+                      <div class="ts-st-b">
+                        <div class="ts-st-t">Select the layer</div>
+                        <div class="ts-def" id="tsDef"></div>
+                        <div class="ts-sub ts-x" id="tsStepBox" hidden>
+                          <span class="cmp-mode-lbl">Time step</span>
+                          <div class="cmp-seg" role="radiogroup" aria-label="EDGAR time step" id="tsStep">
+                            <button type="button" role="radio" aria-checked="true" data-step="annual">Annual</button>
+                            <button type="button" role="radio" aria-checked="false" data-step="monthly">Monthly</button>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="ts-st" id="tsSt3">
+                      <span class="ts-n" aria-hidden="true"><span class="k">3</span><i class="bi bi-check-lg"></i></span>
+                      <div class="ts-st-b">
+                        <div class="ts-st-t">Choose the area
+                          <span class="ts-chip ts-right ts-lock-chip" title="Remove all layers from the plot to choose another area type" hidden><i class="bi bi-lock-fill"></i>Fixed</span></div>
+                        <div class="cmp-seg ts-seg ts-where-seg" role="radiogroup" aria-label="Area type" id="tsWhereL">
+                          <button type="button" role="radio" aria-checked="true" data-where="pixel"><i class="bi bi-crosshair2"></i>Pixel</button>
+                          <button type="button" role="radio" aria-checked="false" data-where="region"><i class="bi bi-bounding-box"></i>Region</button>
+                          <button type="button" role="radio" aria-checked="false" data-where="whole"><i class="bi bi-map"></i>Whole image</button>
+                        </div>
+                        <div class="ts-sub ts-x ts-region-tools" hidden>
+                          <div class="cmp-seg ts-shape-seg" role="radiogroup" aria-label="Region shape">
+                            <button type="button" role="radio" aria-checked="true" data-shape="rect"><i class="bi bi-square"></i> Rectangle</button>
+                            <button type="button" role="radio" aria-checked="false" data-shape="poly"><i class="bi bi-pentagon"></i> Polygon</button>
+                          </div>
+                          <button type="button" class="ts-btn ts-right ts-draw" aria-pressed="false"><i class="bi bi-pencil"></i><span>Draw</span></button>
+                        </div>
+                        <div class="ts-loc ts-loc-box"><i class="bi bi-info-circle" aria-hidden="true"></i><span class="ts-loc-txt">Click a cell on the map.</span></div>
+                      </div>
+                    </li>
+                    <li class="ts-st" id="tsSt4">
+                      <span class="ts-n" aria-hidden="true"><span class="k">4</span><i class="bi bi-check-lg"></i></span>
+                      <div class="ts-st-b">
+                        <div class="ts-st-t">Add the layer to the plot</div>
+                        <div class="ts-warn" id="tsDsWarn" role="alert" hidden>
+                          <i class="bi bi-exclamation-triangle-fill"></i><b>MapEIre can't be added to the time series plot</b> (it has only one or two years, as images).
+                          Select <b>EDGAR</b> or the <b>Inverse model</b> in step 1 to add a layer to the plot.
+                          <span class="ts-warn-acts"><button type="button" data-ds="edgar">Use EDGAR</button><button type="button" data-ds="inverse">Use the Inverse model</button></span>
+                        </div>
+                        <div class="ts-warn" id="tsGasWarn" role="alert" hidden></div>
+                        <button type="button" class="ts-add" id="tsAdd" disabled><i class="bi bi-plus-lg"></i><span>Add to plot</span></button>
+                        <p class="cmp-msg" id="tsMsg" role="status"></p>
+                        <p class="ts-addbox-note">The graph appears on the right. Repeat steps 2–4 to overlay more layers of the same gas. The plot uses every year of the layer; the year and period above only set the map.</p>
+                      </div>
+                    </li>
+                  </ol>
                 </div>
               </div></div>
             </section>
@@ -1839,6 +1904,34 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                 </button>
               </h3>
               <div class="ms-step-body" id="msStep3Body" role="region" aria-labelledby="msStep3Btn"><div class="ms-step-inner" id="msStep3Inner"></div></div>
+            </section>
+            <section class="ms-step is-open" data-step="4">
+              <h3 class="ms-step-h">
+                <button type="button" class="ms-step-btn" id="msStep4Btn" aria-expanded="true" aria-controls="msStep4Body">
+                  <span class="ms-badge"><span class="n">4</span><i class="bi bi-check-lg"></i></span>
+                  <span class="ms-step-txt"><span class="ms-step-title">Download the map</span><span class="ms-step-sum" id="msSum4"></span></span>
+                  <i class="bi bi-chevron-down ms-chev" aria-hidden="true"></i>
+                </button>
+              </h3>
+              <div class="ms-step-body" id="msStep4Body" role="region" aria-labelledby="msStep4Btn"><div class="ms-step-inner">
+                <!-- Download the layer on the map: GeoTIFF (data) + JPEG (map with legend) -->
+                <div class="ms-dl" id="msDl">
+                  <div class="ms-dl-split">
+                    <button type="button" class="ms-dl-main" id="msDlBoth" disabled aria-describedby="msDlStatus">
+                      <i class="bi bi-download"></i><span>Download map</span><span class="ms-dl-fmt">GeoTIFF + JPEG</span>
+                    </button>
+                    <button type="button" class="ms-dl-caret" id="msDlCaret" disabled aria-haspopup="menu" aria-expanded="false" aria-controls="msDlMenu" title="More download options">
+                      <i class="bi bi-chevron-down"></i>
+                    </button>
+                  </div>
+                  <ul class="ms-dl-menu" id="msDlMenu" role="menu" aria-label="Download options" hidden>
+                    <li role="none"><button type="button" role="menuitem" data-fmt="both"><i class="bi bi-files"></i><span><b>GeoTIFF + JPEG</b><small>Both files at once</small></span></button></li>
+                    <li role="none"><button type="button" role="menuitem" data-fmt="geotiff"><i class="bi bi-grid-3x3-gap"></i><span><b>GeoTIFF</b><small>Cell values for GIS (QGIS, ArcGIS)</small></span></button></li>
+                    <li role="none"><button type="button" role="menuitem" data-fmt="jpeg"><i class="bi bi-image"></i><span><b>JPEG map</b><small>With legend, title and source</small></span></button></li>
+                  </ul>
+                  <p class="ms-dl-status" id="msDlStatus" role="status">Show a layer on the map to download it.</p>
+                </div>
+              </div></div>
             </section>
           </div>
           <button type="button" class="ms-reset ms-only" id="msReset" title="Remove the emission layer and clear the dropdowns of this dataset">
@@ -1927,25 +2020,6 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                 </button>
               </h3>
               <div class="ms-step-body" id="msAboutBody" role="region" aria-labelledby="msAboutBtn"><div class="ms-step-inner">
-
-                <!-- Download the layer on the map: GeoTIFF (data) + JPEG (map with legend) -->
-                <div class="ms-dl" id="msDl">
-                  <div class="ms-dl-split">
-                    <button type="button" class="ms-dl-main" id="msDlBoth" disabled aria-describedby="msDlStatus">
-                      <i class="bi bi-download"></i><span>Download map</span><span class="ms-dl-fmt">GeoTIFF + JPEG</span>
-                    </button>
-                    <button type="button" class="ms-dl-caret" id="msDlCaret" disabled aria-haspopup="menu" aria-expanded="false" aria-controls="msDlMenu" title="More download options">
-                      <i class="bi bi-chevron-down"></i>
-                    </button>
-                  </div>
-                  <ul class="ms-dl-menu" id="msDlMenu" role="menu" aria-label="Download options" hidden>
-                    <li role="none"><button type="button" role="menuitem" data-fmt="both"><i class="bi bi-files"></i><span><b>GeoTIFF + JPEG</b><small>Both files at once</small></span></button></li>
-                    <li role="none"><button type="button" role="menuitem" data-fmt="geotiff"><i class="bi bi-grid-3x3-gap"></i><span><b>GeoTIFF</b><small>Cell values for GIS (QGIS, ArcGIS)</small></span></button></li>
-                    <li role="none"><button type="button" role="menuitem" data-fmt="jpeg"><i class="bi bi-image"></i><span><b>JPEG map</b><small>With legend, title and source</small></span></button></li>
-                  </ul>
-                  <p class="ms-dl-status" id="msDlStatus" role="status">Show a layer on the map to download it.</p>
-                </div>
-
                 <div class="ms-info" data-ds="mapeire">
                   <p class="ms-info-lead"><b>MapEIre</b> maps Ireland&rsquo;s national emission inventory onto a 1&nbsp;km grid, so each layer shows where one pollutant from one sector is emitted. It was produced for the EPA by Aarhus University and covers greenhouse gases, air pollutants, heavy metals and persistent organic pollutants.</p>
                   <div class="ms-info-more" id="msInfoMoreMapeire"><div>
@@ -2040,21 +2114,21 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
             <div class="cmp-res-body">
               <section class="ts-card" aria-labelledby="tsAreaH">
                 <h4 class="ts-card-h" id="tsAreaH"><i class="bi bi-geo-alt"></i>Area
-                  <span class="ts-chip ts-right" id="tsLock" title="Remove all layers from the plot to choose another area type" hidden><i class="bi bi-lock-fill"></i>Fixed for this plot</span></h4>
-                <div class="cmp-seg ts-seg" role="radiogroup" aria-label="Area type" id="tsWhere">
+                  <span class="ts-chip ts-right ts-lock-chip" id="tsLock" title="Remove all layers from the plot to choose another area type" hidden><i class="bi bi-lock-fill"></i>Fixed for this plot</span></h4>
+                <div class="cmp-seg ts-seg ts-where-seg" role="radiogroup" aria-label="Area type" id="tsWhere">
                   <button type="button" role="radio" aria-checked="true" data-where="pixel"><i class="bi bi-crosshair2"></i>Pixel</button>
                   <button type="button" role="radio" aria-checked="false" data-where="region"><i class="bi bi-bounding-box"></i>Region</button>
                   <button type="button" role="radio" aria-checked="false" data-where="whole"><i class="bi bi-map"></i>Whole image</button>
                 </div>
-                <div class="ts-sub ts-x" id="tsRegionTools" hidden>
+                <div class="ts-sub ts-x ts-region-tools" id="tsRegionTools" hidden>
                   <span class="cmp-mode-lbl">Shape</span>
-                  <div class="cmp-seg" role="radiogroup" aria-label="Region shape" id="tsShape">
+                  <div class="cmp-seg ts-shape-seg" role="radiogroup" aria-label="Region shape" id="tsShape">
                     <button type="button" role="radio" aria-checked="true" data-shape="rect"><i class="bi bi-square"></i> Rectangle</button>
                     <button type="button" role="radio" aria-checked="false" data-shape="poly"><i class="bi bi-pentagon"></i> Polygon</button>
                   </div>
-                  <button type="button" class="ts-btn ts-right" id="tsDraw" aria-pressed="false"><i class="bi bi-pencil"></i><span>Draw</span></button>
+                  <button type="button" class="ts-btn ts-right ts-draw" id="tsDraw" aria-pressed="false"><i class="bi bi-pencil"></i><span>Draw</span></button>
                 </div>
-                <div class="ts-loc" id="tsLoc"><i class="bi bi-info-circle" aria-hidden="true"></i><span id="tsLocTxt">Click a cell on the map.</span></div>
+                <div class="ts-loc ts-loc-box" id="tsLoc"><i class="bi bi-info-circle" aria-hidden="true"></i><span class="ts-loc-txt" id="tsLocTxt">Click a cell on the map.</span></div>
                 <div class="ts-sub ts-x" id="tsAggBox" hidden>
                   <span class="cmp-mode-lbl">Combine cells by</span>
                   <div class="cmp-seg" role="radiogroup" aria-label="Combine the cells of the area by" id="tsAgg">
@@ -2084,8 +2158,10 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                   <div class="ts-empty" id="tsEmpty">
                     <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
                     <b>No layers in the plot yet</b>
-                    <ol><li>Choose the area above (pixel, region or whole image).</li>
-                        <li>Select a layer on the left and click <b>Add to plot</b>.</li></ol>
+                    <ol><li>Choose the dataset (left panel).</li>
+                        <li>Select the layer (left panel).</li>
+                        <li>Choose the area: pixel, region or whole image (left panel or above).</li>
+                        <li>Click <b>Add to plot</b> on the left.</li></ol>
                   </div>
                 </div>
                 <p class="cmp-note" id="tsNote"></p>
@@ -4701,7 +4777,7 @@ if (MAP_STANDALONE) (function mapWindow(){
   }
   resize();
 
-  // ---- Side-panel stepper: 1 dataset, 2 layer, 3 display ----
+  // ---- Side-panel stepper: 1 dataset, 2 layer, 3 display, 4 download ----
   // The dashboard's raster bar becomes step 2 and its opacity field step 3.
   const mapEl = document.getElementById("map");
   const rasterBar = document.querySelector("#mapPanel .raster-bar");
@@ -4709,7 +4785,7 @@ if (MAP_STANDALONE) (function mapWindow(){
   document.getElementById("msStep2Inner").prepend(rasterBar);   // before the compare column B
   document.getElementById("msStep3Inner").appendChild(opacityEl.closest(".raster-opacity"));
   const steps = Object.fromEntries([...document.querySelectorAll("#mapSide .ms-step")].map(s => [s.dataset.step, s]));
-  const [sum1, sum2, sum3] = ["msSum1", "msSum2", "msSum3"].map(id => document.getElementById(id));
+  const [sum1, sum2, sum3, sum4] = ["msSum1", "msSum2", "msSum3", "msSum4"].map(id => document.getElementById(id));
 
   const setOpen = (step, open) => {
     step.classList.toggle("is-open", open);
@@ -4731,6 +4807,8 @@ if (MAP_STANDALONE) (function mapWindow(){
     steps[2].classList.toggle("is-done", layerOn);
     steps[3].classList.toggle("is-done", layerOn);
     sum3.textContent = `Opacity ${opacityEl.value}%`;
+    sum4.textContent = layerOn ? "GeoTIFF + JPEG" : "Show a layer first";
+    sum4.classList.toggle("empty", !layerOn);
     // About this dataset: show the selected dataset's text
     sumAbout.textContent = sum1.textContent;
     infoBlocks.forEach(b => { b.hidden = b.dataset.ds !== datasetSel.value; });
@@ -5479,13 +5557,21 @@ if (MAP_STANDALONE) (function mapWindow(){
   const ts = (() => {
     const $ = id => document.getElementById(id);
     const btn = $("msTs"), panel = $("tsResults"), titleEl = $("tsTitle"), gasPill = $("tsGasPill");
-    const whereSeg = $("tsWhere"), lockEl = $("tsLock"), regionTools = $("tsRegionTools"), shapeSeg = $("tsShape");
-    const drawBtn = $("tsDraw"), locBox = $("tsLoc"), locTxt = $("tsLocTxt"), aggBox = $("tsAggBox"), aggSeg = $("tsAgg");
+    // The area controls exist twice (step 3 on the left and the Area card on the right) and are kept in step
+    const all = sel => [...document.querySelectorAll(sel)];
+    const whereSegs = all(".ts-where-seg"), lockEls = all(".ts-lock-chip"), regionToolsEls = all(".ts-region-tools");
+    const shapeSegs = all(".ts-shape-seg"), drawBtns = all(".ts-draw"), locBoxes = all(".ts-loc-box");
+    const aggBox = $("tsAggBox"), aggSeg = $("tsAgg");
+    const stepEls = [1, 2, 3, 4].map(i => $("tsSt" + i)), dsTxt = $("tsDsTxt");
+    const DS_NAMES = { edgar: "EDGAR", inverse: "Inverse model", mapeire: "MapEIre" };
     const scaleEl = $("tsScale"), scaleBox = $("tsScaleBox"), bandEl = $("tsBand"), bandBox = $("tsBandBox");
     const pngBtn = $("tsPng"), dpiSel = $("tsDpi"), csvBtn = $("tsCsv"), emptyEl = $("tsEmpty"), noteEl = $("tsNote");
     const listEl = $("tsList"), countEl = $("tsCount"), clearBtn = $("tsClear"), statsCard = $("tsStatsCard"), statsEl = $("tsStats");
     const addBox = $("tsAddBox"), defEl = $("tsDef"), stepBox = $("tsStepBox"), stepSeg = $("tsStep");
-    const gasWarn = $("tsGasWarn"), addBtn = $("tsAdd"), msgEl = $("tsMsg");
+    const gasWarn = $("tsGasWarn"), addBtn = $("tsAdd"), msgEl = $("tsMsg"), dsWarn = $("tsDsWarn");
+    // MapEIre notice: switch to a dataset that has time series (the dataset cards drive the select)
+    dsWarn.querySelectorAll("[data-ds]").forEach(b => b.addEventListener("click", () =>
+      document.querySelector(`.ms-ds-card[data-ds="${b.dataset.ds}"]`)?.click()));
     const { esc, fmtVal } = GRID_UI;
     const COLOURS = ["#0E8C8A", "#E8A33D", "#16324F", "#B2182B", "#6A4C93", "#2166AC", "#7A8B2E", "#C2185B"];
     const GASES = { CH4: ["CH₄", "Methane"], N2O: ["N₂O", "Nitrous oxide"], CO2: ["CO₂", "Carbon dioxide"] };
@@ -5696,8 +5782,8 @@ if (MAP_STANDALONE) (function mapWindow(){
       const g = plotGas();
       gasPill.hidden = !g;
       if (g) gasPill.innerHTML = `<i class="bi bi-droplet-half"></i>${esc(F(g))} · ${esc(GASES[g]?.[1] || "")}`;
-      whereSeg.querySelectorAll("button").forEach(b => { b.disabled = n > 0; });
-      lockEl.hidden = !n;
+      whereSegs.forEach(s => s.querySelectorAll("button").forEach(b => { b.disabled = n > 0; }));
+      lockEls.forEach(el => { el.hidden = !n; });
       countEl.textContent = String(n);
       clearBtn.hidden = !n;
       pngBtn.disabled = dpiSel.disabled = csvBtn.disabled = !vis.length;
@@ -5865,7 +5951,7 @@ if (MAP_STANDALONE) (function mapWindow(){
     function setDraw(on){
       clearDraft();
       st.drawMode = on;
-      drawBtn.setAttribute("aria-pressed", String(on));
+      drawBtns.forEach(b => b.setAttribute("aria-pressed", String(on)));
       mapEl.classList.toggle("ts-drawing", on);
       map.dragging[on && st.shape === "rect" ? "disable" : "enable"]();
       map.boxZoom[on ? "disable" : "enable"]();
@@ -5929,15 +6015,17 @@ if (MAP_STANDALONE) (function mapWindow(){
         st.poly.rubber.setLatLngs([]); syncLoc();
       }
     });
-    drawBtn.addEventListener("click", () => setDraw(!st.drawMode));
+    drawBtns.forEach(b => b.addEventListener("click", () => setDraw(!st.drawMode)));
 
     // ---- panel state ----
     function syncLoc(){
       const L0 = st.loc, region = st.where === "region";
-      regionTools.hidden = !region;
+      regionToolsEls.forEach(el => { el.hidden = !region; });
       aggBox.hidden = st.where === "pixel";
-      drawBtn.querySelector("span").textContent = st.drawMode ? "Cancel" : L0 && region ? "Redraw" : "Draw";
-      drawBtn.querySelector("i").className = st.drawMode ? "bi bi-x-lg" : "bi bi-pencil";
+      drawBtns.forEach(b => {
+        b.querySelector("span").textContent = st.drawMode ? "Cancel" : L0 && region ? "Redraw" : "Draw";
+        b.querySelector("i").className = st.drawMode ? "bi bi-x-lg" : "bi bi-pencil";
+      });
       let html, cls = "";
       if (st.areaWarn) { html = esc(st.areaWarn); cls = "warn"; }
       else if (st.where === "whole") { html = "Every Ireland cell of each dataset."; cls = "set"; }
@@ -5954,10 +6042,26 @@ if (MAP_STANDALONE) (function mapWindow(){
                                   : `Polygon of <b>${L0.pts.length} points</b>`;
         cls = "set";
       } else html = "Choose Rectangle or Polygon and click <b>Draw</b>.";
-      locTxt.innerHTML = html;
-      locBox.className = "ts-loc" + (cls ? " " + cls : "");
+      locBoxes.forEach(box => {
+        box.querySelector(".ts-loc-txt").innerHTML = html;
+        box.className = "ts-loc ts-loc-box" + (cls ? " " + cls : "");
+      });
       mapEl.classList.toggle("ts-picking", st.active && st.where === "pixel");
       titleEl.textContent = { pixel: "Pixel time series", region: "Region time series", whole: "Whole-image time series" }[st.where];
+      syncSteps();
+    }
+    // Numbered steps on the left: done (tick), current (highlighted) or still to do
+    function syncSteps(){
+      if (!st.active) return;
+      const def = currentDef(), g = plotGas(), dsOk = ds() === "edgar" || ds() === "inverse";
+      const wrongGas = !def.missing && g && def.gas !== g;
+      const dup = !def.missing && st.layers.some(l => l.key === keyOf(def));
+      const done = [dsOk, dsOk && !def.missing && !wrongGas, locReady(), dup];
+      const cur = done.indexOf(false);
+      stepEls.forEach((el, i) => { el.classList.toggle("done", done[i]); el.classList.toggle("cur", i === cur); });
+      dsTxt.innerHTML = dsOk ? `<b>${esc(DS_NAMES[ds()])}</b> · change it in step 1 above.`
+        : `Time series need <b>EDGAR</b> or the <b>Inverse model</b>: choose one in step 1 above.`;
+      dsTxt.classList.toggle("muted", !dsOk);
     }
     function syncAdd(){
       addBox.hidden = !st.active;
@@ -5978,24 +6082,28 @@ if (MAP_STANDALONE) (function mapWindow(){
       }
       const dup = !def.missing && st.layers.some(l => l.key === keyOf(def));
       addBtn.disabled = !!def.missing || wrongGas || dup || !locReady() || st.busy;
-      addBtn.querySelector("span").textContent = st.busy ? "Adding…" : dup ? "Already in the plot" : "Add to plot";
-      addBtn.querySelector("i").className = dup ? "bi bi-check2" : "bi bi-plus-lg";
+      const needArea = !def.missing && !wrongGas && !dup && !locReady();
+      const noTs = ds() === "mapeire";
+      dsWarn.hidden = !noTs;
+      addBtn.querySelector("span").textContent = st.busy ? "Adding…" : noTs ? "Not available for MapEIre" : dup ? "Already in the plot" : needArea ? "Choose the area first (step 3)" : "Add to plot";
+      addBtn.querySelector("i").className = noTs ? "bi bi-slash-circle" : dup ? "bi bi-check2" : needArea ? "bi bi-arrow-up" : "bi bi-plus-lg";
       if (!st.busy && !msgEl.classList.contains("warn"))
-        setMsg(!def.missing && !wrongGas && !locReady() ? `First choose the area in the Time series panel: ${st.where === "pixel" ? "click a pixel on the map" : "draw a region on the map"}.` : "");
+        setMsg(needArea ? `In step 3, ${st.where === "pixel" ? "click a pixel on the map" : "draw a region on the map"}; Add to plot then becomes active.` : "");
+      syncSteps();
     }
     function clearAll(){ st.layers = []; st.colour = 0; st.token++; setMsg(""); render(); syncAdd(); }
 
-    whereSeg.querySelectorAll("[data-where]").forEach(b => b.addEventListener("click", () => {
+    whereSegs.forEach(s => s.querySelectorAll("[data-where]").forEach(b => b.addEventListener("click", () => {
       if (st.layers.length || st.where === b.dataset.where) return;
-      st.where = b.dataset.where; seg(whereSeg, "where", st.where);
+      st.where = b.dataset.where; whereSegs.forEach(w => seg(w, "where", st.where));
       st.loc = null; st.areaWarn = "";
       setDraw(st.where === "region");                    // a region starts with drawing
       syncAdd();
-    }));
-    shapeSeg.querySelectorAll("[data-shape]").forEach(b => b.addEventListener("click", () => {
-      st.shape = b.dataset.shape; seg(shapeSeg, "shape", st.shape); st.areaWarn = "";
+    })));
+    shapeSegs.forEach(s => s.querySelectorAll("[data-shape]").forEach(b => b.addEventListener("click", () => {
+      st.shape = b.dataset.shape; shapeSegs.forEach(x => seg(x, "shape", st.shape)); st.areaWarn = "";
       setDraw(true);
-    }));
+    })));
     aggSeg.querySelectorAll("[data-agg]").forEach(b => b.addEventListener("click", () => {
       if (st.agg === b.dataset.agg) return;
       st.agg = b.dataset.agg; seg(aggSeg, "agg", st.agg); refetchAll();
@@ -6036,16 +6144,17 @@ if (MAP_STANDALONE) (function mapWindow(){
       marks.remove(); mapEl.classList.remove("ts-picking");
       syncButton(); refit();
     }
+    // The panel opens on every dataset; on MapEIre Add to plot is disabled with a notice
     function syncButton(){
-      const ok = ds() !== "mapeire";
-      btn.disabled = !ok && !st.active;       // stays open on MapEIre so the plot is not lost
-      btn.title = ok || st.active ? "Plot the time series of a pixel, a region or the whole of Ireland"
-                                  : "Time series are available for EDGAR and the Inverse model (MapEIre has one or two years, as images)";
+      btn.disabled = false;
+      btn.title = ds() !== "mapeire" ? "Plot the time series of a pixel, a region or the whole of Ireland"
+                                     : "Time series are available for EDGAR and the Inverse model (MapEIre has one or two years, as images)";
     }
     btn.addEventListener("click", () => st.active ? exit() : enter());
     document.addEventListener("mapmode:enter", e => { if (e.detail !== "ts" && st.active) exit(); });
     datasetSel.addEventListener("change", () => { syncButton(); if (st.active) { setMsg(""); syncAdd(); } });
     syncButton();
+    enter();                                  // the map page opens with the time series panel
 
     return { get active(){ return st.active; } };
   })();
