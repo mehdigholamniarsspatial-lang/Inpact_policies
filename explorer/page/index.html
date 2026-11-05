@@ -1467,7 +1467,6 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
 .ts-st-d.muted{color:var(--text-muted)}
 .ts-st .ts-loc{margin-top:.45rem}
 .ts-st .ts-add{margin-top:.1rem}
-.ts-lock-chip[hidden]{display:none!important}
 #map.ts-drawing,#map.ts-drawing .leaflet-interactive,#map.ts-picking,#map.ts-picking .leaflet-interactive{cursor:crosshair!important}
 @media (max-width:1279px){
   html.map-standalone.ms-ts{--ms-side-w:400px}
@@ -1859,8 +1858,7 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                     <li class="ts-st" id="tsSt3">
                       <span class="ts-n" aria-hidden="true"><span class="k">3</span><i class="bi bi-check-lg"></i></span>
                       <div class="ts-st-b">
-                        <div class="ts-st-t">Choose the area
-                          <span class="ts-chip ts-right ts-lock-chip" title="Remove all layers from the plot to choose another area type" hidden><i class="bi bi-lock-fill"></i>Fixed</span></div>
+                        <div class="ts-st-t">Choose the area</div>
                         <div class="cmp-seg ts-seg ts-where-seg" role="radiogroup" aria-label="Area type" id="tsWhereL">
                           <button type="button" role="radio" aria-checked="true" data-where="pixel"><i class="bi bi-crosshair2"></i>Pixel</button>
                           <button type="button" role="radio" aria-checked="false" data-where="region"><i class="bi bi-bounding-box"></i>Region</button>
@@ -2113,8 +2111,7 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
             </div>
             <div class="cmp-res-body">
               <section class="ts-card" aria-labelledby="tsAreaH">
-                <h4 class="ts-card-h" id="tsAreaH"><i class="bi bi-geo-alt"></i>Area
-                  <span class="ts-chip ts-right ts-lock-chip" id="tsLock" title="Remove all layers from the plot to choose another area type" hidden><i class="bi bi-lock-fill"></i>Fixed for this plot</span></h4>
+                <h4 class="ts-card-h" id="tsAreaH"><i class="bi bi-geo-alt"></i>Area</h4>
                 <div class="cmp-seg ts-seg ts-where-seg" role="radiogroup" aria-label="Area type" id="tsWhere">
                   <button type="button" role="radio" aria-checked="true" data-where="pixel"><i class="bi bi-crosshair2"></i>Pixel</button>
                   <button type="button" role="radio" aria-checked="false" data-where="region"><i class="bi bi-bounding-box"></i>Region</button>
@@ -5552,14 +5549,14 @@ if (MAP_STANDALONE) (function mapWindow(){
 
   // ---- Time series of a pixel, a region or the whole grid (EDGAR and the inverse model) ----
   // The left panel's layer is added to the plot ("basket") on the right with Add to plot.
-  // A plot holds one gas; the area type is fixed while it has layers, and every layer
-  // follows the same pixel or region when it moves.
+  // A plot holds one gas; every layer follows the same area (pixel, region or whole image),
+  // which can be moved or switched at any time.
   const ts = (() => {
     const $ = id => document.getElementById(id);
     const btn = $("msTs"), panel = $("tsResults"), titleEl = $("tsTitle"), gasPill = $("tsGasPill");
     // The area controls exist twice (step 3 on the left and the Area card on the right) and are kept in step
     const all = sel => [...document.querySelectorAll(sel)];
-    const whereSegs = all(".ts-where-seg"), lockEls = all(".ts-lock-chip"), regionToolsEls = all(".ts-region-tools");
+    const whereSegs = all(".ts-where-seg"), regionToolsEls = all(".ts-region-tools");
     const shapeSegs = all(".ts-shape-seg"), drawBtns = all(".ts-draw"), locBoxes = all(".ts-loc-box");
     const aggBox = $("tsAggBox"), aggSeg = $("tsAgg");
     const stepEls = [1, 2, 3, 4].map(i => $("tsSt" + i)), dsTxt = $("tsDsTxt");
@@ -5580,7 +5577,7 @@ if (MAP_STANDALONE) (function mapWindow(){
     const GAS_SELECT = { edgar: "edgarGas", inverse: "invGas" };
     const st = { active: false, where: "pixel", shape: "rect", agg: "mean", step: "annual", loc: null, layers: [],
                  chart: null, cache: new Map(), token: 0, drawMode: false, drag: null, poly: null, colour: 0, seq: 0,
-                 busy: false, areaWarn: "" };
+                 busy: false, areaWarn: "", saved: { pixel: null, region: null } };
     map.createPane("tsPane").style.zIndex = 430;
     const marks = L.layerGroup();
     const LINE = { pane: "tsPane", color: "#0B5563", weight: 2, interactive: false };
@@ -5775,15 +5772,15 @@ if (MAP_STANDALONE) (function mapWindow(){
       if (st.chart) { st.chart.destroy(); st.chart = null; }
       const vis = visible(), n = st.layers.length;
       emptyEl.hidden = vis.length > 0;
-      emptyEl.querySelector("b").textContent = n ? "No layer is ticked" : "No layers in the plot yet";
+      emptyEl.querySelector("b").textContent = !n ? "No layers in the plot yet"
+        : !locReady() ? (st.where === "pixel" ? "Click a pixel on the map to update the plot" : "Draw a region on the map to update the plot")
+        : st.layers.some(l => l.on) && !vis.length ? "Loading the time series…" : "No layer is ticked";
       if (vis.length) st.chart = new Chart($("tsChart"), chartConfig());
       else computeScales();
       // header, lock, toolbar
       const g = plotGas();
       gasPill.hidden = !g;
       if (g) gasPill.innerHTML = `<i class="bi bi-droplet-half"></i>${esc(F(g))} · ${esc(GASES[g]?.[1] || "")}`;
-      whereSegs.forEach(s => s.querySelectorAll("button").forEach(b => { b.disabled = n > 0; }));
-      lockEls.forEach(el => { el.hidden = !n; });
       countEl.textContent = String(n);
       clearBtn.hidden = !n;
       pngBtn.disabled = dpiSel.disabled = csvBtn.disabled = !vis.length;
@@ -5943,7 +5940,7 @@ if (MAP_STANDALONE) (function mapWindow(){
       }
       marks.addTo(map);
     }
-    function setLoc(loc){ st.loc = loc; st.areaWarn = ""; syncLoc(); drawMarks(); syncAdd(); refetchAll(); }
+    function setLoc(loc){ st.loc = st.saved[st.where] = loc; st.areaWarn = ""; syncLoc(); drawMarks(); syncAdd(); refetchAll(); }
     function clearDraft(){
       if (st.drag) { map.removeLayer(st.drag.rect); st.drag = null; }
       if (st.poly) { [st.poly.line, st.poly.rubber, st.poly.dots].forEach(x => map.removeLayer(x)); st.poly = null; }
@@ -6094,11 +6091,15 @@ if (MAP_STANDALONE) (function mapWindow(){
     function clearAll(){ st.layers = []; st.colour = 0; st.token++; setMsg(""); render(); syncAdd(); }
 
     whereSegs.forEach(s => s.querySelectorAll("[data-where]").forEach(b => b.addEventListener("click", () => {
-      if (st.layers.length || st.where === b.dataset.where) return;
+      if (st.where === b.dataset.where) return;
+      // The area type can change at any time: the last pixel / region of that type comes back
+      // and every layer in the plot follows it (or waits until one is chosen)
       st.where = b.dataset.where; whereSegs.forEach(w => seg(w, "where", st.where));
-      st.loc = null; st.areaWarn = "";
-      setDraw(st.where === "region");                    // a region starts with drawing
+      st.loc = st.saved[st.where] || null; st.areaWarn = "";
+      setDraw(st.where === "region" && !st.loc);         // a new region starts with drawing
       syncAdd();
+      st.token++; st.layers.forEach(l => { l.data = null; l.error = null; }); render();   // old area's values go
+      if (locReady()) refetchAll();
     })));
     shapeSegs.forEach(s => s.querySelectorAll("[data-shape]").forEach(b => b.addEventListener("click", () => {
       st.shape = b.dataset.shape; shapeSegs.forEach(x => seg(x, "shape", st.shape)); st.areaWarn = "";
