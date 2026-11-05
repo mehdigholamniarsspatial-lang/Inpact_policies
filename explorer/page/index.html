@@ -1043,12 +1043,19 @@ html.map-standalone .map-side{
 }
 html.map-standalone .ms-steps{padding:.2rem .9rem 0}
 .ms-step{position:relative}
-/* Thin connector from each badge down to the next one */
-.ms-steps .ms-step:not(:last-child)::before{
-  content:"";position:absolute;left:11px;top:calc(.4rem + 27px);bottom:calc(3px - .4rem);width:2px;
+/* Thin connector from each badge down to the next one, ending in a small arrowhead (1 → 2 → 3 …) */
+.ms-step[hidden]{display:none!important}
+.ms-steps .ms-step:not(.is-last)::before{
+  content:"";position:absolute;left:11px;top:calc(.4rem + 27px);bottom:calc(9px - .4rem);width:2px;
   border-radius:2px;background:var(--grey-border);transition:background .2s;
 }
-.ms-steps .ms-step.is-done:not(:last-child)::before{background:rgba(14,140,138,.45)}
+.ms-steps .ms-step:not(.is-last)::after{
+  content:"";position:absolute;left:7px;bottom:calc(3px - .4rem);width:0;height:0;
+  border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid #B9C6CF;transition:border-color .2s;
+}
+.ms-steps .ms-step.is-done:not(.is-last)::before{background:rgba(14,140,138,.45)}
+.ms-steps .ms-step.is-done:not(.is-last)::after{border-top-color:rgba(14,140,138,.7)}
+.ms-step-btn .ms-badge{cursor:pointer}
 .ms-step-h{margin:0;font-size:inherit}
 .ms-step-btn{
   width:100%;display:flex;align-items:center;gap:.7rem;padding:.4rem .15rem .4rem 0;
@@ -1065,8 +1072,7 @@ html.map-standalone .ms-steps{padding:.2rem .9rem 0}
 .ms-badge .bi-check-lg,.ms-badge .bi-info-lg{display:none;font-size:.8rem;line-height:1}
 .ms-step.is-open .ms-badge{border-color:var(--teal);color:var(--teal)}
 .ms-step.is-done .ms-badge{background:var(--teal);border-color:var(--teal);color:#fff}
-.ms-step.is-done .ms-badge .n{display:none}
-.ms-step.is-done .ms-badge .bi-check-lg{display:block}
+/* a finished step keeps its number (white on teal) so the order 1, 2, 3 … stays readable */
 .ms-badge.info{border-style:dashed}
 .ms-badge.info .bi-info-lg{display:block}
 .ms-step-txt{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;line-height:1.2}
@@ -1433,9 +1439,6 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
 .ts-stats td:first-child .ts-sw{margin:0;flex:none}
 .ts-stats .up{color:#B2182B;font-weight:700}.ts-stats .down{color:#2166AC;font-weight:700}
 /* left panel: Add to plot */
-.ts-addbox{margin-top:.75rem;padding:.7rem .75rem .6rem;border:1px solid rgba(14,140,138,.45);border-radius:12px;background:linear-gradient(180deg,#EEF9F8,#fff 60%)}
-.ts-addbox-h{display:flex;align-items:center;gap:.4rem;font-size:.7rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--navy);margin-bottom:.45rem}
-.ts-addbox-h i{color:var(--teal);font-size:.9rem}
 .ts-def{font-size:.76rem;color:var(--text-main);padding:.42rem .55rem;border:1px solid var(--grey-border);border-radius:8px;background:#fff;line-height:1.35}
 .ts-def small{display:block;font-size:.64rem;color:var(--text-muted)}
 .ts-def.muted{color:var(--text-muted);border-style:dashed}
@@ -1447,26 +1450,8 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
 .ts-add{margin-top:.6rem;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:.35rem;border:0;border-radius:8px;background:var(--teal);color:#fff;font-family:inherit;font-size:.8rem;font-weight:800;padding:.5rem .8rem;cursor:pointer;box-shadow:0 1px 2px rgba(14,140,138,.3)}
 .ts-add:hover:not(:disabled){filter:brightness(.94)}
 .ts-add:disabled{background:#B9C6CF;box-shadow:none;cursor:not-allowed}
-.ts-addbox .cmp-msg:empty{display:none}
+.ts-step .cmp-msg:empty{display:none}
 .ts-addbox-note{margin:.45rem 0 0;font-size:.62rem;color:var(--text-muted);line-height:1.35}
-/* numbered steps of the time series box: 1 dataset, 2 layer, 3 area, 4 add */
-.ts-steps{list-style:none;margin:.2rem 0 0;padding:0}
-.ts-st{position:relative;display:grid;grid-template-columns:22px minmax(0,1fr);gap:.55rem;padding-bottom:.8rem}
-.ts-st:last-child{padding-bottom:0}
-.ts-st:not(:last-child)::before{content:"";position:absolute;left:10px;top:25px;bottom:3px;width:2px;border-radius:1px;background:var(--grey-border)}
-.ts-st.done:not(:last-child)::before{background:var(--teal)}
-.ts-n{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;background:#fff;border:2px solid #B9C6CF;color:var(--text-muted);transition:background .15s,border-color .15s}
-.ts-n .bi{display:none;font-size:.78rem}
-.ts-st.done .ts-n{background:var(--teal);border-color:var(--teal);color:#fff}
-.ts-st.done .ts-n .bi{display:inline}.ts-st.done .ts-n .k{display:none}
-.ts-st.cur .ts-n{border-color:var(--teal);color:#0B5563;box-shadow:0 0 0 3px rgba(14,140,138,.18)}
-.ts-st-b{min-width:0}
-.ts-st-t{display:flex;align-items:center;gap:.4rem;min-height:22px;margin-bottom:.3rem;font-size:.75rem;font-weight:800;color:var(--navy)}
-.ts-st.cur .ts-st-t{color:#0B5563}
-.ts-st-d{font-size:.72rem;color:var(--text-main);line-height:1.35}
-.ts-st-d.muted{color:var(--text-muted)}
-.ts-st .ts-loc{margin-top:.45rem}
-.ts-st .ts-add{margin-top:.1rem}
 #map.ts-drawing,#map.ts-drawing .leaflet-interactive,#map.ts-picking,#map.ts-picking .leaflet-interactive{cursor:crosshair!important}
 @media (max-width:1279px){
   html.map-standalone.ms-ts{--ms-side-w:400px}
@@ -1830,72 +1815,66 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                   </div>
                   <p class="cmp-msg" id="cmpMsg" role="status"></p>
                 </div>
-                <!-- Time series mode: add the layer chosen above to the plot on the right -->
-                <div class="ts-addbox" id="tsAddBox" hidden>
-                  <div class="ts-addbox-h"><i class="bi bi-graph-up"></i>Time series plot<span class="ts-chip ts-right">4 steps</span></div>
-                  <ol class="ts-steps" aria-label="Steps to add a layer to the time series plot">
-                    <li class="ts-st" id="tsSt1">
-                      <span class="ts-n" aria-hidden="true"><span class="k">1</span><i class="bi bi-check-lg"></i></span>
-                      <div class="ts-st-b">
-                        <div class="ts-st-t">Choose the dataset</div>
-                        <div class="ts-st-d" id="tsDsTxt"></div>
-                      </div>
-                    </li>
-                    <li class="ts-st" id="tsSt2">
-                      <span class="ts-n" aria-hidden="true"><span class="k">2</span><i class="bi bi-check-lg"></i></span>
-                      <div class="ts-st-b">
-                        <div class="ts-st-t">Select the layer</div>
-                        <div class="ts-def" id="tsDef"></div>
-                        <div class="ts-sub ts-x" id="tsStepBox" hidden>
-                          <span class="cmp-mode-lbl">Time step</span>
-                          <div class="cmp-seg" role="radiogroup" aria-label="EDGAR time step" id="tsStep">
-                            <button type="button" role="radio" aria-checked="true" data-step="annual">Annual</button>
-                            <button type="button" role="radio" aria-checked="false" data-step="monthly">Monthly</button>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                    <li class="ts-st" id="tsSt3">
-                      <span class="ts-n" aria-hidden="true"><span class="k">3</span><i class="bi bi-check-lg"></i></span>
-                      <div class="ts-st-b">
-                        <div class="ts-st-t">Choose the area</div>
-                        <div class="cmp-seg ts-seg ts-where-seg" role="radiogroup" aria-label="Area type" id="tsWhereL">
-                          <button type="button" role="radio" aria-checked="true" data-where="pixel"><i class="bi bi-crosshair2"></i>Pixel</button>
-                          <button type="button" role="radio" aria-checked="false" data-where="region"><i class="bi bi-bounding-box"></i>Region</button>
-                          <button type="button" role="radio" aria-checked="false" data-where="whole"><i class="bi bi-map"></i>Whole image</button>
-                        </div>
-                        <div class="ts-sub ts-x ts-region-tools" hidden>
-                          <div class="cmp-seg ts-shape-seg" role="radiogroup" aria-label="Region shape">
-                            <button type="button" role="radio" aria-checked="true" data-shape="rect"><i class="bi bi-square"></i> Rectangle</button>
-                            <button type="button" role="radio" aria-checked="false" data-shape="poly"><i class="bi bi-pentagon"></i> Polygon</button>
-                          </div>
-                          <button type="button" class="ts-btn ts-right ts-draw" aria-pressed="false"><i class="bi bi-pencil"></i><span>Draw</span></button>
-                        </div>
-                        <div class="ts-loc ts-loc-box"><i class="bi bi-info-circle" aria-hidden="true"></i><span class="ts-loc-txt">Click a cell on the map.</span></div>
-                      </div>
-                    </li>
-                    <li class="ts-st" id="tsSt4">
-                      <span class="ts-n" aria-hidden="true"><span class="k">4</span><i class="bi bi-check-lg"></i></span>
-                      <div class="ts-st-b">
-                        <div class="ts-st-t">Add the layer to the plot</div>
-                        <div class="ts-warn" id="tsDsWarn" role="alert" hidden>
-                          <i class="bi bi-exclamation-triangle-fill"></i><b>MapEIre can't be added to the time series plot</b> (it has only one or two years, as images).
-                          Select <b>EDGAR</b> or the <b>Inverse model</b> in step 1 to add a layer to the plot.
-                          <span class="ts-warn-acts"><button type="button" data-ds="edgar">Use EDGAR</button><button type="button" data-ds="inverse">Use the Inverse model</button></span>
-                        </div>
-                        <div class="ts-warn" id="tsGasWarn" role="alert" hidden></div>
-                        <button type="button" class="ts-add" id="tsAdd" disabled><i class="bi bi-plus-lg"></i><span>Add to plot</span></button>
-                        <p class="cmp-msg" id="tsMsg" role="status"></p>
-                        <p class="ts-addbox-note">The graph appears on the right. Repeat steps 2–4 to overlay more layers of the same gas. The plot uses every year of the layer; the year and period above only set the map.</p>
-                      </div>
-                    </li>
-                  </ol>
-                </div>
               </div></div>
             </section>
-            <section class="ms-step is-open" data-step="3">
+            <!-- Time series mode only: the area of the plot, then adding the step-2 layer to it.
+                 Step numbers are set by the script (these two steps are hidden outside time series). -->
+            <section class="ms-step ts-step" data-step="area" hidden>
               <h3 class="ms-step-h">
-                <button type="button" class="ms-step-btn" id="msStep3Btn" aria-expanded="true" aria-controls="msStep3Body">
+                <button type="button" class="ms-step-btn" id="msStepAreaBtn" aria-expanded="false" aria-controls="msStepAreaBody">
+                  <span class="ms-badge"><span class="n">3</span><i class="bi bi-check-lg"></i></span>
+                  <span class="ms-step-txt"><span class="ms-step-title">Choose the area</span><span class="ms-step-sum" id="msSumArea"></span></span>
+                  <i class="bi bi-chevron-down ms-chev" aria-hidden="true"></i>
+                </button>
+              </h3>
+              <div class="ms-step-body" id="msStepAreaBody" role="region" aria-labelledby="msStepAreaBtn"><div class="ms-step-inner">
+                <p class="ms-p">Where the time series is taken: one pixel, a region you draw, or the whole image.</p>
+                <div class="cmp-seg ts-seg ts-where-seg" role="radiogroup" aria-label="Area type" id="tsWhereL">
+                  <button type="button" role="radio" aria-checked="true" data-where="pixel"><i class="bi bi-crosshair2"></i>Pixel</button>
+                  <button type="button" role="radio" aria-checked="false" data-where="region"><i class="bi bi-bounding-box"></i>Region</button>
+                  <button type="button" role="radio" aria-checked="false" data-where="whole"><i class="bi bi-map"></i>Whole image</button>
+                </div>
+                <div class="ts-sub ts-x ts-region-tools" hidden>
+                  <div class="cmp-seg ts-shape-seg" role="radiogroup" aria-label="Region shape">
+                    <button type="button" role="radio" aria-checked="true" data-shape="rect"><i class="bi bi-square"></i> Rectangle</button>
+                    <button type="button" role="radio" aria-checked="false" data-shape="poly"><i class="bi bi-pentagon"></i> Polygon</button>
+                  </div>
+                  <button type="button" class="ts-btn ts-right ts-draw" aria-pressed="false"><i class="bi bi-pencil"></i><span>Draw</span></button>
+                </div>
+                <div class="ts-loc ts-loc-box"><i class="bi bi-info-circle" aria-hidden="true"></i><span class="ts-loc-txt">Click a cell on the map.</span></div>
+              </div></div>
+            </section>
+            <section class="ms-step ts-step" data-step="add" hidden>
+              <h3 class="ms-step-h">
+                <button type="button" class="ms-step-btn" id="msStepAddBtn" aria-expanded="false" aria-controls="msStepAddBody">
+                  <span class="ms-badge"><span class="n">4</span><i class="bi bi-check-lg"></i></span>
+                  <span class="ms-step-txt"><span class="ms-step-title">Add to the time series plot</span><span class="ms-step-sum" id="msSumAdd"></span></span>
+                  <i class="bi bi-chevron-down ms-chev" aria-hidden="true"></i>
+                </button>
+              </h3>
+              <div class="ms-step-body" id="msStepAddBody" role="region" aria-labelledby="msStepAddBtn"><div class="ms-step-inner">
+                <div class="ts-def" id="tsDef"></div>
+                <div class="ts-sub ts-x" id="tsStepBox" hidden>
+                  <span class="cmp-mode-lbl">Time step</span>
+                  <div class="cmp-seg" role="radiogroup" aria-label="EDGAR time step" id="tsStep">
+                    <button type="button" role="radio" aria-checked="true" data-step="annual">Annual</button>
+                    <button type="button" role="radio" aria-checked="false" data-step="monthly">Monthly</button>
+                  </div>
+                </div>
+                <div class="ts-warn" id="tsDsWarn" role="alert" hidden>
+                  <i class="bi bi-exclamation-triangle-fill"></i><b>MapEIre can't be added to the time series plot</b> (it has only one or two years, as images).
+                  Select <b>EDGAR</b> or the <b>Inverse model</b> in step 1 to add a layer to the plot.
+                  <span class="ts-warn-acts"><button type="button" data-ds="edgar">Use EDGAR</button><button type="button" data-ds="inverse">Use the Inverse model</button></span>
+                </div>
+                <div class="ts-warn" id="tsGasWarn" role="alert" hidden></div>
+                <button type="button" class="ts-add" id="tsAdd" disabled><i class="bi bi-plus-lg"></i><span>Add to plot</span></button>
+                <p class="cmp-msg" id="tsMsg" role="status"></p>
+                <p class="ts-addbox-note">The graph appears on the right. To overlay another layer of the same gas, change it in step 2 and add it here. The plot uses every year of the layer; the year and period in step 2 only set the map.</p>
+              </div></div>
+            </section>
+            <section class="ms-step" data-step="3">
+              <h3 class="ms-step-h">
+                <button type="button" class="ms-step-btn" id="msStep3Btn" aria-expanded="false" aria-controls="msStep3Body">
                   <span class="ms-badge"><span class="n">3</span><i class="bi bi-check-lg"></i></span>
                   <span class="ms-step-txt"><span class="ms-step-title">Adjust the display</span><span class="ms-step-sum" id="msSum3"></span></span>
                   <i class="bi bi-chevron-down ms-chev" aria-hidden="true"></i>
@@ -1903,9 +1882,9 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
               </h3>
               <div class="ms-step-body" id="msStep3Body" role="region" aria-labelledby="msStep3Btn"><div class="ms-step-inner" id="msStep3Inner"></div></div>
             </section>
-            <section class="ms-step is-open" data-step="4">
+            <section class="ms-step" data-step="4">
               <h3 class="ms-step-h">
-                <button type="button" class="ms-step-btn" id="msStep4Btn" aria-expanded="true" aria-controls="msStep4Body">
+                <button type="button" class="ms-step-btn" id="msStep4Btn" aria-expanded="false" aria-controls="msStep4Body">
                   <span class="ms-badge"><span class="n">4</span><i class="bi bi-check-lg"></i></span>
                   <span class="ms-step-txt"><span class="ms-step-title">Download the map</span><span class="ms-step-sum" id="msSum4"></span></span>
                   <i class="bi bi-chevron-down ms-chev" aria-hidden="true"></i>
@@ -4790,6 +4769,17 @@ if (MAP_STANDALONE) (function mapWindow(){
   };
   Object.values(steps).forEach(s =>
     s.querySelector(".ms-step-btn").addEventListener("click", () => setOpen(s, !s.classList.contains("is-open"))));
+  // Number the visible steps 1, 2, 3 … (the time series adds "area" and "add" after the layer);
+  // the last visible step has no arrow down to a next one
+  const numbered = () => [...document.querySelectorAll("#msSteps > .ms-step")].filter(s => !s.hidden);
+  function renumberSteps(){
+    const vis = numbered();
+    vis.forEach((s, i) => { s.querySelector(".ms-badge .n").textContent = String(i + 1); s.classList.toggle("is-last", i === vis.length - 1); });
+  }
+  // The visible step after `step` (opened when `step` is finished)
+  const nextStep = step => { const vis = numbered(); return vis[vis.indexOf(step) + 1]; };
+  renumberSteps();
+  let hadLayer = null;
 
   // Header summaries (shown when a step is collapsed) and the checkmark badges
   const optText = sel => { const o = sel.selectedOptions[0]; return o && o.value ? o.textContent.split(" · ")[0].trim() : ""; };
@@ -4803,6 +4793,12 @@ if (MAP_STANDALONE) (function mapWindow(){
     const layerOn = !!mapEl.querySelector(".raster-title");
     steps[2].classList.toggle("is-done", layerOn);
     steps[3].classList.toggle("is-done", layerOn);
+    // Layer chosen: step 2 folds up and the next step opens (not while comparing: B is picked there too)
+    if (hadLayer === false && layerOn && !root.classList.contains("ms-compare") && steps[2].classList.contains("is-open")) {
+      setOpen(steps[2], false);
+      const nx = nextStep(steps[2]); if (nx) setOpen(nx, true);
+    }
+    hadLayer = layerOn;
     sum3.textContent = `Opacity ${opacityEl.value}%`;
     sum4.textContent = layerOn ? "GeoTIFF + JPEG" : "Show a layer first";
     sum4.classList.toggle("empty", !layerOn);
@@ -5559,12 +5555,11 @@ if (MAP_STANDALONE) (function mapWindow(){
     const whereSegs = all(".ts-where-seg"), regionToolsEls = all(".ts-region-tools");
     const shapeSegs = all(".ts-shape-seg"), drawBtns = all(".ts-draw"), locBoxes = all(".ts-loc-box");
     const aggBox = $("tsAggBox"), aggSeg = $("tsAgg");
-    const stepEls = [1, 2, 3, 4].map(i => $("tsSt" + i)), dsTxt = $("tsDsTxt");
-    const DS_NAMES = { edgar: "EDGAR", inverse: "Inverse model", mapeire: "MapEIre" };
+    const areaStep = steps.area, addStep = steps.add, sumArea = $("msSumArea"), sumAdd = $("msSumAdd");
     const scaleEl = $("tsScale"), scaleBox = $("tsScaleBox"), bandEl = $("tsBand"), bandBox = $("tsBandBox");
     const pngBtn = $("tsPng"), dpiSel = $("tsDpi"), csvBtn = $("tsCsv"), emptyEl = $("tsEmpty"), noteEl = $("tsNote");
     const listEl = $("tsList"), countEl = $("tsCount"), clearBtn = $("tsClear"), statsCard = $("tsStatsCard"), statsEl = $("tsStats");
-    const addBox = $("tsAddBox"), defEl = $("tsDef"), stepBox = $("tsStepBox"), stepSeg = $("tsStep");
+    const defEl = $("tsDef"), stepBox = $("tsStepBox"), stepSeg = $("tsStep");
     const gasWarn = $("tsGasWarn"), addBtn = $("tsAdd"), msgEl = $("tsMsg"), dsWarn = $("tsDsWarn");
     // MapEIre notice: switch to a dataset that has time series (the dataset cards drive the select)
     dsWarn.querySelectorAll("[data-ds]").forEach(b => b.addEventListener("click", () =>
@@ -6045,23 +6040,34 @@ if (MAP_STANDALONE) (function mapWindow(){
       });
       mapEl.classList.toggle("ts-picking", st.active && st.where === "pixel");
       titleEl.textContent = { pixel: "Pixel time series", region: "Region time series", whole: "Whole-image time series" }[st.where];
-      syncSteps();
+      syncTsSteps();
     }
-    // Numbered steps on the left: done (tick), current (highlighted) or still to do
-    function syncSteps(){
+    // The "Choose the area" and "Add to the time series plot" steps of the left stepper:
+    // shown only in time series mode, with a tick, a summary when folded, and auto-advance
+    function showSteps(on){
+      if (areaStep.hidden === !on) return;
+      areaStep.hidden = addStep.hidden = !on;
+      renumberSteps();
+    }
+    let hadArea = null;
+    function syncTsSteps(){
       if (!st.active) return;
-      const def = currentDef(), g = plotGas(), dsOk = ds() === "edgar" || ds() === "inverse";
-      const wrongGas = !def.missing && g && def.gas !== g;
-      const dup = !def.missing && st.layers.some(l => l.key === keyOf(def));
-      const done = [dsOk, dsOk && !def.missing && !wrongGas, locReady(), dup];
-      const cur = done.indexOf(false);
-      stepEls.forEach((el, i) => { el.classList.toggle("done", done[i]); el.classList.toggle("cur", i === cur); });
-      dsTxt.innerHTML = dsOk ? `<b>${esc(DS_NAMES[ds()])}</b> · change it in step 1 above.`
-        : `Time series need <b>EDGAR</b> or the <b>Inverse model</b>: choose one in step 1 above.`;
-      dsTxt.classList.toggle("muted", !dsOk);
+      const L0 = st.loc, areaOk = locReady() && !st.drawMode, n = st.layers.length;
+      areaStep.classList.toggle("is-done", areaOk);
+      addStep.classList.toggle("is-done", n > 0);
+      sumArea.textContent = st.where === "whole" ? "Whole image"
+        : !L0 ? "Not chosen yet"
+        : st.where === "pixel" ? `Pixel ${L0.lat.toFixed(3)}°N, ${lngTxt(L0.lng, 3)}`
+        : L0.type === "rect" ? "Rectangle region" : `Polygon of ${L0.pts.length} points`;
+      sumArea.classList.toggle("empty", !areaOk);
+      sumAdd.textContent = n ? `${n} layer${n > 1 ? "s" : ""} in the plot` : ds() === "mapeire" ? "Not available for MapEIre" : "Nothing added yet";
+      sumAdd.classList.toggle("empty", !n);
+      // Area chosen: fold the step and open "Add to the time series plot"
+      if (hadArea === false && areaOk && areaStep.classList.contains("is-open")) { setOpen(areaStep, false); setOpen(addStep, true); }
+      hadArea = areaOk;
     }
     function syncAdd(){
-      addBox.hidden = !st.active;
+      showSteps(st.active);
       if (!st.active) return;
       const def = currentDef(), g = plotGas();
       defEl.innerHTML = def.missing ? esc(def.missing) : defHtml(def);
@@ -6086,7 +6092,7 @@ if (MAP_STANDALONE) (function mapWindow(){
       addBtn.querySelector("i").className = noTs ? "bi bi-slash-circle" : dup ? "bi bi-check2" : needArea ? "bi bi-arrow-up" : "bi bi-plus-lg";
       if (!st.busy && !msgEl.classList.contains("warn"))
         setMsg(needArea ? `In step 3, ${st.where === "pixel" ? "click a pixel on the map" : "draw a region on the map"}; Add to plot then becomes active.` : "");
-      syncSteps();
+      syncTsSteps();
     }
     function clearAll(){ st.layers = []; st.colour = 0; st.token++; setMsg(""); render(); syncAdd(); }
 
@@ -6131,7 +6137,10 @@ if (MAP_STANDALONE) (function mapWindow(){
       st.active = true; root.classList.add("ms-ts");
       btn.setAttribute("aria-pressed", "true");
       panel.hidden = false;
-      setOpen(steps[2], true);
+      showSteps(true);
+      // Open the first step still to do: the layer, else the area
+      if (!mapEl.querySelector(".raster-title")) setOpen(steps[2], true);
+      else { setOpen(steps[2], false); setOpen(areaStep, true); }
       if (root.classList.contains("ms-side-hidden")) setSide(true);
       if (st.where === "region" && !st.loc) setDraw(true);
       syncLoc(); syncAdd(); render();
@@ -6141,7 +6150,7 @@ if (MAP_STANDALONE) (function mapWindow(){
       setDraw(false);
       st.active = false; root.classList.remove("ms-ts");
       btn.setAttribute("aria-pressed", "false");
-      panel.hidden = true; addBox.hidden = true;
+      panel.hidden = true; showSteps(false);
       marks.remove(); mapEl.classList.remove("ts-picking");
       syncButton(); refit();
     }
