@@ -6362,7 +6362,7 @@ if (MAP_STANDALONE) (function mapWindow(){
   (function splitters(){
     const panel = document.getElementById("mapPanel"), side = document.getElementById("mapSide");
     const results = { compare: document.getElementById("cmpResults"), ts: document.getElementById("tsResults") };
-    const KEY = "inpact.mapPanelWidths", MAP_MIN = 320, SIDE_MIN = 300, RES_MIN = 320;
+    const KEY = "inpact.mapPanelWidths", MAP_MIN = 320, SIDE_MIN = 300, RES_MIN = 320, MAX_GROW = 1.8;
     const VARS = { side: "--ms-side-w", res: "--cmp-res-w" };
     let saved = {};
     try { saved = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { saved = {}; }
@@ -6385,9 +6385,19 @@ if (MAP_STANDALONE) (function mapWindow(){
     const H = { side: handle("side", "Resize the layer panel"), res: handle("res", "Resize the results panel") };
 
     // the other column's width, to keep the map at least MAP_MIN wide
+    // The panel's default width in this mode and screen size: the CSS value without the user's override
+    const defaultWidth = kind => {
+      const own = root.style.getPropertyValue(VARS[kind]);
+      if (own) root.style.removeProperty(VARS[kind]);
+      const d = parseFloat(getComputedStyle(root).getPropertyValue(VARS[kind]));
+      if (own) root.style.setProperty(VARS[kind], own);
+      return d;
+    };
+    // At most 80% wider than the default, and the map keeps at least MAP_MIN
     const clamp = (kind, w) => {
       const other = kind === "side" ? (resBeside() ? res().offsetWidth : 0) : (sideBeside() ? side.offsetWidth : 0);
-      const max = panel.clientWidth - other - MAP_MIN;
+      const def = defaultWidth(kind);
+      const max = Math.min(panel.clientWidth - other - MAP_MIN, def > 0 ? def * MAX_GROW : Infinity);
       return Math.round(Math.max(kind === "side" ? SIDE_MIN : RES_MIN, Math.min(w, max)));
     };
     function apply(){
