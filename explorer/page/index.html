@@ -1428,37 +1428,32 @@ html.map-standalone .ms-about.is-big{flex:1 0 auto;margin-top:.4rem}
 .ms-disclaimer a{color:var(--teal);font-weight:600}
 @media (prefers-reduced-motion: reduce){.ms-info-more{transition:none}}
 
-/* Download menu (split button: main part = both files, caret = choose one) */
-.ms-dl{position:relative;margin:.1rem 0 .65rem}
-.ms-dl-split{display:flex;border-radius:9px;box-shadow:0 2px 8px rgba(14,140,138,.22)}
-.ms-dl-main,.ms-dl-caret{
-  border:0;background:var(--teal);color:#fff;font-family:inherit;cursor:pointer;
-  display:inline-flex;align-items:center;transition:background .15s,opacity .15s;
+/* Download: the file format as three visible choices, then one download button */
+.ms-dl{margin:.1rem 0 .65rem}
+.ms-dl-lbl{display:block;font-size:.64rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--navy);margin-bottom:.3rem}
+.ms-dl-fmts{display:grid;grid-template-columns:repeat(3,1fr);gap:.35rem;margin-bottom:.5rem}
+.ms-dl-fmts button{
+  display:flex;flex-direction:column;align-items:center;gap:.05rem;padding:.4rem .25rem;min-width:0;
+  border:1.5px solid var(--grey-border);border-radius:9px;background:#fff;font-family:inherit;cursor:pointer;
+  color:var(--text-main);text-align:center;transition:border-color .15s,background .15s;
 }
-.ms-dl-main{flex:1 1 auto;gap:.45rem;padding:.45rem .75rem;border-radius:9px 0 0 9px;font-size:.8rem;font-weight:800}
-.ms-dl-fmt{margin-left:auto;font-size:.66rem;font-weight:700;padding:.08rem .45rem;border-radius:999px;background:rgba(255,255,255,.2)}
-.ms-dl-caret{padding:0 .6rem;border-radius:0 9px 9px 0;border-left:1px solid rgba(255,255,255,.35);font-size:.75rem}
-.ms-dl-main:hover:not(:disabled),.ms-dl-caret:hover:not(:disabled){background:#0B7573}
-.ms-dl-main:focus-visible,.ms-dl-caret:focus-visible{outline:3px solid rgba(14,140,138,.4);outline-offset:2px}
-.ms-dl-main:disabled,.ms-dl-caret:disabled{background:#B8C4CE;cursor:not-allowed}
-.ms-dl-split:has(:disabled){box-shadow:none}
-.ms-dl-caret[aria-expanded="true"] i{transform:rotate(180deg)}
-.ms-dl-caret i{transition:transform .2s ease}
+.ms-dl-fmts button i{font-size:1.05rem;color:var(--teal)}
+.ms-dl-fmts button b{font-size:.76rem;color:var(--navy)}
+.ms-dl-fmts button small{font-size:.6rem;line-height:1.2;color:var(--text-muted)}
+.ms-dl-fmts button:hover:not(:disabled){border-color:var(--teal)}
+.ms-dl-fmts button[aria-checked="true"]{border-color:var(--teal);background:var(--teal-light);box-shadow:inset 0 0 0 1px var(--teal)}
+.ms-dl-fmts button:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.ms-dl-fmts button:disabled{opacity:.5;cursor:not-allowed}
+.ms-dl-main{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:.45rem;padding:.5rem .75rem;
+  border:0;border-radius:9px;background:var(--teal);color:#fff;font-family:inherit;font-size:.8rem;font-weight:800;cursor:pointer;
+  box-shadow:0 2px 8px rgba(14,140,138,.22);transition:background .15s;
+}
+.ms-dl-main:hover:not(:disabled){background:#0B7573}
+.ms-dl-main:focus-visible{outline:3px solid rgba(14,140,138,.4);outline-offset:2px}
+.ms-dl-main:disabled{background:#B8C4CE;cursor:not-allowed;box-shadow:none}
 .ms-dl.busy .ms-dl-main i{animation:msDlPulse 1s ease-in-out infinite}
 @keyframes msDlPulse{50%{transform:translateY(2px)}}
-.ms-dl-menu{
-  position:absolute;z-index:20;left:0;right:0;top:calc(100% + 4px);list-style:none;margin:0;padding:.3rem;
-  background:#fff;border:1px solid var(--grey-border);border-radius:10px;box-shadow:var(--shadow-lg);
-}
-.ms-dl-menu[hidden]{display:none}
-.ms-dl-menu button{
-  width:100%;display:flex;align-items:flex-start;gap:.6rem;padding:.45rem .55rem;border:0;border-radius:8px;
-  background:none;text-align:left;font-family:inherit;cursor:pointer;color:var(--text-main);
-}
-.ms-dl-menu button:hover,.ms-dl-menu button:focus-visible{background:var(--teal-light);outline:none}
-.ms-dl-menu i{color:var(--teal);font-size:1rem;margin-top:.05rem}
-.ms-dl-menu b{display:block;font-size:.78rem;color:var(--navy)}
-.ms-dl-menu small{display:block;font-size:.68rem;color:var(--text-muted)}
 .ms-dl-status{margin:.3rem 0 0;font-size:.66rem;line-height:1.35;color:var(--text-muted);min-height:1em}
 .ms-dl-status.ok{color:var(--emerald-dark)}
 .ms-dl-status.warn{color:var(--red)}
@@ -2203,19 +2198,15 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
               <div class="ms-step-body" id="msStep4Body" role="region" aria-labelledby="msStep4Btn"><div class="ms-step-inner">
                 <!-- Download the layer on the map: GeoTIFF (data) + JPEG (map with legend) -->
                 <div class="ms-dl" id="msDl">
-                  <div class="ms-dl-split">
-                    <button type="button" class="ms-dl-main" id="msDlBoth" disabled aria-describedby="msDlStatus">
-                      <i class="bi bi-download"></i><span>Download map</span><span class="ms-dl-fmt">GeoTIFF + JPEG</span>
-                    </button>
-                    <button type="button" class="ms-dl-caret" id="msDlCaret" disabled aria-haspopup="menu" aria-expanded="false" aria-controls="msDlMenu" title="More download options">
-                      <i class="bi bi-chevron-down"></i>
-                    </button>
+                  <span class="ms-dl-lbl" id="msDlLbl">File format</span>
+                  <div class="ms-dl-fmts" role="radiogroup" aria-labelledby="msDlLbl" id="msDlFmts">
+                    <button type="button" role="radio" aria-checked="false" data-fmt="jpeg"><i class="bi bi-image"></i><b>JPEG</b><small>Map image with legend</small></button>
+                    <button type="button" role="radio" aria-checked="false" data-fmt="geotiff"><i class="bi bi-grid-3x3-gap"></i><b>GeoTIFF</b><small>Cell values for GIS</small></button>
+                    <button type="button" role="radio" aria-checked="true" data-fmt="zip"><i class="bi bi-file-earmark-zip"></i><b>Both</b><small>One ZIP with the two</small></button>
                   </div>
-                  <ul class="ms-dl-menu" id="msDlMenu" role="menu" aria-label="Download options" hidden>
-                    <li role="none"><button type="button" role="menuitem" data-fmt="both"><i class="bi bi-files"></i><span><b>GeoTIFF + JPEG</b><small>Both files at once</small></span></button></li>
-                    <li role="none"><button type="button" role="menuitem" data-fmt="geotiff"><i class="bi bi-grid-3x3-gap"></i><span><b>GeoTIFF</b><small>Cell values for GIS (QGIS, ArcGIS)</small></span></button></li>
-                    <li role="none"><button type="button" role="menuitem" data-fmt="jpeg"><i class="bi bi-image"></i><span><b>JPEG map</b><small>With legend, title and source</small></span></button></li>
-                  </ul>
+                  <button type="button" class="ms-dl-main" id="msDlGo" disabled aria-describedby="msDlStatus">
+                    <i class="bi bi-download"></i><span id="msDlGoTxt">Download GeoTIFF + JPEG (.zip)</span>
+                  </button>
                   <p class="ms-dl-status" id="msDlStatus" role="status">Show a layer on the map to download it.</p>
                 </div>
               </div></div>
@@ -5321,6 +5312,14 @@ if (MAP_STANDALONE) (function mapWindow(){
   document.getElementById("msStep3Inner").appendChild(opacityEl.closest(".raster-opacity"));
   const steps = Object.fromEntries([...document.querySelectorAll("#mapSide .ms-step")].map(s => [s.dataset.step, s]));
   const [sum1, sum2, sum3, sum4] = ["msSum1", "msSum2", "msSum3", "msSum4"].map(id => document.getElementById(id));
+  const DL_FORMATS = {
+    jpeg:    { name: "JPEG map", button: "Download JPEG map", hint: "A map image with legend, title and source, ready for reports." },
+    geotiff: { name: "GeoTIFF", button: "Download GeoTIFF", hint: "The cell values with coordinates, for GIS software (QGIS, ArcGIS)." },
+    zip:     { name: "GeoTIFF + JPEG", button: "Download GeoTIFF + JPEG (.zip)", hint: "One ZIP file holding the GeoTIFF and the JPEG map." },
+  };
+  let dlFmt = "zip";
+  try { dlFmt = localStorage.getItem("inpact.mapDlFormat") || "zip"; } catch (e) {}
+  if (!DL_FORMATS[dlFmt]) dlFmt = "zip";
 
   const setOpen = (step, open) => {
     step.classList.toggle("is-open", open);
@@ -5360,19 +5359,17 @@ if (MAP_STANDALONE) (function mapWindow(){
     }
     hadLayer = layerOn;
     sum3.textContent = styleUI ? styleUI.summary() : `Opacity ${opacityEl.value}%`;
-    sum4.textContent = layerOn ? "GeoTIFF + JPEG" : "Show a layer first";
+    sum4.textContent = layerOn ? DL_FORMATS[dlFmt].name : "Show a layer first";
     sum4.classList.toggle("empty", !layerOn);
     // About this dataset: show the selected dataset's text
     sumAbout.textContent = sum1.textContent;
     infoBlocks.forEach(b => { b.hidden = b.dataset.ds !== datasetSel.value; });
     const more = infoBlocks.find(b => !b.hidden)?.querySelector(".ms-info-more");
     if (more) moreBtn.setAttribute("aria-controls", more.id);
-    // Download menu: available while a layer is on the map
-    if (dlBoth.disabled === layerOn && !dlBox.classList.contains("busy")) {
-      dlBoth.disabled = dlCaret.disabled = !layerOn;
-      if (!layerOn) closeDlMenu();
-      setDlStatus(layerOn ? "Downloads the layer on the map: GeoTIFF data and a JPEG map with legend."
-                          : "Show a layer on the map to download it.");
+    // Download: available while a layer is on the map
+    if (dlGo.disabled === layerOn && !dlBox.classList.contains("busy")) {
+      dlGo.disabled = !layerOn;
+      setDlStatus(layerOn ? DL_FORMATS[dlFmt].hint : "Show a layer on the map to download it.");
     }
   }
 
@@ -5390,11 +5387,10 @@ if (MAP_STANDALONE) (function mapWindow(){
 
   // ---- Download the selected layer (server builds the files: /api/map/export/<geotiff|jpeg>/) ----
   const dlBox = document.getElementById("msDl");
-  const dlBoth = document.getElementById("msDlBoth");
-  const dlCaret = document.getElementById("msDlCaret");
-  const dlMenu = document.getElementById("msDlMenu");
+  const dlGo = document.getElementById("msDlGo");
+  const dlGoTxt = document.getElementById("msDlGoTxt");
   const dlStatus = document.getElementById("msDlStatus");
-  const dlItems = [...dlMenu.querySelectorAll("[role=menuitem]")];
+  const dlFmtBtns = [...document.querySelectorAll("#msDlFmts [data-fmt]")];
   const EXPORT_FIELDS = {
     mapeire: { year: "rasterYear", sector: "rasterSector", parameter: "rasterParam" },
     edgar:   { gas: "edgarGas", sector: "edgarSector", year: "edgarYear", month: "edgarMonth" },
@@ -5424,12 +5420,13 @@ if (MAP_STANDALONE) (function mapWindow(){
   }
   async function fetchFile(fmt, q){
     const res = await fetch(`/api/map/export/${fmt}/?${q}`);
+    const ext = { jpeg: "jpg", geotiff: "tif", zip: "zip" }[fmt];
     if (!res.ok) {
       let detail = `HTTP ${res.status}`;
       try { detail = (await res.json()).detail || detail; } catch (e) {}
       throw new Error(detail);
     }
-    const name = /filename="([^"]+)"/.exec(res.headers.get("Content-Disposition") || "")?.[1] || `map.${fmt === "jpeg" ? "jpg" : "tif"}`;
+    const name = /filename="([^"]+)"/.exec(res.headers.get("Content-Disposition") || "")?.[1] || `map.${ext}`;
     return { name, blob: await res.blob() };
   }
   function saveFile({ name, blob }){
@@ -5438,44 +5435,49 @@ if (MAP_STANDALONE) (function mapWindow(){
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
-  async function download(fmt){
-    closeDlMenu();
-    if (dlBox.classList.contains("busy")) return;
-    const fmts = fmt === "both" ? ["geotiff", "jpeg"] : [fmt];
-    const q = exportQuery();
-    dlBox.classList.add("busy"); dlBoth.disabled = dlCaret.disabled = true;
-    setDlStatus(fmts.length > 1 ? "Preparing the GeoTIFF and the JPEG…" : `Preparing the ${fmt === "jpeg" ? "JPEG" : "GeoTIFF"}…`);
+  // "Both" is one ZIP built by the server: a single download, which browsers never block
+  function setDlFmt(fmt, focus){
+    if (!DL_FORMATS[fmt]) fmt = "zip";
+    dlFmt = fmt;
+    try { localStorage.setItem("inpact.mapDlFormat", fmt); } catch (e) {}
+    dlFmtBtns.forEach(b => {
+      const on = b.dataset.fmt === fmt;
+      b.setAttribute("aria-checked", String(on)); b.tabIndex = on ? 0 : -1;
+      if (on && focus) b.focus();
+    });
+    dlGoTxt.textContent = DL_FORMATS[fmt].button;
+    if (!dlGo.disabled && !dlBox.classList.contains("busy")) setDlStatus(DL_FORMATS[fmt].hint);
+    syncSteps();
+  }
+  async function download(){
+    if (dlBox.classList.contains("busy") || dlGo.disabled) return;
+    const fmt = dlFmt, F = DL_FORMATS[fmt];
+    dlBox.classList.add("busy"); dlGo.disabled = true;
+    dlGoTxt.textContent = "Preparing…";
+    setDlStatus(`Preparing the ${F.name}…`);
     try {
-      const files = await Promise.all(fmts.map(f => fetchFile(f, q)));   // both built in parallel
-      files.forEach(saveFile);
-      setDlStatus(`Downloaded ${files.map(f => f.name).join(" and ")}`, "ok");
+      const file = await fetchFile(fmt, exportQuery());
+      saveFile(file);
+      setDlStatus(`Downloaded ${file.name}`, "ok");
     } catch (err) {
       setDlStatus(`Download failed: ${err.message}`, "warn");
     } finally {
       dlBox.classList.remove("busy");
-      dlBoth.disabled = dlCaret.disabled = !mapEl.querySelector(".raster-title");
+      dlGo.disabled = !mapEl.querySelector(".raster-title");
+      dlGoTxt.textContent = F.button;
     }
   }
-  function openDlMenu(){
-    dlMenu.hidden = false; dlCaret.setAttribute("aria-expanded", "true");
-    dlItems[0].focus();
-  }
-  function closeDlMenu(focusCaret){
-    if (dlMenu.hidden) return;
-    dlMenu.hidden = true; dlCaret.setAttribute("aria-expanded", "false");
-    if (focusCaret) dlCaret.focus();
-  }
-  dlBoth.addEventListener("click", () => download("both"));
-  dlCaret.addEventListener("click", () => dlMenu.hidden ? openDlMenu() : closeDlMenu());
-  dlItems.forEach((item, i) => {
-    item.addEventListener("click", () => download(item.dataset.fmt));
-    item.addEventListener("keydown", e => {
-      const d = { ArrowDown: 1, ArrowUp: -1 }[e.key];
-      if (d) { e.preventDefault(); dlItems[(i + d + dlItems.length) % dlItems.length].focus(); }
-      else if (e.key === "Escape" || e.key === "Tab") closeDlMenu(e.key === "Escape");
+  dlFmtBtns.forEach((b, i) => {
+    b.addEventListener("click", () => setDlFmt(b.dataset.fmt));
+    b.addEventListener("keydown", e => {
+      const d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+      if (!d) return;
+      e.preventDefault();
+      setDlFmt(dlFmtBtns[(i + d + dlFmtBtns.length) % dlFmtBtns.length].dataset.fmt, true);
     });
   });
-  document.addEventListener("click", e => { if (!dlBox.contains(e.target)) closeDlMenu(); });
+  dlGo.addEventListener("click", download);
+  setDlFmt(dlFmt);
 
   // Step 2: a lock + "Select a … first" hint under each dropdown that is not available yet
   const article = w => /^[aeiou]/i.test(w) ? "an" : "a";
