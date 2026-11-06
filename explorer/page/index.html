@@ -1283,6 +1283,35 @@ html.map-standalone .raster-opacity input[type=range]:focus-visible::-moz-range-
 .ms-pal-rev{display:inline-flex;align-items:center;gap:.4rem;margin:.45rem 0 0;font-size:.74rem;font-weight:600;color:var(--navy);cursor:pointer}
 .ms-pal-rev input{width:15px;height:15px;accent-color:var(--teal);cursor:pointer}
 .ms-pal.is-off .ms-pal-rev{opacity:.45;cursor:not-allowed}
+/* Colour range: a two-handle slider (two overlaid range inputs) with the min / max values at the ends */
+.ms-rs{display:flex;align-items:center;gap:.5rem;margin:.55rem 0 0}
+.ms-rs.is-off{opacity:.45;pointer-events:none}
+.ms-rs-val{flex:0 0 auto;min-width:3.6em;font-size:.72rem;font-weight:800;color:var(--navy);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ms-rs-val.hi{text-align:right}
+.ms-rs-track{position:relative;flex:1 1 auto;height:24px;--a:0%;--b:100%}
+.ms-rs-track::before{content:"";position:absolute;left:0;right:0;top:9px;height:6px;border-radius:999px;background:#D5DEE6}
+.ms-rs-fill{position:absolute;top:9px;height:6px;left:var(--a);right:calc(100% - var(--b));border-radius:999px;background:var(--teal)}
+.ms-rs-track input[type=range]{
+  position:absolute;inset:0;width:100%;height:24px;margin:0;padding:0;background:transparent;pointer-events:none;
+  -webkit-appearance:none;appearance:none;
+}
+.ms-rs-track input[type=range]:focus{outline:none}
+.ms-rs-track input[type=range]::-webkit-slider-runnable-track{background:transparent;height:24px}
+.ms-rs-track input[type=range]::-moz-range-track{background:transparent}
+.ms-rs-track input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;pointer-events:auto;cursor:grab;width:18px;height:18px;margin-top:3px;border-radius:50%;
+  background:#fff;border:3px solid var(--teal);box-shadow:0 1px 4px rgba(22,50,79,.3);
+}
+.ms-rs-track input[type=range]::-moz-range-thumb{
+  pointer-events:auto;cursor:grab;width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid var(--teal);box-shadow:0 1px 4px rgba(22,50,79,.3);
+}
+.ms-rs-track input[type=range]:active::-webkit-slider-thumb{cursor:grabbing;transform:scale(1.1)}
+.ms-rs-track input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(14,140,138,.3)}
+.ms-rs-track input[type=range]:focus-visible::-moz-range-thumb{box-shadow:0 0 0 4px rgba(14,140,138,.3)}
+.ms-bg{display:flex;align-items:center;gap:.45rem;margin:.45rem 0 0}
+.ms-bg label{font-size:.72rem;font-weight:700;color:var(--navy);margin:0}
+.ms-bg input{width:6.5em;font-size:.74rem;padding:.15rem .4rem}
+.ms-pal.is-off .ms-rs,.ms-pal.is-off .ms-bg{opacity:.45;pointer-events:none}
 .ms-pal-off{display:flex;gap:.4rem;margin:.45rem 0 0;font-size:.7rem;line-height:1.4;color:var(--text-muted)}
 .ms-pal-off[hidden]{display:none}
 .ms-pal-off i{color:var(--teal)}
@@ -2073,6 +2102,21 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                       <ul class="ms-cp-list" id="msCpList" role="listbox" aria-labelledby="msPalLbl"></ul>
                       <p class="ms-cp-none" id="msCpNone" hidden>No palette matches.</p>
                     </div>
+                  </div>
+                  <!-- Colour range: two handles (min, max) over the layer's values; the values sit at the ends -->
+                  <div class="ms-rs" id="msRs">
+                    <span class="ms-rs-val lo" id="msRsLo">–</span>
+                    <div class="ms-rs-track" id="msRsTrack">
+                      <div class="ms-rs-fill" id="msRsFill"></div>
+                      <input type="range" id="msRsMin" min="0" max="1000" step="1" value="0" aria-label="Colour range minimum">
+                      <input type="range" id="msRsMax" min="0" max="1000" step="1" value="1000" aria-label="Colour range maximum">
+                    </div>
+                    <span class="ms-rs-val hi" id="msRsHi">–</span>
+                  </div>
+                  <div class="ms-bg">
+                    <label for="msBg">Background</label>
+                    <input type="number" class="form-control form-control-sm" id="msBg" step="any" value="0" placeholder="none"
+                           title="Cells equal to this value are not coloured (leave empty for none)">
                   </div>
                   <label class="ms-pal-rev"><input type="checkbox" id="msPalRev"> Reverse colours</label>
                   <p class="ms-pal-off" id="msPalOff" hidden><i class="bi bi-info-circle" aria-hidden="true"></i>MapEIre layers are published as ready-made images, so their colours can&rsquo;t be changed. Opacity still applies.</p>
@@ -3974,6 +4018,44 @@ const GRID_UI = (() => {
   const palette = { PALETTES, DEFAULT: PAL_DEFAULT, get: () => ({ ...PAL }), set: setPalette, seqColour, divColour,
                     stops, divStops, divWords };
   const STOPS = stops();                        // (kept for old callers; legends use stops())
+
+  // ---- Colour range slider + background value (step 3 "Map style"; same rules in map_export.py) ----
+  // Each map layer registers a provider; the highest-priority one with a layer on the map is the
+  // one the slider shows: { key, kind: "log" | "div", min, max, lo, hi } (lo / hi = its own scale).
+  // The user's range applies to that layer only (a new layer starts at its own scale).
+  // Cells equal to the background value (default 0; empty = none) are not coloured.
+  const providers = [];
+  let userRange = null;                          // { key, lo, hi }
+  const BG_KEY = "inpact.mapBackground";
+  let bg = 0;
+  try {
+    const s = localStorage.getItem(BG_KEY);
+    if (s === "none") bg = null; else if (s !== null && Number.isFinite(+s)) bg = +s;
+  } catch (e) { /* storage blocked: 0 */ }
+  const range = {
+    register(p){ providers.push(p); providers.sort((a, b) => b.priority - a.priority); },
+    current(){ for (const p of providers) { const i = p.info(); if (i) return i; } return null; },
+    // The range in use for a layer: the user's if it was set on this layer, else the layer's own scale
+    eff(info){ return userRange && info && userRange.key === info.key ? { lo: userRange.lo, hi: userRange.hi } : { lo: info.lo, hi: info.hi }; },
+    isUser(info){ return !!(userRange && info && userRange.key === info.key); },
+    set(key, lo, hi){
+      userRange = { key, lo, hi };
+      document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } }));
+    },
+    clear(){ userRange = null; document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } })); },
+    get bg(){ return bg; },
+    setBg(v){
+      bg = v;
+      try { localStorage.setItem(BG_KEY, v === null ? "none" : String(v)); } catch (e) { /* not kept */ }
+      document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } }));
+    },
+    isBg: v => bg !== null && Number.isFinite(v) && Math.abs(v - bg) <= 1e-12 * Math.max(1, Math.abs(bg)),
+    // Position of v in [-1, 1] on a difference range: zero stays the middle colour when lo < 0 < hi
+    divT(v, lo, hi){
+      if (lo < 0 && hi > 0) return v < 0 ? -Math.min(v / lo, 1) : Math.min(v / hi, 1);
+      return 2 * (Math.min(Math.max(v, lo), hi) - lo) / ((hi - lo) || 1) - 1;
+    },
+  };
   function fill(select, items, placeholder){
     select.innerHTML = "";
     if (placeholder){
@@ -3982,7 +4064,7 @@ const GRID_UI = (() => {
     }
     items.forEach(([value, label]) => select.appendChild(new Option(label, value)));
   }
-  return { esc, fmtVal, rainbow, diverging, STOPS, fill, palette };
+  return { esc, fmtVal, rainbow, diverging, STOPS, fill, palette, range };
 })();
 
 /* ------------- Dataset switch: MapEIre / EDGAR / Inverse Model ------------- */
@@ -4115,12 +4197,25 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
     return rainbow(t);
   }
 
+  // The colour range slider of step 3 shows this layer while it is on the map (log scale)
+  function rangeInfo(){
+    if (!current || !current.layer.scale) return null;
+    const { sel, layer } = current;
+    if (!layer._ext) {
+      const pos = layer.values.filter(v => v > 0);
+      layer._ext = pos.length ? [Math.min(...pos), Math.max(...pos)] : [layer.scale.lo, layer.scale.hi];
+    }
+    return { key: "edgar|" + JSON.stringify(sel), kind: "log", min: layer._ext[0], max: layer._ext[1],
+             lo: layer.scale.lo, hi: layer.scale.hi };
+  }
+  GRID_UI.range.register({ priority: 1, info: rangeInfo });
+  const scaleNow = () => GRID_UI.range.eff(rangeInfo());
   function restyle(){
-    const { layer } = current;
+    const { layer } = current, sc = scaleNow(), R = GRID_UI.range;
     rects.forEach((r, i) => {
       const v = layer.values[i];
-      r.setStyle(v > 0
-        ? { fillColor: colourOf(v, layer.scale), fillOpacity: opacity }
+      r.setStyle(R.isBg(v) ? { fillOpacity: 0 }                // background value: not coloured
+        : v > 0 ? { fillColor: colourOf(v, sc), fillOpacity: opacity }
         : { fillColor: "#ffffff", fillOpacity: opacity * 0.3 });
     });
   }
@@ -4152,7 +4247,7 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
 
   function buildColorbar(layer){
     const src = META.source;
-    const s = layer.scale;
+    const s = scaleNow(), own = !GRID_UI.range.isUser(rangeInfo()), R = GRID_UI.range;
     const ctrl = L.control({ position: "bottomleft" });
     ctrl.onAdd = () => {
       const div = L.DomUtil.create("div", "raster-colorbar");
@@ -4162,13 +4257,14 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
         <div class="cb-row">
           <div class="cb-gradient" style="background:linear-gradient(to top, ${GRID_UI.palette.stops().join(",")})"></div>
           <div class="cb-ticks">
-            <span>${fmtVal(s.hi)}</span>
+            <span>${own ? "" : "≥ "}${fmtVal(s.hi)}</span>
             <span>${fmtVal(Math.sqrt(s.lo * s.hi))}</span>
             <span>≤ ${fmtVal(s.lo)}</span>
           </div>
         </div>
-        <div class="cb-zero"><i></i>0 (no emission assigned)</div>
-        <div class="cb-note">Log scale, fixed over ${META.years[0]}–${META.years.at(-1)} · mass of gas, not CO₂-eq</div>
+        ${R.isBg(0) ? "" : '<div class="cb-zero"><i></i>0 (no emission assigned)</div>'}
+        <div class="cb-note">Log scale${own ? `, fixed over ${META.years[0]}–${META.years.at(-1)}` : ", range set on the slider"} · mass of gas, not CO₂-eq${
+          R.bg !== null ? `<br>Background ${esc(fmtVal(R.bg))}: not coloured` : ""}</div>
         <div class="cb-source">Source: <a href="${esc(src.url)}" target="_blank" rel="noopener">${esc(src.dataset)}</a>,
           ${esc(src.credit)} · ${esc(src.resolution)} · Boundary: ${esc(src.boundary)}</div>`;
       L.DomEvent.disableClickPropagation(div);
@@ -4389,19 +4485,43 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
         · ${esc(META.cell_area_km2[i].toFixed(0))} km² · ${lat.toFixed(2)}°N, ${Math.abs(lng).toFixed(2)}°W</div>`;
   }
 
-  function colourOf(v, est, scale){
+  // `rg` = the colour range in use: { lo, hi } (flux, log scale) or the difference range around zero
+  function colourOf(v, est, rg){
     if (!Number.isFinite(v)) return null;
-    if (est === "difference") return diverging(v / scale.difference.limit);
-    const lo = Math.log10(scale.flux.lo), hi = Math.log10(scale.flux.hi);
-    const t = (Math.log10(Math.min(Math.max(v, scale.flux.lo), scale.flux.hi)) - lo) / (hi - lo);
+    if (est === "difference") return diverging(GRID_UI.range.divT(v, rg.lo, rg.hi));
+    const lo = Math.log10(rg.lo), hi = Math.log10(rg.hi);
+    const t = hi > lo ? (Math.log10(Math.min(Math.max(v, rg.lo), rg.hi)) - lo) / (hi - lo) : 0.5;
     return rainbow(t);
   }
 
+  // The colour range slider of step 3 shows this layer while it is on the map
+  function rangeInfo(){
+    if (!current) return null;
+    const { sel, layer } = current, s = layer.scale, key = "inverse|" + JSON.stringify(sel);
+    if (layer._extKey !== sel.estimate) {
+      const vals = layer.country_fraction.map((_, i) => valueOf(layer, sel.estimate, i)).filter(Number.isFinite);
+      if (sel.estimate === "difference") {
+        const M = Math.max(...vals.map(Math.abs), s.difference.limit);
+        layer._ext = [-M, M];
+      } else {
+        const pos = vals.filter(v => v > 0);
+        layer._ext = pos.length ? [Math.min(...pos), Math.max(...pos)] : [s.flux.lo, s.flux.hi];
+      }
+      layer._extKey = sel.estimate;
+    }
+    return sel.estimate === "difference"
+      ? { key, kind: "div", min: layer._ext[0], max: layer._ext[1], lo: -s.difference.limit, hi: s.difference.limit }
+      : { key, kind: "log", min: layer._ext[0], max: layer._ext[1], lo: s.flux.lo, hi: s.flux.hi };
+  }
+  GRID_UI.range.register({ priority: 1, info: rangeInfo });
+  const rangeNow = () => GRID_UI.range.eff(rangeInfo());
+
   // Cells outside the modellers' Ireland attribution area are drawn faded.
   function restyle(){
-    const { sel, layer } = current;
+    const { sel, layer } = current, rg = rangeNow();
     rects.forEach((r, i) => {
-      const colour = colourOf(valueOf(layer, sel.estimate, i), sel.estimate, layer.scale);
+      const v = valueOf(layer, sel.estimate, i);
+      const colour = GRID_UI.range.isBg(v) ? null : colourOf(v, sel.estimate, rg);   // background: not coloured
       r.setStyle(colour
         ? { fillColor: colour, fillOpacity: opacity * (layer.country_fraction[i] > 0 ? 1 : 0.45) }
         : { fillOpacity: 0 });
@@ -4434,14 +4554,15 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
   }
 
   function buildColorbar(sel, layer){
-    const src = META.source, s = layer.scale;
+    const src = META.source, rg = rangeNow(), R = GRID_UI.range, own = !R.isUser(rangeInfo());
     const isDiff = sel.estimate === "difference";
+    const sg = v => (v > 0 ? "+" : v < 0 ? "−" : "") + fmtVal(Math.abs(v));
     const ctrl = L.control({ position: "bottomleft" });
     ctrl.onAdd = () => {
       const div = L.DomUtil.create("div", "raster-colorbar");
       const ticks = isDiff
-        ? [`≥ +${fmtVal(s.difference.limit)}`, "0", `≤ −${fmtVal(s.difference.limit)}`]
-        : [`≥ ${fmtVal(s.flux.hi)}`, fmtVal(Math.sqrt(s.flux.lo * s.flux.hi)), `≤ ${fmtVal(s.flux.lo)}`];
+        ? [`≥ ${sg(rg.hi)}`, rg.lo < 0 && rg.hi > 0 ? "0" : sg((rg.lo + rg.hi) / 2), `≤ ${sg(rg.lo)}`]
+        : [`≥ ${fmtVal(rg.hi)}`, fmtVal(Math.sqrt(rg.lo * rg.hi)), `≤ ${fmtVal(rg.lo)}`];
       const ramp = isDiff ? GRID_UI.palette.divStops() : GRID_UI.palette.stops();
       div.innerHTML = `
         <div class="cb-title">${isDiff ? "Posterior − prior flux" : "Flux density"}</div>
@@ -4451,8 +4572,8 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
           <div class="cb-ticks">${ticks.map(t => `<span>${t}</span>`).join("")}</div>
         </div>
         <div class="cb-zero"><i style="opacity:.45;background:${isDiff ? ramp[3] : ramp[5]}"></i>Outside the Ireland attribution area</div>
-        <div class="cb-note">${isDiff ? "Linear, symmetric" : "Log scale"}, fixed for all models and years ·
-          ${esc(src.aggregation.toLowerCase())}</div>
+        <div class="cb-note">${isDiff ? (own ? "Linear, symmetric" : "Linear") : "Log scale"}${own ? ", fixed for all models and years" : ", range set on the slider"} ·
+          ${esc(src.aggregation.toLowerCase())}${R.bg !== null ? `<br>Background ${esc(fmtVal(R.bg))}: not coloured` : ""}</div>
         <div class="cb-source">Source: <a href="${esc(src.url)}" target="_blank" rel="noopener">${esc(src.dataset)}</a>,
           ${esc(src.credit)} · ${esc(src.resolution)}</div>`;
       L.DomEvent.disableClickPropagation(div);
@@ -5137,6 +5258,10 @@ if (MAP_STANDALONE) (function mapWindow(){
     // The JPEG uses the colours chosen in step 3 "Map style"
     const pal = GRID_UI.palette.get();
     q.set("palette", pal.seq); q.set("div_palette", pal.div); q.set("reverse", pal.reverse ? "1" : "0");
+    // ... and the colour range set on the slider (only when moved) and the background value
+    const R = GRID_UI.range, info = R.current();
+    if (info && R.isUser(info)) { const e = R.eff(info); q.set("rlo", String(e.lo)); q.set("rhi", String(e.hi)); }
+    q.set("bg", R.bg === null ? "" : String(R.bg));
     return q;
   }
   async function fetchFile(fmt, q){
@@ -5343,7 +5468,82 @@ if (MAP_STANDALONE) (function mapWindow(){
       syncSteps();
     }
     revEl.addEventListener("change", () => P.set({ reverse: revEl.checked }));
+
+    // ---- Colour range slider (two handles) and background value ----
+    // The slider spans the shown layer's values (log10 positions on log scales) and starts at the
+    // layer's own colour range; dragging a handle recolours the map straight away.
+    const RG = GRID_UI.range, N = 1000;
+    const rsBox = document.getElementById("msRs"), rsTrack = document.getElementById("msRsTrack");
+    const rsMin = document.getElementById("msRsMin"), rsMax = document.getElementById("msRsMax");
+    const rsLo = document.getElementById("msRsLo"), rsHi = document.getElementById("msRsHi");
+    const bgEl = document.getElementById("msBg");
+    let rsInfo = null, rsShown = "", dragging = false, rsRaf = 0;
+    const fmtR = v => rsInfo?.kind !== "div" ? GRID_UI.fmtVal(v)
+      : (v > 0 ? "+" : v < 0 ? "−" : "") + GRID_UI.fmtVal(Math.abs(v));      // signed, as in the legend
+    // [a, b] = the slider's ends, in the position space (log10 on log scales)
+    function ends(info){
+      if (info.kind === "log") {
+        const lo = Math.min(info.min, info.lo), hi = Math.max(info.max, info.hi);
+        return [Math.log10(lo), Math.log10(hi)];
+      }
+      return [Math.min(info.min, info.lo), Math.max(info.max, info.hi)];
+    }
+    const toVal = (info, p) => { const [a, b] = ends(info), x = a + (b - a) * p / N; return info.kind === "log" ? 10 ** x : x; };
+    const toPos = (info, v) => {
+      const [a, b] = ends(info), x = info.kind === "log" ? Math.log10(v) : v;
+      return Math.round(Math.min(Math.max((x - a) / ((b - a) || 1), 0), 1) * N);
+    };
+    function paintRs(){
+      rsTrack.style.setProperty("--a", (+rsMin.value / N * 100) + "%");
+      rsTrack.style.setProperty("--b", (+rsMax.value / N * 100) + "%");
+      rsMin.style.zIndex = +rsMin.value > N - 50 ? 3 : 2;     // keep the min handle reachable at the right end
+    }
+    function syncRange(){
+      rsInfo = RG.current();
+      const off = !rsInfo || datasetSel.value === "mapeire";
+      rsBox.classList.toggle("is-off", off);
+      rsMin.disabled = rsMax.disabled = off;
+      if (off) { rsLo.textContent = rsHi.textContent = "–"; rsMin.value = 0; rsMax.value = N; paintRs(); rsShown = ""; return; }
+      if (dragging) return;
+      const e = RG.eff(rsInfo), key = rsInfo.key + "|" + ends(rsInfo).join(",");
+      rsShown = key;
+      rsMin.value = toPos(rsInfo, e.lo); rsMax.value = toPos(rsInfo, e.hi);
+      rsLo.textContent = fmtR(e.lo); rsHi.textContent = fmtR(e.hi);
+      paintRs();
+    }
+    function onSlide(which){
+      if (!rsInfo) return;
+      let a = +rsMin.value, b = +rsMax.value;
+      if (a > b - 1) { if (which === "min") a = rsMin.value = b - 1; else b = rsMax.value = a + 1; }
+      paintRs();
+      // the layer's own range is kept exactly while a handle stays where it started
+      const e = RG.eff(rsInfo);
+      const lo = a === toPos(rsInfo, e.lo) ? e.lo : toVal(rsInfo, a);
+      const hi = b === toPos(rsInfo, e.hi) ? e.hi : toVal(rsInfo, b);
+      rsLo.textContent = fmtR(lo); rsHi.textContent = fmtR(hi);
+      const key = rsInfo.key;
+      clearTimeout(rsRaf);                     // redraw at most every ~30 ms while dragging
+      rsRaf = setTimeout(() => RG.set(key, lo, hi), 30);
+    }
+    [["min", rsMin], ["max", rsMax]].forEach(([w, el]) => {
+      el.addEventListener("input", () => { dragging = true; onSlide(w); });
+      el.addEventListener("change", () => { dragging = false; });
+      el.addEventListener("pointerup", () => { dragging = false; });
+      el.addEventListener("blur", () => { dragging = false; });
+    });
+    const showBg = () => { if (document.activeElement !== bgEl) bgEl.value = RG.bg === null ? "" : String(RG.bg); };
+    bgEl.addEventListener("change", () => {
+      const s = bgEl.value.trim(), v = parseFloat(s);
+      if (s === "") RG.setBg(null); else if (Number.isFinite(v)) RG.setBg(v); else showBg();
+    });
+    showBg();
+    // Follow the layer on the map: legends are re-added whenever a layer is drawn
+    new MutationObserver(() => syncRange()).observe(mapEl.querySelector(".leaflet-control-container"), { childList: true, subtree: true });
+    document.addEventListener("mappalette:change", () => { syncRange(); showBg(); });
+    syncRange();
+
     resetBtn.addEventListener("click", () => {
+      RG.clear(); RG.setBg(0);
       P.set({ ...P.DEFAULT });
       if (+opacityEl.value !== DEFAULT_OPACITY) { opacityEl.value = DEFAULT_OPACITY; opacityEl.dispatchEvent(new Event("input")); }
     });
@@ -5653,10 +5853,20 @@ if (MAP_STANDALONE) (function mapWindow(){
         ${c.sig != null ? `<div class="k">${c.sig ? "1σ ranges do not overlap" : "Within the 1σ uncertainty ranges"}</div>` : ""}
         <div class="k">Cell centre ${where(c)}</div>`;
     }
+    // While B − A is on the map the colour range slider of step 3 shows it (before the A layer)
+    function rangeInfo(){
+      if (!st.active || !st.result || !st.layer) return null;
+      const R = st.result;
+      if (!R._ext) { const M = Math.max(R.lim, ...R.used.map(c => Math.abs(c.v))); R._ext = [-M, M]; }
+      return { key: `cmp|${R.mode}|${R.labelA}|${R.labelB}`, kind: "div", min: R._ext[0], max: R._ext[1], lo: -R.lim, hi: R.lim };
+    }
+    GRID_UI.range.register({ priority: 2, info: rangeInfo });
+    const rangeNow = () => GRID_UI.range.eff(rangeInfo());
     function restyle(){
       if (!st.layer) return;
-      const op = +opacityEl.value / 100, R = st.result;
-      R.used.forEach(c => st.rects[c.i]?.setStyle({ fillColor: diverging(c.v / R.lim), fillOpacity: op }));
+      const op = +opacityEl.value / 100, R = st.result, rg = rangeNow(), RG = GRID_UI.range;
+      R.used.forEach(c => st.rects[c.i]?.setStyle(RG.isBg(c.v) ? { fillOpacity: 0 }      // background: not coloured
+        : { fillColor: diverging(RG.divT(c.v, rg.lo, rg.hi)), fillOpacity: op }));
     }
     function removeMapLayer(){
       if (st.layer) { map.removeLayer(st.layer); st.layer = null; st.rects = {}; }
@@ -5692,11 +5902,15 @@ if (MAP_STANDALONE) (function mapWindow(){
       st.bar.onAdd = () => {
         const div = L.DomUtil.create("div", "raster-colorbar cmp-card");
         const stops = [-1, -0.5, 0, 0.5, 1].map(diverging).join(",");
+        const rg = rangeNow(), RG = GRID_UI.range, own = !RG.isUser(rangeInfo());
+        const sg = v => (v > 0 ? "+" : v < 0 ? "−" : "") + fmtVal(Math.abs(v));
         div.innerHTML = `<div class="cb-title">B − A${pct ? " (%)" : ""}</div>
           <div class="cb-unit">${esc(R.valueUnit)}</div>
           <div class="cb-row"><div class="cb-gradient" style="background:linear-gradient(to top, ${stops})"></div>
-            <div class="cb-ticks"><span>≥ +${fmtVal(R.lim)}</span><span>0</span><span>≤ −${fmtVal(R.lim)}</span></div></div>
-          <div class="cb-note">${(w => `${w.hi[0].toUpperCase() + w.hi.slice(1)}: higher in B · ${w.lo}: lower in B`)(GRID_UI.palette.divWords())}<br>Scale ±98th percentile of |B − A|${pct ? " · cells where A is below 1% of its mean are left out" : ""}</div>`;
+            <div class="cb-ticks"><span>≥ ${sg(rg.hi)}</span><span>${rg.lo < 0 && rg.hi > 0 ? "0" : sg((rg.lo + rg.hi) / 2)}</span><span>≤ ${sg(rg.lo)}</span></div></div>
+          <div class="cb-note">${(w => `${w.hi[0].toUpperCase() + w.hi.slice(1)}: higher in B · ${w.lo}: lower in B`)(GRID_UI.palette.divWords())}<br>${
+            own ? "Scale ±98th percentile of |B − A|" : "Range set on the slider"}${pct ? " · cells where A is below 1% of its mean are left out" : ""}${
+            RG.bg !== null ? ` · background ${esc(fmtVal(RG.bg))} not coloured` : ""}</div>`;
         L.DomEvent.disableClickPropagation(div);
         return div;
       };
@@ -5805,7 +6019,7 @@ if (MAP_STANDALONE) (function mapWindow(){
 
     function histogram(){
       // Bins span the 2nd–98th percentile of the cells; the end bins also hold the tails
-      const R = st.result, vals = R.used.map(c => c.v), L0 = R.lim, nb = 24;
+      const R = st.result, vals = R.used.map(c => c.v), rgH = rangeNow(), nb = 24;   // bar colours as on the map
       const sorted = vals.slice().sort((x, y) => x - y);
       let lo = quantile(sorted, 0.02), hi = quantile(sorted, 0.98);
       if (!(hi > lo)) { lo = (sorted[0] ?? 0) - 1; hi = (sorted.at(-1) ?? 0) + 1; }
@@ -5815,7 +6029,7 @@ if (MAP_STANDALONE) (function mapWindow(){
       const marks = [[0, "#16324F", "0"], [R.stats.mean, "#E8A33D", "mean"], [R.stats.median, "#0E8C8A", "median"]];
       st.charts.push(new Chart(document.getElementById("cmpHist"), {
         type: "bar",
-        data: { labels: centres.map(c => fmtVal(c)), datasets: [{ data: counts, backgroundColor: centres.map(c => diverging(c / L0)), borderColor: "rgba(22,50,79,.25)", borderWidth: 1, barPercentage: 1, categoryPercentage: 1 }] },
+        data: { labels: centres.map(c => fmtVal(c)), datasets: [{ data: counts, backgroundColor: centres.map(c => diverging(GRID_UI.range.divT(c, rgH.lo, rgH.hi))), borderColor: "rgba(22,50,79,.25)", borderWidth: 1, barPercentage: 1, categoryPercentage: 1 }] },
         options: {
           animation: false, maintainAspectRatio: false,
           plugins: { legend: { display: false }, tooltip: { callbacks: {
