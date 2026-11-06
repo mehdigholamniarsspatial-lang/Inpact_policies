@@ -4,6 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ireland Greenhouse Gas Policy Impact Explorer</title>
+<script>
+/* Map page text size (the A / a buttons): apply the viewer's saved size before the page draws.
+   100% is the default and the smallest; nearly all text is in rem, so it follows the root size. */
+(function(){
+  var root = document.documentElement;
+  if (!root.classList.contains("map-standalone")) return;
+  try {
+    var p = parseInt(localStorage.getItem("inpact.mapTextSize"), 10);
+    if (p > 100 && p <= 150) root.style.fontSize = p + "%";
+  } catch (e) { /* storage blocked: default size */ }
+})();
+</script>
 
 <!-- Bootstrap 5 -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -1035,6 +1047,14 @@ html.map-standalone .ms-bar{
 .ms-tool:focus-visible{outline:2px solid #9FE8C2;outline-offset:2px}
 .ms-tool[aria-pressed="true"]{background:#9FE8C2;border-color:#9FE8C2;color:var(--navy)}
 .ms-tool.done{background:var(--emerald);border-color:var(--emerald)}
+/* Text size: a (smaller) | A (larger), one joined pair; sizes in px so the buttons don't grow */
+.ms-textsize{display:inline-flex}
+.ms-textsize .ms-tool{width:34px;padding:0;font-family:Georgia,"Times New Roman",serif;line-height:1}
+.ms-textsize .ms-tool:first-child{border-radius:8px 0 0 8px;border-right-width:0}
+.ms-textsize .ms-tool:last-child{border-radius:0 8px 8px 0}
+.ms-a.sm{font-size:14px;font-weight:700}
+.ms-a.lg{font-size:20px;font-weight:700}
+.ms-textsize .ms-tool:disabled{opacity:.4;cursor:not-allowed;background:rgba(255,255,255,.06)}
 
 /* Side panel: a compact accordion stepper (1 dataset, 2 layer, 3 display) */
 html.map-standalone .map-side{
@@ -1791,6 +1811,10 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
               <button type="button" class="ms-tool" id="msTs" aria-pressed="false" aria-controls="tsResults" title="Plot the time series of a pixel, a region or the whole of Ireland">
                 <i class="bi bi-graph-up"></i><span class="lbl">Time series</span>
               </button>
+              <div class="ms-textsize" role="group" aria-label="Text size">
+                <button type="button" class="ms-tool" id="msTextSmaller" aria-label="Smaller text" title="Smaller text"><span class="ms-a sm" aria-hidden="true">a</span></button>
+                <button type="button" class="ms-tool" id="msTextLarger" aria-label="Larger text" title="Larger text"><span class="ms-a lg" aria-hidden="true">A</span></button>
+              </div>
               <button type="button" class="ms-tool" id="msResetView" title="Zoom back to the whole of Ireland">
                 <i class="bi bi-crosshair"></i><span class="lbl">Reset view</span>
               </button>
@@ -4805,6 +4829,24 @@ if (MAP_STANDALONE) (function mapWindow(){
   const layerText = document.getElementById("msLayerText");
   const narrow = window.matchMedia("(max-width: 991px)");
   const resize = () => setTimeout(() => map.invalidateSize(), 60);
+
+  // ---- Text size: A enlarges all page text in 10% steps up to 150%; a goes back down to 100%
+  //      (today's size is the default and the smallest). Saved per viewer in this browser. ----
+  (function textSize(){
+    const MIN = 100, MAX = 150, STEP = 10, KEY = "inpact.mapTextSize";
+    const smaller = document.getElementById("msTextSmaller"), larger = document.getElementById("msTextLarger");
+    let size = parseInt(root.style.fontSize, 10) || MIN;     // set from storage in <head>
+    function apply(save){
+      root.style.fontSize = size === MIN ? "" : size + "%";
+      smaller.disabled = size <= MIN; larger.disabled = size >= MAX;
+      smaller.title = size <= MIN ? "Smallest text size (default)" : `Smaller text (now ${size}%)`;
+      larger.title = size >= MAX ? `Largest text size (${MAX}%)` : `Larger text (now ${size}%)`;
+      if (save) { try { localStorage.setItem(KEY, String(size)); } catch (e) { /* not saved */ } resize(); }
+    }
+    smaller.addEventListener("click", () => { size = Math.max(MIN, size - STEP); apply(true); });
+    larger.addEventListener("click", () => { size = Math.min(MAX, size + STEP); apply(true); });
+    apply(false);
+  })();
 
   // Start from the view / dataset handed over by the dashboard (or a shared link)
   const q = new URLSearchParams(location.search);
