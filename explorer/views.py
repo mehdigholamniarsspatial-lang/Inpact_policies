@@ -389,8 +389,7 @@ def inverse_layer(request):
 _LAYER_KEYS = ("year", "sector", "parameter", "gas", "month", "model", "transport", "estimate")
 # Plus a second layer (b_*) and the difference mode when comparing two layers
 _EXPORT_KEYS = ("dataset", "compare", "mode", *_LAYER_KEYS, *(f"b_{k}" for k in _LAYER_KEYS),
-                # the colours and colour range chosen in the map's "Map style" step
-                "palette", "div_palette", "reverse", "stretch", "k", "clip", "hide", "nodata")
+                "palette", "div_palette", "reverse")   # the colours chosen in the map's "Map style" step
 
 
 def map_export(request, fmt):

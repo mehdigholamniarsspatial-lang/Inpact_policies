@@ -1283,17 +1283,6 @@ html.map-standalone .raster-opacity input[type=range]:focus-visible::-moz-range-
 .ms-pal-rev{display:inline-flex;align-items:center;gap:.4rem;margin:.45rem 0 0;font-size:.74rem;font-weight:600;color:var(--navy);cursor:pointer}
 .ms-pal-rev input{width:15px;height:15px;accent-color:var(--teal);cursor:pointer}
 .ms-pal.is-off .ms-pal-rev{opacity:.45;cursor:not-allowed}
-.ms-rng{margin:.75rem 0 0;padding:.6rem 0 0;border-top:1px dashed var(--grey-border)}
-.ms-rng-seg{width:100%;display:grid;grid-template-columns:1fr 1fr}
-.ms-rng-row{display:flex;align-items:center;flex-wrap:wrap;gap:.45rem;margin-top:.45rem}
-.ms-rng-row[hidden]{display:none}
-.ms-rng-row > label:not(.ms-pal-rev),.ms-rng-sub{font-size:.72rem;font-weight:700;color:var(--navy);margin:0}
-.ms-rng-row select{width:auto;flex:0 0 auto;font-size:.74rem;padding-top:.15rem;padding-bottom:.15rem}
-.ms-rng-row .ms-pal-rev{margin:0}
-.ms-rng-num{width:6.5em;flex:0 0 auto;font-size:.74rem;padding:.15rem .4rem}
-.ms-rng-hint{margin:.3rem 0 0;font-size:.64rem;line-height:1.35;color:var(--text-muted)}
-.ms-rng-row .ms-rng-hint{margin:0}
-.ms-pal.is-off .ms-rng{opacity:.45;pointer-events:none}
 .ms-pal-off{display:flex;gap:.4rem;margin:.45rem 0 0;font-size:.7rem;line-height:1.4;color:var(--text-muted)}
 .ms-pal-off[hidden]{display:none}
 .ms-pal-off i{color:var(--teal)}
@@ -2086,37 +2075,6 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                     </div>
                   </div>
                   <label class="ms-pal-rev"><input type="checkbox" id="msPalRev"> Reverse colours</label>
-                  <!-- Colour range: fixed scale or mean ± k·SD; what happens outside it; a value to leave off the map -->
-                  <div class="ms-rng" id="msRng">
-                    <div class="ms-pal-head"><span class="ms-pal-lbl" id="msRngLbl">Colour range</span></div>
-                    <div class="cmp-seg ms-rng-seg" role="radiogroup" aria-labelledby="msRngLbl" id="msRngMode">
-                      <button type="button" role="radio" aria-checked="true" data-mode="fixed" title="The dataset's own scale, the same for every year">Fixed scale</button>
-                      <button type="button" role="radio" aria-checked="false" data-mode="sd" title="Stretch the colours to the mean ± a number of standard deviations of this layer's cells">Mean ± SD</button>
-                    </div>
-                    <div class="ms-rng-row" id="msRngSd" hidden>
-                      <label for="msRngK">Factor</label>
-                      <select class="form-select form-select-sm" id="msRngK" aria-describedby="msRngKHint">
-                        <option value="1">± 1 SD</option>
-                        <option value="1.5">± 1.5 SD</option>
-                        <option value="2" selected>± 2 SD</option>
-                        <option value="2.5">± 2.5 SD</option>
-                        <option value="3">± 3 SD</option>
-                      </select>
-                      <span class="ms-rng-hint" id="msRngKHint"></span>
-                    </div>
-                    <div class="ms-rng-row">
-                      <span class="ms-rng-sub" id="msRngClipLbl">Outside the range</span>
-                      <div class="cmp-seg" role="radiogroup" aria-labelledby="msRngClipLbl" id="msRngClip">
-                        <button type="button" role="radio" aria-checked="true" data-clip="clamp" title="Values beyond the range take the end colour">End colour</button>
-                        <button type="button" role="radio" aria-checked="false" data-clip="hide" title="Values beyond the range are not drawn">Hide</button>
-                      </div>
-                    </div>
-                    <div class="ms-rng-row">
-                      <label class="ms-pal-rev ms-rng-nd"><input type="checkbox" id="msRngHide"> Hide cells equal to</label>
-                      <input type="number" class="form-control form-control-sm ms-rng-num" id="msRngVal" value="0" step="any" aria-label="Value to hide">
-                    </div>
-                    <p class="ms-rng-hint">Hidden cells show the basemap. 0 is the usual background (no emission) value.</p>
-                  </div>
                   <p class="ms-pal-off" id="msPalOff" hidden><i class="bi bi-info-circle" aria-hidden="true"></i>MapEIre layers are published as ready-made images, so their colours can&rsquo;t be changed. Opacity still applies.</p>
                 </div>
               </div></div>
@@ -4013,65 +3971,8 @@ const GRID_UI = (() => {
     try { localStorage.setItem(PAL_KEY, JSON.stringify(PAL)); } catch (e) { /* not kept */ }
     document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } }));
   }
-  // ---- Colour range ("stretch") of step 3, the same rules as explorer/map_export.py ----
-  // mode "fixed": the dataset's own scale (default). "sd": mean ± k·SD of the layer's cells
-  // (of log10 values on the log scales; |mean| + k·SD around zero for differences).
-  // clip "clamp": values beyond the range take the end colour; "hide": they are not drawn.
-  // hide + nodata: cells equal to that value (e.g. 0) are not drawn.
-  const ST_DEFAULT = { mode: "fixed", k: 2, clip: "clamp", hide: false, nodata: 0 };
-  const ST_K = [1, 1.5, 2, 2.5, 3];
-  const ST_KEY = "inpact.mapStretch";
-  const ST = { ...ST_DEFAULT };
-  try {
-    const s = JSON.parse(localStorage.getItem(ST_KEY)) || {};
-    if (s.mode === "sd") ST.mode = "sd";
-    if (ST_K.includes(s.k)) ST.k = s.k;
-    if (s.clip === "hide") ST.clip = "hide";
-    ST.hide = s.hide === true;
-    if (Number.isFinite(s.nodata)) ST.nodata = s.nodata;
-  } catch (e) { /* storage blocked: defaults */ }
-  const isNodata = v => ST.hide && Math.abs(v - ST.nodata) <= 1e-12 * Math.max(1, Math.abs(ST.nodata));
-  const meanSd = xs => {
-    const n = xs.length, m = xs.reduce((a, x) => a + x, 0) / n;
-    return [m, Math.sqrt(xs.reduce((a, x) => a + (x - m) * (x - m), 0) / n)];
-  };
-  // Range of a log-scaled layer: { lo, hi } (fixed ones passed in)
-  function logRange(values, lo, hi){
-    if (ST.mode !== "sd") return { lo, hi };
-    const ls = values.filter(v => Number.isFinite(v) && v > 0 && !isNodata(v)).map(Math.log10);
-    if (ls.length < 2) return { lo, hi };
-    const [m, s] = meanSd(ls);
-    return s > 0 ? { lo: 10 ** (m - ST.k * s), hi: 10 ** (m + ST.k * s) } : { lo, hi };
-  }
-  // Half-width of a difference layer's symmetric range around zero
-  function divLimit(values, lim){
-    if (ST.mode !== "sd") return lim;
-    const xs = values.filter(v => Number.isFinite(v) && !isNodata(v));
-    if (xs.length < 2) return lim;
-    const [m, s] = meanSd(xs), L = Math.abs(m) + ST.k * s;
-    return L > 0 ? L : lim;
-  }
-  // Is this cell left off the map? (no-data value, or outside the range when "hide" is chosen)
-  const hiddenLog = (v, r) => isNodata(v) || (ST.clip === "hide" && v > 0 && (v < r.lo || v > r.hi));
-  const hiddenDiv = (v, lim) => isNodata(v) || (ST.clip === "hide" && Math.abs(v) > lim);
-  // One line for the legend notes
-  function stretchNote(){
-    const p = [];
-    if (ST.mode === "sd") p.push(`Colour range: mean ± ${ST.k} SD`);
-    if (ST.clip === "hide") p.push("values outside the range hidden");
-    if (ST.hide) p.push(`cells = ${fmtVal(ST.nodata)} hidden`);
-    return p.join(" · ");
-  }
-  function setStretch(patch){
-    Object.assign(ST, patch);
-    try { localStorage.setItem(ST_KEY, JSON.stringify(ST)); } catch (e) { /* not kept */ }
-    document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } }));   // same redraw as a new palette
-  }
-  const stretch = { DEFAULT: ST_DEFAULT, K: ST_K, get: () => ({ ...ST }), set: setStretch,
-                    logRange, divLimit, hiddenLog, hiddenDiv, isNodata, note: stretchNote };
-
   const palette = { PALETTES, DEFAULT: PAL_DEFAULT, get: () => ({ ...PAL }), set: setPalette, seqColour, divColour,
-                    stops, divStops, divWords, stretch };
+                    stops, divStops, divWords };
   const STOPS = stops();                        // (kept for old callers; legends use stops())
   function fill(select, items, placeholder){
     select.innerHTML = "";
@@ -4214,14 +4115,12 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
     return rainbow(t);
   }
 
-  // The colour range in use: the fixed scale, or mean ± k·SD of this layer (step 3 "Map style")
-  const range = layer => GRID_UI.palette.stretch.logRange(layer.values, layer.scale.lo, layer.scale.hi);
   function restyle(){
-    const { layer } = current, ST = GRID_UI.palette.stretch, rg = range(layer);
+    const { layer } = current;
     rects.forEach((r, i) => {
       const v = layer.values[i];
-      r.setStyle(ST.hiddenLog(v, rg) ? { fillOpacity: 0 }
-        : v > 0 ? { fillColor: colourOf(v, rg), fillOpacity: opacity }
+      r.setStyle(v > 0
+        ? { fillColor: colourOf(v, layer.scale), fillOpacity: opacity }
         : { fillColor: "#ffffff", fillOpacity: opacity * 0.3 });
     });
   }
@@ -4253,8 +4152,7 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
 
   function buildColorbar(layer){
     const src = META.source;
-    const s = range(layer), stNote = GRID_UI.palette.stretch.note();
-    const fixedNote = GRID_UI.palette.stretch.get().mode === "sd" ? "Log scale" : `Log scale, fixed over ${META.years[0]}–${META.years.at(-1)}`;
+    const s = layer.scale;
     const ctrl = L.control({ position: "bottomleft" });
     ctrl.onAdd = () => {
       const div = L.DomUtil.create("div", "raster-colorbar");
@@ -4264,13 +4162,13 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
         <div class="cb-row">
           <div class="cb-gradient" style="background:linear-gradient(to top, ${GRID_UI.palette.stops().join(",")})"></div>
           <div class="cb-ticks">
-            <span>≥ ${fmtVal(s.hi)}</span>
+            <span>${fmtVal(s.hi)}</span>
             <span>${fmtVal(Math.sqrt(s.lo * s.hi))}</span>
             <span>≤ ${fmtVal(s.lo)}</span>
           </div>
         </div>
-        ${GRID_UI.palette.stretch.isNodata(0) ? "" : '<div class="cb-zero"><i></i>0 (no emission assigned)</div>'}
-        <div class="cb-note">${fixedNote} · mass of gas, not CO₂-eq${stNote ? `<br>${esc(stNote)}` : ""}</div>
+        <div class="cb-zero"><i></i>0 (no emission assigned)</div>
+        <div class="cb-note">Log scale, fixed over ${META.years[0]}–${META.years.at(-1)} · mass of gas, not CO₂-eq</div>
         <div class="cb-source">Source: <a href="${esc(src.url)}" target="_blank" rel="noopener">${esc(src.dataset)}</a>,
           ${esc(src.credit)} · ${esc(src.resolution)} · Boundary: ${esc(src.boundary)}</div>`;
       L.DomEvent.disableClickPropagation(div);
@@ -4499,22 +4397,11 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
     return rainbow(t);
   }
 
-  // The colour range in use (step 3 "Map style"): the fixed scale, or mean ± k·SD of this layer's cells
-  function effScale(sel, layer){
-    const ST = GRID_UI.palette.stretch, s = layer.scale;
-    const vals = layer.country_fraction.map((_, i) => valueOf(layer, sel.estimate, i));
-    return sel.estimate === "difference"
-      ? { ...s, difference: { ...s.difference, limit: ST.divLimit(vals, s.difference.limit) } }
-      : { ...s, flux: { ...s.flux, ...ST.logRange(vals, s.flux.lo, s.flux.hi) } };
-  }
-  const hiddenCell = (v, sel, sc) => sel.estimate === "difference"
-    ? GRID_UI.palette.stretch.hiddenDiv(v, sc.difference.limit) : GRID_UI.palette.stretch.hiddenLog(v, sc.flux);
   // Cells outside the modellers' Ireland attribution area are drawn faded.
   function restyle(){
-    const { sel, layer } = current, sc = effScale(sel, layer);
+    const { sel, layer } = current;
     rects.forEach((r, i) => {
-      const v = valueOf(layer, sel.estimate, i);
-      const colour = Number.isFinite(v) && hiddenCell(v, sel, sc) ? null : colourOf(v, sel.estimate, sc);
+      const colour = colourOf(valueOf(layer, sel.estimate, i), sel.estimate, layer.scale);
       r.setStyle(colour
         ? { fillColor: colour, fillOpacity: opacity * (layer.country_fraction[i] > 0 ? 1 : 0.45) }
         : { fillOpacity: 0 });
@@ -4547,8 +4434,8 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
   }
 
   function buildColorbar(sel, layer){
-    const src = META.source, s = effScale(sel, layer), stNote = GRID_UI.palette.stretch.note();
-    const isDiff = sel.estimate === "difference", fixed = GRID_UI.palette.stretch.get().mode !== "sd";
+    const src = META.source, s = layer.scale;
+    const isDiff = sel.estimate === "difference";
     const ctrl = L.control({ position: "bottomleft" });
     ctrl.onAdd = () => {
       const div = L.DomUtil.create("div", "raster-colorbar");
@@ -4564,8 +4451,8 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
           <div class="cb-ticks">${ticks.map(t => `<span>${t}</span>`).join("")}</div>
         </div>
         <div class="cb-zero"><i style="opacity:.45;background:${isDiff ? ramp[3] : ramp[5]}"></i>Outside the Ireland attribution area</div>
-        <div class="cb-note">${isDiff ? "Linear, symmetric" : "Log scale"}${fixed ? ", fixed for all models and years" : ""} ·
-          ${esc(src.aggregation.toLowerCase())}${stNote ? `<br>${esc(stNote)}` : ""}</div>
+        <div class="cb-note">${isDiff ? "Linear, symmetric" : "Log scale"}, fixed for all models and years ·
+          ${esc(src.aggregation.toLowerCase())}</div>
         <div class="cb-source">Source: <a href="${esc(src.url)}" target="_blank" rel="noopener">${esc(src.dataset)}</a>,
           ${esc(src.credit)} · ${esc(src.resolution)}</div>`;
       L.DomEvent.disableClickPropagation(div);
@@ -5248,10 +5135,8 @@ if (MAP_STANDALONE) (function mapWindow(){
       Object.entries(cmp.result.selB).forEach(([k, v]) => q.set(`b_${k}`, v));
     }
     // The JPEG uses the colours chosen in step 3 "Map style"
-    const pal = GRID_UI.palette.get(), rng = GRID_UI.palette.stretch.get();
+    const pal = GRID_UI.palette.get();
     q.set("palette", pal.seq); q.set("div_palette", pal.div); q.set("reverse", pal.reverse ? "1" : "0");
-    q.set("stretch", rng.mode); q.set("k", String(rng.k)); q.set("clip", rng.clip);
-    q.set("hide", rng.hide ? "1" : "0"); q.set("nodata", String(rng.nodata));
     return q;
   }
   async function fetchFile(fmt, q){
@@ -5377,7 +5262,7 @@ if (MAP_STANDALONE) (function mapWindow(){
     const resetBtn = document.createElement("button");
     resetBtn.type = "button"; resetBtn.className = "ms-style-reset";
     resetBtn.innerHTML = '<i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>Reset to default';
-    resetBtn.title = "Rainbow (Blue – red for differences), not reversed, fixed colour range, nothing hidden, opacity 80%";
+    resetBtn.title = "Rainbow (Blue – red for differences), not reversed, opacity 80%";
     document.getElementById("msStep3Inner").appendChild(resetBtn);   // after the opacity slider
     const DEFAULT_OPACITY = 80;
 
@@ -5455,41 +5340,10 @@ if (MAP_STANDALONE) (function mapWindow(){
       forEl.textContent = off ? "" : fam === "div" ? "for differences: − · 0 · +" : "for values: low → high";
       revEl.checked = cur.reverse; revEl.disabled = off;
       box.classList.toggle("is-off", off); offEl.hidden = !off;
-      renderRange();
       syncSteps();
     }
     revEl.addEventListener("change", () => P.set({ reverse: revEl.checked }));
-
-    // ---- Colour range: fixed / mean ± k·SD, outside the range, a value to hide ----
-    const S = P.stretch;
-    const modeSeg = document.getElementById("msRngMode"), clipSeg = document.getElementById("msRngClip");
-    const sdRow = document.getElementById("msRngSd"), kSel = document.getElementById("msRngK");
-    const kHint = document.getElementById("msRngKHint");
-    const hideEl = document.getElementById("msRngHide"), valEl = document.getElementById("msRngVal");
-    // Share of cells inside mean ± k·SD if they were normally distributed (log values on the log scales)
-    const K_SHARE = { 1: "68", 1.5: "87", 2: "95", 2.5: "99", 3: "99.7" };
-    const segSet = (seg, attr, v) => seg.querySelectorAll(`[data-${attr}]`).forEach(b => b.setAttribute("aria-checked", String(b.dataset[attr] === v)));
-    function renderRange(){
-      const s = S.get(), off = datasetSel.value === "mapeire";
-      segSet(modeSeg, "mode", s.mode); segSet(clipSeg, "clip", s.clip);
-      sdRow.hidden = s.mode !== "sd";
-      kSel.value = String(s.k);
-      kHint.textContent = `≈ ${K_SHARE[s.k]}% of cells inside`;
-      hideEl.checked = s.hide;
-      if (document.activeElement !== valEl) valEl.value = String(s.nodata);
-      valEl.disabled = !s.hide || off;
-      [...modeSeg.children, ...clipSeg.children, kSel, hideEl].forEach(el => { el.disabled = off; });
-    }
-    modeSeg.querySelectorAll("[data-mode]").forEach(b => b.addEventListener("click", () => S.set({ mode: b.dataset.mode })));
-    clipSeg.querySelectorAll("[data-clip]").forEach(b => b.addEventListener("click", () => S.set({ clip: b.dataset.clip })));
-    kSel.addEventListener("change", () => S.set({ k: +kSel.value }));
-    hideEl.addEventListener("change", () => S.set({ hide: hideEl.checked }));
-    valEl.addEventListener("change", () => {
-      const v = parseFloat(valEl.value);
-      if (Number.isFinite(v)) S.set({ nodata: v }); else valEl.value = String(S.get().nodata);
-    });
     resetBtn.addEventListener("click", () => {
-      S.set({ ...S.DEFAULT });
       P.set({ ...P.DEFAULT });
       if (+opacityEl.value !== DEFAULT_OPACITY) { opacityEl.value = DEFAULT_OPACITY; opacityEl.dispatchEvent(new Event("input")); }
     });
@@ -5501,10 +5355,8 @@ if (MAP_STANDALONE) (function mapWindow(){
     // Folded step 3 reads e.g. "Viridis (reversed) · 80%"
     const summary = () => {
       if (datasetSel.value === "mapeire") return `Opacity ${opacityEl.value}%`;
-      const fam = family(), cur = P.get(), s = S.get();
-      return [`${P.PALETTES[fam][cur[fam]].name}${cur.reverse ? " (reversed)" : ""}`,
-              s.mode === "sd" ? `±${s.k} SD` : "", s.hide ? `${GRID_UI.fmtVal(s.nodata)} hidden` : "",
-              `${opacityEl.value}%`].filter(Boolean).join(" · ");
+      const fam = family(), cur = P.get();
+      return `${P.PALETTES[fam][cur[fam]].name}${cur.reverse ? " (reversed)" : ""} · ${opacityEl.value}%`;
     };
     return { render, summary };
   })();
@@ -5801,13 +5653,10 @@ if (MAP_STANDALONE) (function mapWindow(){
         ${c.sig != null ? `<div class="k">${c.sig ? "1σ ranges do not overlap" : "Within the 1σ uncertainty ranges"}</div>` : ""}
         <div class="k">Cell centre ${where(c)}</div>`;
     }
-    // ±limit of the colour range in use: ±98th percentile of |B − A|, or |mean| + k·SD (step 3 "Map style")
-    const effLim = () => GRID_UI.palette.stretch.divLimit(st.result.used.map(c => c.v), st.result.lim);
     function restyle(){
       if (!st.layer) return;
-      const op = +opacityEl.value / 100, R = st.result, lim = effLim(), ST = GRID_UI.palette.stretch;
-      R.used.forEach(c => st.rects[c.i]?.setStyle(ST.hiddenDiv(c.v, lim) ? { fillOpacity: 0 }
-        : { fillColor: diverging(c.v / lim), fillOpacity: op }));
+      const op = +opacityEl.value / 100, R = st.result;
+      R.used.forEach(c => st.rects[c.i]?.setStyle({ fillColor: diverging(c.v / R.lim), fillOpacity: op }));
     }
     function removeMapLayer(){
       if (st.layer) { map.removeLayer(st.layer); st.layer = null; st.rects = {}; }
@@ -5843,13 +5692,11 @@ if (MAP_STANDALONE) (function mapWindow(){
       st.bar.onAdd = () => {
         const div = L.DomUtil.create("div", "raster-colorbar cmp-card");
         const stops = [-1, -0.5, 0, 0.5, 1].map(diverging).join(",");
-        const lim = effLim(), ST = GRID_UI.palette.stretch, sd = ST.get().mode === "sd", stNote = ST.note();
         div.innerHTML = `<div class="cb-title">B − A${pct ? " (%)" : ""}</div>
           <div class="cb-unit">${esc(R.valueUnit)}</div>
           <div class="cb-row"><div class="cb-gradient" style="background:linear-gradient(to top, ${stops})"></div>
-            <div class="cb-ticks"><span>≥ +${fmtVal(lim)}</span><span>0</span><span>≤ −${fmtVal(lim)}</span></div></div>
-          <div class="cb-note">${(w => `${w.hi[0].toUpperCase() + w.hi.slice(1)}: higher in B · ${w.lo}: lower in B`)(GRID_UI.palette.divWords())}<br>${
-            sd ? esc(stNote) : `Scale ±98th percentile of |B − A|${stNote ? ` · ${esc(stNote)}` : ""}`}${pct ? " · cells where A is below 1% of its mean are left out" : ""}</div>`;
+            <div class="cb-ticks"><span>≥ +${fmtVal(R.lim)}</span><span>0</span><span>≤ −${fmtVal(R.lim)}</span></div></div>
+          <div class="cb-note">${(w => `${w.hi[0].toUpperCase() + w.hi.slice(1)}: higher in B · ${w.lo}: lower in B`)(GRID_UI.palette.divWords())}<br>Scale ±98th percentile of |B − A|${pct ? " · cells where A is below 1% of its mean are left out" : ""}</div>`;
         L.DomEvent.disableClickPropagation(div);
         return div;
       };
@@ -5958,7 +5805,7 @@ if (MAP_STANDALONE) (function mapWindow(){
 
     function histogram(){
       // Bins span the 2nd–98th percentile of the cells; the end bins also hold the tails
-      const R = st.result, vals = R.used.map(c => c.v), L0 = effLim(), nb = 24;   // bar colours as on the map
+      const R = st.result, vals = R.used.map(c => c.v), L0 = R.lim, nb = 24;
       const sorted = vals.slice().sort((x, y) => x - y);
       let lo = quantile(sorted, 0.02), hi = quantile(sorted, 0.98);
       if (!(hi > lo)) { lo = (sorted[0] ?? 0) - 1; hi = (sorted.at(-1) ?? 0) + 1; }

@@ -71,38 +71,18 @@ def _ramp(rgb: Sequence[RGB], t: float) -> RGB:
     return tuple(round(rgb[i][j] + (rgb[i + 1][j] - rgb[i][j]) * k) for j in range(3))  # type: ignore[return-value]
 
 
-STRETCH_K = (1.0, 1.5, 2.0, 2.5, 3.0)
-
-
 @dataclass(frozen=True)
 class Palette:
-    """The map's step 3 "Map style": colours and colour range (``GRID_UI.palette`` on the page)."""
     seq: str = DEFAULT_SEQ
     div: str = DEFAULT_DIV
     reverse: bool = False
-    stretch: str = "fixed"          # "fixed" | "sd" (mean ± k·SD of the layer's cells)
-    k: float = 2.0
-    clip: str = "clamp"             # "clamp": end colour beyond the range | "hide": not drawn
-    hide: bool = False              # leave cells equal to ``nodata`` off the map
-    nodata: float = 0.0
 
     @classmethod
     def from_query(cls, q: dict) -> "Palette":
-        """Unknown values fall back to the defaults (the query never picks anything else)."""
+        """Unknown names fall back to the defaults (the query never picks anything else)."""
         seq, div = q.get("palette", ""), q.get("div_palette", "")
-        try:
-            k = float(q.get("k", ""))
-        except ValueError:
-            k = 2.0
-        try:
-            nodata = float(q.get("nodata", ""))
-        except ValueError:
-            nodata = 0.0
         return cls(seq if seq in SEQ_PALETTES else DEFAULT_SEQ, div if div in DIV_PALETTES else DEFAULT_DIV,
-                   q.get("reverse") == "1",
-                   "sd" if q.get("stretch") == "sd" else "fixed", k if k in STRETCH_K else 2.0,
-                   "hide" if q.get("clip") == "hide" else "clamp", q.get("hide") == "1",
-                   nodata if math.isfinite(nodata) else 0.0)
+                   q.get("reverse") == "1")
 
 
 # The palette of the download being built (set per request by ``use_palette``)
@@ -137,59 +117,6 @@ def diverging(t: float) -> RGB:
     if p.reverse:
         t = -t
     return _ramp(DIV_PALETTES[p.div], (min(max(t, -1.0), 1.0) + 1) / 2)
-
-
-# Colour range: the same rules as ``GRID_UI.palette.stretch`` on the page
-def is_nodata(v: float) -> bool:
-    p = _PALETTE.get()
-    return p.hide and abs(v - p.nodata) <= 1e-12 * max(1.0, abs(p.nodata))
-
-
-def log_range(values, lo: float, hi: float) -> Tuple[float, float]:
-    """(lo, hi) of a log-scaled layer: the fixed scale, or 10^(mean ± k·SD of log10 values)."""
-    p = _PALETTE.get()
-    if p.stretch != "sd":
-        return lo, hi
-    v = np.asarray(values, float)
-    v = v[np.isfinite(v) & (v > 0)]
-    v = np.array([x for x in v if not is_nodata(x)])
-    if v.size < 2:
-        return lo, hi
-    lv = np.log10(v)
-    m, s = float(lv.mean()), float(lv.std())
-    return (10 ** (m - p.k * s), 10 ** (m + p.k * s)) if s > 0 else (lo, hi)
-
-
-def div_limit(values, lim: float) -> float:
-    """± limit of a difference layer: the fixed one, or |mean| + k·SD of the cells."""
-    p = _PALETTE.get()
-    if p.stretch != "sd":
-        return lim
-    v = np.asarray(values, float)
-    v = np.array([x for x in v[np.isfinite(v)] if not is_nodata(x)])
-    if v.size < 2:
-        return lim
-    L = abs(float(v.mean())) + p.k * float(v.std())
-    return L if L > 0 else lim
-
-
-def hidden_log(v: float, lo: float, hi: float) -> bool:
-    return is_nodata(v) or (_PALETTE.get().clip == "hide" and v > 0 and (v < lo or v > hi))
-
-
-def hidden_div(v: float, lim: float) -> bool:
-    return is_nodata(v) or (_PALETTE.get().clip == "hide" and abs(v) > lim)
-
-
-def stretch_note() -> str:
-    p, parts = _PALETTE.get(), []
-    if p.stretch == "sd":
-        parts.append(f"Colour range: mean ± {p.k:g} SD")
-    if p.clip == "hide":
-        parts.append("values outside the range hidden")
-    if p.hide:
-        parts.append(f"cells = {fmt(p.nodata)} hidden")
-    return " · ".join(parts)
 
 
 def _fade(c: RGB, alpha: float) -> RGB:
@@ -283,7 +210,7 @@ def _edgar_layer(q: dict) -> Layer:
     gas, sector = meta["gases"][q["gas"]], meta["sectors"][q["sector"]]
     grid = meta["grid"]
     west, north, res, rows, cols = grid["west"], grid["north"], grid["res"], grid["rows"], grid["cols"]
-    lo, hi = log_range(data["values"], data["scale"]["lo"], data["scale"]["hi"])
+    lo, hi = data["scale"]["lo"], data["scale"]["hi"]
     annual = data["period"] == "annual"
     period = f"{q['year']} annual total" if annual else data["month_label"]
 
@@ -292,8 +219,6 @@ def _edgar_layer(q: dict) -> Layer:
     zero = (235, 238, 241)
     cells = []
     for idx, v in zip(grid["cells"], data["values"]):
-        if hidden_log(v, lo, hi):
-            continue                        # left off the map ("Map style" colour range)
         r, c = divmod(idx, cols)
         w, n = west + c * res, north - r * res
         if v > 0:
@@ -305,13 +230,10 @@ def _edgar_layer(q: dict) -> Layer:
 
     src = meta["source"]
     years = meta["years"]
-    st_note = stretch_note()
-    fixed = _PALETTE.get().stretch != "sd"
     legend = Legend(
         title=f"{gas['formula']} · {period}", unit=data["unit"], kind="log", lo=lo, hi=hi,
-        ticks=_log_ticks(lo, hi), swatches=[] if is_nodata(0.0) else [(zero, "0 (no emission assigned)")],
-        note=(f"Log scale, fixed over {years[0]}–{years[-1]}" if fixed else "Log scale")
-             + " · mass of gas, not CO₂-eq" + (f" · {st_note}" if st_note else ""),
+        ticks=_log_ticks(lo, hi), swatches=[(zero, "0 (no emission assigned)")],
+        note=f"Log scale, fixed over {years[0]}–{years[-1]} · mass of gas, not CO₂-eq",
     )
     return Layer(
         stem=_slug("EDGAR", q["gas"], q["sector"], q["year"], "annual" if annual else f"m{int(q['month']):02d}"),
@@ -349,26 +271,16 @@ def _inverse_layer(q: dict) -> Layer:
     post = np.array([np.nan if v is None else v for v in data["posterior"]], dtype=np.float64)
     values = post - prior if est == "difference" else (post if est == "posterior" else prior)
     frac = data["country_fraction"]
-    # The colour range in use ("Map style"): the fixed scale or mean ± k·SD of this layer's cells
-    s = {**data["scale"]}
-    if est == "difference":
-        s["difference"] = {**s["difference"], "limit": div_limit(values, s["difference"]["limit"])}
-    else:
-        flo, fhi = log_range(values, s["flux"]["lo"], s["flux"]["hi"])
-        s["flux"] = {**s["flux"], "lo": flo, "hi": fhi}
+    s = data["scale"]
 
     cells = []
     for i, v in enumerate(values):
         if not np.isfinite(v):
             continue
         if est == "difference":
-            if hidden_div(v, s["difference"]["limit"]):
-                continue
             colour = diverging(v / s["difference"]["limit"])
         else:
             flo, fhi = s["flux"]["lo"], s["flux"]["hi"]
-            if hidden_log(v, flo, fhi):
-                continue
             colour = rainbow((math.log10(min(max(v, flo), fhi)) - math.log10(flo)) / (math.log10(fhi) - math.log10(flo)))
         if not frac[i] > 0:
             colour = _fade(colour, 0.45)
@@ -377,8 +289,6 @@ def _inverse_layer(q: dict) -> Layer:
         cells.append((w, n - dlat, w + dlon, n, colour))
 
     arr = np.where(np.isfinite(values), values, NODATA).astype(np.float32).reshape(rows, cols)
-    fixed = _PALETTE.get().stretch != "sd"
-    st_note = (f" · {stretch_note()}" if stretch_note() else "")
     if est == "difference":
         lim = s["difference"]["limit"]
         legend = Legend(
@@ -387,14 +297,14 @@ def _inverse_layer(q: dict) -> Layer:
             ticks=[(0, f"≤ −{fmt(lim)}"), (0.25, f"−{fmt(lim / 2)}"), (0.5, "0"),
                    (0.75, f"+{fmt(lim / 2)}"), (1, f"≥ +{fmt(lim)}")],
             swatches=[(_fade(diverging(0.5), 0.45), "Outside the Ireland attribution area")],
-            note="Linear, symmetric" + (" · fixed for all models and years" if fixed else "") + st_note,
+            note="Linear, symmetric · fixed for all models and years",
         )
     else:
         legend = Legend(
             title=f"{gas['formula']} — {q['year']} — {_ESTIMATES[est]}", unit=data["unit"], kind="log",
             lo=s["flux"]["lo"], hi=s["flux"]["hi"], ticks=_log_ticks(s["flux"]["lo"], s["flux"]["hi"]),
             swatches=[(_fade(rainbow(0.6), 0.45), "Outside the Ireland attribution area")],
-            note="Log scale" + (" · fixed for all models and years" if fixed else "") + st_note,
+            note="Log scale · fixed for all models and years",
         )
     src = meta["source"]
     diff = data["total_posterior"] - data["total_prior"]
@@ -561,11 +471,10 @@ def _compare_layer(q: dict) -> Layer:
     vals = np.sort(v[finite])
     lim = _quantile(np.abs(vals), 0.98) if vals.size else 1.0
     lim = lim if lim > 0 else (float(np.abs(vals).max()) if vals.size and np.abs(vals).max() > 0 else 1.0)
-    lim = div_limit(vals, lim)              # "Map style": or |mean| + k·SD of B − A
 
     cells = []
     for (w, n, dx, dy), val in zip(geo, v):
-        if np.isfinite(val) and not hidden_div(val, lim):
+        if np.isfinite(val):
             cells.append((w, n - dy, w + dx, n, diverging(val / lim)))
 
     arr = np.full(tif_rows * tif_cols, NODATA, dtype=np.float32)
@@ -589,9 +498,7 @@ def _compare_layer(q: dict) -> Layer:
         title=f"{formula} · B − A" + (" (%)" if mode == "pct" else ""), unit=value_unit, kind="diverging",
         lo=-lim, hi=lim,
         ticks=[(0, f"≤ −{fmt(lim)}"), (0.25, f"−{fmt(lim / 2)}"), (0.5, "0"), (0.75, f"+{fmt(lim / 2)}"), (1, f"≥ +{fmt(lim)}")],
-        note=f"A: {label_a} · B: {label_b} · "
-             + (stretch_note() if _PALETTE.get().stretch == "sd"
-                else "scale ±98th percentile of |B − A|" + (f" · {stretch_note()}" if stretch_note() else "")),
+        note=f"A: {label_a} · B: {label_b} · scale ±98th percentile of |B − A|",
     )
     name = "EDGAR" if ds == "edgar" else "PARIS inverse model"
     return Layer(
