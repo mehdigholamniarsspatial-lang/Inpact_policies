@@ -1848,6 +1848,9 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                 <button type="button" class="ms-tool" id="msTextSmaller" aria-label="Smaller text" title="Smaller text"><span class="ms-a sm" aria-hidden="true">a</span></button>
                 <button type="button" class="ms-tool" id="msTextLarger" aria-label="Larger text" title="Larger text"><span class="ms-a lg" aria-hidden="true">A</span></button>
               </div>
+              <button type="button" class="ms-tool" id="msResetView" title="Zoom back to the whole of Ireland">
+                <i class="bi bi-crosshair"></i><span class="lbl">Reset View</span>
+              </button>
               <button type="button" class="ms-tool" id="msFullscreen" title="Full screen">
                 <i class="bi bi-arrows-fullscreen"></i><span class="lbl">Full screen</span>
               </button>
@@ -5113,6 +5116,10 @@ if (MAP_STANDALONE) (function mapWindow(){
   setSide(!narrow.matches);
   narrow.addEventListener("change", e => setSide(!e.matches));
   sideBtn.addEventListener("click", () => setSide(root.classList.contains("ms-side-hidden")));
+
+  // Reset View: fit the map to the whole of Ireland (whatever the panel widths)
+  document.getElementById("msResetView").addEventListener("click", () =>
+    map.flyToBounds([[51.4, -10.7], [55.45, -5.4]], { duration: .8, padding: [12, 12] }));
 
   // Full screen takes the whole map workspace (toolbar and panel included)
   fsBtn.addEventListener("click", () => {
