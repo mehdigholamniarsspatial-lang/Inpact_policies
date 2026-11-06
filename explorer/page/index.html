@@ -1237,8 +1237,12 @@ html.map-standalone .raster-status{flex-basis:auto;font-size:.68rem;line-height:
 html.map-standalone .raster-status:empty{display:none}
 
 /* Step 3: opacity slider with a teal track and a large handle */
-html.map-standalone .raster-opacity label{align-items:center;font-size:.64rem;color:var(--navy)}
+/* one line: "Opacity" · slider · "80%" (the label's text and percent become row items around the slider) */
+html.map-standalone .raster-opacity{display:flex;flex-direction:row;align-items:center;gap:.5rem;margin-top:.55rem}
+html.map-standalone .raster-opacity label{display:contents;font-size:.64rem;color:var(--navy)}
+html.map-standalone .raster-opacity input[type=range]{order:2;flex:1 1 auto;min-width:0}
 html.map-standalone .raster-opacity label span{
+  order:3;flex:0 0 auto;
   font-size:.74rem;font-weight:800;color:var(--teal);background:var(--teal-light);
   padding:.05rem .45rem;border-radius:999px;min-width:3.1em;text-align:center;
 }
@@ -1313,9 +1317,13 @@ html.map-standalone .raster-opacity input[type=range]:focus-visible::-moz-range-
 .ms-cp-none{margin:0;padding:.6rem .8rem;font-size:.74rem;color:var(--text-muted)}
 .ms-cp-none[hidden]{display:none}
 /* Colour range: a two-handle slider (two overlaid range inputs) with the min / max values at the ends */
-.ms-rs{display:flex;align-items:center;gap:.5rem;margin:.55rem 0 0}
+.ms-bgrow{display:flex;align-items:center;gap:.45rem;margin:.55rem 0 0}
+.ms-bgrow > label{flex:0 0 auto;margin:0;font-size:.64rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--navy)}
+.ms-bg-val{flex:0 0 4.6em;width:4.6em;font-size:.74rem;padding:.12rem .35rem}
+.ms-pal.is-off .ms-bgrow > label,.ms-pal.is-off .ms-bg-val{opacity:.45;pointer-events:none}
+.ms-rs{display:flex;align-items:center;gap:.4rem;flex:1 1 auto;min-width:0}
 .ms-rs.is-off{opacity:.45;pointer-events:none}
-.ms-rs-val{flex:0 0 auto;min-width:3.6em;font-size:.72rem;font-weight:800;color:var(--navy);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ms-rs-val{flex:0 0 auto;min-width:2.6em;font-size:.7rem;font-weight:800;color:var(--navy);font-variant-numeric:tabular-nums;white-space:nowrap}
 .ms-rs-val.hi{text-align:right}
 .ms-rs-track{position:relative;flex:1 1 auto;height:24px;--a:0%;--b:100%}
 .ms-rs-track::before{content:"";position:absolute;left:0;right:0;top:9px;height:6px;border-radius:999px;background:#D5DEE6}
@@ -2135,16 +2143,22 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                       <p class="ms-cp-none" id="msCpNone" hidden>No palette matches.</p>
                     </div>
                   </div>
-                  <!-- Value range filter: two handles (min, max) over the layer's values; cells outside are not
-                       drawn, the colours keep the layer's scale. The values sit at the ends. -->
-                  <div class="ms-rs" id="msRs">
-                    <span class="ms-rs-val lo" id="msRsLo">–</span>
-                    <div class="ms-rs-track" id="msRsTrack">
-                      <div class="ms-rs-fill" id="msRsFill"></div>
-                      <input type="range" id="msRsMin" min="0" max="1000" step="1" value="0" aria-label="Show values from (minimum)">
-                      <input type="range" id="msRsMax" min="0" max="1000" step="1" value="1000" aria-label="Show values up to (maximum)">
+                  <!-- One line: "Background", the background value box (cells equal to it are not coloured)
+                       and the value range filter (two handles, min and max; cells outside are not drawn,
+                       the colours keep the layer's scale; the values sit at the ends). -->
+                  <div class="ms-bgrow">
+                    <label for="msBg">Background</label>
+                    <input type="number" class="form-control form-control-sm ms-bg-val" id="msBg" step="any" value="0"
+                           title="Cells equal to this value are not coloured (empty: none)">
+                    <div class="ms-rs" id="msRs">
+                      <span class="ms-rs-val lo" id="msRsLo">–</span>
+                      <div class="ms-rs-track" id="msRsTrack">
+                        <div class="ms-rs-fill" id="msRsFill"></div>
+                        <input type="range" id="msRsMin" min="0" max="1000" step="1" value="0" aria-label="Show values from (minimum)">
+                        <input type="range" id="msRsMax" min="0" max="1000" step="1" value="1000" aria-label="Show values up to (maximum)">
+                      </div>
+                      <span class="ms-rs-val hi" id="msRsHi">–</span>
                     </div>
-                    <span class="ms-rs-val hi" id="msRsHi">–</span>
                   </div>
                   <p class="ms-pal-off" id="msPalOff" hidden><i class="bi bi-info-circle" aria-hidden="true"></i>MapEIre layers are published as ready-made images, so their colours can&rsquo;t be changed. Opacity still applies.</p>
                 </div>
@@ -4053,11 +4067,15 @@ const GRID_UI = (() => {
   // highest-priority one with a layer is the one the slider shows:
   // { key, kind: "log" | "div", min, max, lo, hi } with lo / hi = min / max = the layer's value extent.
   // The user's range applies to that layer only (a new layer starts with everything shown).
-  // Cells equal to the background value (0) are not coloured.
+  // Cells equal to the background value (default 0, typed in the Background box; empty = none) are not coloured.
   const providers = [];
   let userRange = null;                          // { key, lo, hi }
-  const bg = 0;                                  // background value: zero cells are left uncoloured
-  try { localStorage.removeItem("inpact.mapBackground"); } catch (e) { /* (an earlier, editable setting) */ }
+  const BG_KEY = "inpact.mapBackground";
+  let bg = 0;
+  try {
+    const s = localStorage.getItem(BG_KEY);
+    if (s === "none") bg = null; else if (s !== null && Number.isFinite(+s)) bg = +s;
+  } catch (e) { /* storage blocked: 0 */ }
   const range = {
     register(p){ providers.push(p); providers.sort((a, b) => b.priority - a.priority); },
     current(){ for (const p of providers) { const i = p.info(); if (i) return i; } return null; },
@@ -4070,7 +4088,12 @@ const GRID_UI = (() => {
     },
     clear(){ userRange = null; document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } })); },
     get bg(){ return bg; },
-    isBg: v => Number.isFinite(v) && Math.abs(v - bg) <= 1e-12 * Math.max(1, Math.abs(bg)),
+    setBg(v){
+      bg = v;
+      try { localStorage.setItem(BG_KEY, v === null ? "none" : String(v)); } catch (e) { /* not kept */ }
+      document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } }));
+    },
+    isBg: v => bg !== null && Number.isFinite(v) && Math.abs(v - bg) <= 1e-12 * Math.max(1, Math.abs(bg)),
     // The filter in use: { lo, hi } with null on a side whose handle is still at its end
     filter(info){
       if (!this.isUser(info)) return { lo: null, hi: null };
@@ -5339,7 +5362,7 @@ if (MAP_STANDALONE) (function mapWindow(){
     const R = GRID_UI.range, f = R.filter(R.current());
     if (f.lo !== null) q.set("rlo", String(f.lo));
     if (f.hi !== null) q.set("rhi", String(f.hi));
-    q.set("bg", String(R.bg));                // zero cells stay uncoloured in the JPEG as on the map
+    q.set("bg", R.bg === null ? "" : String(R.bg));   // background cells stay uncoloured in the JPEG as on the map
     return q;
   }
   async function fetchFile(fmt, q){
@@ -5608,13 +5631,21 @@ if (MAP_STANDALONE) (function mapWindow(){
       el.addEventListener("pointerup", () => { dragging = false; });
       el.addEventListener("blur", () => { dragging = false; });
     });
+    // Background box: cells equal to the value are not coloured (empty = none)
+    const bgEl = document.getElementById("msBg");
+    const showBg = () => { if (document.activeElement !== bgEl) bgEl.value = RG.bg === null ? "" : String(RG.bg); };
+    bgEl.addEventListener("change", () => {
+      const s = bgEl.value.trim(), v = parseFloat(s);
+      if (s === "") RG.setBg(null); else if (Number.isFinite(v)) RG.setBg(v); else showBg();
+    });
+    showBg();
     // Follow the layer on the map: legends are re-added whenever a layer is drawn
     new MutationObserver(() => syncRange()).observe(mapEl.querySelector(".leaflet-control-container"), { childList: true, subtree: true });
-    document.addEventListener("mappalette:change", syncRange);
+    document.addEventListener("mappalette:change", () => { syncRange(); showBg(); });
     syncRange();
 
     resetBtn.addEventListener("click", () => {
-      RG.clear();
+      RG.clear(); RG.setBg(0);
       P.set({ ...P.DEFAULT });
       if (+opacityEl.value !== DEFAULT_OPACITY) { opacityEl.value = DEFAULT_OPACITY; opacityEl.dispatchEvent(new Event("input")); }
     });
