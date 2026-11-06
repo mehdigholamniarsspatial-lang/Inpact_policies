@@ -1042,6 +1042,38 @@ html.map-standalone .map-side{
   background:var(--grey-panel);border-right:1px solid var(--grey-border);
 }
 html.map-standalone .ms-steps{padding:.2rem .9rem 0}
+
+/* Analysis tabs above the stepper: Compare layers / Time series (the toolbar copies are hidden) */
+.ms-tools #msCompare,.ms-tools #msTs{display:none}
+html.map-standalone .ms-modes{display:block}
+.ms-modes{display:none;padding:.75rem .9rem .55rem;border-bottom:1px solid var(--grey-border);background:#fff}
+.ms-modes-lbl{font-size:.66rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin:0 0 .4rem}
+.ms-tabs{display:grid;grid-template-columns:1fr 1fr;gap:.25rem;padding:.25rem;border-radius:12px;background:var(--grey-panel);border:1px solid var(--grey-border)}
+.ms-tab{
+  position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:.12rem;min-width:0;
+  padding:.5rem .6rem .5rem;border:0;border-radius:9px;background:transparent;cursor:pointer;text-align:left;
+  font-family:inherit;color:var(--navy);transition:background .15s,box-shadow .15s,color .15s;
+}
+.ms-tab:hover:not(:disabled){background:#fff}
+.ms-tab:focus-visible{outline:3px solid rgba(14,140,138,.35);outline-offset:1px}
+.ms-tab-top{display:flex;align-items:center;gap:.4rem;width:100%}
+.ms-tab-top i{font-size:1rem;line-height:1;color:var(--teal)}
+.ms-tab .t{font-size:.84rem;font-weight:800;line-height:1.15;white-space:nowrap}
+.ms-tab .s{font-size:.68rem;line-height:1.3;color:var(--text-muted)}
+.ms-tab .on{
+  margin-left:auto;display:none;align-items:center;gap:.2rem;padding:.05rem .4rem;border-radius:999px;
+  background:rgba(255,255,255,.22);font-size:.6rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+}
+.ms-tab[aria-selected="true"]{background:var(--teal);color:#fff;box-shadow:0 3px 10px rgba(14,140,138,.28)}
+.ms-tab[aria-selected="true"] .ms-tab-top i,.ms-tab[aria-selected="true"] .s{color:#E4F6F5}
+.ms-tab[aria-selected="true"] .on{display:inline-flex}
+.ms-tab:disabled{cursor:not-allowed;opacity:.5}
+.ms-mode-hint{display:flex;gap:.45rem;align-items:flex-start;margin:.5rem 0 0;font-size:.72rem;line-height:1.4;color:var(--text-muted)}
+.ms-mode-hint i{color:var(--teal);margin-top:.05rem}
+.ms-mode-hint b{color:var(--navy)}
+.ms-mode-hint button{
+  border:0;background:none;padding:0;font:inherit;font-weight:700;color:var(--teal);text-decoration:underline;cursor:pointer;
+}
 .ms-step{position:relative}
 /* Thin connector from each badge down to the next one, ending in a small arrowhead (1 → 2 → 3 …) */
 .ms-step[hidden]{display:none!important}
@@ -1761,6 +1793,21 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
             </div>
           </div>
           <div class="map-side" id="mapSide">
+          <!-- What to do with the map: compare two layers or plot a time series (drives #msCompare / #msTs) -->
+          <div class="ms-modes" id="msModes">
+            <p class="ms-modes-lbl" id="msModesLbl">Choose an analysis</p>
+            <div class="ms-tabs" role="tablist" aria-labelledby="msModesLbl">
+              <button type="button" class="ms-tab" role="tab" id="msTabCompare" data-for="msCompare" aria-selected="false">
+                <span class="ms-tab-top"><i class="bi bi-layout-split" aria-hidden="true"></i><span class="t">Compare</span><span class="on"><i class="bi bi-check-lg"></i>On</span></span>
+                <span class="s">Difference of two layers (B − A) on the map</span>
+              </button>
+              <button type="button" class="ms-tab" role="tab" id="msTabTs" data-for="msTs" aria-selected="false">
+                <span class="ms-tab-top"><i class="bi bi-graph-up" aria-hidden="true"></i><span class="t">Time series</span><span class="on"><i class="bi bi-check-lg"></i>On</span></span>
+                <span class="s">Values over the years for a pixel, a region or Ireland</span>
+              </button>
+            </div>
+            <p class="ms-mode-hint" id="msModeHint" role="status"></p>
+          </div>
           <!-- Stepper of the map's own window. On /map/ the script moves the raster bar
                into step 2 and the opacity field into step 3. -->
           <div class="ms-steps ms-only" id="msSteps">
@@ -6171,6 +6218,45 @@ if (MAP_STANDALONE) (function mapWindow(){
     enter();                                  // the map page opens with the time series panel
 
     return { get active(){ return st.active; } };
+  })();
+
+  // ---- Analysis tabs above step 1: Compare / Time series ----
+  // Each tab presses the (hidden) toolbar button of its mode and mirrors its state;
+  // clicking the open tab again goes back to the plain single-layer map.
+  (function modeTabs(){
+    const tabs = [...document.querySelectorAll("#msModes .ms-tab")];
+    const hint = document.getElementById("msModeHint");
+    const src = t => document.getElementById(t.dataset.for);
+    const HINTS = {
+      msCompare: "<b>Compare is on.</b> Pick layer A in step 2; layer B sits under it. The map shows B − A and the statistics open on the right.",
+      msTs: "<b>Time series is on.</b> Pick a layer in step 2, keep the area (whole image by default) and press <b>Add to plot</b>."
+    };
+    function sync(){
+      let on = null;
+      tabs.forEach(t => {
+        const b = src(t), sel = b.getAttribute("aria-pressed") === "true";
+        t.setAttribute("aria-selected", String(sel));
+        t.tabIndex = sel || (!on && t === tabs[0]) ? 0 : -1;
+        t.disabled = b.disabled;
+        t.title = b.title + (sel ? " · click again to close" : "");
+        if (sel) on = t;
+      });
+      const off = tabs.find(t => t.disabled);
+      hint.innerHTML = on
+        ? `<i class="bi bi-info-circle" aria-hidden="true"></i><span>${HINTS[on.dataset.for]} <button type="button" data-close>Close</button></span>`
+        : `<i class="bi bi-map" aria-hidden="true"></i><span>Showing one layer on the map. Choose <b>Compare</b> or <b>Time series</b> to start an analysis.${
+            off ? ` ${off.querySelector(".t").textContent} needs EDGAR or the Inverse model.` : ""}</span>`;
+      hint.querySelector("[data-close]")?.addEventListener("click", () => src(on).click());
+    }
+    tabs.forEach((t, i) => {
+      t.addEventListener("click", () => src(t).click());
+      t.addEventListener("keydown", e => {
+        const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+        if (d) { e.preventDefault(); tabs[(i + d + tabs.length) % tabs.length].focus(); }
+      });
+      new MutationObserver(sync).observe(src(t), { attributes: true, attributeFilter: ["aria-pressed", "disabled", "title"] });
+    });
+    sync();
   })();
 
   // Toolbar chip and stepper mirror the active layer's title card on the map
