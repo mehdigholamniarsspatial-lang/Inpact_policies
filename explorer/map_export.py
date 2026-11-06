@@ -73,12 +73,12 @@ def _ramp(rgb: Sequence[RGB], t: float) -> RGB:
 
 @dataclass(frozen=True)
 class Palette:
-    """The map's step 3 "Map style": colours, the colour range slider and the background value."""
+    """The map's step 3 "Map style": colours, the value range slider and the background value."""
     seq: str = DEFAULT_SEQ
     div: str = DEFAULT_DIV
     reverse: bool = False
-    rlo: Optional[float] = None     # colour range set on the slider (both or neither)
-    rhi: Optional[float] = None
+    rlo: Optional[float] = None     # value range filter of the slider: cells below rlo / above rhi
+    rhi: Optional[float] = None     # are not drawn (None: no limit on that side)
     bg: Optional[float] = None      # cells equal to this value are not coloured
 
     @classmethod
@@ -92,7 +92,7 @@ class Palette:
             return v if math.isfinite(v) else None
         seq, div = q.get("palette", ""), q.get("div_palette", "")
         rlo, rhi = num("rlo"), num("rhi")
-        if rlo is None or rhi is None or not rlo < rhi:
+        if rlo is not None and rhi is not None and not rlo < rhi:
             rlo = rhi = None
         return cls(seq if seq in SEQ_PALETTES else DEFAULT_SEQ, div if div in DIV_PALETTES else DEFAULT_DIV,
                    q.get("reverse") == "1", rlo, rhi, num("bg"))
@@ -132,17 +132,12 @@ def diverging(t: float) -> RGB:
     return _ramp(DIV_PALETTES[p.div], (min(max(t, -1.0), 1.0) + 1) / 2)
 
 
-# Colour range slider and background value: the same rules as ``GRID_UI.range`` on the page
-def user_range(lo: float, hi: float, log: bool = False) -> Tuple[float, float]:
-    """The range set on the slider, else the layer's own (lo, hi)."""
+# Value range slider and background value: the same rules as ``GRID_UI.range`` on the page.
+# A display filter: the colours keep the layer's own scale; cells outside are not drawn.
+def outside(v: float) -> bool:
+    """Is v filtered out by the slider (below its min or above its max handle)?"""
     p = _PALETTE.get()
-    if p.rlo is None or (log and p.rlo <= 0):
-        return lo, hi
-    return p.rlo, p.rhi
-
-
-def range_set() -> bool:
-    return _PALETTE.get().rlo is not None
+    return math.isfinite(v) and ((p.rlo is not None and v < p.rlo) or (p.rhi is not None and v > p.rhi))
 
 
 def is_bg(v: float) -> bool:
@@ -150,25 +145,27 @@ def is_bg(v: float) -> bool:
     return b is not None and math.isfinite(v) and abs(v - b) <= 1e-12 * max(1.0, abs(b))
 
 
-def div_t(v: float, lo: float, hi: float) -> float:
-    """Position of v in [-1, 1] on a difference range; zero stays the middle colour when lo < 0 < hi."""
-    if lo < 0 < hi:
-        return -min(v / lo, 1.0) if v < 0 else min(v / hi, 1.0)
-    return 2 * (min(max(v, lo), hi) - lo) / ((hi - lo) or 1) - 1
+def hidden(v: float) -> bool:
+    """Not drawn: the background value, or outside the slider's range."""
+    return is_bg(v) or outside(v)
 
 
 def _signed(v: float) -> str:
     return ("+" if v > 0 else "−" if v < 0 else "") + fmt(abs(v))
 
 
-def _div_ticks(lo: float, hi: float) -> List[Tuple[float, str]]:
-    mid = "0" if lo < 0 < hi else _signed((lo + hi) / 2)
-    return [(0, f"≤ {_signed(lo)}"), (0.5, mid), (1, f"≥ {_signed(hi)}")]
-
-
-def _bg_note() -> str:
-    b = _PALETTE.get().bg
-    return "" if b is None else f" · background {fmt(b)} not coloured"
+def _filter_note(signed: bool = False) -> str:
+    """' · Showing values 20 – 9,757' and ' · background 0 not coloured', as on the map."""
+    p, f, out = _PALETTE.get(), (_signed if signed else fmt), ""
+    if p.rlo is not None and p.rhi is not None:
+        out += f" · Showing values {f(p.rlo)} – {f(p.rhi)}"
+    elif p.rlo is not None:
+        out += f" · Showing values ≥ {f(p.rlo)}"
+    elif p.rhi is not None:
+        out += f" · Showing values ≤ {f(p.rhi)}"
+    if p.bg is not None:
+        out += f" · background {fmt(p.bg)} not coloured"
+    return out
 
 
 def _fade(c: RGB, alpha: float) -> RGB:
@@ -262,7 +259,7 @@ def _edgar_layer(q: dict) -> Layer:
     gas, sector = meta["gases"][q["gas"]], meta["sectors"][q["sector"]]
     grid = meta["grid"]
     west, north, res, rows, cols = grid["west"], grid["north"], grid["res"], grid["rows"], grid["cols"]
-    lo, hi = user_range(data["scale"]["lo"], data["scale"]["hi"], log=True)
+    lo, hi = data["scale"]["lo"], data["scale"]["hi"]
     annual = data["period"] == "annual"
     period = f"{q['year']} annual total" if annual else data["month_label"]
 
@@ -271,8 +268,8 @@ def _edgar_layer(q: dict) -> Layer:
     zero = (235, 238, 241)
     cells = []
     for idx, v in zip(grid["cells"], data["values"]):
-        if is_bg(v):
-            continue                        # background value: not coloured
+        if hidden(v):
+            continue                        # background value, or outside the slider: not drawn
         r, c = divmod(idx, cols)
         w, n = west + c * res, north - r * res
         if v > 0:
@@ -286,9 +283,8 @@ def _edgar_layer(q: dict) -> Layer:
     years = meta["years"]
     legend = Legend(
         title=f"{gas['formula']} · {period}", unit=data["unit"], kind="log", lo=lo, hi=hi,
-        ticks=_log_ticks(lo, hi), swatches=[] if is_bg(0.0) else [(zero, "0 (no emission assigned)")],
-        note=("Log scale, range set on the slider" if range_set() else f"Log scale, fixed over {years[0]}–{years[-1]}")
-             + " · mass of gas, not CO₂-eq" + _bg_note(),
+        ticks=_log_ticks(lo, hi), swatches=[] if hidden(0.0) else [(zero, "0 (no emission assigned)")],
+        note=f"Log scale, fixed over {years[0]}–{years[-1]} · mass of gas, not CO₂-eq" + _filter_note(),
     )
     return Layer(
         stem=_slug("EDGAR", q["gas"], q["sector"], q["year"], "annual" if annual else f"m{int(q['month']):02d}"),
@@ -327,19 +323,14 @@ def _inverse_layer(q: dict) -> Layer:
     values = post - prior if est == "difference" else (post if est == "posterior" else prior)
     frac = data["country_fraction"]
     s = data["scale"]
-    # The colour range in use: the one set on the slider, else the layer's fixed scale
-    if est == "difference":
-        dlo, dhi = user_range(-s["difference"]["limit"], s["difference"]["limit"])
-    else:
-        flo, fhi = user_range(s["flux"]["lo"], s["flux"]["hi"], log=True)
-
     cells = []
     for i, v in enumerate(values):
-        if not np.isfinite(v) or is_bg(v):
-            continue                        # no value, or the background value: not coloured
+        if not np.isfinite(v) or hidden(v):
+            continue                        # no value, background value, or outside the slider: not drawn
         if est == "difference":
-            colour = diverging(div_t(v, dlo, dhi))
+            colour = diverging(v / s["difference"]["limit"])
         else:
+            flo, fhi = s["flux"]["lo"], s["flux"]["hi"]
             colour = rainbow((math.log10(min(max(v, flo), fhi)) - math.log10(flo)) / (math.log10(fhi) - math.log10(flo)))
         if not frac[i] > 0:
             colour = _fade(colour, 0.45)
@@ -348,24 +339,22 @@ def _inverse_layer(q: dict) -> Layer:
         cells.append((w, n - dlat, w + dlon, n, colour))
 
     arr = np.where(np.isfinite(values), values, NODATA).astype(np.float32).reshape(rows, cols)
-    fixed = "range set on the slider" if range_set() else "fixed for all models and years"
     if est == "difference":
         lim = s["difference"]["limit"]
-        ticks = (_div_ticks(dlo, dhi) if range_set() else
-                 [(0, f"≤ −{fmt(lim)}"), (0.25, f"−{fmt(lim / 2)}"), (0.5, "0"),
-                  (0.75, f"+{fmt(lim / 2)}"), (1, f"≥ +{fmt(lim)}")])
         legend = Legend(
             title=f"{gas['formula']} — {q['year']} — Difference", unit=data["unit"], kind="diverging",
-            lo=dlo, hi=dhi, ticks=ticks,
+            lo=-lim, hi=lim,
+            ticks=[(0, f"≤ −{fmt(lim)}"), (0.25, f"−{fmt(lim / 2)}"), (0.5, "0"),
+                   (0.75, f"+{fmt(lim / 2)}"), (1, f"≥ +{fmt(lim)}")],
             swatches=[(_fade(diverging(0.5), 0.45), "Outside the Ireland attribution area")],
-            note=("Linear" if range_set() else "Linear, symmetric") + f" · {fixed}" + _bg_note(),
+            note="Linear, symmetric · fixed for all models and years" + _filter_note(signed=True),
         )
     else:
         legend = Legend(
             title=f"{gas['formula']} — {q['year']} — {_ESTIMATES[est]}", unit=data["unit"], kind="log",
-            lo=flo, hi=fhi, ticks=_log_ticks(flo, fhi),
+            lo=s["flux"]["lo"], hi=s["flux"]["hi"], ticks=_log_ticks(s["flux"]["lo"], s["flux"]["hi"]),
             swatches=[(_fade(rainbow(0.6), 0.45), "Outside the Ireland attribution area")],
-            note=f"Log scale · {fixed}" + _bg_note(),
+            note="Log scale · fixed for all models and years" + _filter_note(),
         )
     src = meta["source"]
     diff = data["total_posterior"] - data["total_prior"]
@@ -533,12 +522,10 @@ def _compare_layer(q: dict) -> Layer:
     lim = _quantile(np.abs(vals), 0.98) if vals.size else 1.0
     lim = lim if lim > 0 else (float(np.abs(vals).max()) if vals.size and np.abs(vals).max() > 0 else 1.0)
 
-    dlo, dhi = user_range(-lim, lim)        # or the range set on the slider
-
     cells = []
     for (w, n, dx, dy), val in zip(geo, v):
-        if np.isfinite(val) and not is_bg(val):
-            cells.append((w, n - dy, w + dx, n, diverging(div_t(val, dlo, dhi))))
+        if np.isfinite(val) and not hidden(val):     # background value / outside the slider: not drawn
+            cells.append((w, n - dy, w + dx, n, diverging(val / lim)))
 
     arr = np.full(tif_rows * tif_cols, NODATA, dtype=np.float32)
     arr[flat_index] = np.where(finite, v, NODATA).astype(np.float32)
@@ -559,11 +546,9 @@ def _compare_layer(q: dict) -> Layer:
     what = "% change" if mode == "pct" else "difference"
     legend = Legend(
         title=f"{formula} · B − A" + (" (%)" if mode == "pct" else ""), unit=value_unit, kind="diverging",
-        lo=dlo, hi=dhi,
-        ticks=(_div_ticks(dlo, dhi) if range_set() else
-               [(0, f"≤ −{fmt(lim)}"), (0.25, f"−{fmt(lim / 2)}"), (0.5, "0"), (0.75, f"+{fmt(lim / 2)}"), (1, f"≥ +{fmt(lim)}")]),
-        note=f"A: {label_a} · B: {label_b} · "
-             + ("range set on the slider" if range_set() else "scale ±98th percentile of |B − A|") + _bg_note(),
+        lo=-lim, hi=lim,
+        ticks=[(0, f"≤ −{fmt(lim)}"), (0.25, f"−{fmt(lim / 2)}"), (0.5, "0"), (0.75, f"+{fmt(lim / 2)}"), (1, f"≥ +{fmt(lim)}")],
+        note=f"A: {label_a} · B: {label_b} · scale ±98th percentile of |B − A|" + _filter_note(signed=True),
     )
     name = "EDGAR" if ds == "edgar" else "PARIS inverse model"
     return Layer(

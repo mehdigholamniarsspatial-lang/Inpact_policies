@@ -2103,13 +2103,14 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                       <p class="ms-cp-none" id="msCpNone" hidden>No palette matches.</p>
                     </div>
                   </div>
-                  <!-- Colour range: two handles (min, max) over the layer's values; the values sit at the ends -->
+                  <!-- Value range filter: two handles (min, max) over the layer's values; cells outside are not
+                       drawn, the colours keep the layer's scale. The values sit at the ends. -->
                   <div class="ms-rs" id="msRs">
                     <span class="ms-rs-val lo" id="msRsLo">–</span>
                     <div class="ms-rs-track" id="msRsTrack">
                       <div class="ms-rs-fill" id="msRsFill"></div>
-                      <input type="range" id="msRsMin" min="0" max="1000" step="1" value="0" aria-label="Colour range minimum">
-                      <input type="range" id="msRsMax" min="0" max="1000" step="1" value="1000" aria-label="Colour range maximum">
+                      <input type="range" id="msRsMin" min="0" max="1000" step="1" value="0" aria-label="Show values from (minimum)">
+                      <input type="range" id="msRsMax" min="0" max="1000" step="1" value="1000" aria-label="Show values up to (maximum)">
                     </div>
                     <span class="ms-rs-val hi" id="msRsHi">–</span>
                   </div>
@@ -4019,10 +4020,13 @@ const GRID_UI = (() => {
                     stops, divStops, divWords };
   const STOPS = stops();                        // (kept for old callers; legends use stops())
 
-  // ---- Colour range slider + background value (step 3 "Map style"; same rules in map_export.py) ----
-  // Each map layer registers a provider; the highest-priority one with a layer on the map is the
-  // one the slider shows: { key, kind: "log" | "div", min, max, lo, hi } (lo / hi = its own scale).
-  // The user's range applies to that layer only (a new layer starts at its own scale).
+  // ---- Value range slider + background value (step 3 "Map style"; same rules in map_export.py) ----
+  // A display filter, not a colour stretch: the colours keep the layer's own scale, and cells with
+  // values below the min handle or above the max handle are not drawn (shown as background).
+  // A handle left at its end does not filter on that side. Each map layer registers a provider; the
+  // highest-priority one with a layer is the one the slider shows:
+  // { key, kind: "log" | "div", min, max, lo, hi } with lo / hi = min / max = the layer's value extent.
+  // The user's range applies to that layer only (a new layer starts with everything shown).
   // Cells equal to the background value (default 0; empty = none) are not coloured.
   const providers = [];
   let userRange = null;                          // { key, lo, hi }
@@ -4050,6 +4054,24 @@ const GRID_UI = (() => {
       document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } }));
     },
     isBg: v => bg !== null && Number.isFinite(v) && Math.abs(v - bg) <= 1e-12 * Math.max(1, Math.abs(bg)),
+    // The filter in use: { lo, hi } with null on a side whose handle is still at its end
+    filter(info){
+      if (!this.isUser(info)) return { lo: null, hi: null };
+      return { lo: userRange.lo > info.lo ? userRange.lo : null, hi: userRange.hi < info.hi ? userRange.hi : null };
+    },
+    // Is v filtered out by the slider? (then the cell is not drawn)
+    outside(info, v){
+      if (!Number.isFinite(v)) return false;
+      const f = this.filter(info);
+      return (f.lo !== null && v < f.lo) || (f.hi !== null && v > f.hi);
+    },
+    // Legend line, e.g. "Showing values 20 – 9,757"; "" when nothing is filtered
+    note(info, fmt = fmtVal){
+      const f = this.filter(info);
+      if (f.lo === null && f.hi === null) return "";
+      return f.lo !== null && f.hi !== null ? `Showing values ${fmt(f.lo)} – ${fmt(f.hi)}`
+           : f.lo !== null ? `Showing values ≥ ${fmt(f.lo)}` : `Showing values ≤ ${fmt(f.hi)}`;
+    },
     // Position of v in [-1, 1] on a difference range: zero stays the middle colour when lo < 0 < hi
     divT(v, lo, hi){
       if (lo < 0 && hi > 0) return v < 0 ? -Math.min(v / lo, 1) : Math.min(v / hi, 1);
@@ -4197,7 +4219,7 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
     return rainbow(t);
   }
 
-  // The colour range slider of step 3 shows this layer while it is on the map (log scale)
+  // The value range slider of step 3 shows this layer (log positions over its non-zero cells)
   function rangeInfo(){
     if (!current || !current.layer.scale) return null;
     const { sel, layer } = current;
@@ -4205,17 +4227,16 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
       const pos = layer.values.filter(v => v > 0);
       layer._ext = pos.length ? [Math.min(...pos), Math.max(...pos)] : [layer.scale.lo, layer.scale.hi];
     }
-    return { key: "edgar|" + JSON.stringify(sel), kind: "log", min: layer._ext[0], max: layer._ext[1],
-             lo: layer.scale.lo, hi: layer.scale.hi };
+    const [mn, mx] = layer._ext;
+    return { key: "edgar|" + JSON.stringify(sel), kind: "log", min: mn, max: mx, lo: mn, hi: mx };
   }
   GRID_UI.range.register({ priority: 1, info: rangeInfo });
-  const scaleNow = () => GRID_UI.range.eff(rangeInfo());
   function restyle(){
-    const { layer } = current, sc = scaleNow(), R = GRID_UI.range;
+    const { layer } = current, R = GRID_UI.range, info = rangeInfo();
     rects.forEach((r, i) => {
       const v = layer.values[i];
-      r.setStyle(R.isBg(v) ? { fillOpacity: 0 }                // background value: not coloured
-        : v > 0 ? { fillColor: colourOf(v, sc), fillOpacity: opacity }
+      r.setStyle(R.isBg(v) || R.outside(info, v) ? { fillOpacity: 0 }   // background, or outside the slider
+        : v > 0 ? { fillColor: colourOf(v, layer.scale), fillOpacity: opacity }
         : { fillColor: "#ffffff", fillOpacity: opacity * 0.3 });
     });
   }
@@ -4247,7 +4268,8 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
 
   function buildColorbar(layer){
     const src = META.source;
-    const s = scaleNow(), own = !GRID_UI.range.isUser(rangeInfo()), R = GRID_UI.range;
+    const s = layer.scale, R = GRID_UI.range, info = rangeInfo(), shown = R.note(info);
+    const zeroOn = !R.isBg(0) && R.filter(info).lo === null;   // zero cells still drawn
     const ctrl = L.control({ position: "bottomleft" });
     ctrl.onAdd = () => {
       const div = L.DomUtil.create("div", "raster-colorbar");
@@ -4257,14 +4279,14 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
         <div class="cb-row">
           <div class="cb-gradient" style="background:linear-gradient(to top, ${GRID_UI.palette.stops().join(",")})"></div>
           <div class="cb-ticks">
-            <span>${own ? "" : "≥ "}${fmtVal(s.hi)}</span>
+            <span>${fmtVal(s.hi)}</span>
             <span>${fmtVal(Math.sqrt(s.lo * s.hi))}</span>
             <span>≤ ${fmtVal(s.lo)}</span>
           </div>
         </div>
-        ${R.isBg(0) ? "" : '<div class="cb-zero"><i></i>0 (no emission assigned)</div>'}
-        <div class="cb-note">Log scale${own ? `, fixed over ${META.years[0]}–${META.years.at(-1)}` : ", range set on the slider"} · mass of gas, not CO₂-eq${
-          R.bg !== null ? `<br>Background ${esc(fmtVal(R.bg))}: not coloured` : ""}</div>
+        ${zeroOn ? '<div class="cb-zero"><i></i>0 (no emission assigned)</div>' : ""}
+        <div class="cb-note">Log scale, fixed over ${META.years[0]}–${META.years.at(-1)} · mass of gas, not CO₂-eq${
+          shown ? `<br>${esc(shown)}` : ""}${R.bg !== null ? `<br>Background ${esc(fmtVal(R.bg))}: not coloured` : ""}</div>
         <div class="cb-source">Source: <a href="${esc(src.url)}" target="_blank" rel="noopener">${esc(src.dataset)}</a>,
           ${esc(src.credit)} · ${esc(src.resolution)} · Boundary: ${esc(src.boundary)}</div>`;
       L.DomEvent.disableClickPropagation(div);
@@ -4494,34 +4516,35 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
     return rainbow(t);
   }
 
-  // The colour range slider of step 3 shows this layer while it is on the map
+  // The value range slider of step 3 shows this layer: its value extent (log positions for fluxes)
   function rangeInfo(){
     if (!current) return null;
     const { sel, layer } = current, s = layer.scale, key = "inverse|" + JSON.stringify(sel);
     if (layer._extKey !== sel.estimate) {
       const vals = layer.country_fraction.map((_, i) => valueOf(layer, sel.estimate, i)).filter(Number.isFinite);
       if (sel.estimate === "difference") {
-        const M = Math.max(...vals.map(Math.abs), s.difference.limit);
-        layer._ext = [-M, M];
+        layer._ext = vals.length ? [Math.min(...vals), Math.max(...vals)] : [-s.difference.limit, s.difference.limit];
       } else {
         const pos = vals.filter(v => v > 0);
         layer._ext = pos.length ? [Math.min(...pos), Math.max(...pos)] : [s.flux.lo, s.flux.hi];
       }
       layer._extKey = sel.estimate;
     }
-    return sel.estimate === "difference"
-      ? { key, kind: "div", min: layer._ext[0], max: layer._ext[1], lo: -s.difference.limit, hi: s.difference.limit }
-      : { key, kind: "log", min: layer._ext[0], max: layer._ext[1], lo: s.flux.lo, hi: s.flux.hi };
+    const [mn, mx] = layer._ext;
+    return { key, kind: sel.estimate === "difference" ? "div" : "log", min: mn, max: mx, lo: mn, hi: mx };
   }
   GRID_UI.range.register({ priority: 1, info: rangeInfo });
-  const rangeNow = () => GRID_UI.range.eff(rangeInfo());
+  // The colours always use the layer's own fixed scale
+  const rangeNow = () => current.sel.estimate === "difference"
+    ? { lo: -current.layer.scale.difference.limit, hi: current.layer.scale.difference.limit }
+    : { lo: current.layer.scale.flux.lo, hi: current.layer.scale.flux.hi };
 
   // Cells outside the modellers' Ireland attribution area are drawn faded.
   function restyle(){
-    const { sel, layer } = current, rg = rangeNow();
+    const { sel, layer } = current, rg = rangeNow(), R = GRID_UI.range, info = rangeInfo();
     rects.forEach((r, i) => {
       const v = valueOf(layer, sel.estimate, i);
-      const colour = GRID_UI.range.isBg(v) ? null : colourOf(v, sel.estimate, rg);   // background: not coloured
+      const colour = R.isBg(v) || R.outside(info, v) ? null : colourOf(v, sel.estimate, rg);  // background / outside the slider
       r.setStyle(colour
         ? { fillColor: colour, fillOpacity: opacity * (layer.country_fraction[i] > 0 ? 1 : 0.45) }
         : { fillOpacity: 0 });
@@ -4554,14 +4577,14 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
   }
 
   function buildColorbar(sel, layer){
-    const src = META.source, rg = rangeNow(), R = GRID_UI.range, own = !R.isUser(rangeInfo());
-    const isDiff = sel.estimate === "difference";
+    const src = META.source, rg = rangeNow(), R = GRID_UI.range, isDiff = sel.estimate === "difference";
     const sg = v => (v > 0 ? "+" : v < 0 ? "−" : "") + fmtVal(Math.abs(v));
+    const shown = R.note(rangeInfo(), isDiff ? sg : fmtVal);
     const ctrl = L.control({ position: "bottomleft" });
     ctrl.onAdd = () => {
       const div = L.DomUtil.create("div", "raster-colorbar");
       const ticks = isDiff
-        ? [`≥ ${sg(rg.hi)}`, rg.lo < 0 && rg.hi > 0 ? "0" : sg((rg.lo + rg.hi) / 2), `≤ ${sg(rg.lo)}`]
+        ? [`≥ +${fmtVal(rg.hi)}`, "0", `≤ −${fmtVal(rg.hi)}`]
         : [`≥ ${fmtVal(rg.hi)}`, fmtVal(Math.sqrt(rg.lo * rg.hi)), `≤ ${fmtVal(rg.lo)}`];
       const ramp = isDiff ? GRID_UI.palette.divStops() : GRID_UI.palette.stops();
       div.innerHTML = `
@@ -4572,8 +4595,8 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
           <div class="cb-ticks">${ticks.map(t => `<span>${t}</span>`).join("")}</div>
         </div>
         <div class="cb-zero"><i style="opacity:.45;background:${isDiff ? ramp[3] : ramp[5]}"></i>Outside the Ireland attribution area</div>
-        <div class="cb-note">${isDiff ? (own ? "Linear, symmetric" : "Linear") : "Log scale"}${own ? ", fixed for all models and years" : ", range set on the slider"} ·
-          ${esc(src.aggregation.toLowerCase())}${R.bg !== null ? `<br>Background ${esc(fmtVal(R.bg))}: not coloured` : ""}</div>
+        <div class="cb-note">${isDiff ? "Linear, symmetric" : "Log scale"}, fixed for all models and years ·
+          ${esc(src.aggregation.toLowerCase())}${shown ? `<br>${esc(shown)}` : ""}${R.bg !== null ? `<br>Background ${esc(fmtVal(R.bg))}: not coloured` : ""}</div>
         <div class="cb-source">Source: <a href="${esc(src.url)}" target="_blank" rel="noopener">${esc(src.dataset)}</a>,
           ${esc(src.credit)} · ${esc(src.resolution)}</div>`;
       L.DomEvent.disableClickPropagation(div);
@@ -5258,9 +5281,10 @@ if (MAP_STANDALONE) (function mapWindow(){
     // The JPEG uses the colours chosen in step 3 "Map style"
     const pal = GRID_UI.palette.get();
     q.set("palette", pal.seq); q.set("div_palette", pal.div); q.set("reverse", pal.reverse ? "1" : "0");
-    // ... and the colour range set on the slider (only when moved) and the background value
-    const R = GRID_UI.range, info = R.current();
-    if (info && R.isUser(info)) { const e = R.eff(info); q.set("rlo", String(e.lo)); q.set("rhi", String(e.hi)); }
+    // ... the value range filter of the slider (a side only when its handle moved) and the background value
+    const R = GRID_UI.range, f = R.filter(R.current());
+    if (f.lo !== null) q.set("rlo", String(f.lo));
+    if (f.hi !== null) q.set("rhi", String(f.hi));
     q.set("bg", R.bg === null ? "" : String(R.bg));
     return q;
   }
@@ -5469,9 +5493,9 @@ if (MAP_STANDALONE) (function mapWindow(){
     }
     revEl.addEventListener("change", () => P.set({ reverse: revEl.checked }));
 
-    // ---- Colour range slider (two handles) and background value ----
-    // The slider spans the shown layer's values (log10 positions on log scales) and starts at the
-    // layer's own colour range; dragging a handle recolours the map straight away.
+    // ---- Value range slider (two handles) and background value ----
+    // The slider spans the shown layer's values (log10 positions on log scales), both handles at the
+    // ends; cells below the min / above the max handle disappear at once, the colours stay as they are.
     const RG = GRID_UI.range, N = 1000;
     const rsBox = document.getElementById("msRs"), rsTrack = document.getElementById("msRsTrack");
     const rsMin = document.getElementById("msRsMin"), rsMax = document.getElementById("msRsMax");
@@ -5853,19 +5877,22 @@ if (MAP_STANDALONE) (function mapWindow(){
         ${c.sig != null ? `<div class="k">${c.sig ? "1σ ranges do not overlap" : "Within the 1σ uncertainty ranges"}</div>` : ""}
         <div class="k">Cell centre ${where(c)}</div>`;
     }
-    // While B − A is on the map the colour range slider of step 3 shows it (before the A layer)
+    // While B − A is on the map the value range slider of step 3 shows it (before the A layer)
     function rangeInfo(){
       if (!st.active || !st.result || !st.layer) return null;
       const R = st.result;
-      if (!R._ext) { const M = Math.max(R.lim, ...R.used.map(c => Math.abs(c.v))); R._ext = [-M, M]; }
-      return { key: `cmp|${R.mode}|${R.labelA}|${R.labelB}`, kind: "div", min: R._ext[0], max: R._ext[1], lo: -R.lim, hi: R.lim };
+      if (!R._ext) {
+        const vs = R.used.map(c => c.v);
+        R._ext = vs.length ? [Math.min(...vs), Math.max(...vs)] : [-R.lim, R.lim];
+      }
+      return { key: `cmp|${R.mode}|${R.labelA}|${R.labelB}`, kind: "div", min: R._ext[0], max: R._ext[1], lo: R._ext[0], hi: R._ext[1] };
     }
     GRID_UI.range.register({ priority: 2, info: rangeInfo });
-    const rangeNow = () => GRID_UI.range.eff(rangeInfo());
+    const rangeNow = () => ({ lo: -st.result.lim, hi: st.result.lim });    // colours: ±98th percentile, as always
     function restyle(){
       if (!st.layer) return;
-      const op = +opacityEl.value / 100, R = st.result, rg = rangeNow(), RG = GRID_UI.range;
-      R.used.forEach(c => st.rects[c.i]?.setStyle(RG.isBg(c.v) ? { fillOpacity: 0 }      // background: not coloured
+      const op = +opacityEl.value / 100, R = st.result, rg = rangeNow(), RG = GRID_UI.range, info = rangeInfo();
+      R.used.forEach(c => st.rects[c.i]?.setStyle(RG.isBg(c.v) || RG.outside(info, c.v) ? { fillOpacity: 0 }   // background / outside the slider
         : { fillColor: diverging(RG.divT(c.v, rg.lo, rg.hi)), fillOpacity: op }));
     }
     function removeMapLayer(){
@@ -5902,14 +5929,14 @@ if (MAP_STANDALONE) (function mapWindow(){
       st.bar.onAdd = () => {
         const div = L.DomUtil.create("div", "raster-colorbar cmp-card");
         const stops = [-1, -0.5, 0, 0.5, 1].map(diverging).join(",");
-        const rg = rangeNow(), RG = GRID_UI.range, own = !RG.isUser(rangeInfo());
-        const sg = v => (v > 0 ? "+" : v < 0 ? "−" : "") + fmtVal(Math.abs(v));
+        const RG = GRID_UI.range, sg = v => (v > 0 ? "+" : v < 0 ? "−" : "") + fmtVal(Math.abs(v));
+        const shown = RG.note(rangeInfo(), sg);
         div.innerHTML = `<div class="cb-title">B − A${pct ? " (%)" : ""}</div>
           <div class="cb-unit">${esc(R.valueUnit)}</div>
           <div class="cb-row"><div class="cb-gradient" style="background:linear-gradient(to top, ${stops})"></div>
-            <div class="cb-ticks"><span>≥ ${sg(rg.hi)}</span><span>${rg.lo < 0 && rg.hi > 0 ? "0" : sg((rg.lo + rg.hi) / 2)}</span><span>≤ ${sg(rg.lo)}</span></div></div>
-          <div class="cb-note">${(w => `${w.hi[0].toUpperCase() + w.hi.slice(1)}: higher in B · ${w.lo}: lower in B`)(GRID_UI.palette.divWords())}<br>${
-            own ? "Scale ±98th percentile of |B − A|" : "Range set on the slider"}${pct ? " · cells where A is below 1% of its mean are left out" : ""}${
+            <div class="cb-ticks"><span>≥ +${fmtVal(R.lim)}</span><span>0</span><span>≤ −${fmtVal(R.lim)}</span></div></div>
+          <div class="cb-note">${(w => `${w.hi[0].toUpperCase() + w.hi.slice(1)}: higher in B · ${w.lo}: lower in B`)(GRID_UI.palette.divWords())}<br>Scale ±98th percentile of |B − A|${
+            pct ? " · cells where A is below 1% of its mean are left out" : ""}${shown ? ` · ${esc(shown)}` : ""}${
             RG.bg !== null ? ` · background ${esc(fmtVal(RG.bg))} not coloured` : ""}</div>`;
         L.DomEvent.disableClickPropagation(div);
         return div;
