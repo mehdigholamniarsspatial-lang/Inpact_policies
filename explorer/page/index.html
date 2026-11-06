@@ -1830,9 +1830,9 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
               <div class="ms-step-body" id="msStepAreaBody" role="region" aria-labelledby="msStepAreaBtn"><div class="ms-step-inner">
                 <p class="ms-p">Where the time series is taken: one pixel, a region you draw, or the whole image.</p>
                 <div class="cmp-seg ts-seg ts-where-seg" role="radiogroup" aria-label="Area type" id="tsWhereL">
-                  <button type="button" role="radio" aria-checked="true" data-where="pixel"><i class="bi bi-crosshair2"></i>Pixel</button>
+                  <button type="button" role="radio" aria-checked="false" data-where="pixel"><i class="bi bi-crosshair2"></i>Pixel</button>
                   <button type="button" role="radio" aria-checked="false" data-where="region"><i class="bi bi-bounding-box"></i>Region</button>
-                  <button type="button" role="radio" aria-checked="false" data-where="whole"><i class="bi bi-map"></i>Whole image</button>
+                  <button type="button" role="radio" aria-checked="true" data-where="whole"><i class="bi bi-map"></i>Whole image</button>
                 </div>
                 <div class="ts-sub ts-x ts-region-tools" hidden>
                   <div class="cmp-seg ts-shape-seg" role="radiogroup" aria-label="Region shape">
@@ -1918,9 +1918,9 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
             <div class="raster-field raster-dataset">
               <label for="mapDataset">Dataset</label>
               <select class="form-select form-select-sm" id="mapDataset" aria-label="Select emission dataset">
-                <option value="mapeire" selected>MapEIre</option>
+                <option value="mapeire">MapEIre</option>
                 <option value="edgar">EDGAR</option>
-                <option value="inverse">Inverse Model</option>
+                <option value="inverse" selected>Inverse Model</option>
               </select>
             </div>
             <div class="raster-group" id="mapeireFields" data-dataset="mapeire">
@@ -2092,9 +2092,9 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
               <section class="ts-card" aria-labelledby="tsAreaH">
                 <h4 class="ts-card-h" id="tsAreaH"><i class="bi bi-geo-alt"></i>Area</h4>
                 <div class="cmp-seg ts-seg ts-where-seg" role="radiogroup" aria-label="Area type" id="tsWhere">
-                  <button type="button" role="radio" aria-checked="true" data-where="pixel"><i class="bi bi-crosshair2"></i>Pixel</button>
+                  <button type="button" role="radio" aria-checked="false" data-where="pixel"><i class="bi bi-crosshair2"></i>Pixel</button>
                   <button type="button" role="radio" aria-checked="false" data-where="region"><i class="bi bi-bounding-box"></i>Region</button>
-                  <button type="button" role="radio" aria-checked="false" data-where="whole"><i class="bi bi-map"></i>Whole image</button>
+                  <button type="button" role="radio" aria-checked="true" data-where="whole"><i class="bi bi-map"></i>Whole image</button>
                 </div>
                 <div class="ts-sub ts-x ts-region-tools" id="tsRegionTools" hidden>
                   <span class="cmp-mode-lbl">Shape</span>
@@ -4719,6 +4719,10 @@ ptUpdateCrossLink();
 const MAP_HOME = { center: [53.35, -8.0], zoom: 7 };
 const MAP_STANDALONE = document.documentElement.classList.contains("map-standalone");
 
+// Default dataset: the Inverse model (selected in the dataset list). Apply it once at start so its
+// fields show and its catalogue loads; on /map/ a link's ?ds= can still pick another dataset below.
+document.getElementById("mapDataset")?.dispatchEvent(new Event("change"));
+
 function mapStateQuery(){
   const c = map.getCenter();
   return new URLSearchParams({
@@ -5570,7 +5574,7 @@ if (MAP_STANDALONE) (function mapWindow(){
     const F = g => GASES[g]?.[0] || g;
     const ESTIMATES = { prior: "Prior", posterior: "Posterior", difference: "Difference" };
     const GAS_SELECT = { edgar: "edgarGas", inverse: "invGas" };
-    const st = { active: false, where: "pixel", shape: "rect", agg: "mean", step: "annual", loc: null, layers: [],
+    const st = { active: false, where: "whole", shape: "rect", agg: "mean", step: "annual", loc: null, layers: [],
                  chart: null, cache: new Map(), token: 0, drawMode: false, drag: null, poly: null, colour: 0, seq: 0,
                  busy: false, areaWarn: "", saved: { pixel: null, region: null } };
     map.createPane("tsPane").style.zIndex = 430;

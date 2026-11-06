@@ -6,6 +6,12 @@
       "runtimeExecutable": "C:/ProgramData/Anaconda3/python.exe",
       "runtimeArgs": ["manage.py", "runserver", "127.0.0.1:8765", "--noreload"],
       "port": 8765
+    },
+    {
+      "name": "inpact-six-django",
+      "runtimeExecutable": "C:/ProgramData/Anaconda3/python.exe",
+      "runtimeArgs": ["C:/MyDriveD/INPACT Project/Creating dashboard/Combine_INPACT_Policies/INPACT_Combined_inpactSix/manage.py", "runserver", "127.0.0.1:8766", "--noreload"],
+      "port": 8766
     }
   ]
 }
