@@ -112,6 +112,34 @@ body{
   .brand-funder .funded-by{display:none}
 }
 
+/* Policy Timeline and Spatial Mapping: the menu bar folds away and the header is 20% lower, for more
+   room. A click on the middle of the header (the title) brings both back; another click folds them. */
+.menu-hint{display:none}
+html.nav-foldable .app-header{cursor:pointer}
+html.nav-foldable .app-header a{cursor:pointer}
+html.nav-foldable .header-text{border-radius:10px;transition:background .15s}
+html.nav-foldable .header-text:hover{background:var(--grey-panel)}
+html.nav-foldable .header-text:focus-visible{outline:3px solid rgba(14,140,138,.35);outline-offset:2px}
+html.nav-foldable .menu-hint{
+  display:inline-flex;align-items:center;gap:.3rem;margin-top:.3rem;padding:.1rem .55rem;border-radius:999px;
+  background:var(--teal-light);color:var(--teal);font-size:.7rem;font-weight:800;line-height:1.4;
+}
+html.nav-folded{--header-h:106px}                     /* 80% of 132px */
+html.nav-folded .tab-nav{display:none}
+html.nav-folded .brand-inpact img{height:calc((var(--header-h) / .8 - 38px) * .8)}
+html.nav-folded .brand-funder img{height:calc((var(--header-h) / .8 - 66px) * .8)}
+html.nav-folded .app-title{font-size:1.2rem}
+html.nav-folded .app-subtitle{font-size:.8rem;margin-top:.15rem}
+html.nav-folded .menu-hint{margin-top:.2rem}
+@media (max-width:991px){
+  html.nav-folded{--header-h:93px}                   /* 80% of 116px */
+  html.nav-folded .app-title{font-size:1.05rem}
+  html.nav-folded .app-subtitle{display:none}
+}
+@media (max-width:575px){
+  html.nav-folded{--header-h:74px}                   /* 80% of 92px */
+}
+
 /* ============ LAYOUT ============ */
 .app-shell{display:flex;align-items:flex-start;gap:0}
 .sidebar{
@@ -1710,6 +1738,8 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
     <div class="header-text">
       <h1 class="app-title"><span class="accent">Ireland</span> Greenhouse Gas Policy Impact Explorer</h1>
       <p class="app-subtitle">Explore greenhouse gas emissions, atmospheric pollutants, climate policies and policy effectiveness across Ireland.</p>
+      <!-- Policy Timeline / Spatial Mapping only: the menu bar is folded away; a click here shows it -->
+      <span class="menu-hint" id="menuHint" aria-hidden="true"><i class="bi bi-chevron-down"></i><span>Show menu</span></span>
     </div>
     <div class="brand-funder">
       <span class="funded-by">Funded by</span>
@@ -4786,6 +4816,7 @@ function activateTab(name){
   Object.entries(tabPanes).forEach(([key, pane]) => {
     if (pane) pane.classList.toggle("active", key === name);
   });
+  syncNavFold(name);                     // Policy Timeline / Spatial Mapping: menu folded, smaller header
   // Leaflet needs a size recalculation when its container becomes visible.
   if (name === "explorer" && typeof map !== "undefined" && map) {
     setTimeout(() => map.invalidateSize(), 60);
@@ -4802,6 +4833,42 @@ function activateTab(name){
 }
 tabButtons.forEach(b =>
   b.addEventListener("click", () => activateTab(b.dataset.tab)));
+
+/* Policy Timeline and Spatial Mapping fold the menu bar away and lower the header by 20%, for more
+   room; a click on the middle of the header shows the menu and the full header again (and back). */
+const NAV_FOLD_TABS = new Set(["policy", "mapping"]);
+const appHeader = document.querySelector(".app-header"), headerMid = document.querySelector(".header-text");
+const menuHint = document.getElementById("menuHint");
+function setNavFolded(folded){
+  const root = document.documentElement, nav = document.querySelector(".tab-nav");
+  root.classList.toggle("nav-folded", folded);
+  menuHint.querySelector("i").className = folded ? "bi bi-chevron-down" : "bi bi-chevron-up";
+  menuHint.querySelector("span").textContent = folded ? "Show menu" : "Hide menu";
+  headerMid.setAttribute("aria-expanded", String(!folded));
+  // the Policy Timeline and Spatial Mapping frames fill the space under the header and menu bar
+  root.style.setProperty("--tabnav-h", (nav ? nav.offsetHeight : 0) + "px");
+  if (typeof pt !== "undefined" && pt.started && ptIsActive()) ptSizeFrame();
+}
+function syncNavFold(name){
+  const foldable = !MAP_STANDALONE && NAV_FOLD_TABS.has(name);
+  document.documentElement.classList.toggle("nav-foldable", foldable);
+  if (foldable) {
+    headerMid.setAttribute("role", "button"); headerMid.tabIndex = 0;
+    headerMid.title = "Show or hide the menu";
+  } else {
+    ["role", "tabindex", "title", "aria-expanded"].forEach(a => headerMid.removeAttribute(a));
+  }
+  setNavFolded(foldable);                // these two tabs open with the menu folded
+}
+const toggleNav = () => {
+  if (document.documentElement.classList.contains("nav-foldable"))
+    setNavFolded(!document.documentElement.classList.contains("nav-folded"));
+};
+// The middle of the header; on phones (no title) anywhere on the header outside the two logos
+appHeader.addEventListener("click", e => { if (!e.target.closest("a")) toggleNav(); });
+headerMid.addEventListener("keydown", e => {
+  if ((e.key === "Enter" || e.key === " ") && headerMid.getAttribute("role") === "button") { e.preventDefault(); toggleNav(); }
+});
 
 /* Spatial Mapping tab: the /map/ workspace in a frame sized to fill the screen under the menu bar.
    It starts on the dashboard map's current view and dataset. */
