@@ -5,7 +5,8 @@ One request returns a whole series (every year, or every month for EDGAR) for
 one layer definition and one spatial selection:
 
 * ``where=pixel``  – the grid cell under ``lat`` / ``lng``
-* ``where=region`` – cells whose centre lies inside ``s``, ``w``, ``n``, ``e``
+* ``where=region`` – cells whose centre lies inside ``s``, ``w``, ``n``, ``e``,
+  a drawn ``poly`` or a ``county`` (data/boundaries/counties.json)
 * ``where=whole``  – every Ireland cell of the dataset
 
 For a region or the whole grid the cells are combined per time step with
@@ -16,6 +17,9 @@ used to build a path directly.
 """
 from __future__ import annotations
 
+import json
+from functools import lru_cache
+from pathlib import Path
 from typing import Optional
 
 import numpy as np
@@ -72,13 +76,41 @@ def _in_polygon(lat: np.ndarray, lng: np.ndarray, pts: np.ndarray) -> np.ndarray
     return inside
 
 
+COUNTIES_PATH = Path(__file__).resolve().parent.parent / "data" / "boundaries" / "counties.json"
+
+
+@lru_cache(maxsize=1)
+def counties() -> dict:
+    """County name → list of (k, 2) lat/lng rings, from scripts/build_counties.py."""
+    try:
+        data = json.loads(COUNTIES_PATH.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return {}
+    return {c["name"]: [np.asarray(r, dtype="float64") for r in c["rings"]] for c in data.get("counties", [])}
+
+
+def _in_rings(lat: np.ndarray, lng: np.ndarray, rings) -> np.ndarray:
+    """Even-odd over every ring: islands add cells, holes take them out."""
+    inside = np.zeros(lat.shape, dtype=bool)
+    for r in rings:
+        inside ^= _in_polygon(lat, lng, r)
+    return inside
+
+
 def _pick(q: dict, centres_lat: np.ndarray, centres_lng: np.ndarray, pixel_index):
     """Positions (into the value arrays) of the selected cells, and whether the region fell back to one cell."""
     where = q.get("where")
     if where == "whole":
         return np.arange(centres_lat.size), False
     if where == "region":
-        if q.get("poly"):
+        if q.get("county"):
+            rings = counties().get(q["county"])
+            if rings is None:
+                raise SelectionError("Unknown county.")
+            sel = np.flatnonzero(_in_rings(centres_lat, centres_lng, rings))
+            big = max(rings, key=len)
+            centre = big.mean(axis=0)
+        elif q.get("poly"):
             pts = _polygon(q["poly"])
             sel = np.flatnonzero(_in_polygon(centres_lat, centres_lng, pts))
             centre = pts.mean(axis=0)

@@ -343,7 +343,17 @@ def edgar_layer(request):
 
 
 _TS_KEYS = ("dataset", "where", "agg", "gas", "sector", "step", "model", "transport", "estimate", "poly",
-            "lat", "lng", "s", "w", "n", "e")
+            "county", "lat", "lng", "s", "w", "n", "e")
+
+
+def map_counties(request):
+    """County outlines for the time series County region (built by scripts/build_counties.py)."""
+    path = timeseries.COUNTIES_PATH
+    if not path.exists():
+        return JsonResponse({"ok": False, "detail": "No county boundaries."}, status=404)
+    resp = HttpResponse(path.read_bytes(), content_type="application/json; charset=utf-8")
+    resp["Cache-Control"] = "public, max-age=86400"
+    return resp
 
 
 def map_timeseries(request):

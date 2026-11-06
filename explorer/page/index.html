@@ -1609,6 +1609,8 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
 .ts-card-h{display:flex;align-items:center;gap:.4rem;margin:0 0 .55rem;font-size:.68rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--navy)}
 .ts-card-h > i{color:var(--teal);font-size:.85rem}
 .ts-right{margin-left:auto}
+.ts-county{flex:1 1 100%;height:31px;border:1px solid var(--teal);border-radius:7px;background:#fff;color:var(--navy);font-family:inherit;font-size:.78rem;font-weight:700;padding:.2rem .5rem;cursor:pointer}
+.ts-county:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
 .ts-chip{display:inline-flex;align-items:center;gap:.25rem;padding:.06rem .45rem;border-radius:999px;background:var(--grey-panel);color:var(--text-muted);font-size:.6rem;font-weight:700;letter-spacing:.01em;text-transform:none}
 .ts-seg{display:flex;width:100%}
 .ts-seg button{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:.3rem;padding:.4rem .4rem}
@@ -2101,8 +2103,10 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                   <div class="cmp-seg ts-shape-seg" role="radiogroup" aria-label="Region shape">
                     <button type="button" role="radio" aria-checked="true" data-shape="rect"><i class="bi bi-square"></i> Rectangle</button>
                     <button type="button" role="radio" aria-checked="false" data-shape="poly"><i class="bi bi-pentagon"></i> Polygon</button>
+                    <button type="button" role="radio" aria-checked="false" data-shape="county"><i class="bi bi-geo"></i> County</button>
                   </div>
-                  <button type="button" class="ts-btn ts-right ts-draw" aria-pressed="false"><i class="bi bi-pencil"></i><span>Draw</span></button>
+                  <button type="button" class="ts-btn ts-right ts-draw ts-x" aria-pressed="false"><i class="bi bi-pencil"></i><span>Draw</span></button>
+                  <select class="ts-county ts-x" aria-label="County" hidden><option value="">Choose a county…</option></select>
                 </div>
                 <div class="ts-loc ts-loc-box"><i class="bi bi-info-circle" aria-hidden="true"></i><span class="ts-loc-txt">Click a cell on the map.</span></div>
               </div></div>
@@ -2408,8 +2412,10 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                   <div class="cmp-seg ts-shape-seg" role="radiogroup" aria-label="Region shape" id="tsShape">
                     <button type="button" role="radio" aria-checked="true" data-shape="rect"><i class="bi bi-square"></i> Rectangle</button>
                     <button type="button" role="radio" aria-checked="false" data-shape="poly"><i class="bi bi-pentagon"></i> Polygon</button>
+                    <button type="button" role="radio" aria-checked="false" data-shape="county"><i class="bi bi-geo"></i> County</button>
                   </div>
-                  <button type="button" class="ts-btn ts-right ts-draw" id="tsDraw" aria-pressed="false"><i class="bi bi-pencil"></i><span>Draw</span></button>
+                  <button type="button" class="ts-btn ts-right ts-draw ts-x" id="tsDraw" aria-pressed="false"><i class="bi bi-pencil"></i><span>Draw</span></button>
+                  <select class="ts-county ts-x" aria-label="County" hidden><option value="">Choose a county…</option></select>
                 </div>
                 <div class="ts-loc ts-loc-box" id="tsLoc"><i class="bi bi-info-circle" aria-hidden="true"></i><span class="ts-loc-txt" id="tsLocTxt">Click a cell on the map.</span></div>
                 <div class="ts-sub ts-x" id="tsAggBox" hidden>
@@ -6305,6 +6311,7 @@ if (MAP_STANDALONE) (function mapWindow(){
     const all = sel => [...document.querySelectorAll(sel)];
     const whereSegs = all(".ts-where-seg"), regionToolsEls = all(".ts-region-tools");
     const shapeSegs = all(".ts-shape-seg"), drawBtns = all(".ts-draw"), locBoxes = all(".ts-loc-box");
+    const countySels = all(".ts-county");
     const aggBox = $("tsAggBox"), aggSeg = $("tsAgg");
     const areaStep = steps.area, addStep = steps.add, sumArea = $("msSumArea"), sumAdd = $("msSumAdd");
     const scaleEl = $("tsScale"), scaleBox = $("tsScaleBox"), bandEl = $("tsBand"), bandBox = $("tsBandBox");
@@ -6363,9 +6370,11 @@ if (MAP_STANDALONE) (function mapWindow(){
     }
     const keyOf = def => JSON.stringify(def);
     const plotGas = () => st.layers[0]?.def.gas || null;
+    const isCounty = () => st.where === "region" && st.loc?.type === "county";
+    const countyName = () => isCounty() ? `County ${st.loc.name}` : "";
     const aggText = l => st.where === "pixel" ? "Single pixel"
-      : l.data?.fallback ? "Region smaller than one cell: the cell at its centre"
-      : `${st.where === "region" ? "Region" : "Whole image"} ${st.agg} of ${l.data ? l.data.n_cells : "…"} cells`;
+      : l.data?.fallback ? `${countyName() || "Region"} smaller than one cell: the cell at its centre`
+      : `${st.where === "region" ? countyName() || "Region" : "Whole image"} ${st.agg} of ${l.data ? l.data.n_cells : "…"} cells`;
 
     // ---- data ----
     const locReady = () => st.where === "whole" || !!st.loc;
@@ -6373,6 +6382,7 @@ if (MAP_STANDALONE) (function mapWindow(){
       const q = new URLSearchParams({ ...def, where: st.where, agg: st.agg });
       const L0 = st.loc;
       if (st.where === "pixel") { q.set("lat", L0.lat.toFixed(5)); q.set("lng", L0.lng.toFixed(5)); }
+      else if (st.where === "region" && L0.type === "county") q.set("county", L0.name);
       else if (st.where === "region" && L0.type === "rect") ["s", "w", "n", "e"].forEach(k => q.set(k, L0[k].toFixed(4)));
       else if (st.where === "region") q.set("poly", L0.pts.map(([a, b]) => `${a.toFixed(4)},${b.toFixed(4)}`).join(";"));
       const url = `/api/map/timeseries/?${q}`;
@@ -6519,7 +6529,8 @@ if (MAP_STANDALONE) (function mapWindow(){
       const vis = visible(), n = st.layers.length;
       emptyEl.hidden = vis.length > 0;
       emptyEl.querySelector("b").textContent = !n ? "No layers in the plot yet"
-        : !locReady() ? (st.where === "pixel" ? "Click a pixel on the map to update the plot" : "Draw a region on the map to update the plot")
+        : !locReady() ? (st.where === "pixel" ? "Click a pixel on the map to update the plot"
+                         : st.shape === "county" ? "Choose a county to update the plot" : "Draw a region on the map to update the plot")
         : st.layers.some(l => l.on) && !vis.length ? "Loading the time series…" : "No layer is ticked";
       if (vis.length) st.chart = new Chart($("tsChart"), chartConfig());
       else computeScales();
@@ -6612,11 +6623,12 @@ if (MAP_STANDALONE) (function mapWindow(){
       }
       return new Blob(parts, { type: "image/png" });
     }
+    const fileArea = () => isCounty() ? `county_${st.loc.name.replace(/\W+/g, "_")}` : st.where;
     function locationText(){
       const L0 = st.loc;
       if (st.where === "whole") return `Whole image (all Ireland cells), ${st.agg} of the cells`;
       if (st.where === "pixel") return `Pixel at ${L0.lat.toFixed(3)}°N, ${lngTxt(L0.lng, 3)}`;
-      return (L0.type === "rect" ? `Rectangle ${L0.s.toFixed(2)}–${L0.n.toFixed(2)}°N, ${lngTxt(L0.w, 2)} to ${lngTxt(L0.e, 2)}`
+      return (L0.type === "county" ? `County ${L0.name}` : L0.type === "rect" ? `Rectangle ${L0.s.toFixed(2)}–${L0.n.toFixed(2)}°N, ${lngTxt(L0.w, 2)} to ${lngTxt(L0.e, 2)}`
                                  : `Polygon of ${L0.pts.length} points`) + `, ${st.agg} of the cells`;
     }
     function sourceText(vis){
@@ -6646,7 +6658,7 @@ if (MAP_STANDALONE) (function mapWindow(){
         const blob = await new Promise(r => cv.toBlob(r, "image/png"));
         chart.destroy();
         const out = pngWithDpi(await blob.arrayBuffer(), dpi);
-        const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(out), download: `time_series_${plotGas()}_${st.where}_${dpi}dpi.png` });
+        const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(out), download: `time_series_${plotGas()}_${fileArea()}_${dpi}dpi.png` });
         document.body.appendChild(a); a.click(); a.remove();
         setTimeout(() => URL.revokeObjectURL(a.href), 4000);
       } finally {
@@ -6664,7 +6676,7 @@ if (MAP_STANDALONE) (function mapWindow(){
           return j >= 0 && l.data.values[j] != null ? l.data.values[j] : "";
         })])];
       const blob = new Blob(["﻿" + rows.map(r => r.map(q).join(",")).join("\r\n")], { type: "text/csv" });
-      const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: `time_series_${plotGas()}_${st.where}.csv` });
+      const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: `time_series_${plotGas()}_${fileArea()}.csv` });
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(a.href), 4000);
     }
@@ -6682,7 +6694,11 @@ if (MAP_STANDALONE) (function mapWindow(){
         });
         marks.addLayer(L.circleMarker([L0.lat, L0.lng], { pane: "tsPane", radius: 5, color: "#fff", weight: 2, fillColor: "#0B5563", fillOpacity: 1, interactive: false }));
       } else if (!st.drawMode) {
-        marks.addLayer(L0.type === "rect" ? L.rectangle([[L0.s, L0.w], [L0.n, L0.e]], area) : L.polygon(L0.pts, area));
+        if (L0.type === "county")                       // white casing so the outline reads on the imagery
+          marks.addLayer(L.polygon(L0.rings.map(r => [r]), { ...LINE, color: "#fff", weight: 5, opacity: 0.85, fill: false }));
+        marks.addLayer(L0.type === "rect" ? L.rectangle([[L0.s, L0.w], [L0.n, L0.e]], area)
+          : L0.type === "county" ? L.polygon(L0.rings.map(r => [r]), { ...area, dashArray: null, weight: 2.4, fillOpacity: 0.12 })
+          : L.polygon(L0.pts, area));
       }
       marks.addTo(map);
     }
@@ -6692,6 +6708,7 @@ if (MAP_STANDALONE) (function mapWindow(){
       if (st.poly) { [st.poly.line, st.poly.rubber, st.poly.dots].forEach(x => map.removeLayer(x)); st.poly = null; }
     }
     function setDraw(on){
+      if (st.shape === "county") on = false;           // a county is chosen from the list, not drawn
       clearDraft();
       st.drawMode = on;
       drawBtns.forEach(b => b.setAttribute("aria-pressed", String(on)));
@@ -6760,13 +6777,40 @@ if (MAP_STANDALONE) (function mapWindow(){
     });
     drawBtns.forEach(b => b.addEventListener("click", () => setDraw(!st.drawMode)));
 
+    // ---- County: an outline from data/boundaries/counties.json, chosen in a list ----
+    let countyList = null;
+    function loadCounties(){
+      if (!countyList) countyList = fetch("/api/map/counties/").then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
+        .then(j => {
+          const list = j.counties || [];
+          countySels.forEach(sel => list.forEach(c => sel.add(new Option(`County ${c.name}`, c.name))));
+          syncLoc();
+          return new Map(list.map(c => [c.name, c]));
+        })
+        .catch(err => { countyList = null; st.areaWarn = "The county list could not be loaded."; syncLoc(); throw err; });
+      return countyList;
+    }
+    countySels.forEach(sel => sel.addEventListener("change", async () => {
+      const name = sel.value;
+      countySels.forEach(x => { x.value = name; });
+      if (!name) return;
+      const c = (await loadCounties()).get(name);
+      if (!c) return;
+      setLoc({ type: "county", name: c.name, rings: c.rings });
+      const [s0, w0, n0, e0] = c.bbox;
+      map.flyToBounds([[s0, w0], [n0, e0]], { padding: [30, 30], duration: 0.6, maxZoom: 9 });
+    }));
+
     // ---- panel state ----
     function syncLoc(){
       const L0 = st.loc, region = st.where === "region";
       regionToolsEls.forEach(el => { el.hidden = !region; });
+      const county = st.shape === "county";
+      drawBtns.forEach(b => { b.hidden = county; });
+      countySels.forEach(sel => { sel.hidden = !county; sel.value = L0?.type === "county" ? L0.name : ""; });
       aggBox.hidden = st.where === "pixel";
       drawBtns.forEach(b => {
-        b.querySelector("span").textContent = st.drawMode ? "Cancel" : L0 && region ? "Redraw" : "Draw";
+        b.querySelector("span").textContent = st.drawMode ? "Cancel" : L0 && region && L0.type !== "county" ? "Redraw" : "Draw";
         b.querySelector("i").className = st.drawMode ? "bi bi-x-lg" : "bi bi-pencil";
       });
       let html, cls = "";
@@ -6781,16 +6825,18 @@ if (MAP_STANDALONE) (function mapWindow(){
         html = `Click on the map to add points${k ? ` (${k} so far)` : ""}. Finish with a double-click, <kbd>Enter</kbd> or a click on the first point · <kbd>Backspace</kbd> undoes · <kbd>Esc</kbd> cancels.`;
         cls = "drawing";
       } else if (L0) {
-        html = L0.type === "rect" ? `Rectangle <b>${L0.s.toFixed(2)}–${L0.n.toFixed(2)}°N, ${lngTxt(L0.w, 2)} to ${lngTxt(L0.e, 2)}</b>`
+        html = L0.type === "county" ? `<b>County ${esc(L0.name)}</b>: cells whose centre lies inside the county`
+             : L0.type === "rect" ? `Rectangle <b>${L0.s.toFixed(2)}–${L0.n.toFixed(2)}°N, ${lngTxt(L0.w, 2)} to ${lngTxt(L0.e, 2)}</b>`
                                   : `Polygon of <b>${L0.pts.length} points</b>`;
         cls = "set";
-      } else html = "Choose Rectangle or Polygon and click <b>Draw</b>.";
+      } else html = st.shape === "county" ? "Choose a county from the list." : "Choose Rectangle or Polygon and click <b>Draw</b>, or pick a <b>County</b>.";
       locBoxes.forEach(box => {
         box.querySelector(".ts-loc-txt").innerHTML = html;
         box.className = "ts-loc ts-loc-box" + (cls ? " " + cls : "");
       });
       mapEl.classList.toggle("ts-picking", st.active && st.where === "pixel");
-      titleEl.textContent = { pixel: "Pixel time series", region: "Region time series", whole: "Whole-image time series" }[st.where];
+      titleEl.textContent = isCounty() ? `County ${L0.name} time series`
+        : { pixel: "Pixel time series", region: "Region time series", whole: "Whole-image time series" }[st.where];
       syncTsSteps();
     }
     // The "Choose the area" and "Add to the time series plot" steps of the left stepper:
@@ -6809,6 +6855,7 @@ if (MAP_STANDALONE) (function mapWindow(){
       sumArea.textContent = st.where === "whole" ? "Whole image"
         : !L0 ? "Not chosen yet"
         : st.where === "pixel" ? `Pixel ${L0.lat.toFixed(3)}°N, ${lngTxt(L0.lng, 3)}`
+        : L0.type === "county" ? `County ${L0.name}`
         : L0.type === "rect" ? "Rectangle region" : `Polygon of ${L0.pts.length} points`;
       sumArea.classList.toggle("empty", !areaOk);
       sumAdd.textContent = n ? `${n} layer${n > 1 ? "s" : ""} in the plot` : ds() === "mapeire" ? "Not available for MapEIre" : "Nothing added yet";
@@ -6842,7 +6889,7 @@ if (MAP_STANDALONE) (function mapWindow(){
       addBtn.querySelector("span").textContent = st.busy ? "Adding…" : noTs ? "Not available for MapEIre" : dup ? "Already in the plot" : needArea ? "Choose the area first (step 3)" : "Add to plot";
       addBtn.querySelector("i").className = noTs ? "bi bi-slash-circle" : dup ? "bi bi-check2" : needArea ? "bi bi-arrow-up" : "bi bi-plus-lg";
       if (!st.busy && !msgEl.classList.contains("warn"))
-        setMsg(needArea ? `In step 3, ${st.where === "pixel" ? "click a pixel on the map" : "draw a region on the map"}; Add to plot then becomes active.` : "");
+        setMsg(needArea ? `In step 3, ${st.where === "pixel" ? "click a pixel on the map" : st.shape === "county" ? "choose a county" : "draw a region on the map"}; Add to plot then becomes active.` : "");
       syncTsSteps();
     }
     function clearAll(){ st.layers = []; st.colour = 0; st.token++; setMsg(""); render(); syncAdd(); }
@@ -6860,7 +6907,13 @@ if (MAP_STANDALONE) (function mapWindow(){
     })));
     shapeSegs.forEach(s => s.querySelectorAll("[data-shape]").forEach(b => b.addEventListener("click", () => {
       st.shape = b.dataset.shape; shapeSegs.forEach(x => seg(x, "shape", st.shape)); st.areaWarn = "";
-      setDraw(true);
+      if (st.shape !== "county") return setDraw(true);
+      setDraw(false);
+      loadCounties().then(() => {
+        if (st.loc?.type === "county") return;
+        const sel = countySels.find(x => x.offsetParent) || countySels[0];
+        sel.focus();
+      }, () => {});
     })));
     aggSeg.querySelectorAll("[data-agg]").forEach(b => b.addEventListener("click", () => {
       if (st.agg === b.dataset.agg) return;
