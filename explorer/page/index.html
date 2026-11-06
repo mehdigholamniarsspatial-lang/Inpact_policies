@@ -1046,15 +1046,27 @@ html.map-standalone .ms-bar{
 .ms-tool:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.4)}
 .ms-tool:focus-visible{outline:2px solid #9FE8C2;outline-offset:2px}
 .ms-tool[aria-pressed="true"]{background:#9FE8C2;border-color:#9FE8C2;color:var(--navy)}
-.ms-tool.done{background:var(--emerald);border-color:var(--emerald)}
-/* Text size: a (smaller) | A (larger), one joined pair; sizes in px so the buttons don't grow */
-.ms-textsize{display:inline-flex}
-.ms-textsize .ms-tool{width:34px;padding:0;font-family:Georgia,"Times New Roman",serif;line-height:1}
-.ms-textsize .ms-tool:first-child{border-radius:8px 0 0 8px;border-right-width:0}
+/* The layer panel is always beside the map on wide screens: Layers is only the drawer's
+   open/close button on narrow ones (below 992px) */
+@media (min-width:992px){ .ms-tools #msSideToggle{display:none} }
+/* Text size: a (smaller) | A (larger), one joined pair; a bright chip on the dark toolbar.
+   Sizes in px so the buttons don't grow with the text. */
+.ms-textsize{
+  display:inline-flex;align-items:center;gap:2px;padding:2px;border-radius:10px;
+  background:#fff;box-shadow:0 0 0 2px #9FE8C2,0 2px 6px rgba(0,0,0,.25);
+}
+.ms-textsize .ms-tool{
+  width:36px;height:30px;padding:0;border:0;border-radius:8px;
+  background:transparent;color:var(--navy);font-family:Georgia,"Times New Roman",serif;line-height:1;
+}
+.ms-textsize .ms-tool:hover:not(:disabled){background:var(--teal);color:#fff}
+.ms-textsize .ms-tool:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
+.ms-textsize .ms-tool:first-child{border-right:1px solid #D5DEE5;border-radius:8px 0 0 8px}
 .ms-textsize .ms-tool:last-child{border-radius:0 8px 8px 0}
-.ms-a.sm{font-size:14px;font-weight:700}
-.ms-a.lg{font-size:20px;font-weight:700}
-.ms-textsize .ms-tool:disabled{opacity:.4;cursor:not-allowed;background:rgba(255,255,255,.06)}
+.ms-a.sm{font-size:16px;font-weight:800}
+.ms-a.lg{font-size:22px;font-weight:800}
+/* at the limit: still readable, clearly not clickable */
+.ms-textsize .ms-tool:disabled{color:#8696A3;background:#EEF2F5;cursor:not-allowed}
 
 /* Side panel: a compact accordion stepper (1 dataset, 2 layer, 3 display) */
 html.map-standalone .map-side{
@@ -1836,12 +1848,6 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                 <button type="button" class="ms-tool" id="msTextSmaller" aria-label="Smaller text" title="Smaller text"><span class="ms-a sm" aria-hidden="true">a</span></button>
                 <button type="button" class="ms-tool" id="msTextLarger" aria-label="Larger text" title="Larger text"><span class="ms-a lg" aria-hidden="true">A</span></button>
               </div>
-              <button type="button" class="ms-tool" id="msResetView" title="Zoom back to the whole of Ireland">
-                <i class="bi bi-crosshair"></i><span class="lbl">Reset view</span>
-              </button>
-              <button type="button" class="ms-tool" id="msCopyLink" title="Copy a link to this map view">
-                <i class="bi bi-link-45deg"></i><span class="lbl">Copy link</span>
-              </button>
               <button type="button" class="ms-tool" id="msFullscreen" title="Full screen">
                 <i class="bi bi-arrows-fullscreen"></i><span class="lbl">Full screen</span>
               </button>
@@ -4845,7 +4851,6 @@ if (MAP_STANDALONE) (function mapWindow(){
   const cards = [...document.querySelectorAll(".ms-ds-card")];
   const sideBtn = document.getElementById("msSideToggle");
   const fsBtn = document.getElementById("msFullscreen");
-  const copyBtn = document.getElementById("msCopyLink");
   const layerChip = document.getElementById("msLayer");
   const layerText = document.getElementById("msLayerText");
   const narrow = window.matchMedia("(max-width: 991px)");
@@ -5108,18 +5113,6 @@ if (MAP_STANDALONE) (function mapWindow(){
   setSide(!narrow.matches);
   narrow.addEventListener("change", e => setSide(!e.matches));
   sideBtn.addEventListener("click", () => setSide(root.classList.contains("ms-side-hidden")));
-
-  document.getElementById("msResetView").addEventListener("click", () => map.flyTo(MAP_HOME.center, MAP_HOME.zoom, { duration: .8 }));
-
-  copyBtn.addEventListener("click", async () => {
-    const label = copyBtn.querySelector(".lbl"), icon = copyBtn.querySelector("i");
-    // The link opens the map on its own (/map/), also when copied from the dashboard's Spatial Mapping tab
-    const link = location.origin + "/map/?" + mapStateQuery();
-    try { await navigator.clipboard.writeText(link); }
-    catch (err) { window.prompt("Copy this link:", link); return; }
-    copyBtn.classList.add("done"); icon.className = "bi bi-check2"; label.textContent = "Copied";
-    setTimeout(() => { copyBtn.classList.remove("done"); icon.className = "bi bi-link-45deg"; label.textContent = "Copy link"; }, 1800);
-  });
 
   // Full screen takes the whole map workspace (toolbar and panel included)
   fsBtn.addEventListener("click", () => {
