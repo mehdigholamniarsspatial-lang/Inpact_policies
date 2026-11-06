@@ -342,6 +342,33 @@ input[type=range]{accent-color:var(--emerald);width:100%}
 .raster-colorbar .cb-source a{color:inherit}
 .raster-title .rt-total{margin-top:.3rem;font-size:.68rem;color:var(--text-main)}
 .raster-title .rt-total b{font-variant-numeric:tabular-nums;color:var(--navy)}
+
+/* One legend, bottom left: the layer description (from the title card, which is kept in the page but
+   not shown), the colour bar, and the stations row with its on / off box. Nothing on the right side. */
+#map .leaflet-control.raster-title{display:none}
+.raster-colorbar{max-width:236px}
+.cb-head{margin-bottom:.4rem;padding-bottom:.4rem;border-bottom:1px solid var(--grey-border);line-height:1.25}
+.cb-head .rt-kicker{font-size:.58rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}
+.cb-head .rt-name{font-size:.8rem;font-weight:800;margin:.1rem 0 .05rem;color:var(--navy)}
+.cb-head .rt-sector{font-size:.66rem;color:var(--text-main)}
+.cb-head .rt-sector .code{color:var(--text-muted)}
+.cb-head .unit-badge{margin-top:.25rem;font-size:.62rem}
+.cb-head .rt-total{margin-top:.25rem;font-size:.64rem;color:var(--text-main)}
+.cb-head .rt-total b{font-variant-numeric:tabular-nums;color:var(--navy)}
+.cb-head .rt-flag{margin-top:.2rem;font-size:.6rem;color:#9A6212}
+.cb-head .unit-badge + .rt-total{margin-top:.3rem}
+.cb-stn{
+  display:flex;align-items:center;gap:.4rem;margin:.35rem 0 0;padding-top:.35rem;border-top:1px solid var(--grey-border);
+  font-size:.66rem;font-weight:600;color:var(--navy);cursor:pointer;line-height:1.2;
+}
+.cb-stn input{width:14px;height:14px;margin:0;accent-color:var(--teal);cursor:pointer;flex:0 0 auto}
+.cb-stn .atmo-dot{
+  width:14px;height:14px;flex:0 0 14px;border-radius:50%;background:var(--teal);border:2px solid #fff;
+  box-shadow:0 0 0 1px rgba(14,140,138,.5);
+}
+.map-legend.stn-only{padding:.35rem .55rem}
+.map-legend.stn-only .cb-stn{margin:0;padding:0;border:0}
+.map-legend.stn-only[hidden]{display:none}
 .edgar-tip .k{color:var(--text-muted)}
 .edgar-tip b{font-variant-numeric:tabular-nums}
 
@@ -3689,19 +3716,55 @@ const stationsLayer = L.layerGroup(STATIONS.map(s =>
 
 stationsLayer.addTo(map);
 
-L.control.layers(null, {
-  "Atmosphere Stations": stationsLayer
-}, { collapsed:false, position:"topright" }).addTo(map);
-
-// Dynamic legend
-const legend = L.control({ position:"bottomright" });
+/* One legend at the bottom left. The emission layers' colour bars carry the layer description (copied
+   from their title card, which stays in the page but is not shown) and a stations row with an on / off
+   box; with no colour bar on the map a small stations-only box stands in. Nothing on the right side. */
+const stnRowHtml = () => `<label class="cb-stn" title="Show or hide the atmospheric GHG monitoring stations">
+    <input type="checkbox" class="cb-stn-box"${map.hasLayer(stationsLayer) ? " checked" : ""}>
+    <span class="atmo-dot" aria-hidden="true"></span><span>Atmospheric GHG monitoring stations</span></label>`;
+const legend = L.control({ position:"bottomleft" });
 legend.onAdd = () => {
-  const div = L.DomUtil.create("div","map-legend");
-  div.innerHTML = `<strong style="font-size:.74rem;color:#16324F">Legend</strong><br>
-    <span class="dot" style="background:var(--teal)"></span>Atmospheric GHG monitoring station`;
+  const div = L.DomUtil.create("div", "map-legend stn-only");
+  div.innerHTML = stnRowHtml();
+  L.DomEvent.disableClickPropagation(div);
   return div;
 };
 legend.addTo(map);
+// The station boxes (in the stand-in and in every colour bar) switch the stations on and off together
+map.getContainer().addEventListener("change", e => {
+  if (!e.target.classList?.contains("cb-stn-box")) return;
+  if (e.target.checked) stationsLayer.addTo(map); else map.removeLayer(stationsLayer);
+  map.getContainer().querySelectorAll(".cb-stn-box").forEach(b => { b.checked = e.target.checked; });
+});
+function syncMapLegend(){
+  const box = map.getContainer().querySelector(".leaflet-control-container");
+  const bars = [...box.querySelectorAll(".raster-colorbar")];
+  bars.forEach(bar => {
+    // the title card of the same layer (compare cards pair with compare cards)
+    const cmp = bar.classList.contains("cmp-card");
+    const card = [...box.querySelectorAll(".raster-title")].find(t => t.classList.contains("cmp-card") === cmp);
+    let head = bar.querySelector(":scope > .cb-head");
+    if (card) {
+      if (!head) { head = document.createElement("div"); head.className = "cb-head"; bar.prepend(head); }
+      if (head.innerHTML !== card.innerHTML) head.innerHTML = card.innerHTML;
+      if (card.title && bar.title !== card.title) bar.title = card.title;
+    } else if (head) head.remove();
+    if (!bar.querySelector(".cb-stn")) {
+      const src = bar.querySelector(".cb-source"), tmp = document.createElement("div");
+      tmp.innerHTML = stnRowHtml();
+      const row = tmp.firstElementChild;
+      L.DomEvent.disableClickPropagation(row);
+      src ? bar.insertBefore(row, src) : bar.appendChild(row);
+    }
+  });
+  // the stand-in only while no colour bar is shown
+  const shown = bars.some(b => getComputedStyle(b).display !== "none");
+  const only = box.querySelector(".map-legend.stn-only");
+  if (only && only.hidden !== shown) only.hidden = shown;
+}
+new MutationObserver(syncMapLegend).observe(map.getContainer().querySelector(".leaflet-control-container"),
+  { childList: true, subtree: true, characterData: true });
+syncMapLegend();
 
 // Fullscreen control
 const FsControl = L.Control.extend({
