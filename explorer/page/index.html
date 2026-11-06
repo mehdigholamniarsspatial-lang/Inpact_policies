@@ -1047,40 +1047,23 @@ html.map-standalone .ms-steps{padding:.2rem .9rem 0}
 .ms-tools #msCompare,.ms-tools #msTs{display:none}
 html.map-standalone .ms-modes{display:block}
 .ms-modes{display:none;padding:.75rem .9rem .55rem;border-bottom:1px solid var(--grey-border);background:#fff}
-.ms-modes-head{
-  width:100%;display:flex;align-items:center;gap:.5rem;padding:0 0 .4rem;border:0;background:none;
-  font-family:inherit;text-align:left;cursor:pointer;border-radius:6px;transition:padding .2s;
-}
-.ms-modes-head:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
-.ms-modes-head:hover .ms-modes-lbl{color:var(--teal)}
-.ms-modes-lbl{font-size:.66rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);white-space:nowrap}
-.ms-modes-sum{
-  display:none;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  font-size:.72rem;font-weight:700;color:var(--teal);
-}
-.ms-modes-head .ms-chev{margin-left:auto;transform:rotate(180deg)}
-.ms-modes-body{display:grid;grid-template-rows:1fr;transition:grid-template-rows .2s ease,visibility .2s}
-.ms-modes-body > div{min-height:0;overflow:hidden;padding:2px}
-.ms-modes.is-collapsed{padding-bottom:.55rem}
-.ms-modes.is-collapsed .ms-modes-head{padding-bottom:0}
-.ms-modes.is-collapsed .ms-modes-head .ms-chev{transform:none}
-.ms-modes.is-collapsed .ms-modes-sum{display:block}
-.ms-modes.is-collapsed .ms-modes-body{grid-template-rows:0fr;visibility:hidden}
-.ms-tabs{display:grid;grid-template-columns:1fr 1fr;gap:.2rem;padding:.2rem;border-radius:10px;background:var(--grey-panel);border:1px solid var(--grey-border)}
+.ms-modes-lbl{font-size:.66rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin:0 0 .4rem}
+/* always shown (not foldable); 30% larger than the first slim version */
+.ms-tabs{display:grid;grid-template-columns:1fr 1fr;gap:.25rem;padding:.25rem;border-radius:11px;background:var(--grey-panel);border:1px solid var(--grey-border)}
 .ms-tab{
   position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:.12rem;min-width:0;
-  padding:.3rem .55rem;border:0;border-radius:7px;background:transparent;cursor:pointer;text-align:left;
+  padding:.45rem .7rem;border:0;border-radius:8px;background:transparent;cursor:pointer;text-align:left;
   font-family:inherit;color:var(--navy);transition:background .15s,box-shadow .15s,color .15s;
 }
 .ms-tab:hover:not(:disabled){background:#fff}
 .ms-tab:focus-visible{outline:3px solid rgba(14,140,138,.35);outline-offset:1px}
-.ms-tab-top{display:flex;align-items:center;gap:.4rem;width:100%}
-.ms-tab-top i{font-size:.88rem;line-height:1;color:var(--teal)}
-.ms-tab .t{font-size:.78rem;font-weight:800;line-height:1.15;white-space:nowrap}
+.ms-tab-top{display:flex;align-items:center;gap:.5rem;width:100%}
+.ms-tab-top i{font-size:1.15rem;line-height:1;color:var(--teal)}
+.ms-tab .t{font-size:1rem;font-weight:800;line-height:1.15;white-space:nowrap}
 .ms-tab .s{display:none}                              /* compact tabs: the description is the tooltip */
 .ms-tab .on{
   margin-left:auto;display:none;align-items:center;gap:.2rem;padding:.05rem .4rem;border-radius:999px;
-  background:rgba(255,255,255,.22);font-size:.6rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  background:rgba(255,255,255,.22);font-size:.7rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
 }
 .ms-tab[aria-selected="true"]{background:var(--teal);color:#fff;box-shadow:0 3px 10px rgba(14,140,138,.28)}
 .ms-tab[aria-selected="true"] .ms-tab-top i,.ms-tab[aria-selected="true"] .s{color:#E4F6F5}
@@ -1230,6 +1213,8 @@ html.map-standalone .ms-about{margin-top:auto;padding:.1rem .9rem .2rem;border-t
 .ms-info-more{display:grid;grid-template-rows:0fr;transition:grid-template-rows .2s ease,visibility .2s;visibility:hidden}
 .ms-info-more > div{min-height:0;overflow:hidden}
 .ms-about.more-open .ms-info-more{grid-template-rows:1fr;visibility:visible}
+/* While About is made bigger the steps above fold, and About fills the panel's free height */
+html.map-standalone .ms-about.is-big{flex:1 0 auto;margin-top:.4rem}
 .ms-facts{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.22rem .7rem;margin:.55rem 0 0;font-size:.7rem;line-height:1.35}
 .ms-facts dt{font-weight:700;color:var(--text-muted);white-space:nowrap}
 .ms-facts dd{margin:0;color:var(--text-main)}
@@ -1814,12 +1799,7 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
           <div class="map-side" id="mapSide">
           <!-- What to do with the map: compare two layers or plot a time series (drives #msCompare / #msTs) -->
           <div class="ms-modes" id="msModes">
-            <button type="button" class="ms-modes-head" id="msModesBtn" aria-expanded="true" aria-controls="msModesBody">
-              <span class="ms-modes-lbl" id="msModesLbl">Choose an analysis</span>
-              <span class="ms-modes-sum" id="msModesSum"></span>
-              <i class="bi bi-chevron-down ms-chev" aria-hidden="true"></i>
-            </button>
-            <div class="ms-modes-body" id="msModesBody"><div>
+            <p class="ms-modes-lbl" id="msModesLbl">Choose an analysis</p>
             <div class="ms-tabs" role="tablist" aria-labelledby="msModesLbl">
               <button type="button" class="ms-tab" role="tab" id="msTabCompare" data-for="msCompare" aria-selected="false">
                 <span class="ms-tab-top"><i class="bi bi-layout-split" aria-hidden="true"></i><span class="t">Compare</span><span class="on"><i class="bi bi-check-lg"></i>On</span></span>
@@ -1831,7 +1811,6 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
               </button>
             </div>
             <p class="ms-mode-hint" id="msModeHint" role="status"></p>
-            </div></div>
           </div>
           <!-- Stepper of the map's own window. On /map/ the script moves the raster bar
                into step 2 and the opacity field into step 3. -->
@@ -6252,9 +6231,6 @@ if (MAP_STANDALONE) (function mapWindow(){
     const tabs = [...document.querySelectorAll("#msModes .ms-tab")];
     const hint = document.getElementById("msModeHint");
     const src = t => document.getElementById(t.dataset.for);
-    const HINTS = {
-      msCompare: "<b>Compare is on.</b> Pick layer A in step 2; layer B sits under it. The map shows B − A and the statistics open on the right."
-    };                                                   // Time series has no tip line
     function sync(){
       let on = null;
       tabs.forEach(t => {
@@ -6266,32 +6242,37 @@ if (MAP_STANDALONE) (function mapWindow(){
         if (sel) on = t;
       });
       const off = tabs.find(t => t.disabled);
-      hint.innerHTML = on
-        ? (HINTS[on.dataset.for] ? `<i class="bi bi-info-circle" aria-hidden="true"></i><span>${HINTS[on.dataset.for]} <button type="button" data-close>Close</button></span>` : "")
+      // No tip while an analysis is on; with none open, a one-line pointer to the tabs
+      hint.innerHTML = on ? ""
         : `<i class="bi bi-map" aria-hidden="true"></i><span>Showing one layer on the map. Choose <b>Compare</b> or <b>Time series</b> to start an analysis.${
             off ? ` ${off.querySelector(".t").textContent} needs EDGAR or the Inverse model.` : ""}</span>`;
-      hint.querySelector("[data-close]")?.addEventListener("click", () => src(on).click());
-      sumEl.textContent = on ? `${on.querySelector(".t").textContent} is on` : "No analysis open";
     }
 
-    // The tabs block folds away while "About this dataset" is made bigger (opened, or More details),
-    // and comes back as it was when About is made smaller again
-    const box = document.getElementById("msModes"), head = document.getElementById("msModesBtn");
-    const sumEl = document.getElementById("msModesSum");
+    // While "About this dataset" is made bigger (opened, or More details) the numbered steps
+    // above it fold and About fills the panel; making About smaller opens them again as they were
     const aboutBox = document.querySelector("#mapSide .ms-about");
     const aboutStep = aboutBox.querySelector('[data-step="about"]');
-    const isOpen = () => !box.classList.contains("is-collapsed");
-    const setModesOpen = open => { box.classList.toggle("is-collapsed", !open); head.setAttribute("aria-expanded", String(open)); };
+    const stepEls = () => [...document.querySelectorAll("#msSteps > .ms-step")];
     const aboutSize = () => !aboutStep.classList.contains("is-open") ? 0 : aboutBox.classList.contains("more-open") ? 2 : 1;
-    let lastSize = aboutSize(), before = null;          // the tabs' state before About grew
-    head.addEventListener("click", () => { before = null; setModesOpen(!isOpen()); });
+    let lastSize = aboutSize(), before = null;          // Map(step -> was open) saved when About grew
     const onAbout = () => {                              // runs after About's own click handlers
       const size = aboutSize();
-      if (size > lastSize) { if (before === null) before = isOpen(); setModesOpen(false); }
-      else if (size < lastSize && before !== null) { setModesOpen(before); before = null; }
+      if (size > lastSize) {
+        if (!before) before = new Map(stepEls().map(s => [s, s.classList.contains("is-open")]));
+        stepEls().forEach(s => setOpen(s, false));
+        aboutBox.classList.add("is-big");
+      } else if (size < lastSize && before) {
+        before.forEach((open, s) => setOpen(s, open)); before = null;
+        aboutBox.classList.remove("is-big");
+      }
+      if (!size) aboutBox.classList.remove("is-big");
       lastSize = size;
     };
     ["msAboutBtn", "msInfoMoreBtn"].forEach(id => document.getElementById(id).addEventListener("click", onAbout));
+    // Opening a step by hand while About is big: About goes back to normal height, the step stays
+    stepEls().forEach(s => s.querySelector(".ms-step-btn").addEventListener("click", () => {
+      if (before && s.classList.contains("is-open")) { before = null; aboutBox.classList.remove("is-big"); }
+    }));
     tabs.forEach((t, i) => {
       t.addEventListener("click", () => src(t).click());
       t.addEventListener("keydown", e => {
