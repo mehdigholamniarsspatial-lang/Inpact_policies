@@ -978,7 +978,7 @@ html.map-embed .ms-crumb .home-link + .sep{display:none!important}
 .home-btn .hb-kicker{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;opacity:.88}
 .home-btn .hb-label{font-size:1.1rem;font-weight:800;white-space:nowrap}
 
-html.map-standalone{--header-h:104px;--ms-side-w:360px}
+html.map-standalone{--header-h:104px;--ms-side-w:396px}
 html.map-standalone,html.map-standalone body{height:100%;overflow:hidden}
 html.map-standalone .home-btn{display:inline-flex}
 html.map-standalone .ms-only{display:block}
@@ -1066,18 +1066,18 @@ html.map-standalone .ms-modes{display:block}
 .ms-modes.is-collapsed .ms-modes-head .ms-chev{transform:none}
 .ms-modes.is-collapsed .ms-modes-sum{display:block}
 .ms-modes.is-collapsed .ms-modes-body{grid-template-rows:0fr;visibility:hidden}
-.ms-tabs{display:grid;grid-template-columns:1fr 1fr;gap:.25rem;padding:.25rem;border-radius:12px;background:var(--grey-panel);border:1px solid var(--grey-border)}
+.ms-tabs{display:grid;grid-template-columns:1fr 1fr;gap:.2rem;padding:.2rem;border-radius:10px;background:var(--grey-panel);border:1px solid var(--grey-border)}
 .ms-tab{
   position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:.12rem;min-width:0;
-  padding:.5rem .6rem .5rem;border:0;border-radius:9px;background:transparent;cursor:pointer;text-align:left;
+  padding:.3rem .55rem;border:0;border-radius:7px;background:transparent;cursor:pointer;text-align:left;
   font-family:inherit;color:var(--navy);transition:background .15s,box-shadow .15s,color .15s;
 }
 .ms-tab:hover:not(:disabled){background:#fff}
 .ms-tab:focus-visible{outline:3px solid rgba(14,140,138,.35);outline-offset:1px}
 .ms-tab-top{display:flex;align-items:center;gap:.4rem;width:100%}
-.ms-tab-top i{font-size:1rem;line-height:1;color:var(--teal)}
-.ms-tab .t{font-size:.84rem;font-weight:800;line-height:1.15;white-space:nowrap}
-.ms-tab .s{font-size:.68rem;line-height:1.3;color:var(--text-muted)}
+.ms-tab-top i{font-size:.88rem;line-height:1;color:var(--teal)}
+.ms-tab .t{font-size:.78rem;font-weight:800;line-height:1.15;white-space:nowrap}
+.ms-tab .s{display:none}                              /* compact tabs: the description is the tooltip */
 .ms-tab .on{
   margin-left:auto;display:none;align-items:center;gap:.2rem;padding:.05rem .4rem;border-radius:999px;
   background:rgba(255,255,255,.22);font-size:.6rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
@@ -1086,6 +1086,7 @@ html.map-standalone .ms-modes{display:block}
 .ms-tab[aria-selected="true"] .ms-tab-top i,.ms-tab[aria-selected="true"] .s{color:#E4F6F5}
 .ms-tab[aria-selected="true"] .on{display:inline-flex}
 .ms-tab:disabled{cursor:not-allowed;opacity:.5}
+.ms-mode-hint:empty{display:none}
 .ms-mode-hint{display:flex;gap:.45rem;align-items:flex-start;margin:.5rem 0 0;font-size:.72rem;line-height:1.4;color:var(--text-muted)}
 .ms-mode-hint i{color:var(--teal);margin-top:.05rem}
 .ms-mode-hint b{color:var(--navy)}
@@ -1300,7 +1301,7 @@ html.map-standalone.ms-side-hidden #mapPanel{grid-template-columns:0 minmax(0,1f
 html.map-standalone.ms-side-hidden .map-side{display:none}
 
 /* ---- Compare mode: layer A | layer B in the panel, a narrower map, results on the right ---- */
-html.map-standalone.ms-compare{--ms-side-w:480px;--cmp-res-w:380px}
+html.map-standalone.ms-compare{--ms-side-w:528px;--cmp-res-w:380px}
 html.map-standalone.ms-compare #mapPanel{grid-template-columns:var(--ms-side-w) minmax(0,1fr) var(--cmp-res-w)}
 html.map-standalone.ms-compare.ms-side-hidden #mapPanel{grid-template-columns:0 minmax(0,1fr) var(--cmp-res-w)}
 .cmp-results[hidden],.cmp-col[hidden],.cmp-mode[hidden]{display:none!important}
@@ -1387,7 +1388,7 @@ html.map-standalone.ms-compare .raster-bar > .cmp-col-head{display:flex}
 @media (prefers-reduced-motion: reduce){.cmp-more{transition:none}}
 /* Medium screens: results move under the map */
 @media (max-width:1279px){
-  html.map-standalone.ms-compare{--ms-side-w:440px}
+  html.map-standalone.ms-compare{--ms-side-w:484px}
   html.map-standalone.ms-compare #mapPanel{grid-template-columns:var(--ms-side-w) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) minmax(0,44%)}
   html.map-standalone.ms-compare.ms-side-hidden #mapPanel{grid-template-columns:0 minmax(0,1fr)}
   html.map-standalone.ms-compare .map-side{grid-row:2 / 4}
@@ -1399,7 +1400,7 @@ html.map-standalone.ms-compare .raster-bar > .cmp-col-head{display:flex}
   html.map-standalone.ms-compare.ms-side-hidden #mapPanel{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) minmax(0,46%)}
   html.map-standalone.ms-compare .map-side{grid-row:auto}
   html.map-standalone .cmp-results{grid-column:1}
-  html.map-standalone.ms-compare{--ms-side-w:460px}
+  html.map-standalone.ms-compare{--ms-side-w:506px}
   .cmp-kv{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 /* ---- Time series mode: same layout as compare; area, graph, layers and statistics on the right ---- */
@@ -1504,7 +1505,7 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
 .ts-addbox-note{margin:.45rem 0 0;font-size:.62rem;color:var(--text-muted);line-height:1.35}
 #map.ts-drawing,#map.ts-drawing .leaflet-interactive,#map.ts-picking,#map.ts-picking .leaflet-interactive{cursor:crosshair!important}
 @media (max-width:1279px){
-  html.map-standalone.ms-ts{--ms-side-w:400px}
+  html.map-standalone.ms-ts{--ms-side-w:440px}
   html.map-standalone.ms-ts #mapPanel{grid-template-columns:var(--ms-side-w) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) minmax(0,52%)}
   html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minmax(0,1fr)}
   html.map-standalone.ms-ts .map-side{grid-row:2 / 4}
@@ -1513,7 +1514,7 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
   html.map-standalone.ms-ts #mapPanel,
   html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) minmax(0,58%)}
   html.map-standalone.ms-ts .map-side{grid-row:auto}
-  html.map-standalone.ms-ts{--ms-side-w:460px}
+  html.map-standalone.ms-ts{--ms-side-w:506px}
 }
 @media (max-width:575px){
   #map .raster-colorbar.cmp-card .cb-note{display:none}
@@ -6252,9 +6253,8 @@ if (MAP_STANDALONE) (function mapWindow(){
     const hint = document.getElementById("msModeHint");
     const src = t => document.getElementById(t.dataset.for);
     const HINTS = {
-      msCompare: "<b>Compare is on.</b> Pick layer A in step 2; layer B sits under it. The map shows B − A and the statistics open on the right.",
-      msTs: "<b>Time series is on.</b> Pick a layer in step 2, keep the area (whole image by default) and press <b>Add to plot</b>."
-    };
+      msCompare: "<b>Compare is on.</b> Pick layer A in step 2; layer B sits under it. The map shows B − A and the statistics open on the right."
+    };                                                   // Time series has no tip line
     function sync(){
       let on = null;
       tabs.forEach(t => {
@@ -6267,7 +6267,7 @@ if (MAP_STANDALONE) (function mapWindow(){
       });
       const off = tabs.find(t => t.disabled);
       hint.innerHTML = on
-        ? `<i class="bi bi-info-circle" aria-hidden="true"></i><span>${HINTS[on.dataset.for]} <button type="button" data-close>Close</button></span>`
+        ? (HINTS[on.dataset.for] ? `<i class="bi bi-info-circle" aria-hidden="true"></i><span>${HINTS[on.dataset.for]} <button type="button" data-close>Close</button></span>` : "")
         : `<i class="bi bi-map" aria-hidden="true"></i><span>Showing one layer on the map. Choose <b>Compare</b> or <b>Time series</b> to start an analysis.${
             off ? ` ${off.querySelector(".t").textContent} needs EDGAR or the Inverse model.` : ""}</span>`;
       hint.querySelector("[data-close]")?.addEventListener("click", () => src(on).click());
