@@ -1307,6 +1307,27 @@ html.map-standalone #map{grid-column:2;grid-row:2;height:auto;min-height:0;borde
 
 html.map-standalone #mapPanel:fullscreen{height:100vh!important}
 
+/* Drag handles between the panels and the map: only the map column (1fr) gives or takes the width */
+.ms-split{display:none}
+html.map-standalone .ms-split{
+  display:block;position:absolute;z-index:1001;width:12px;margin-left:-6px;cursor:col-resize;touch-action:none;
+  background:transparent;outline:none;
+}
+html.map-standalone .ms-split[hidden]{display:none}
+.ms-split::before{                                      /* the line along the edge */
+  content:"";position:absolute;left:5px;top:0;bottom:0;width:2px;background:transparent;transition:background .15s;
+}
+.ms-split::after{                                       /* the grip in the middle */
+  content:"";position:absolute;left:2px;top:50%;width:8px;height:40px;margin-top:-20px;border-radius:5px;
+  background:#fff;border:1px solid #B9C6CF;box-shadow:0 1px 3px rgba(16,42,67,.18);
+  background-image:linear-gradient(90deg,transparent 2px,#9AAAB7 2px,#9AAAB7 3px,transparent 3px,transparent 4px,#9AAAB7 4px,#9AAAB7 5px,transparent 5px);
+  transition:border-color .15s,background-color .15s;
+}
+.ms-split:hover::before,.ms-split:focus-visible::before,.ms-split.dragging::before{background:var(--teal)}
+.ms-split:hover::after,.ms-split:focus-visible::after,.ms-split.dragging::after{border-color:var(--teal)}
+html.ms-resizing,html.ms-resizing *{cursor:col-resize!important;user-select:none!important}
+html.ms-resizing #map{pointer-events:none}
+
 /* Side panel hidden: map takes the full width */
 html.map-standalone.ms-side-hidden #mapPanel{grid-template-columns:0 minmax(0,1fr)}
 html.map-standalone.ms-side-hidden .map-side{display:none}
@@ -6340,6 +6361,111 @@ if (MAP_STANDALONE) (function mapWindow(){
       new MutationObserver(sync).observe(src(t), { attributes: true, attributeFilter: ["aria-pressed", "disabled", "title"] });
     });
     sync();
+  })();
+
+  // ---- Resizable panels: drag the left panel's or the right panel's edge ----
+  // Only the map in the middle changes width. Widths are kept per mode (plain map, compare,
+  // time series) in this browser; double-click a handle (or Home key) goes back to the default.
+  (function splitters(){
+    const panel = document.getElementById("mapPanel"), side = document.getElementById("mapSide");
+    const results = { compare: document.getElementById("cmpResults"), ts: document.getElementById("tsResults") };
+    const KEY = "inpact.mapPanelWidths", MAP_MIN = 320, SIDE_MIN = 300, RES_MIN = 320;
+    const VARS = { side: "--ms-side-w", res: "--cmp-res-w" };
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { saved = {}; }
+    const store = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) { /* not kept */ } };
+    const mode = () => root.classList.contains("ms-compare") ? "compare" : root.classList.contains("ms-ts") ? "ts" : "plain";
+    const res = () => { const r = results[mode()]; return r && !r.hidden ? r : null; };
+    const beside = el => !!el && el.offsetWidth > 0 && getComputedStyle(el).position !== "absolute";
+    // the results panel is a column only on wide screens (below 1280px it sits under the map)
+    const resBeside = () => beside(res()) && getComputedStyle(res()).gridColumnStart === "3";
+    const sideBeside = () => !root.classList.contains("ms-side-hidden") && beside(side);
+
+    function handle(kind, label){
+      const h = document.createElement("div");
+      h.className = "ms-split"; h.dataset.kind = kind; h.tabIndex = 0;
+      h.setAttribute("role", "separator"); h.setAttribute("aria-orientation", "vertical");
+      h.setAttribute("aria-label", label); h.title = "Drag to resize · double-click to reset";
+      panel.appendChild(h);
+      return h;
+    }
+    const H = { side: handle("side", "Resize the layer panel"), res: handle("res", "Resize the results panel") };
+
+    // the other column's width, to keep the map at least MAP_MIN wide
+    const clamp = (kind, w) => {
+      const other = kind === "side" ? (resBeside() ? res().offsetWidth : 0) : (sideBeside() ? side.offsetWidth : 0);
+      const max = panel.clientWidth - other - MAP_MIN;
+      return Math.round(Math.max(kind === "side" ? SIDE_MIN : RES_MIN, Math.min(w, max)));
+    };
+    function apply(){
+      const m = mode();
+      ["side", "res"].forEach(kind => {
+        const w = saved[`${kind}:${m}`];
+        if (w) root.style.setProperty(VARS[kind], clamp(kind, w) + "px"); else root.style.removeProperty(VARS[kind]);
+      });
+      place();
+    }
+    function place(){
+      const p = panel.getBoundingClientRect();
+      const put = (h, el, edge, on) => {
+        h.hidden = !on;
+        if (!on) return;
+        const r = el.getBoundingClientRect();
+        h.style.left = (r[edge] - p.left) + "px"; h.style.top = (r.top - p.top) + "px"; h.style.height = r.height + "px";
+        h.setAttribute("aria-valuenow", String(Math.round(r.width)));
+      };
+      put(H.side, side, "right", sideBeside());
+      put(H.res, res(), "left", resBeside());
+    }
+    let raf = 0;
+    const relayout = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; place(); window.dispatchEvent(new Event("resize")); }); };
+    function setWidth(kind, w, save){
+      w = clamp(kind, w);
+      root.style.setProperty(VARS[kind], w + "px");
+      if (save) { saved[`${kind}:${mode()}`] = w; store(); }
+      relayout();
+    }
+
+    Object.entries(H).forEach(([kind, h]) => {
+      h.addEventListener("pointerdown", e => {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        h.setPointerCapture(e.pointerId);
+        h.classList.add("dragging"); root.classList.add("ms-resizing");
+        const p = panel.getBoundingClientRect();
+        const move = ev => setWidth(kind, kind === "side" ? ev.clientX - p.left : p.right - ev.clientX, false);
+        const up = ev => {
+          h.releasePointerCapture(ev.pointerId);
+          h.removeEventListener("pointermove", move); h.removeEventListener("pointerup", up); h.removeEventListener("pointercancel", up);
+          h.classList.remove("dragging"); root.classList.remove("ms-resizing");
+          const el = kind === "side" ? side : res();
+          if (el) setWidth(kind, el.offsetWidth, true);
+          map.invalidateSize();
+        };
+        h.addEventListener("pointermove", move); h.addEventListener("pointerup", up); h.addEventListener("pointercancel", up);
+      });
+      h.addEventListener("dblclick", () => { delete saved[`${kind}:${mode()}`]; store(); apply(); relayout(); });
+      h.addEventListener("keydown", e => {
+        const el = kind === "side" ? side : res();
+        if (!el) return;
+        const grow = kind === "side" ? 1 : -1;            // the right panel grows to the left
+        const d = { ArrowRight: 24 * grow, ArrowLeft: -24 * grow }[e.key];
+        if (d) { e.preventDefault(); setWidth(kind, el.offsetWidth + d, true); }
+        else if (e.key === "Home") { e.preventDefault(); h.dispatchEvent(new Event("dblclick")); }
+      });
+    });
+
+    // Follow mode changes (compare / time series / plain), panel toggles and window resizes
+    let layoutKey = "";
+    new MutationObserver(() => {
+      const k = mode() + root.classList.contains("ms-side-hidden");
+      if (k !== layoutKey) { layoutKey = k; apply(); } else place();   // e.g. ms-resizing toggles: no reset
+    }).observe(root, { attributes: true, attributeFilter: ["class"] });
+    layoutKey = mode() + root.classList.contains("ms-side-hidden");
+    const ro = new ResizeObserver(() => place());
+    [panel, side, ...Object.values(results)].forEach(el => ro.observe(el));
+    window.addEventListener("resize", () => { if (!root.classList.contains("ms-resizing")) place(); });
+    apply();
   })();
 
   // Toolbar chip and stepper mirror the active layer's title card on the map
