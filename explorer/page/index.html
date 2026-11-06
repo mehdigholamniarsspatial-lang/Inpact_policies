@@ -1047,7 +1047,25 @@ html.map-standalone .ms-steps{padding:.2rem .9rem 0}
 .ms-tools #msCompare,.ms-tools #msTs{display:none}
 html.map-standalone .ms-modes{display:block}
 .ms-modes{display:none;padding:.75rem .9rem .55rem;border-bottom:1px solid var(--grey-border);background:#fff}
-.ms-modes-lbl{font-size:.66rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin:0 0 .4rem}
+.ms-modes-head{
+  width:100%;display:flex;align-items:center;gap:.5rem;padding:0 0 .4rem;border:0;background:none;
+  font-family:inherit;text-align:left;cursor:pointer;border-radius:6px;transition:padding .2s;
+}
+.ms-modes-head:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.ms-modes-head:hover .ms-modes-lbl{color:var(--teal)}
+.ms-modes-lbl{font-size:.66rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);white-space:nowrap}
+.ms-modes-sum{
+  display:none;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:.72rem;font-weight:700;color:var(--teal);
+}
+.ms-modes-head .ms-chev{margin-left:auto;transform:rotate(180deg)}
+.ms-modes-body{display:grid;grid-template-rows:1fr;transition:grid-template-rows .2s ease,visibility .2s}
+.ms-modes-body > div{min-height:0;overflow:hidden;padding:2px}
+.ms-modes.is-collapsed{padding-bottom:.55rem}
+.ms-modes.is-collapsed .ms-modes-head{padding-bottom:0}
+.ms-modes.is-collapsed .ms-modes-head .ms-chev{transform:none}
+.ms-modes.is-collapsed .ms-modes-sum{display:block}
+.ms-modes.is-collapsed .ms-modes-body{grid-template-rows:0fr;visibility:hidden}
 .ms-tabs{display:grid;grid-template-columns:1fr 1fr;gap:.25rem;padding:.25rem;border-radius:12px;background:var(--grey-panel);border:1px solid var(--grey-border)}
 .ms-tab{
   position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:.12rem;min-width:0;
@@ -1795,7 +1813,12 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
           <div class="map-side" id="mapSide">
           <!-- What to do with the map: compare two layers or plot a time series (drives #msCompare / #msTs) -->
           <div class="ms-modes" id="msModes">
-            <p class="ms-modes-lbl" id="msModesLbl">Choose an analysis</p>
+            <button type="button" class="ms-modes-head" id="msModesBtn" aria-expanded="true" aria-controls="msModesBody">
+              <span class="ms-modes-lbl" id="msModesLbl">Choose an analysis</span>
+              <span class="ms-modes-sum" id="msModesSum"></span>
+              <i class="bi bi-chevron-down ms-chev" aria-hidden="true"></i>
+            </button>
+            <div class="ms-modes-body" id="msModesBody"><div>
             <div class="ms-tabs" role="tablist" aria-labelledby="msModesLbl">
               <button type="button" class="ms-tab" role="tab" id="msTabCompare" data-for="msCompare" aria-selected="false">
                 <span class="ms-tab-top"><i class="bi bi-layout-split" aria-hidden="true"></i><span class="t">Compare</span><span class="on"><i class="bi bi-check-lg"></i>On</span></span>
@@ -1807,6 +1830,7 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
               </button>
             </div>
             <p class="ms-mode-hint" id="msModeHint" role="status"></p>
+            </div></div>
           </div>
           <!-- Stepper of the map's own window. On /map/ the script moves the raster bar
                into step 2 and the opacity field into step 3. -->
@@ -6247,7 +6271,27 @@ if (MAP_STANDALONE) (function mapWindow(){
         : `<i class="bi bi-map" aria-hidden="true"></i><span>Showing one layer on the map. Choose <b>Compare</b> or <b>Time series</b> to start an analysis.${
             off ? ` ${off.querySelector(".t").textContent} needs EDGAR or the Inverse model.` : ""}</span>`;
       hint.querySelector("[data-close]")?.addEventListener("click", () => src(on).click());
+      sumEl.textContent = on ? `${on.querySelector(".t").textContent} is on` : "No analysis open";
     }
+
+    // The tabs block folds away while "About this dataset" is made bigger (opened, or More details),
+    // and comes back as it was when About is made smaller again
+    const box = document.getElementById("msModes"), head = document.getElementById("msModesBtn");
+    const sumEl = document.getElementById("msModesSum");
+    const aboutBox = document.querySelector("#mapSide .ms-about");
+    const aboutStep = aboutBox.querySelector('[data-step="about"]');
+    const isOpen = () => !box.classList.contains("is-collapsed");
+    const setModesOpen = open => { box.classList.toggle("is-collapsed", !open); head.setAttribute("aria-expanded", String(open)); };
+    const aboutSize = () => !aboutStep.classList.contains("is-open") ? 0 : aboutBox.classList.contains("more-open") ? 2 : 1;
+    let lastSize = aboutSize(), before = null;          // the tabs' state before About grew
+    head.addEventListener("click", () => { before = null; setModesOpen(!isOpen()); });
+    const onAbout = () => {                              // runs after About's own click handlers
+      const size = aboutSize();
+      if (size > lastSize) { if (before === null) before = isOpen(); setModesOpen(false); }
+      else if (size < lastSize && before !== null) { setModesOpen(before); before = null; }
+      lastSize = size;
+    };
+    ["msAboutBtn", "msInfoMoreBtn"].forEach(id => document.getElementById(id).addEventListener("click", onAbout));
     tabs.forEach((t, i) => {
       t.addEventListener("click", () => src(t).click());
       t.addEventListener("keydown", e => {
