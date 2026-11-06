@@ -1239,24 +1239,47 @@ html.map-standalone .raster-opacity input[type=range]:focus-visible::-moz-range-
 .ms-pal-head{display:flex;align-items:baseline;gap:.5rem;margin-bottom:.35rem}
 .ms-pal-lbl{font-size:.64rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--navy)}
 .ms-pal-for{font-size:.68rem;color:var(--text-muted)}
-.ms-pal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.35rem;padding:2px}
-.ms-pal-sw{
-  position:relative;display:flex;flex-direction:column;gap:.25rem;min-width:0;padding:.3rem .35rem .3rem;
-  border:2px solid var(--grey-border);border-radius:8px;background:#fff;cursor:pointer;text-align:left;
-  font-family:inherit;color:var(--navy);transition:border-color .15s,box-shadow .15s,background .15s;
+/* Colour picker: a button with the current gradient; the list opens under it (in the panel's flow) */
+.ms-cp{position:relative}
+.ms-cp-btn{
+  width:100%;display:flex;align-items:center;gap:.55rem;padding:.4rem .6rem .4rem .45rem;min-height:42px;
+  border:2px solid var(--grey-border);border-radius:10px;background:#fff;cursor:pointer;text-align:left;
+  font-family:inherit;color:var(--navy);transition:border-color .15s,box-shadow .15s;
 }
-.ms-pal-sw:hover:not(:disabled){border-color:#9FCFCE;background:#FBFEFE}
-.ms-pal-sw:focus-visible{outline:3px solid rgba(14,140,138,.35);outline-offset:1px}
-.ms-pal-sw .bar{display:block;height:14px;border-radius:4px;box-shadow:inset 0 0 0 1px rgba(16,42,67,.12)}
-.ms-pal-sw .nm{font-size:.7rem;font-weight:700;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ms-pal-sw .nt{font-size:.6rem;line-height:1.15;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ms-pal-sw .ck{
-  position:absolute;top:-7px;right:-7px;width:18px;height:18px;border-radius:50%;display:none;
-  align-items:center;justify-content:center;background:var(--teal);color:#fff;font-size:.7rem;box-shadow:0 0 0 2px #fff;
+.ms-cp-btn:hover:not(:disabled){border-color:#9FCFCE}
+.ms-cp-btn:focus-visible{outline:3px solid rgba(14,140,138,.35);outline-offset:1px}
+.ms-cp-btn[aria-expanded="true"]{border-color:var(--teal);box-shadow:0 2px 10px rgba(14,140,138,.18)}
+.ms-cp-btn .bar{flex:0 0 46%;height:20px;border-radius:5px;box-shadow:inset 0 0 0 1px rgba(16,42,67,.14)}
+.ms-cp-btn .nm{flex:1 1 auto;min-width:0;font-size:.8rem;font-weight:800;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ms-cp-btn .more{flex:0 0 auto;font-size:.64rem;font-weight:700;color:var(--teal);background:var(--teal-light);padding:.08rem .4rem;border-radius:999px;white-space:nowrap}
+.ms-cp-btn > .bi{flex:0 0 auto;color:var(--text-muted);font-size:.8rem;transition:transform .2s}
+.ms-cp-btn[aria-expanded="true"] > .bi{transform:rotate(180deg)}
+.ms-cp-btn:disabled{cursor:not-allowed;opacity:.5}
+.ms-cp-pop{
+  margin-top:.35rem;border:1px solid var(--grey-border);border-radius:10px;background:#fff;
+  box-shadow:0 8px 24px rgba(16,42,67,.16);overflow:hidden;
 }
-.ms-pal-sw[aria-checked="true"]{border-color:var(--teal);background:#E9F6F6;box-shadow:0 2px 8px rgba(14,140,138,.18)}
-.ms-pal-sw[aria-checked="true"] .ck{display:flex}
-.ms-pal-sw:disabled{cursor:not-allowed;opacity:.45}
+.ms-cp-pop[hidden]{display:none}
+.ms-cp-search{display:flex;align-items:center;gap:.4rem;padding:.4rem .55rem;border-bottom:1px solid var(--grey-border);background:var(--grey-panel)}
+.ms-cp-search i{color:var(--text-muted);font-size:.8rem}
+.ms-cp-search input{flex:1 1 auto;min-width:0;border:0;background:transparent;font-family:inherit;font-size:.78rem;color:var(--navy);outline:none}
+.ms-cp-list{list-style:none;margin:0;padding:.25rem 0;max-height:320px;overflow-y:auto}
+.ms-cp-list .grp{
+  padding:.45rem .7rem .2rem;font-size:.6rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted);
+}
+.ms-cp-list [role=option]{
+  display:grid;grid-template-columns:44% minmax(0,1fr) 16px;align-items:center;gap:.55rem;
+  margin:0 .3rem;padding:.3rem .4rem;border-radius:7px;cursor:pointer;color:var(--navy);
+}
+.ms-cp-list [role=option] .bar{height:16px;border-radius:4px;box-shadow:inset 0 0 0 1px rgba(16,42,67,.12)}
+.ms-cp-list [role=option] .nm{min-width:0;font-size:.76rem;font-weight:700;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ms-cp-list [role=option] .nm small{display:block;font-size:.62rem;font-weight:500;color:var(--text-muted)}
+.ms-cp-list [role=option] .ck{color:var(--teal);font-size:.9rem;visibility:hidden}
+.ms-cp-list [role=option]:hover,.ms-cp-list [role=option].active{background:#EEF7F7}
+.ms-cp-list [role=option][aria-selected="true"]{background:#D6EEEE}
+.ms-cp-list [role=option][aria-selected="true"] .ck{visibility:visible}
+.ms-cp-none{margin:0;padding:.6rem .8rem;font-size:.74rem;color:var(--text-muted)}
+.ms-cp-none[hidden]{display:none}
 .ms-pal-rev{display:inline-flex;align-items:center;gap:.4rem;margin:.45rem 0 0;font-size:.74rem;font-weight:600;color:var(--navy);cursor:pointer}
 .ms-pal-rev input{width:15px;height:15px;accent-color:var(--teal);cursor:pointer}
 .ms-pal.is-off .ms-pal-rev{opacity:.45;cursor:not-allowed}
@@ -2033,7 +2056,24 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                 <!-- Colour palette of the layer (bars filled by the script); the opacity slider is moved in below it -->
                 <div class="ms-pal" id="msPal">
                   <div class="ms-pal-head"><span class="ms-pal-lbl" id="msPalLbl">Colour palette</span><span class="ms-pal-for" id="msPalFor"></span></div>
-                  <div class="ms-pal-grid" id="msPalGrid" role="radiogroup" aria-labelledby="msPalLbl"></div>
+                  <!-- Colour picker: the button shows the current palette; it opens the full list (grouped, searchable) -->
+                  <div class="ms-cp" id="msCp">
+                    <button type="button" class="ms-cp-btn" id="msCpBtn" aria-haspopup="listbox" aria-expanded="false" aria-controls="msCpPop">
+                      <span class="bar" id="msCpBar" aria-hidden="true"></span>
+                      <span class="nm" id="msCpName">Rainbow</span>
+                      <span class="more" id="msCpMore"></span>
+                      <i class="bi bi-chevron-down" aria-hidden="true"></i>
+                    </button>
+                    <div class="ms-cp-pop" id="msCpPop" hidden>
+                      <div class="ms-cp-search">
+                        <i class="bi bi-search" aria-hidden="true"></i>
+                        <input type="search" id="msCpSearch" placeholder="Search palettes" aria-label="Search palettes"
+                               aria-controls="msCpList" autocomplete="off" spellcheck="false">
+                      </div>
+                      <ul class="ms-cp-list" id="msCpList" role="listbox" aria-labelledby="msPalLbl"></ul>
+                      <p class="ms-cp-none" id="msCpNone" hidden>No palette matches.</p>
+                    </div>
+                  </div>
                   <label class="ms-pal-rev"><input type="checkbox" id="msPalRev"> Reverse colours</label>
                   <p class="ms-pal-off" id="msPalOff" hidden><i class="bi bi-info-circle" aria-hidden="true"></i>MapEIre layers are published as ready-made images, so their colours can&rsquo;t be changed. Opacity still applies.</p>
                 </div>
@@ -3877,32 +3917,23 @@ const GRID_UI = (() => {
     if (a >= 1000) return Math.round(v).toLocaleString("en-IE");
     return String(+v.toPrecision(3));
   }
-  // ---- Colour palettes (step 3 "Map style"); the same lists are in explorer/map_export.py ----
+  // ---- Colour palettes (step 3 "Map style") ----
+  // explorer/palettes.json, spliced in by the server: the same list the JPEG export draws with.
   // Sequential ramps colour values low -> high; diverging ones colour B − A or posterior − prior
-  // around zero. Rainbow (HSV hue 240 -> 0, as the MapEIre overlays) and Blue–red are the defaults.
+  // from most negative to most positive. Rainbow (HSV hue 240 -> 0) and Blue – red are the defaults.
+  const PAL_SRC = /*@PALETTES@*/{};
   const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
-  const PALETTES = {
-    seq: {
-      rainbow: { name: "Rainbow" },
-      viridis: { name: "Viridis", note: "Colour-blind safe",
-        stops: ["#440154","#472d7b","#3b528b","#2c728e","#21918c","#28ae80","#5ec962","#addc30","#fde725"] },
-      heat:    { name: "Heat",
-        stops: ["#ffffcc","#ffeda0","#fed976","#feb24c","#fd8d3c","#fc4e2a","#e31a1c","#bd0026","#800026"] },
-      magma:   { name: "Magma",
-        stops: ["#000004","#180f3d","#440f76","#721f81","#9e2f7f","#cd4071","#f1605d","#fd9668","#fcfdbf"] },
-      blues:   { name: "Blues",
-        stops: ["#f7fbff","#deebf7","#c6dbef","#9ecae1","#6baed6","#4292c6","#2171b5","#08519c","#08306b"] },
-      greys:   { name: "Greys", note: "Good for printing",
-        stops: ["#f0f0f0","#d9d9d9","#bdbdbd","#969696","#737373","#525252","#363636","#1a1a1a","#000000"] },
-    },
-    div: {
-      bluered: { name: "Blue – red",     neg: [33, 102, 172], mid: [247, 247, 247], pos: [178, 24, 43], lo: "blue",   hi: "red" },
-      prgn:    { name: "Purple – green", neg: [118, 42, 131], mid: [247, 247, 247], pos: [27, 120, 55], lo: "purple", hi: "green" },
-      brbg:    { name: "Brown – teal",   neg: [140, 81, 10],  mid: [245, 245, 245], pos: [1, 102, 94],  lo: "brown",  hi: "teal" },
-    },
+  const byId = (list, fallback) => {
+    const out = {};
+    (list && list.length ? list : fallback).forEach(p => { out[p.id] = { ...p, rgb: p.stops ? p.stops.map(hex) : null }; });
+    return out;
   };
-  Object.values(PALETTES.seq).forEach(p => { if (p.stops) p.rgb = p.stops.map(hex); });
-  const PAL_DEFAULT = { seq: "rainbow", div: "bluered", reverse: false };
+  const PALETTES = {      // id -> { name, group, note, rgb } in list order; minimal set if the list is missing
+    seq: byId(PAL_SRC.seq, [{ id: "rainbow", name: "Rainbow", group: "Rainbow", hsv: true }]),
+    div: byId(PAL_SRC.div, [{ id: "bluered", name: "Blue – red", group: "Diverging", lo: "blue", hi: "red",
+                               stops: ["#2166ac", "#f7f7f7", "#b2182b"] }]),
+  };
+  const PAL_DEFAULT = { seq: PAL_SRC.default?.seq || "rainbow", div: PAL_SRC.default?.div || "bluered", reverse: false };
   const PAL_KEY = "inpact.mapPalette";
   const PAL = { ...PAL_DEFAULT };
   try {
@@ -3912,20 +3943,22 @@ const GRID_UI = (() => {
     PAL.reverse = s.reverse === true;
   } catch (e) { /* storage blocked: defaults */ }
   const rgbStr = c => `rgb(${c.map(Math.round).join(",")})`;
+  // Linear interpolation between evenly spaced stops, t in [0, 1]
+  function ramp(rgb, t){
+    const x = Math.min(Math.max(t, 0), 1) * (rgb.length - 1), i = Math.min(Math.floor(x), rgb.length - 2), k = x - i;
+    return rgbStr(rgb[i].map((c, j) => c + (rgb[i + 1][j] - c) * k));
+  }
   // A sequential palette's colour at t in [0, 1] (low -> high); `rev` flips it
   function seqColour(name, t, rev){
     t = Math.min(Math.max(t, 0), 1); if (rev) t = 1 - t;
-    const p = PALETTES.seq[name] || PALETTES.seq.rainbow;
-    if (!p.rgb) return `hsl(${Math.round((1 - t) * 240)},100%,50%)`;
-    const x = t * (p.rgb.length - 1), i = Math.min(Math.floor(x), p.rgb.length - 2), k = x - i;
-    return rgbStr(p.rgb[i].map((c, j) => c + (p.rgb[i + 1][j] - c) * k));
+    const p = PALETTES.seq[name] || PALETTES.seq[PAL_DEFAULT.seq];
+    return p.rgb ? ramp(p.rgb, t) : `hsl(${Math.round((1 - t) * 240)},100%,50%)`;
   }
   // A diverging palette's colour at t in [-1, 1]; `rev` swaps the two ends
   function divColour(name, t, rev){
-    const p = PALETTES.div[name] || PALETTES.div.bluered;
+    const p = PALETTES.div[name] || PALETTES.div[PAL_DEFAULT.div];
     if (rev) t = -t;
-    const end = t < 0 ? p.neg : p.pos, k = Math.min(Math.abs(t), 1);
-    return rgbStr(p.mid.map((c, i) => c + (end[i] - c) * k));
+    return ramp(p.rgb, (Math.min(Math.max(t, -1), 1) + 1) / 2);
   }
   // What the layers use: the viewer's current choice
   const rainbow = t => seqColour(PAL.seq, t, PAL.reverse);
@@ -5219,8 +5252,12 @@ if (MAP_STANDALONE) (function mapWindow(){
   // B − A, inverse Difference) the diverging ones. MapEIre is images: only opacity applies.
   styleUI = (() => {
     const P = GRID_UI.palette;
-    const box = document.getElementById("msPal"), grid = document.getElementById("msPalGrid");
+    const box = document.getElementById("msPal");
     const forEl = document.getElementById("msPalFor"), revEl = document.getElementById("msPalRev");
+    const btn = document.getElementById("msCpBtn"), pop = document.getElementById("msCpPop");
+    const barEl = document.getElementById("msCpBar"), nameEl = document.getElementById("msCpName");
+    const moreEl = document.getElementById("msCpMore"), listEl = document.getElementById("msCpList");
+    const searchEl = document.getElementById("msCpSearch"), noneEl = document.getElementById("msCpNone");
     const offEl = document.getElementById("msPalOff"), estSel = document.getElementById("invEstimate");
     const resetBtn = document.createElement("button");
     resetBtn.type = "button"; resetBtn.className = "ms-style-reset";
@@ -5234,39 +5271,77 @@ if (MAP_STANDALONE) (function mapWindow(){
     const ramp = (fam, name, rev) => fam === "div"
       ? [-1, -0.5, 0, 0.5, 1].map(t => P.divColour(name, t, rev))
       : Array.from({ length: 9 }, (_, i) => P.seqColour(name, i / 8, rev));
+    const gradient = (fam, id, rev) => `linear-gradient(to right, ${ramp(fam, id, rev).join(",")})`;
     let shownKey = "";
+
+    // ---- the list: one row per palette (gradient + name), under group headings, filtered by the search ----
+    const isOpen = () => !pop.hidden;
+    const options = () => [...listEl.querySelectorAll('[role="option"]')];
+    function fillList(){
+      const fam = family(), cur = P.get(), term = searchEl.value.trim().toLowerCase();
+      let group = null, html = "", n = 0;
+      Object.entries(P.PALETTES[fam]).forEach(([id, p]) => {
+        if (term && !`${p.name} ${p.group || ""} ${p.note || ""} ${id}`.toLowerCase().includes(term)) return;
+        if (p.group !== group) { group = p.group; html += `<li class="grp" role="presentation">${GRID_UI.esc(group || "")}</li>`; }
+        n++;
+        html += `<li role="option" id="msCpOpt-${id}" data-id="${id}" aria-selected="${id === cur[fam]}">
+            <span class="bar" style="background:${gradient(fam, id, cur.reverse)}" aria-hidden="true"></span>
+            <span class="nm">${GRID_UI.esc(p.name)}${p.note ? `<small>${GRID_UI.esc(p.note)}</small>` : ""}</span>
+            <i class="bi bi-check-lg ck" aria-hidden="true"></i></li>`;
+      });
+      listEl.innerHTML = html; noneEl.hidden = n > 0;
+      setActive(options().find(o => o.dataset.id === cur[fam]) || options()[0]);
+    }
+    function setActive(o){
+      options().forEach(x => x.classList.toggle("active", x === o));
+      if (o) { searchEl.setAttribute("aria-activedescendant", o.id); o.scrollIntoView({ block: "nearest" }); }
+      else searchEl.removeAttribute("aria-activedescendant");
+    }
+    function openList(){
+      if (btn.disabled || isOpen()) return;
+      searchEl.value = ""; fillList();
+      pop.hidden = false; btn.setAttribute("aria-expanded", "true");
+      searchEl.focus({ preventScroll: true });
+      pop.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+    function closeList(focusBtn){
+      if (!isOpen()) return;
+      pop.hidden = true; btn.setAttribute("aria-expanded", "false");
+      if (focusBtn) btn.focus();
+    }
+    const choose = id => { P.set({ [family()]: id }); closeList(true); };
+    btn.addEventListener("click", () => isOpen() ? closeList(false) : openList());
+    btn.addEventListener("keydown", e => { if (e.key === "ArrowDown") { e.preventDefault(); openList(); } });
+    listEl.addEventListener("click", e => { const o = e.target.closest('[role="option"]'); if (o) choose(o.dataset.id); });
+    listEl.addEventListener("mousemove", e => { const o = e.target.closest('[role="option"]'); if (o && !o.classList.contains("active")) setActive(o); });
+    searchEl.addEventListener("input", fillList);
+    searchEl.addEventListener("keydown", e => {
+      const os = options(), i = os.findIndex(o => o.classList.contains("active"));
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        if (os.length) setActive(os[(i + (e.key === "ArrowDown" ? 1 : -1) + os.length) % os.length]);
+      } else if (e.key === "Enter") { e.preventDefault(); if (os[i]) choose(os[i].dataset.id); }
+      else if (e.key === "Escape") { e.preventDefault(); closeList(true); }
+    });
+    document.addEventListener("pointerdown", e => { if (isOpen() && !e.target.closest("#msCp")) closeList(false); });
+
     function render(){
       const fam = family(), cur = P.get(), off = datasetSel.value === "mapeire";
+      const p = P.PALETTES[fam][cur[fam]];
+      barEl.style.background = gradient(fam, cur[fam], cur.reverse);
+      nameEl.textContent = p.name + (cur.reverse ? " (reversed)" : "");
+      moreEl.textContent = `${Object.keys(P.PALETTES[fam]).length} palettes`;
+      btn.disabled = off;
+      btn.title = off ? "MapEIre layers are ready-made images" : "Choose a colour palette";
+      if (off) closeList(false);
       const key = fam + off;
-      if (key !== shownKey) {                          // rebuild the bars for the other family
-        shownKey = key;
-        grid.innerHTML = Object.entries(P.PALETTES[fam]).map(([id, p]) => `
-          <button type="button" class="ms-pal-sw" role="radio" data-id="${id}" aria-checked="false">
-            <span class="bar"></span><span class="nm">${GRID_UI.esc(p.name)}</span>
-            ${p.note ? `<span class="nt">${GRID_UI.esc(p.note)}</span>` : ""}
-            <span class="ck" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
-          </button>`).join("");
-        grid.querySelectorAll(".ms-pal-sw").forEach(b => b.addEventListener("click", () => P.set({ [family()]: b.dataset.id })));
-      }
-      grid.querySelectorAll(".ms-pal-sw").forEach(b => {
-        const on = b.dataset.id === cur[fam];
-        b.setAttribute("aria-checked", String(on)); b.tabIndex = on ? 0 : -1; b.disabled = off;
-        b.querySelector(".bar").style.background = `linear-gradient(to right, ${ramp(fam, b.dataset.id, cur.reverse).join(",")})`;
-      });
+      if (key !== shownKey) { shownKey = key; if (isOpen()) closeList(false); }   // values <-> differences
+      else if (isOpen()) fillList();
       forEl.textContent = off ? "" : fam === "div" ? "for differences: − · 0 · +" : "for values: low → high";
       revEl.checked = cur.reverse; revEl.disabled = off;
       box.classList.toggle("is-off", off); offEl.hidden = !off;
       syncSteps();
     }
-    // Arrow keys move between the bars, like the dataset cards
-    grid.addEventListener("keydown", e => {
-      const d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
-      if (!d) return;
-      const bs = [...grid.querySelectorAll(".ms-pal-sw")], i = bs.indexOf(document.activeElement);
-      if (i < 0) return;
-      e.preventDefault();
-      const nx = bs[(i + d + bs.length) % bs.length]; nx.focus(); nx.click();
-    });
     revEl.addEventListener("change", () => P.set({ reverse: revEl.checked }));
     resetBtn.addEventListener("click", () => {
       P.set({ ...P.DEFAULT });

@@ -48,34 +48,40 @@ RGB = Tuple[int, int, int]
 # ---------------------------------------------------------------------------
 # Colours: the palettes of the map's step 3 "Map style" (``GRID_UI.palette`` on the page)
 # ---------------------------------------------------------------------------
-# Sequential ramps (low -> high) as hex stops; "rainbow" is the HSV hue 240 -> 0 default.
-SEQ_PALETTES = {
-    "rainbow": None,
-    "viridis": ["#440154", "#472d7b", "#3b528b", "#2c728e", "#21918c", "#28ae80", "#5ec962", "#addc30", "#fde725"],
-    "heat":    ["#ffffcc", "#ffeda0", "#fed976", "#feb24c", "#fd8d3c", "#fc4e2a", "#e31a1c", "#bd0026", "#800026"],
-    "magma":   ["#000004", "#180f3d", "#440f76", "#721f81", "#9e2f7f", "#cd4071", "#f1605d", "#fd9668", "#fcfdbf"],
-    "blues":   ["#f7fbff", "#deebf7", "#c6dbef", "#9ecae1", "#6baed6", "#4292c6", "#2171b5", "#08519c", "#08306b"],
-    "greys":   ["#f0f0f0", "#d9d9d9", "#bdbdbd", "#969696", "#737373", "#525252", "#363636", "#1a1a1a", "#000000"],
-}
-# Diverging ramps: (negative, middle, positive)
-DIV_PALETTES = {
-    "bluered": ((33, 102, 172), (247, 247, 247), (178, 24, 43)),
-    "prgn":    ((118, 42, 131), (247, 247, 247), (27, 120, 55)),
-    "brbg":    ((140, 81, 10), (245, 245, 245), (1, 102, 94)),
-}
+def _hex(c: str) -> RGB:
+    c = c.lstrip("#")
+    return int(c[0:2], 16), int(c[2:4], 16), int(c[4:6], 16)
+
+
+# explorer/palettes.json is the one list, shared with the web map (spliced into the page).
+PALETTES_PATH = Path(__file__).resolve().parent / "palettes.json"
+_PAL_DATA = json.loads(PALETTES_PATH.read_text(encoding="utf-8"))
+# Sequential ramps (low -> high) as RGB stops; None = the HSV hue 240 -> 0 rainbow
+SEQ_PALETTES = {p["id"]: (None if p.get("hsv") else [_hex(s) for s in p["stops"]]) for p in _PAL_DATA["seq"]}
+# Diverging ramps: RGB stops from most negative to most positive, zero in the middle
+DIV_PALETTES = {p["id"]: [_hex(s) for s in p["stops"]] for p in _PAL_DATA["div"]}
+DEFAULT_SEQ, DEFAULT_DIV = _PAL_DATA["default"]["seq"], _PAL_DATA["default"]["div"]
+
+
+def _ramp(rgb: Sequence[RGB], t: float) -> RGB:
+    """Linear interpolation between evenly spaced stops, t in [0, 1]."""
+    x = min(max(t, 0.0), 1.0) * (len(rgb) - 1)
+    i = min(int(x), len(rgb) - 2)
+    k = x - i
+    return tuple(round(rgb[i][j] + (rgb[i + 1][j] - rgb[i][j]) * k) for j in range(3))  # type: ignore[return-value]
 
 
 @dataclass(frozen=True)
 class Palette:
-    seq: str = "rainbow"
-    div: str = "bluered"
+    seq: str = DEFAULT_SEQ
+    div: str = DEFAULT_DIV
     reverse: bool = False
 
     @classmethod
     def from_query(cls, q: dict) -> "Palette":
         """Unknown names fall back to the defaults (the query never picks anything else)."""
         seq, div = q.get("palette", ""), q.get("div_palette", "")
-        return cls(seq if seq in SEQ_PALETTES else "rainbow", div if div in DIV_PALETTES else "bluered",
+        return cls(seq if seq in SEQ_PALETTES else DEFAULT_SEQ, div if div in DIV_PALETTES else DEFAULT_DIV,
                    q.get("reverse") == "1")
 
 
@@ -102,27 +108,15 @@ def rainbow(t: float) -> RGB:
     if stops is None:
         r, g, b = colorsys.hls_to_rgb((1 - t) * 240 / 360, 0.5, 1.0)
         return round(r * 255), round(g * 255), round(b * 255)
-    rgb = [_hex(s) for s in stops]
-    x = t * (len(rgb) - 1)
-    i = min(int(x), len(rgb) - 2)
-    k = x - i
-    return tuple(round(rgb[i][j] + (rgb[i + 1][j] - rgb[i][j]) * k) for j in range(3))  # type: ignore[return-value]
+    return _ramp(stops, t)
 
 
 def diverging(t: float) -> RGB:
     """Diverging colour at t in [-1, 1] in the chosen palette (default blue -> white -> red)."""
     p = _PALETTE.get()
-    neg, mid, pos = DIV_PALETTES[p.div]
     if p.reverse:
         t = -t
-    end = neg if t < 0 else pos
-    k = min(abs(t), 1.0)
-    return tuple(round(mid[i] + (end[i] - mid[i]) * k) for i in range(3))  # type: ignore[return-value]
-
-
-def _hex(c: str) -> RGB:
-    c = c.lstrip("#")
-    return int(c[0:2], 16), int(c[2:4], 16), int(c[4:6], 16)
+    return _ramp(DIV_PALETTES[p.div], (min(max(t, -1.0), 1.0) + 1) / 2)
 
 
 def _fade(c: RGB, alpha: float) -> RGB:

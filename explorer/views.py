@@ -29,6 +29,7 @@ logger = logging.getLogger(__name__)
 # explorer/views.py -> explorer -> <project root>
 BASE_DIR = Path(__file__).resolve().parent.parent
 _PAGE_PATH = Path(__file__).resolve().parent / "page" / "index.html"
+_PALETTES_PATH = Path(__file__).resolve().parent / "palettes.json"
 _CSV_PATH = BASE_DIR / "data" / "ghg_inventory.csv"
 _POLICIES_PATH = BASE_DIR / "data" / "policies.csv"
 
@@ -188,6 +189,12 @@ def _render_page():
     html = html.replace("/*@POLICIES@*/[]", policies_json, 1)
     html = html.replace("/*@SECTORS@*/{}", sectors_json, 1)
     html = html.replace("/*@SECTOR_YEARS@*/[]", sector_years_json, 1)
+    # Map colour palettes (explorer/palettes.json, the same list the JPEG export uses)
+    try:
+        palettes_json = _PALETTES_PATH.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        palettes_json = "{}"
+    html = html.replace("/*@PALETTES@*/{}", palettes_json, 1)
     return html
 
 
