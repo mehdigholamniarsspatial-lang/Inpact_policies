@@ -155,7 +155,7 @@ def _signed(v: float) -> str:
 
 
 def _filter_note(signed: bool = False) -> str:
-    """' · Showing values 20 – 9,757' and ' · background 0 not coloured', as on the map."""
+    """' · Showing values 20 – 9,757', as on the map."""
     p, f, out = _PALETTE.get(), (_signed if signed else fmt), ""
     if p.rlo is not None and p.rhi is not None:
         out += f" · Showing values {f(p.rlo)} – {f(p.rhi)}"
@@ -163,8 +163,6 @@ def _filter_note(signed: bool = False) -> str:
         out += f" · Showing values ≥ {f(p.rlo)}"
     elif p.rhi is not None:
         out += f" · Showing values ≤ {f(p.rhi)}"
-    if p.bg is not None:
-        out += f" · background {fmt(p.bg)} not coloured"
     return out
 
 

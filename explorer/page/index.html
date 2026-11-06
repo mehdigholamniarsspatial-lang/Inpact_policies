@@ -1241,6 +1241,10 @@ html.map-standalone .raster-opacity input[type=range]:focus-visible::-moz-range-
 .ms-pal-for{font-size:.68rem;color:var(--text-muted)}
 /* Colour picker: a button with the current gradient; the list opens under it (in the panel's flow) */
 .ms-cp{position:relative}
+.ms-cp-row{display:flex;align-items:center;gap:.45rem}
+.ms-cp-row .ms-cp-btn{flex:1 1 auto;min-width:0}
+.ms-cp-rev{flex:0 0 auto;width:17px;height:17px;margin:0;accent-color:var(--teal);cursor:pointer}
+.ms-cp-rev:disabled{cursor:not-allowed;opacity:.45}
 .ms-cp-btn{
   width:100%;display:flex;align-items:center;gap:.55rem;padding:.4rem .6rem .4rem .45rem;min-height:42px;
   border:2px solid var(--grey-border);border-radius:10px;background:#fff;cursor:pointer;text-align:left;
@@ -1280,9 +1284,6 @@ html.map-standalone .raster-opacity input[type=range]:focus-visible::-moz-range-
 .ms-cp-list [role=option][aria-selected="true"] .ck{visibility:visible}
 .ms-cp-none{margin:0;padding:.6rem .8rem;font-size:.74rem;color:var(--text-muted)}
 .ms-cp-none[hidden]{display:none}
-.ms-pal-rev{display:inline-flex;align-items:center;gap:.4rem;margin:.45rem 0 0;font-size:.74rem;font-weight:600;color:var(--navy);cursor:pointer}
-.ms-pal-rev input{width:15px;height:15px;accent-color:var(--teal);cursor:pointer}
-.ms-pal.is-off .ms-pal-rev{opacity:.45;cursor:not-allowed}
 /* Colour range: a two-handle slider (two overlaid range inputs) with the min / max values at the ends */
 .ms-rs{display:flex;align-items:center;gap:.5rem;margin:.55rem 0 0}
 .ms-rs.is-off{opacity:.45;pointer-events:none}
@@ -1308,10 +1309,7 @@ html.map-standalone .raster-opacity input[type=range]:focus-visible::-moz-range-
 .ms-rs-track input[type=range]:active::-webkit-slider-thumb{cursor:grabbing;transform:scale(1.1)}
 .ms-rs-track input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(14,140,138,.3)}
 .ms-rs-track input[type=range]:focus-visible::-moz-range-thumb{box-shadow:0 0 0 4px rgba(14,140,138,.3)}
-.ms-bg{display:flex;align-items:center;gap:.45rem;margin:.45rem 0 0}
-.ms-bg label{font-size:.72rem;font-weight:700;color:var(--navy);margin:0}
-.ms-bg input{width:6.5em;font-size:.74rem;padding:.15rem .4rem}
-.ms-pal.is-off .ms-rs,.ms-pal.is-off .ms-bg{opacity:.45;pointer-events:none}
+.ms-pal.is-off .ms-rs{opacity:.45;pointer-events:none}
 .ms-pal-off{display:flex;gap:.4rem;margin:.45rem 0 0;font-size:.7rem;line-height:1.4;color:var(--text-muted)}
 .ms-pal-off[hidden]{display:none}
 .ms-pal-off i{color:var(--teal)}
@@ -2087,12 +2085,16 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                   <div class="ms-pal-head"><span class="ms-pal-lbl" id="msPalLbl">Colour palette</span><span class="ms-pal-for" id="msPalFor"></span></div>
                   <!-- Colour picker: the button shows the current palette; it opens the full list (grouped, searchable) -->
                   <div class="ms-cp" id="msCp">
-                    <button type="button" class="ms-cp-btn" id="msCpBtn" aria-haspopup="listbox" aria-expanded="false" aria-controls="msCpPop">
-                      <span class="bar" id="msCpBar" aria-hidden="true"></span>
-                      <span class="nm" id="msCpName">Rainbow</span>
-                      <span class="more" id="msCpMore"></span>
-                      <i class="bi bi-chevron-down" aria-hidden="true"></i>
-                    </button>
+                    <div class="ms-cp-row">
+                      <button type="button" class="ms-cp-btn" id="msCpBtn" aria-haspopup="listbox" aria-expanded="false" aria-controls="msCpPop">
+                        <span class="bar" id="msCpBar" aria-hidden="true"></span>
+                        <span class="nm" id="msCpName">Rainbow</span>
+                        <span class="more" id="msCpMore"></span>
+                        <i class="bi bi-chevron-down" aria-hidden="true"></i>
+                      </button>
+                      <!-- Reverse the palette: a small box, no text (name in the tooltip / for screen readers) -->
+                      <input type="checkbox" class="ms-cp-rev" id="msPalRev" aria-label="Reverse colours" title="Reverse colours">
+                    </div>
                     <div class="ms-cp-pop" id="msCpPop" hidden>
                       <div class="ms-cp-search">
                         <i class="bi bi-search" aria-hidden="true"></i>
@@ -2114,12 +2116,6 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                     </div>
                     <span class="ms-rs-val hi" id="msRsHi">–</span>
                   </div>
-                  <div class="ms-bg">
-                    <label for="msBg">Background</label>
-                    <input type="number" class="form-control form-control-sm" id="msBg" step="any" value="0" placeholder="none"
-                           title="Cells equal to this value are not coloured (leave empty for none)">
-                  </div>
-                  <label class="ms-pal-rev"><input type="checkbox" id="msPalRev"> Reverse colours</label>
                   <p class="ms-pal-off" id="msPalOff" hidden><i class="bi bi-info-circle" aria-hidden="true"></i>MapEIre layers are published as ready-made images, so their colours can&rsquo;t be changed. Opacity still applies.</p>
                 </div>
               </div></div>
@@ -4027,15 +4023,11 @@ const GRID_UI = (() => {
   // highest-priority one with a layer is the one the slider shows:
   // { key, kind: "log" | "div", min, max, lo, hi } with lo / hi = min / max = the layer's value extent.
   // The user's range applies to that layer only (a new layer starts with everything shown).
-  // Cells equal to the background value (default 0; empty = none) are not coloured.
+  // Cells equal to the background value (0) are not coloured.
   const providers = [];
   let userRange = null;                          // { key, lo, hi }
-  const BG_KEY = "inpact.mapBackground";
-  let bg = 0;
-  try {
-    const s = localStorage.getItem(BG_KEY);
-    if (s === "none") bg = null; else if (s !== null && Number.isFinite(+s)) bg = +s;
-  } catch (e) { /* storage blocked: 0 */ }
+  const bg = 0;                                  // background value: zero cells are left uncoloured
+  try { localStorage.removeItem("inpact.mapBackground"); } catch (e) { /* (an earlier, editable setting) */ }
   const range = {
     register(p){ providers.push(p); providers.sort((a, b) => b.priority - a.priority); },
     current(){ for (const p of providers) { const i = p.info(); if (i) return i; } return null; },
@@ -4048,12 +4040,7 @@ const GRID_UI = (() => {
     },
     clear(){ userRange = null; document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } })); },
     get bg(){ return bg; },
-    setBg(v){
-      bg = v;
-      try { localStorage.setItem(BG_KEY, v === null ? "none" : String(v)); } catch (e) { /* not kept */ }
-      document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } }));
-    },
-    isBg: v => bg !== null && Number.isFinite(v) && Math.abs(v - bg) <= 1e-12 * Math.max(1, Math.abs(bg)),
+    isBg: v => Number.isFinite(v) && Math.abs(v - bg) <= 1e-12 * Math.max(1, Math.abs(bg)),
     // The filter in use: { lo, hi } with null on a side whose handle is still at its end
     filter(info){
       if (!this.isUser(info)) return { lo: null, hi: null };
@@ -4286,7 +4273,7 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
         </div>
         ${zeroOn ? '<div class="cb-zero"><i></i>0 (no emission assigned)</div>' : ""}
         <div class="cb-note">Log scale, fixed over ${META.years[0]}–${META.years.at(-1)} · mass of gas, not CO₂-eq${
-          shown ? `<br>${esc(shown)}` : ""}${R.bg !== null ? `<br>Background ${esc(fmtVal(R.bg))}: not coloured` : ""}</div>
+          shown ? `<br>${esc(shown)}` : ""}</div>
         <div class="cb-source">Source: <a href="${esc(src.url)}" target="_blank" rel="noopener">${esc(src.dataset)}</a>,
           ${esc(src.credit)} · ${esc(src.resolution)} · Boundary: ${esc(src.boundary)}</div>`;
       L.DomEvent.disableClickPropagation(div);
@@ -4596,7 +4583,7 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
         </div>
         <div class="cb-zero"><i style="opacity:.45;background:${isDiff ? ramp[3] : ramp[5]}"></i>Outside the Ireland attribution area</div>
         <div class="cb-note">${isDiff ? "Linear, symmetric" : "Log scale"}, fixed for all models and years ·
-          ${esc(src.aggregation.toLowerCase())}${shown ? `<br>${esc(shown)}` : ""}${R.bg !== null ? `<br>Background ${esc(fmtVal(R.bg))}: not coloured` : ""}</div>
+          ${esc(src.aggregation.toLowerCase())}${shown ? `<br>${esc(shown)}` : ""}</div>
         <div class="cb-source">Source: <a href="${esc(src.url)}" target="_blank" rel="noopener">${esc(src.dataset)}</a>,
           ${esc(src.credit)} · ${esc(src.resolution)}</div>`;
       L.DomEvent.disableClickPropagation(div);
@@ -5285,7 +5272,7 @@ if (MAP_STANDALONE) (function mapWindow(){
     const R = GRID_UI.range, f = R.filter(R.current());
     if (f.lo !== null) q.set("rlo", String(f.lo));
     if (f.hi !== null) q.set("rhi", String(f.hi));
-    q.set("bg", R.bg === null ? "" : String(R.bg));
+    q.set("bg", String(R.bg));                // zero cells stay uncoloured in the JPEG as on the map
     return q;
   }
   async function fetchFile(fmt, q){
@@ -5493,14 +5480,13 @@ if (MAP_STANDALONE) (function mapWindow(){
     }
     revEl.addEventListener("change", () => P.set({ reverse: revEl.checked }));
 
-    // ---- Value range slider (two handles) and background value ----
+    // ---- Value range slider (two handles) ----
     // The slider spans the shown layer's values (log10 positions on log scales), both handles at the
     // ends; cells below the min / above the max handle disappear at once, the colours stay as they are.
     const RG = GRID_UI.range, N = 1000;
     const rsBox = document.getElementById("msRs"), rsTrack = document.getElementById("msRsTrack");
     const rsMin = document.getElementById("msRsMin"), rsMax = document.getElementById("msRsMax");
     const rsLo = document.getElementById("msRsLo"), rsHi = document.getElementById("msRsHi");
-    const bgEl = document.getElementById("msBg");
     let rsInfo = null, rsShown = "", dragging = false, rsRaf = 0;
     const fmtR = v => rsInfo?.kind !== "div" ? GRID_UI.fmtVal(v)
       : (v > 0 ? "+" : v < 0 ? "−" : "") + GRID_UI.fmtVal(Math.abs(v));      // signed, as in the legend
@@ -5555,19 +5541,13 @@ if (MAP_STANDALONE) (function mapWindow(){
       el.addEventListener("pointerup", () => { dragging = false; });
       el.addEventListener("blur", () => { dragging = false; });
     });
-    const showBg = () => { if (document.activeElement !== bgEl) bgEl.value = RG.bg === null ? "" : String(RG.bg); };
-    bgEl.addEventListener("change", () => {
-      const s = bgEl.value.trim(), v = parseFloat(s);
-      if (s === "") RG.setBg(null); else if (Number.isFinite(v)) RG.setBg(v); else showBg();
-    });
-    showBg();
     // Follow the layer on the map: legends are re-added whenever a layer is drawn
     new MutationObserver(() => syncRange()).observe(mapEl.querySelector(".leaflet-control-container"), { childList: true, subtree: true });
-    document.addEventListener("mappalette:change", () => { syncRange(); showBg(); });
+    document.addEventListener("mappalette:change", syncRange);
     syncRange();
 
     resetBtn.addEventListener("click", () => {
-      RG.clear(); RG.setBg(0);
+      RG.clear();
       P.set({ ...P.DEFAULT });
       if (+opacityEl.value !== DEFAULT_OPACITY) { opacityEl.value = DEFAULT_OPACITY; opacityEl.dispatchEvent(new Event("input")); }
     });
@@ -5936,8 +5916,7 @@ if (MAP_STANDALONE) (function mapWindow(){
           <div class="cb-row"><div class="cb-gradient" style="background:linear-gradient(to top, ${stops})"></div>
             <div class="cb-ticks"><span>≥ +${fmtVal(R.lim)}</span><span>0</span><span>≤ −${fmtVal(R.lim)}</span></div></div>
           <div class="cb-note">${(w => `${w.hi[0].toUpperCase() + w.hi.slice(1)}: higher in B · ${w.lo}: lower in B`)(GRID_UI.palette.divWords())}<br>Scale ±98th percentile of |B − A|${
-            pct ? " · cells where A is below 1% of its mean are left out" : ""}${shown ? ` · ${esc(shown)}` : ""}${
-            RG.bg !== null ? ` · background ${esc(fmtVal(RG.bg))} not coloured` : ""}</div>`;
+            pct ? " · cells where A is below 1% of its mean are left out" : ""}${shown ? ` · ${esc(shown)}` : ""}</div>`;
         L.DomEvent.disableClickPropagation(div);
         return div;
       };
