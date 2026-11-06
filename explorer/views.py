@@ -381,7 +381,8 @@ def inverse_layer(request):
 
 _LAYER_KEYS = ("year", "sector", "parameter", "gas", "month", "model", "transport", "estimate")
 # Plus a second layer (b_*) and the difference mode when comparing two layers
-_EXPORT_KEYS = ("dataset", "compare", "mode", *_LAYER_KEYS, *(f"b_{k}" for k in _LAYER_KEYS))
+_EXPORT_KEYS = ("dataset", "compare", "mode", *_LAYER_KEYS, *(f"b_{k}" for k in _LAYER_KEYS),
+                "palette", "div_palette", "reverse")   # the colours chosen in the map's "Map style" step
 
 
 def map_export(request, fmt):
@@ -394,8 +395,9 @@ def map_export(request, fmt):
         return JsonResponse({"ok": False, "detail": "Format must be geotiff or jpeg."}, status=404)
     q = {k: (request.GET.get(k) or "").strip() for k in _EXPORT_KEYS}
     try:
-        layer = map_export_mod.build_layer(q)
-        body, filename = (map_export_mod.geotiff if fmt == "geotiff" else map_export_mod.jpeg)(layer)
+        with map_export_mod.use_palette(map_export_mod.Palette.from_query(q)):
+            layer = map_export_mod.build_layer(q)
+            body, filename = (map_export_mod.geotiff if fmt == "geotiff" else map_export_mod.jpeg)(layer)
     except map_export_mod.SelectionError as exc:
         return JsonResponse({"ok": False, "detail": str(exc)}, status=404)
     except rasters.RasterRenderingUnavailable:

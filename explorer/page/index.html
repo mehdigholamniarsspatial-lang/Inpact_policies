@@ -1234,6 +1234,43 @@ html.map-standalone .raster-opacity input[type=range]::-moz-range-thumb{
 }
 html.map-standalone .raster-opacity input[type=range]:focus-visible::-moz-range-thumb{box-shadow:0 0 0 4px rgba(14,140,138,.3)}
 
+/* Step 3 "Map style": colour palette bars, Reverse, then the opacity slider and Reset */
+.ms-pal{margin:0 0 .7rem}
+.ms-pal-head{display:flex;align-items:baseline;gap:.5rem;margin-bottom:.35rem}
+.ms-pal-lbl{font-size:.64rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--navy)}
+.ms-pal-for{font-size:.68rem;color:var(--text-muted)}
+.ms-pal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.35rem;padding:2px}
+.ms-pal-sw{
+  position:relative;display:flex;flex-direction:column;gap:.25rem;min-width:0;padding:.3rem .35rem .3rem;
+  border:2px solid var(--grey-border);border-radius:8px;background:#fff;cursor:pointer;text-align:left;
+  font-family:inherit;color:var(--navy);transition:border-color .15s,box-shadow .15s,background .15s;
+}
+.ms-pal-sw:hover:not(:disabled){border-color:#9FCFCE;background:#FBFEFE}
+.ms-pal-sw:focus-visible{outline:3px solid rgba(14,140,138,.35);outline-offset:1px}
+.ms-pal-sw .bar{display:block;height:14px;border-radius:4px;box-shadow:inset 0 0 0 1px rgba(16,42,67,.12)}
+.ms-pal-sw .nm{font-size:.7rem;font-weight:700;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ms-pal-sw .nt{font-size:.6rem;line-height:1.15;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ms-pal-sw .ck{
+  position:absolute;top:-7px;right:-7px;width:18px;height:18px;border-radius:50%;display:none;
+  align-items:center;justify-content:center;background:var(--teal);color:#fff;font-size:.7rem;box-shadow:0 0 0 2px #fff;
+}
+.ms-pal-sw[aria-checked="true"]{border-color:var(--teal);background:#E9F6F6;box-shadow:0 2px 8px rgba(14,140,138,.18)}
+.ms-pal-sw[aria-checked="true"] .ck{display:flex}
+.ms-pal-sw:disabled{cursor:not-allowed;opacity:.45}
+.ms-pal-rev{display:inline-flex;align-items:center;gap:.4rem;margin:.45rem 0 0;font-size:.74rem;font-weight:600;color:var(--navy);cursor:pointer}
+.ms-pal-rev input{width:15px;height:15px;accent-color:var(--teal);cursor:pointer}
+.ms-pal.is-off .ms-pal-rev{opacity:.45;cursor:not-allowed}
+.ms-pal-off{display:flex;gap:.4rem;margin:.45rem 0 0;font-size:.7rem;line-height:1.4;color:var(--text-muted)}
+.ms-pal-off[hidden]{display:none}
+.ms-pal-off i{color:var(--teal)}
+.ms-style-reset{
+  margin:.5rem 0 0;padding:.1rem 0;border:0;background:none;font-family:inherit;font-size:.72rem;font-weight:600;
+  color:var(--text-muted);text-decoration:underline;text-underline-offset:2px;cursor:pointer;border-radius:4px;
+}
+.ms-style-reset:hover{color:var(--teal)}
+.ms-style-reset:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.ms-style-reset i{margin-right:.25rem}
+
 .ms-reset{
   align-self:flex-start;margin:.1rem 0 .5rem calc(.9rem + 24px + .7rem);padding:.15rem .1rem;
   border:0;background:none;font-family:inherit;font-size:.74rem;font-weight:600;color:var(--text-muted);
@@ -1988,11 +2025,19 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
               <h3 class="ms-step-h">
                 <button type="button" class="ms-step-btn" id="msStep3Btn" aria-expanded="false" aria-controls="msStep3Body">
                   <span class="ms-badge"><span class="n">3</span><i class="bi bi-check-lg"></i></span>
-                  <span class="ms-step-txt"><span class="ms-step-title">Adjust the display</span><span class="ms-step-sum" id="msSum3"></span></span>
+                  <span class="ms-step-txt"><span class="ms-step-title">Map style</span><span class="ms-step-sum" id="msSum3"></span></span>
                   <i class="bi bi-chevron-down ms-chev" aria-hidden="true"></i>
                 </button>
               </h3>
-              <div class="ms-step-body" id="msStep3Body" role="region" aria-labelledby="msStep3Btn"><div class="ms-step-inner" id="msStep3Inner"></div></div>
+              <div class="ms-step-body" id="msStep3Body" role="region" aria-labelledby="msStep3Btn"><div class="ms-step-inner" id="msStep3Inner">
+                <!-- Colour palette of the layer (bars filled by the script); the opacity slider is moved in below it -->
+                <div class="ms-pal" id="msPal">
+                  <div class="ms-pal-head"><span class="ms-pal-lbl" id="msPalLbl">Colour palette</span><span class="ms-pal-for" id="msPalFor"></span></div>
+                  <div class="ms-pal-grid" id="msPalGrid" role="radiogroup" aria-labelledby="msPalLbl"></div>
+                  <label class="ms-pal-rev"><input type="checkbox" id="msPalRev"> Reverse colours</label>
+                  <p class="ms-pal-off" id="msPalOff" hidden><i class="bi bi-info-circle" aria-hidden="true"></i>MapEIre layers are published as ready-made images, so their colours can&rsquo;t be changed. Opacity still applies.</p>
+                </div>
+              </div></div>
             </section>
             <section class="ms-step" data-step="4">
               <h3 class="ms-step-h">
@@ -3832,9 +3877,70 @@ const GRID_UI = (() => {
     if (a >= 1000) return Math.round(v).toLocaleString("en-IE");
     return String(+v.toPrecision(3));
   }
-  // Same blue -> red rainbow as the MapEIre overlays (HSV hue 240 -> 0).
-  const rainbow = t => `hsl(${Math.round((1 - t) * 240)},100%,50%)`;
-  const STOPS = Array.from({ length: 9 }, (_, i) => rainbow(i / 8));
+  // ---- Colour palettes (step 3 "Map style"); the same lists are in explorer/map_export.py ----
+  // Sequential ramps colour values low -> high; diverging ones colour B − A or posterior − prior
+  // around zero. Rainbow (HSV hue 240 -> 0, as the MapEIre overlays) and Blue–red are the defaults.
+  const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const PALETTES = {
+    seq: {
+      rainbow: { name: "Rainbow" },
+      viridis: { name: "Viridis", note: "Colour-blind safe",
+        stops: ["#440154","#472d7b","#3b528b","#2c728e","#21918c","#28ae80","#5ec962","#addc30","#fde725"] },
+      heat:    { name: "Heat",
+        stops: ["#ffffcc","#ffeda0","#fed976","#feb24c","#fd8d3c","#fc4e2a","#e31a1c","#bd0026","#800026"] },
+      magma:   { name: "Magma",
+        stops: ["#000004","#180f3d","#440f76","#721f81","#9e2f7f","#cd4071","#f1605d","#fd9668","#fcfdbf"] },
+      blues:   { name: "Blues",
+        stops: ["#f7fbff","#deebf7","#c6dbef","#9ecae1","#6baed6","#4292c6","#2171b5","#08519c","#08306b"] },
+      greys:   { name: "Greys", note: "Good for printing",
+        stops: ["#f0f0f0","#d9d9d9","#bdbdbd","#969696","#737373","#525252","#363636","#1a1a1a","#000000"] },
+    },
+    div: {
+      bluered: { name: "Blue – red",     neg: [33, 102, 172], mid: [247, 247, 247], pos: [178, 24, 43], lo: "blue",   hi: "red" },
+      prgn:    { name: "Purple – green", neg: [118, 42, 131], mid: [247, 247, 247], pos: [27, 120, 55], lo: "purple", hi: "green" },
+      brbg:    { name: "Brown – teal",   neg: [140, 81, 10],  mid: [245, 245, 245], pos: [1, 102, 94],  lo: "brown",  hi: "teal" },
+    },
+  };
+  Object.values(PALETTES.seq).forEach(p => { if (p.stops) p.rgb = p.stops.map(hex); });
+  const PAL_DEFAULT = { seq: "rainbow", div: "bluered", reverse: false };
+  const PAL_KEY = "inpact.mapPalette";
+  const PAL = { ...PAL_DEFAULT };
+  try {
+    const s = JSON.parse(localStorage.getItem(PAL_KEY)) || {};
+    if (PALETTES.seq[s.seq]) PAL.seq = s.seq;
+    if (PALETTES.div[s.div]) PAL.div = s.div;
+    PAL.reverse = s.reverse === true;
+  } catch (e) { /* storage blocked: defaults */ }
+  const rgbStr = c => `rgb(${c.map(Math.round).join(",")})`;
+  // A sequential palette's colour at t in [0, 1] (low -> high); `rev` flips it
+  function seqColour(name, t, rev){
+    t = Math.min(Math.max(t, 0), 1); if (rev) t = 1 - t;
+    const p = PALETTES.seq[name] || PALETTES.seq.rainbow;
+    if (!p.rgb) return `hsl(${Math.round((1 - t) * 240)},100%,50%)`;
+    const x = t * (p.rgb.length - 1), i = Math.min(Math.floor(x), p.rgb.length - 2), k = x - i;
+    return rgbStr(p.rgb[i].map((c, j) => c + (p.rgb[i + 1][j] - c) * k));
+  }
+  // A diverging palette's colour at t in [-1, 1]; `rev` swaps the two ends
+  function divColour(name, t, rev){
+    const p = PALETTES.div[name] || PALETTES.div.bluered;
+    if (rev) t = -t;
+    const end = t < 0 ? p.neg : p.pos, k = Math.min(Math.abs(t), 1);
+    return rgbStr(p.mid.map((c, i) => c + (end[i] - c) * k));
+  }
+  // What the layers use: the viewer's current choice
+  const rainbow = t => seqColour(PAL.seq, t, PAL.reverse);
+  const diverging = t => divColour(PAL.div, t, PAL.reverse);
+  const stops = () => Array.from({ length: 9 }, (_, i) => rainbow(i / 8));          // legend, bottom -> top
+  const divStops = () => [-1, -0.5, 0, 0.5, 1].map(diverging);
+  const divWords = () => { const p = PALETTES.div[PAL.div]; return PAL.reverse ? { hi: p.lo, lo: p.hi } : { hi: p.hi, lo: p.lo }; };
+  function setPalette(patch){
+    Object.assign(PAL, patch);
+    try { localStorage.setItem(PAL_KEY, JSON.stringify(PAL)); } catch (e) { /* not kept */ }
+    document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } }));
+  }
+  const palette = { PALETTES, DEFAULT: PAL_DEFAULT, get: () => ({ ...PAL }), set: setPalette, seqColour, divColour,
+                    stops, divStops, divWords };
+  const STOPS = stops();                        // (kept for old callers; legends use stops())
   function fill(select, items, placeholder){
     select.innerHTML = "";
     if (placeholder){
@@ -3843,7 +3949,7 @@ const GRID_UI = (() => {
     }
     items.forEach(([value, label]) => select.appendChild(new Option(label, value)));
   }
-  return { esc, fmtVal, rainbow, STOPS, fill };
+  return { esc, fmtVal, rainbow, diverging, STOPS, fill, palette };
 })();
 
 /* ------------- Dataset switch: MapEIre / EDGAR / Inverse Model ------------- */
@@ -3897,6 +4003,13 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
     const sel = { gas: gasSel.value, sector: sectorSel.value, year: yearSel.value, month: monthSel.value };
     if (sel.gas && sel.sector && sel.year && sel.month) loadLayer(sel);
   }
+
+  // Map style: a new palette recolours the cells and the legend
+  document.addEventListener("mappalette:change", () => {
+    if (!current || !colorbar) return;
+    restyle();
+    map.removeControl(colorbar); colorbar = buildColorbar(current.layer); colorbar.addTo(map);
+  });
 
   opacityEl.addEventListener("input", () => {
     opacity = +opacityEl.value / 100;
@@ -4014,7 +4127,7 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
         <div class="cb-title">Emission per 0.1° grid cell</div>
         <div class="cb-unit">${esc(layer.unit)}</div>
         <div class="cb-row">
-          <div class="cb-gradient" style="background:linear-gradient(to top, ${STOPS.join(",")})"></div>
+          <div class="cb-gradient" style="background:linear-gradient(to top, ${GRID_UI.palette.stops().join(",")})"></div>
           <div class="cb-ticks">
             <span>${fmtVal(s.hi)}</span>
             <span>${fmtVal(Math.sqrt(s.lo * s.hi))}</span>
@@ -4120,14 +4233,8 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
     return ["Strong observational constraint", false];
   }
 
-  // Blue (posterior below prior) -> white -> red (posterior above prior).
-  const DIV_NEG = [33, 102, 172], DIV_MID = [247, 247, 247], DIV_POS = [178, 24, 43];
-  function diverging(t){                       // t in [-1, 1]
-    const [a, b] = t < 0 ? [DIV_MID, DIV_NEG] : [DIV_MID, DIV_POS];
-    const k = Math.min(Math.abs(t), 1);
-    return `rgb(${a.map((c, i) => Math.round(c + (b[i] - c) * k)).join(",")})`;
-  }
-  const DIV_STOPS = [-1, -0.5, 0, 0.5, 1].map(diverging);
+  // Difference view: the viewer's diverging palette (default blue: posterior below prior -> red: above)
+  const { diverging } = GRID_UI;
 
   // ---- dataset switch: drop this layer; load the catalogue on first use ----
   document.addEventListener("maplayers:clear", () => {
@@ -4170,6 +4277,12 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
   opacityEl.addEventListener("input", () => {
     opacity = +opacityEl.value / 100;
     if (current) restyle();
+  });
+  // Map style: a new palette recolours the cells and the legend
+  document.addEventListener("mappalette:change", () => {
+    if (!current || !colorbar) return;
+    restyle();
+    map.removeControl(colorbar); colorbar = buildColorbar(current.sel, current.layer); colorbar.addTo(map);
   });
 
   clearBtn.addEventListener("click", () => { if (datasetSel.value === "inverse") clearSelection(); });
@@ -4296,14 +4409,15 @@ document.getElementById("mapDataset")?.addEventListener("change", e => {
       const ticks = isDiff
         ? [`≥ +${fmtVal(s.difference.limit)}`, "0", `≤ −${fmtVal(s.difference.limit)}`]
         : [`≥ ${fmtVal(s.flux.hi)}`, fmtVal(Math.sqrt(s.flux.lo * s.flux.hi)), `≤ ${fmtVal(s.flux.lo)}`];
+      const ramp = isDiff ? GRID_UI.palette.divStops() : GRID_UI.palette.stops();
       div.innerHTML = `
         <div class="cb-title">${isDiff ? "Posterior − prior flux" : "Flux density"}</div>
         <div class="cb-unit">${esc(layer.unit)}</div>
         <div class="cb-row">
-          <div class="cb-gradient" style="background:linear-gradient(to top, ${(isDiff ? DIV_STOPS : STOPS).join(",")})"></div>
+          <div class="cb-gradient" style="background:linear-gradient(to top, ${ramp.join(",")})"></div>
           <div class="cb-ticks">${ticks.map(t => `<span>${t}</span>`).join("")}</div>
         </div>
-        <div class="cb-zero"><i style="opacity:.45;background:${isDiff ? DIV_STOPS[3] : STOPS[5]}"></i>Outside the Ireland attribution area</div>
+        <div class="cb-zero"><i style="opacity:.45;background:${isDiff ? ramp[3] : ramp[5]}"></i>Outside the Ireland attribution area</div>
         <div class="cb-note">${isDiff ? "Linear, symmetric" : "Log scale"}, fixed for all models and years ·
           ${esc(src.aggregation.toLowerCase())}</div>
         <div class="cb-source">Source: <a href="${esc(src.url)}" target="_blank" rel="noopener">${esc(src.dataset)}</a>,
@@ -4914,6 +5028,7 @@ if (MAP_STANDALONE) (function mapWindow(){
   const nextStep = step => { const vis = numbered(); return vis[vis.indexOf(step) + 1]; };
   renumberSteps();
   let hadLayer = null;
+  let styleUI = null;                 // step 3 "Map style" (set up further down)
 
   // Header summaries (shown when a step is collapsed) and the checkmark badges
   const optText = sel => { const o = sel.selectedOptions[0]; return o && o.value ? o.textContent.split(" · ")[0].trim() : ""; };
@@ -4933,7 +5048,7 @@ if (MAP_STANDALONE) (function mapWindow(){
       const nx = nextStep(steps[2]); if (nx) setOpen(nx, true);
     }
     hadLayer = layerOn;
-    sum3.textContent = `Opacity ${opacityEl.value}%`;
+    sum3.textContent = styleUI ? styleUI.summary() : `Opacity ${opacityEl.value}%`;
     sum4.textContent = layerOn ? "GeoTIFF + JPEG" : "Show a layer first";
     sum4.classList.toggle("empty", !layerOn);
     // About this dataset: show the selected dataset's text
@@ -4986,6 +5101,9 @@ if (MAP_STANDALONE) (function mapWindow(){
       q.set("compare", "1"); q.set("mode", cmp.result.mode);
       Object.entries(cmp.result.selB).forEach(([k, v]) => q.set(`b_${k}`, v));
     }
+    // The JPEG uses the colours chosen in step 3 "Map style"
+    const pal = GRID_UI.palette.get();
+    q.set("palette", pal.seq); q.set("div_palette", pal.div); q.set("reverse", pal.reverse ? "1" : "0");
     return q;
   }
   async function fetchFile(fmt, q){
@@ -5096,6 +5214,79 @@ if (MAP_STANDALONE) (function mapWindow(){
   opacityEl.addEventListener("input", syncOpacity);
   syncOpacity();
 
+  // ---- Step 3 "Map style": colour palette, Reverse, opacity and Reset ----
+  // Values (EDGAR, inverse posterior / prior) get the sequential palettes; differences (compare
+  // B − A, inverse Difference) the diverging ones. MapEIre is images: only opacity applies.
+  styleUI = (() => {
+    const P = GRID_UI.palette;
+    const box = document.getElementById("msPal"), grid = document.getElementById("msPalGrid");
+    const forEl = document.getElementById("msPalFor"), revEl = document.getElementById("msPalRev");
+    const offEl = document.getElementById("msPalOff"), estSel = document.getElementById("invEstimate");
+    const resetBtn = document.createElement("button");
+    resetBtn.type = "button"; resetBtn.className = "ms-style-reset";
+    resetBtn.innerHTML = '<i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>Reset to default';
+    resetBtn.title = "Rainbow (Blue – red for differences), not reversed, opacity 80%";
+    document.getElementById("msStep3Inner").appendChild(resetBtn);   // after the opacity slider
+    const DEFAULT_OPACITY = 80;
+
+    const family = () => root.classList.contains("ms-compare")
+      || (datasetSel.value === "inverse" && estSel.value === "difference") ? "div" : "seq";
+    const ramp = (fam, name, rev) => fam === "div"
+      ? [-1, -0.5, 0, 0.5, 1].map(t => P.divColour(name, t, rev))
+      : Array.from({ length: 9 }, (_, i) => P.seqColour(name, i / 8, rev));
+    let shownKey = "";
+    function render(){
+      const fam = family(), cur = P.get(), off = datasetSel.value === "mapeire";
+      const key = fam + off;
+      if (key !== shownKey) {                          // rebuild the bars for the other family
+        shownKey = key;
+        grid.innerHTML = Object.entries(P.PALETTES[fam]).map(([id, p]) => `
+          <button type="button" class="ms-pal-sw" role="radio" data-id="${id}" aria-checked="false">
+            <span class="bar"></span><span class="nm">${GRID_UI.esc(p.name)}</span>
+            ${p.note ? `<span class="nt">${GRID_UI.esc(p.note)}</span>` : ""}
+            <span class="ck" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
+          </button>`).join("");
+        grid.querySelectorAll(".ms-pal-sw").forEach(b => b.addEventListener("click", () => P.set({ [family()]: b.dataset.id })));
+      }
+      grid.querySelectorAll(".ms-pal-sw").forEach(b => {
+        const on = b.dataset.id === cur[fam];
+        b.setAttribute("aria-checked", String(on)); b.tabIndex = on ? 0 : -1; b.disabled = off;
+        b.querySelector(".bar").style.background = `linear-gradient(to right, ${ramp(fam, b.dataset.id, cur.reverse).join(",")})`;
+      });
+      forEl.textContent = off ? "" : fam === "div" ? "for differences: − · 0 · +" : "for values: low → high";
+      revEl.checked = cur.reverse; revEl.disabled = off;
+      box.classList.toggle("is-off", off); offEl.hidden = !off;
+      syncSteps();
+    }
+    // Arrow keys move between the bars, like the dataset cards
+    grid.addEventListener("keydown", e => {
+      const d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+      if (!d) return;
+      const bs = [...grid.querySelectorAll(".ms-pal-sw")], i = bs.indexOf(document.activeElement);
+      if (i < 0) return;
+      e.preventDefault();
+      const nx = bs[(i + d + bs.length) % bs.length]; nx.focus(); nx.click();
+    });
+    revEl.addEventListener("change", () => P.set({ reverse: revEl.checked }));
+    resetBtn.addEventListener("click", () => {
+      P.set({ ...P.DEFAULT });
+      if (+opacityEl.value !== DEFAULT_OPACITY) { opacityEl.value = DEFAULT_OPACITY; opacityEl.dispatchEvent(new Event("input")); }
+    });
+    document.addEventListener("mappalette:change", render);
+    datasetSel.addEventListener("change", render);
+    estSel.addEventListener("change", render);
+    new MutationObserver(() => { if (family() + (datasetSel.value === "mapeire") !== shownKey) render(); })
+      .observe(root, { attributes: true, attributeFilter: ["class"] });
+    // Folded step 3 reads e.g. "Viridis (reversed) · 80%"
+    const summary = () => {
+      if (datasetSel.value === "mapeire") return `Opacity ${opacityEl.value}%`;
+      const fam = family(), cur = P.get();
+      return `${P.PALETTES[fam][cur[fam]].name}${cur.reverse ? " (reversed)" : ""} · ${opacityEl.value}%`;
+    };
+    return { render, summary };
+  })();
+  styleUI.render();
+
   document.getElementById("msReset").addEventListener("click", () => {
     document.dispatchEvent(new Event("maplayers:clear"));   // every dataset clears its dropdowns
     setOpen(steps[2], true);
@@ -5157,12 +5348,8 @@ if (MAP_STANDALONE) (function mapWindow(){
     headA.className = "cmp-col-head"; headA.innerHTML = '<span class="cmp-tag">A</span>Layer A';
     rasterBar.prepend(headA);
 
-    // Same blue -> white -> red ramp as the inverse model's Difference view
-    const NEG = [33, 102, 172], MID = [247, 247, 247], POS = [178, 24, 43];
-    function diverging(t){
-      const [a, b] = t < 0 ? [MID, NEG] : [MID, POS], k = Math.min(Math.abs(t), 1);
-      return `rgb(${a.map((c, i) => Math.round(c + (b[i] - c) * k)).join(",")})`;
-    }
+    // The viewer's diverging palette, as the inverse model's Difference view (default blue -> white -> red)
+    const { diverging } = GRID_UI;
 
     // ---- statistics helpers ----
     const mean = xs => xs.reduce((s, x) => s + x, 0) / xs.length;
@@ -5434,7 +5621,7 @@ if (MAP_STANDALONE) (function mapWindow(){
           <div class="cb-unit">${esc(R.valueUnit)}</div>
           <div class="cb-row"><div class="cb-gradient" style="background:linear-gradient(to top, ${stops})"></div>
             <div class="cb-ticks"><span>≥ +${fmtVal(R.lim)}</span><span>0</span><span>≤ −${fmtVal(R.lim)}</span></div></div>
-          <div class="cb-note">Red: higher in B · blue: lower in B<br>Scale ±98th percentile of |B − A|${pct ? " · cells where A is below 1% of its mean are left out" : ""}</div>`;
+          <div class="cb-note">${(w => `${w.hi[0].toUpperCase() + w.hi.slice(1)}: higher in B · ${w.lo}: lower in B`)(GRID_UI.palette.divWords())}<br>Scale ±98th percentile of |B − A|${pct ? " · cells where A is below 1% of its mean are left out" : ""}</div>`;
         L.DomEvent.disableClickPropagation(div);
         return div;
       };
@@ -5664,6 +5851,8 @@ if (MAP_STANDALONE) (function mapWindow(){
       schedule();
     }));
     opacityEl.addEventListener("input", restyle);
+    // Map style: a new diverging palette redraws B − A, its legend and the histogram
+    document.addEventListener("mappalette:change", () => { if (st.active && st.result) { draw(); renderResults(); } });
     syncButton();
 
     return { get result(){ return st.result; } };
