@@ -1318,9 +1318,8 @@ html.map-standalone .raster-opacity input[type=range]:focus-visible::-moz-range-
 .ms-cp-none[hidden]{display:none}
 /* Colour range: a two-handle slider (two overlaid range inputs) with the min / max values at the ends */
 .ms-bgrow{display:flex;align-items:center;gap:.45rem;margin:.55rem 0 0}
-.ms-bgrow > label{flex:0 0 auto;margin:0;font-size:.64rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--navy)}
-.ms-bg-val{flex:0 0 4.6em;width:4.6em;font-size:.74rem;padding:.12rem .35rem}
-.ms-pal.is-off .ms-bgrow > label,.ms-pal.is-off .ms-bg-val{opacity:.45;pointer-events:none}
+.ms-bgrow-lbl{flex:0 0 auto;font-size:.64rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--navy)}
+.ms-pal.is-off .ms-bgrow-lbl{opacity:.45}
 .ms-rs{display:flex;align-items:center;gap:.4rem;flex:1 1 auto;min-width:0}
 .ms-rs.is-off{opacity:.45;pointer-events:none}
 .ms-rs-val{flex:0 0 auto;min-width:2.6em;font-size:.7rem;font-weight:800;color:var(--navy);font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -2143,14 +2142,12 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                       <p class="ms-cp-none" id="msCpNone" hidden>No palette matches.</p>
                     </div>
                   </div>
-                  <!-- One line: "Background", the background value box (cells equal to it are not coloured)
-                       and the value range filter (two handles, min and max; cells outside are not drawn,
-                       the colours keep the layer's scale; the values sit at the ends). -->
+                  <!-- One line: "Filter" and the value range filter (two handles, min and max; cells outside are
+                       not drawn, the colours keep the layer's scale; the values sit at the ends). Zero cells are
+                       always left uncoloured (background). -->
                   <div class="ms-bgrow">
-                    <label for="msBg">Background</label>
-                    <input type="number" class="form-control form-control-sm ms-bg-val" id="msBg" step="any" value="0"
-                           title="Cells equal to this value are not coloured (empty: none)">
-                    <div class="ms-rs" id="msRs">
+                    <span class="ms-bgrow-lbl" id="msRsLbl">Filter</span>
+                    <div class="ms-rs" id="msRs" role="group" aria-labelledby="msRsLbl">
                       <span class="ms-rs-val lo" id="msRsLo">–</span>
                       <div class="ms-rs-track" id="msRsTrack">
                         <div class="ms-rs-fill" id="msRsFill"></div>
@@ -4067,15 +4064,11 @@ const GRID_UI = (() => {
   // highest-priority one with a layer is the one the slider shows:
   // { key, kind: "log" | "div", min, max, lo, hi } with lo / hi = min / max = the layer's value extent.
   // The user's range applies to that layer only (a new layer starts with everything shown).
-  // Cells equal to the background value (default 0, typed in the Background box; empty = none) are not coloured.
+  // Cells equal to the background value (0) are not coloured.
   const providers = [];
   let userRange = null;                          // { key, lo, hi }
-  const BG_KEY = "inpact.mapBackground";
-  let bg = 0;
-  try {
-    const s = localStorage.getItem(BG_KEY);
-    if (s === "none") bg = null; else if (s !== null && Number.isFinite(+s)) bg = +s;
-  } catch (e) { /* storage blocked: 0 */ }
+  const bg = 0;                                  // background value: zero cells are left uncoloured
+  try { localStorage.removeItem("inpact.mapBackground"); } catch (e) { /* (an earlier, editable setting) */ }
   const range = {
     register(p){ providers.push(p); providers.sort((a, b) => b.priority - a.priority); },
     current(){ for (const p of providers) { const i = p.info(); if (i) return i; } return null; },
@@ -4088,12 +4081,7 @@ const GRID_UI = (() => {
     },
     clear(){ userRange = null; document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } })); },
     get bg(){ return bg; },
-    setBg(v){
-      bg = v;
-      try { localStorage.setItem(BG_KEY, v === null ? "none" : String(v)); } catch (e) { /* not kept */ }
-      document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } }));
-    },
-    isBg: v => bg !== null && Number.isFinite(v) && Math.abs(v - bg) <= 1e-12 * Math.max(1, Math.abs(bg)),
+    isBg: v => Number.isFinite(v) && Math.abs(v - bg) <= 1e-12 * Math.max(1, Math.abs(bg)),
     // The filter in use: { lo, hi } with null on a side whose handle is still at its end
     filter(info){
       if (!this.isUser(info)) return { lo: null, hi: null };
@@ -5362,7 +5350,7 @@ if (MAP_STANDALONE) (function mapWindow(){
     const R = GRID_UI.range, f = R.filter(R.current());
     if (f.lo !== null) q.set("rlo", String(f.lo));
     if (f.hi !== null) q.set("rhi", String(f.hi));
-    q.set("bg", R.bg === null ? "" : String(R.bg));   // background cells stay uncoloured in the JPEG as on the map
+    q.set("bg", String(R.bg));                // zero cells stay uncoloured in the JPEG as on the map
     return q;
   }
   async function fetchFile(fmt, q){
@@ -5631,21 +5619,13 @@ if (MAP_STANDALONE) (function mapWindow(){
       el.addEventListener("pointerup", () => { dragging = false; });
       el.addEventListener("blur", () => { dragging = false; });
     });
-    // Background box: cells equal to the value are not coloured (empty = none)
-    const bgEl = document.getElementById("msBg");
-    const showBg = () => { if (document.activeElement !== bgEl) bgEl.value = RG.bg === null ? "" : String(RG.bg); };
-    bgEl.addEventListener("change", () => {
-      const s = bgEl.value.trim(), v = parseFloat(s);
-      if (s === "") RG.setBg(null); else if (Number.isFinite(v)) RG.setBg(v); else showBg();
-    });
-    showBg();
     // Follow the layer on the map: legends are re-added whenever a layer is drawn
     new MutationObserver(() => syncRange()).observe(mapEl.querySelector(".leaflet-control-container"), { childList: true, subtree: true });
-    document.addEventListener("mappalette:change", () => { syncRange(); showBg(); });
+    document.addEventListener("mappalette:change", syncRange);
     syncRange();
 
     resetBtn.addEventListener("click", () => {
-      RG.clear(); RG.setBg(0);
+      RG.clear();
       P.set({ ...P.DEFAULT });
       if (+opacityEl.value !== DEFAULT_OPACITY) { opacityEl.value = DEFAULT_OPACITY; opacityEl.dispatchEvent(new Event("input")); }
     });
