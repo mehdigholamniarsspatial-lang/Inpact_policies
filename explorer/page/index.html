@@ -112,32 +112,48 @@ body{
   .brand-funder .funded-by{display:none}
 }
 
-/* Policy Timeline and Spatial Mapping: the menu bar folds away and the header is 20% lower, for more
-   room. A click on the middle of the header (the title) brings both back; another click folds them. */
-.menu-hint{display:none}
-html.nav-foldable .app-header{cursor:pointer}
-html.nav-foldable .app-header a{cursor:pointer}
-html.nav-foldable .header-text{border-radius:10px;transition:background .15s}
-html.nav-foldable .header-text:hover{background:var(--grey-panel)}
-html.nav-foldable .header-text:focus-visible{outline:3px solid rgba(14,140,138,.35);outline-offset:2px}
-html.nav-foldable .menu-hint{
-  display:inline-flex;align-items:center;gap:.3rem;margin-top:.3rem;padding:.1rem .55rem;border-radius:999px;
-  background:var(--teal-light);color:var(--teal);font-size:.7rem;font-weight:800;line-height:1.4;
+/* Policy Timeline and Spatial Mapping: the menu bar folds away and the header shrinks to a slim strip
+   (40% lower than the earlier folded header: 106px -> 64px), for more room. The whole strip is one
+   click target (logos included) that brings the full header and menu back; the button in the right
+   corner shows it (four arrows out) and, on the full header, shrinks it again (four arrows in). */
+.nav-toggle{display:none}
+html.nav-foldable .app-header{padding-right:3.6rem}
+html.nav-foldable .nav-toggle{
+  display:inline-flex;align-items:center;justify-content:center;position:absolute;right:.9rem;top:50%;
+  transform:translateY(-50%);width:34px;height:34px;padding:0;border:1px solid var(--grey-border);border-radius:8px;
+  background:#fff;color:var(--navy);cursor:pointer;box-shadow:0 1px 3px rgba(16,42,67,.12);
+  transition:background .15s,color .15s,border-color .15s;
 }
-html.nav-folded{--header-h:106px}                     /* 80% of 132px */
+html.nav-foldable .nav-toggle:hover{background:var(--teal-light);color:var(--teal);border-color:var(--teal)}
+html.nav-foldable .nav-toggle:focus-visible{outline:3px solid rgba(14,140,138,.35);outline-offset:2px}
+html.nav-foldable .nav-toggle svg{width:20px;height:20px}
+.nav-toggle .ic-in{display:none}
+html.nav-foldable:not(.nav-folded) .nav-toggle .ic-out{display:none}
+html.nav-foldable:not(.nav-folded) .nav-toggle .ic-in{display:block}
+/* Slim (folded) strip: everything on it is clickable and opens the full header */
+html.nav-folded{--header-h:64px}                      /* 60% of the earlier folded 106px */
+html.nav-folded .app-header{cursor:pointer;transition:background .15s}
+html.nav-folded .app-header:hover{background:#F6FAFB}
+html.nav-folded .app-header a{cursor:pointer}
 html.nav-folded .tab-nav{display:none}
-html.nav-folded .brand-inpact img{height:calc((var(--header-h) / .8 - 38px) * .8)}
-html.nav-folded .brand-funder img{height:calc((var(--header-h) / .8 - 66px) * .8)}
-html.nav-folded .app-title{font-size:1.2rem}
-html.nav-folded .app-subtitle{font-size:.8rem;margin-top:.15rem}
-html.nav-folded .menu-hint{margin-top:.2rem}
+html.nav-folded .header-inner{gap:1rem}
+html.nav-folded .brand-inpact img{height:46px}
+html.nav-folded .header-text{padding-left:1rem}
+html.nav-folded .app-title{font-size:1.02rem}
+html.nav-folded .app-subtitle{display:none}
+html.nav-folded .brand-funder{flex-direction:row;gap:.5rem;padding-left:1rem}
+html.nav-folded .brand-funder img{height:26px}
 @media (max-width:991px){
-  html.nav-folded{--header-h:93px}                   /* 80% of 116px */
-  html.nav-folded .app-title{font-size:1.05rem}
-  html.nav-folded .app-subtitle{display:none}
+  html.nav-folded{--header-h:56px}                   /* 60% of the earlier folded 93px */
+  html.nav-folded .brand-inpact img{height:40px}
+  html.nav-folded .app-title{font-size:.92rem}
+  html.nav-folded .brand-funder img{height:22px}
 }
 @media (max-width:575px){
-  html.nav-folded{--header-h:74px}                   /* 80% of 92px */
+  html.nav-folded{--header-h:46px}                   /* 60% of the earlier folded 74px */
+  html.nav-folded .brand-inpact img{height:32px}
+  html.nav-folded .brand-funder img{height:18px}
+  html.nav-foldable .nav-toggle{width:30px;height:30px;right:.6rem}
 }
 
 /* ============ LAYOUT ============ */
@@ -1774,8 +1790,6 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
     <div class="header-text">
       <h1 class="app-title"><span class="accent">Ireland</span> Greenhouse Gas Policy Impact Explorer</h1>
       <p class="app-subtitle">Explore greenhouse gas emissions, atmospheric pollutants, climate policies and policy effectiveness across Ireland.</p>
-      <!-- Policy Timeline / Spatial Mapping only: the menu bar is folded away; a click here shows it -->
-      <span class="menu-hint" id="menuHint" aria-hidden="true"><i class="bi bi-chevron-down"></i><span>Show menu</span></span>
     </div>
     <div class="brand-funder">
       <span class="funded-by">Funded by</span>
@@ -1786,6 +1800,17 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
       </a>
     </div>
   </div>
+  <!-- Policy Timeline / Spatial Mapping only: right corner. Slim header: four arrows out = show the full
+       header and the menu; full header: four arrows in = shrink it again -->
+  <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" title="Show the menu and full header">
+    <svg class="ic-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4 9V4h5M4 4l6 6M20 9V4h-5M20 4l-6 6M4 15v5h5M4 20l6-6M20 15v5h-5M20 20l-6-6"/>
+    </svg>
+    <svg class="ic-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M10 5v5H5M10 10 4 4M14 5v5h5M14 10l6-6M10 19v-5H5M10 14l-6 6M14 19v-5h5M14 14l6 6"/>
+    </svg>
+    <span class="visually-hidden" id="navToggleTxt">Show the menu</span>
+  </button>
 </header>
 
 <!-- ================= TAB NAVIGATION ================= -->
@@ -4931,17 +4956,21 @@ function activateTab(name){
 tabButtons.forEach(b =>
   b.addEventListener("click", () => activateTab(b.dataset.tab)));
 
-/* Policy Timeline and Spatial Mapping fold the menu bar away and lower the header by 20%, for more
-   room; a click on the middle of the header shows the menu and the full header again (and back). */
+/* Policy Timeline and Spatial Mapping fold the menu bar away and shrink the header to a slim strip, for
+   more room. A click anywhere on the slim strip (logos included) shows the full header and menu; the
+   button in the right corner does the same and, on the full header, shrinks it again. */
 const NAV_FOLD_TABS = new Set(["policy", "mapping"]);
-const appHeader = document.querySelector(".app-header"), headerMid = document.querySelector(".header-text");
-const menuHint = document.getElementById("menuHint");
+const appHeader = document.querySelector(".app-header");
+const navToggle = document.getElementById("navToggle"), navToggleTxt = document.getElementById("navToggleTxt");
+const isFoldable = () => document.documentElement.classList.contains("nav-foldable");
+const isFolded = () => document.documentElement.classList.contains("nav-folded");
 function setNavFolded(folded){
   const root = document.documentElement, nav = document.querySelector(".tab-nav");
   root.classList.toggle("nav-folded", folded);
-  menuHint.querySelector("i").className = folded ? "bi bi-chevron-down" : "bi bi-chevron-up";
-  menuHint.querySelector("span").textContent = folded ? "Show menu" : "Hide menu";
-  headerMid.setAttribute("aria-expanded", String(!folded));
+  const label = folded ? "Show the menu and full header" : "Shrink the header and hide the menu";
+  navToggle.title = label; navToggleTxt.textContent = label;
+  navToggle.setAttribute("aria-expanded", String(!folded));
+  appHeader.title = folded ? "Click to show the menu and full header" : "";
   // the Policy Timeline and Spatial Mapping frames fill the space under the header and menu bar
   root.style.setProperty("--tabnav-h", (nav ? nav.offsetHeight : 0) + "px");
   if (typeof pt !== "undefined" && pt.started && ptIsActive()) ptSizeFrame();
@@ -4949,22 +4978,18 @@ function setNavFolded(folded){
 function syncNavFold(name){
   const foldable = !MAP_STANDALONE && NAV_FOLD_TABS.has(name);
   document.documentElement.classList.toggle("nav-foldable", foldable);
-  if (foldable) {
-    headerMid.setAttribute("role", "button"); headerMid.tabIndex = 0;
-    headerMid.title = "Show or hide the menu";
-  } else {
-    ["role", "tabindex", "title", "aria-expanded"].forEach(a => headerMid.removeAttribute(a));
-  }
+  if (!foldable) appHeader.removeAttribute("title");
   setNavFolded(foldable);                // these two tabs open with the menu folded
 }
-const toggleNav = () => {
-  if (document.documentElement.classList.contains("nav-foldable"))
-    setNavFolded(!document.documentElement.classList.contains("nav-folded"));
-};
-// The middle of the header; on phones (no title) anywhere on the header outside the two logos
-appHeader.addEventListener("click", e => { if (!e.target.closest("a")) toggleNav(); });
-headerMid.addEventListener("keydown", e => {
-  if ((e.key === "Enter" || e.key === " ") && headerMid.getAttribute("role") === "button") { e.preventDefault(); toggleNav(); }
+navToggle.addEventListener("click", e => {
+  e.stopPropagation();
+  if (isFoldable()) setNavFolded(!isFolded());
+});
+// Slim strip: a click anywhere (the logo links too) opens the full header instead of following a link
+appHeader.addEventListener("click", e => {
+  if (!isFoldable() || !isFolded()) return;
+  e.preventDefault();
+  setNavFolded(false);
 });
 
 /* Spatial Mapping tab: the /map/ workspace in a frame sized to fill the screen under the menu bar.
