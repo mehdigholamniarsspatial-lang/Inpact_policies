@@ -402,7 +402,7 @@ _LAYER_KEYS = ("year", "sector", "parameter", "gas", "month", "model", "transpor
 # Plus a second layer (b_*) and the difference mode when comparing two layers
 _EXPORT_KEYS = ("dataset", "compare", "mode", *_LAYER_KEYS, *(f"b_{k}" for k in _LAYER_KEYS),
                 # the colours, colour range slider and background value of the map's "Map style" step
-                "palette", "div_palette", "reverse", "rlo", "rhi", "bg")
+                "palette", "div_palette", "reverse", "rlo", "rhi", "rinv", "bg")
 
 
 def map_export(request, fmt):

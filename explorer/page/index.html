@@ -1372,6 +1372,10 @@ html.map-standalone .raster-opacity input[type=range]:focus-visible::-moz-range-
 .ms-rs-track input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(14,140,138,.3)}
 .ms-rs-track input[type=range]:focus-visible::-moz-range-thumb{box-shadow:0 0 0 4px rgba(14,140,138,.3)}
 .ms-pal.is-off .ms-rs{opacity:.45;pointer-events:none}
+/* Reversed filter (compare map): the hidden range is grey, what is shown (outside it) teal */
+.ms-rs-track.inv::before{background:var(--teal)}
+.ms-rs-track.inv .ms-rs-fill{background:#D5DEE6}
+#msRsInv[hidden]{display:none}
 .ms-pal-off{display:flex;gap:.4rem;margin:.45rem 0 0;font-size:.7rem;line-height:1.4;color:var(--text-muted)}
 .ms-pal-off[hidden]{display:none}
 .ms-pal-off i{color:var(--teal)}
@@ -2182,6 +2186,9 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                       </div>
                       <span class="ms-rs-val hi" id="msRsHi">–</span>
                     </div>
+                    <!-- Compare map only: reverse the filter (hide the slider's range instead of showing it) -->
+                    <input type="checkbox" class="ms-cp-rev" id="msRsInv" aria-label="Reverse filter: hide the values in the range"
+                           title="Reverse filter: hide the values in the range" hidden>
                   </div>
                   <p class="ms-pal-off" id="msPalOff" hidden><i class="bi bi-info-circle" aria-hidden="true"></i>MapEIre layers are published as ready-made images, so their colours can&rsquo;t be changed. Opacity still applies.</p>
                 </div>
@@ -4127,6 +4134,7 @@ const GRID_UI = (() => {
   // Cells equal to the background value (0) are not coloured.
   const providers = [];
   let userRange = null;                          // { key, lo, hi }
+  let invKey = null;                             // key of the layer whose filter is reversed
   const bg = 0;                                  // background value: zero cells are left uncoloured
   try { localStorage.removeItem("inpact.mapBackground"); } catch (e) { /* (an earlier, editable setting) */ }
   const range = {
@@ -4139,7 +4147,14 @@ const GRID_UI = (() => {
       userRange = { key, lo, hi };
       document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } }));
     },
-    clear(){ userRange = null; document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } })); },
+    // Reverse filter (only layers whose info has canInvert, i.e. the compare map): the slider's range
+    // is hidden instead of shown. Kept per layer, like the range.
+    isInv(info){ return !!(invKey && info && info.canInvert && invKey === info.key); },
+    setInv(key, on){
+      invKey = on ? key : null;
+      document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } }));
+    },
+    clear(){ userRange = null; invKey = null; document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } })); },
     get bg(){ return bg; },
     isBg: v => Number.isFinite(v) && Math.abs(v - bg) <= 1e-12 * Math.max(1, Math.abs(bg)),
     // The filter in use: { lo, hi } with null on a side whose handle is still at its end
@@ -4151,12 +4166,17 @@ const GRID_UI = (() => {
     outside(info, v){
       if (!Number.isFinite(v)) return false;
       const f = this.filter(info);
-      return (f.lo !== null && v < f.lo) || (f.hi !== null && v > f.hi);
+      if (f.lo === null && f.hi === null) return false;
+      const out = (f.lo !== null && v < f.lo) || (f.hi !== null && v > f.hi);
+      return this.isInv(info) ? !out : out;      // reversed: the cells inside the range are hidden
     },
     // Legend line, e.g. "Showing values 20 – 9,757"; "" when nothing is filtered
     note(info, fmt = fmtVal){
       const f = this.filter(info);
       if (f.lo === null && f.hi === null) return "";
+      if (this.isInv(info))
+        return f.lo !== null && f.hi !== null ? `Hiding values ${fmt(f.lo)} – ${fmt(f.hi)}`
+             : f.lo !== null ? `Hiding values ≥ ${fmt(f.lo)}` : `Hiding values ≤ ${fmt(f.hi)}`;
       return f.lo !== null && f.hi !== null ? `Showing values ${fmt(f.lo)} – ${fmt(f.hi)}`
            : f.lo !== null ? `Showing values ≥ ${fmt(f.lo)}` : `Showing values ≤ ${fmt(f.hi)}`;
     },
@@ -5415,6 +5435,7 @@ if (MAP_STANDALONE) (function mapWindow(){
     const R = GRID_UI.range, f = R.filter(R.current());
     if (f.lo !== null) q.set("rlo", String(f.lo));
     if (f.hi !== null) q.set("rhi", String(f.hi));
+    if (R.isInv(R.current()) && (f.lo !== null || f.hi !== null)) q.set("rinv", "1");   // compare: range hidden
     q.set("bg", String(R.bg));                // zero cells stay uncoloured in the JPEG as on the map
     return q;
   }
@@ -5636,7 +5657,15 @@ if (MAP_STANDALONE) (function mapWindow(){
     const rsBox = document.getElementById("msRs"), rsTrack = document.getElementById("msRsTrack");
     const rsMin = document.getElementById("msRsMin"), rsMax = document.getElementById("msRsMax");
     const rsLo = document.getElementById("msRsLo"), rsHi = document.getElementById("msRsHi");
+    const rsInv = document.getElementById("msRsInv");
     let rsInfo = null, rsShown = "", dragging = false, rsRaf = 0;
+    // The reverse box: shown for the compare map only (not for single layers / the time series)
+    function syncInv(off){
+      const can = !off && !!rsInfo?.canInvert, on = can && RG.isInv(rsInfo);
+      rsInv.hidden = !can; rsInv.checked = on;
+      rsTrack.classList.toggle("inv", on);
+    }
+    rsInv.addEventListener("change", () => { if (rsInfo?.canInvert) RG.setInv(rsInfo.key, rsInv.checked); });
     const fmtR = v => rsInfo?.kind !== "div" ? GRID_UI.fmtVal(v)
       : (v > 0 ? "+" : v < 0 ? "−" : "") + GRID_UI.fmtVal(Math.abs(v));      // signed, as in the legend
     // [a, b] = the slider's ends, in the position space (log10 on log scales)
@@ -5662,6 +5691,7 @@ if (MAP_STANDALONE) (function mapWindow(){
       const off = !rsInfo || datasetSel.value === "mapeire";
       rsBox.classList.toggle("is-off", off);
       rsMin.disabled = rsMax.disabled = off;
+      syncInv(off);
       if (off) { rsLo.textContent = rsHi.textContent = "–"; rsMin.value = 0; rsMax.value = N; paintRs(); rsShown = ""; return; }
       if (dragging) return;
       const e = RG.eff(rsInfo), key = rsInfo.key + "|" + ends(rsInfo).join(",");
@@ -6014,7 +6044,8 @@ if (MAP_STANDALONE) (function mapWindow(){
         const vs = R.used.map(c => c.v);
         R._ext = vs.length ? [Math.min(...vs), Math.max(...vs)] : [-R.lim, R.lim];
       }
-      return { key: `cmp|${R.mode}|${R.labelA}|${R.labelB}`, kind: "div", min: R._ext[0], max: R._ext[1], lo: R._ext[0], hi: R._ext[1] };
+      return { key: `cmp|${R.mode}|${R.labelA}|${R.labelB}`, kind: "div", min: R._ext[0], max: R._ext[1], lo: R._ext[0], hi: R._ext[1],
+               canInvert: true };                // the "Reverse filter" box applies to the compare map only
     }
     GRID_UI.range.register({ priority: 2, info: rangeInfo });
     const rangeNow = () => ({ lo: -st.result.lim, hi: st.result.lim });    // colours: ±98th percentile, as always

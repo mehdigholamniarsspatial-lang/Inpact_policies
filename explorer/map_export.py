@@ -80,6 +80,7 @@ class Palette:
     rlo: Optional[float] = None     # value range filter of the slider: cells below rlo / above rhi
     rhi: Optional[float] = None     # are not drawn (None: no limit on that side)
     bg: Optional[float] = None      # cells equal to this value are not coloured
+    rinv: bool = False              # reverse filter (compare map): cells inside rlo..rhi are not drawn
 
     @classmethod
     def from_query(cls, q: dict) -> "Palette":
@@ -95,7 +96,8 @@ class Palette:
         if rlo is not None and rhi is not None and not rlo < rhi:
             rlo = rhi = None
         return cls(seq if seq in SEQ_PALETTES else DEFAULT_SEQ, div if div in DIV_PALETTES else DEFAULT_DIV,
-                   q.get("reverse") == "1", rlo, rhi, num("bg"))
+                   q.get("reverse") == "1", rlo, rhi, num("bg"),
+                   q.get("rinv") == "1" and (rlo is not None or rhi is not None))
 
 
 # The palette of the download being built (set per request by ``use_palette``)
@@ -137,7 +139,10 @@ def diverging(t: float) -> RGB:
 def outside(v: float) -> bool:
     """Is v filtered out by the slider (below its min or above its max handle)?"""
     p = _PALETTE.get()
-    return math.isfinite(v) and ((p.rlo is not None and v < p.rlo) or (p.rhi is not None and v > p.rhi))
+    if not math.isfinite(v):
+        return False
+    out = (p.rlo is not None and v < p.rlo) or (p.rhi is not None and v > p.rhi)
+    return not out if p.rinv else out   # reverse filter: the range itself is hidden
 
 
 def is_bg(v: float) -> bool:
@@ -157,6 +162,10 @@ def _signed(v: float) -> str:
 def _filter_note(signed: bool = False) -> str:
     """' · Showing values 20 – 9,757', as on the map."""
     p, f, out = _PALETTE.get(), (_signed if signed else fmt), ""
+    if p.rinv:
+        lo, hi = p.rlo, p.rhi
+        return (f" · Hiding values {f(lo)} – {f(hi)}" if lo is not None and hi is not None
+                else f" · Hiding values ≥ {f(lo)}" if lo is not None else f" · Hiding values ≤ {f(hi)}")
     if p.rlo is not None and p.rhi is not None:
         out += f" · Showing values {f(p.rlo)} – {f(p.rhi)}"
     elif p.rlo is not None:
