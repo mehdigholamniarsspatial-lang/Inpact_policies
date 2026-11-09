@@ -1375,6 +1375,7 @@ html.map-standalone .raster-opacity input[type=range]:focus-visible::-moz-range-
 /* Reversed filter (compare map): the hidden range is grey, what is shown (outside it) teal */
 .ms-rs-track.inv::before{background:var(--teal)}
 .ms-rs-track.inv .ms-rs-fill{background:#D5DEE6}
+.ms-rs-track.inv #msRsMin{display:none}          /* reverse filter: one handle (% of cells near zero) */
 #msRsInv[hidden]{display:none}
 .ms-pal-off{display:flex;gap:.4rem;margin:.45rem 0 0;font-size:.7rem;line-height:1.4;color:var(--text-muted)}
 .ms-pal-off[hidden]{display:none}
@@ -2187,8 +2188,8 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
                       <span class="ms-rs-val hi" id="msRsHi">–</span>
                     </div>
                     <!-- Compare map only: reverse the filter (hide the slider's range instead of showing it) -->
-                    <input type="checkbox" class="ms-cp-rev" id="msRsInv" aria-label="Reverse filter: hide the values in the range"
-                           title="Reverse filter: hide the values in the range" hidden>
+                    <input type="checkbox" class="ms-cp-rev" id="msRsInv" aria-label="Reverse filter: hide a % of the cells closest to zero"
+                           title="Reverse filter: hide a % of the cells closest to zero" hidden>
                   </div>
                   <p class="ms-pal-off" id="msPalOff" hidden><i class="bi bi-info-circle" aria-hidden="true"></i>MapEIre layers are published as ready-made images, so their colours can&rsquo;t be changed. Opacity still applies.</p>
                 </div>
@@ -4134,7 +4135,7 @@ const GRID_UI = (() => {
   // Cells equal to the background value (0) are not coloured.
   const providers = [];
   let userRange = null;                          // { key, lo, hi }
-  let invKey = null;                             // key of the layer whose filter is reversed
+  let inv = null;                                // { key, conf }: the layer in reverse-filter mode (conf = % of cells near zero hidden)
   const bg = 0;                                  // background value: zero cells are left uncoloured
   try { localStorage.removeItem("inpact.mapBackground"); } catch (e) { /* (an earlier, editable setting) */ }
   const range = {
@@ -4147,14 +4148,23 @@ const GRID_UI = (() => {
       userRange = { key, lo, hi };
       document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } }));
     },
-    // Reverse filter (only layers whose info has canInvert, i.e. the compare map): the slider's range
-    // is hidden instead of shown. Kept per layer, like the range.
-    isInv(info){ return !!(invKey && info && info.canInvert && invKey === info.key); },
+    // Reverse filter (only layers whose info has canInvert, i.e. the compare map; the box by the slider):
+    // the slider becomes a % of cells, and that share of the cells closest to zero is hidden (the layer
+    // decides with info.confHidden; info.confNote words the legend). The value range is not applied
+    // meanwhile. Kept per layer, like the range.
+    CONF_DEFAULT: 10, CONF_MAX: 99,
+    isInv(info){ return !!(inv && info && info.canInvert && inv.key === info.key); },
+    conf(info){ return this.isInv(info) ? inv.conf : 0; },
     setInv(key, on){
-      invKey = on ? key : null;
+      inv = on ? { key, conf: inv?.key === key ? inv.conf : this.CONF_DEFAULT } : null;
       document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } }));
     },
-    clear(){ userRange = null; invKey = null; document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } })); },
+    setConf(key, conf){
+      if (!inv || inv.key !== key) return;
+      inv = { key, conf };
+      document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } }));
+    },
+    clear(){ userRange = null; inv = null; document.dispatchEvent(new CustomEvent("mappalette:change", { detail: { ...PAL } })); },
     get bg(){ return bg; },
     isBg: v => Number.isFinite(v) && Math.abs(v - bg) <= 1e-12 * Math.max(1, Math.abs(bg)),
     // The filter in use: { lo, hi } with null on a side whose handle is still at its end
@@ -4164,19 +4174,15 @@ const GRID_UI = (() => {
     },
     // Is v filtered out by the slider? (then the cell is not drawn)
     outside(info, v){
-      if (!Number.isFinite(v)) return false;
+      if (!Number.isFinite(v) || this.isInv(info)) return false;   // reverse filter: the layer decides
       const f = this.filter(info);
-      if (f.lo === null && f.hi === null) return false;
-      const out = (f.lo !== null && v < f.lo) || (f.hi !== null && v > f.hi);
-      return this.isInv(info) ? !out : out;      // reversed: the cells inside the range are hidden
+      return (f.lo !== null && v < f.lo) || (f.hi !== null && v > f.hi);
     },
     // Legend line, e.g. "Showing values 20 – 9,757"; "" when nothing is filtered
     note(info, fmt = fmtVal){
+      if (this.isInv(info)) return inv.conf > 0 && info.confNote ? info.confNote(inv.conf) : "";
       const f = this.filter(info);
       if (f.lo === null && f.hi === null) return "";
-      if (this.isInv(info))
-        return f.lo !== null && f.hi !== null ? `Hiding values ${fmt(f.lo)} – ${fmt(f.hi)}`
-             : f.lo !== null ? `Hiding values ≥ ${fmt(f.lo)}` : `Hiding values ≤ ${fmt(f.hi)}`;
       return f.lo !== null && f.hi !== null ? `Showing values ${fmt(f.lo)} – ${fmt(f.hi)}`
            : f.lo !== null ? `Showing values ≥ ${fmt(f.lo)}` : `Showing values ≤ ${fmt(f.hi)}`;
     },
@@ -5435,7 +5441,8 @@ if (MAP_STANDALONE) (function mapWindow(){
     const R = GRID_UI.range, f = R.filter(R.current());
     if (f.lo !== null) q.set("rlo", String(f.lo));
     if (f.hi !== null) q.set("rhi", String(f.hi));
-    if (R.isInv(R.current()) && (f.lo !== null || f.hi !== null)) q.set("rinv", "1");   // compare: range hidden
+    const conf = R.conf(R.current());          // compare map: % of cells closest to zero hidden, not the range
+    if (conf > 0) { q.delete("rlo"); q.delete("rhi"); q.set("rinv", "1"); q.set("conf", String(conf)); }
     q.set("bg", String(R.bg));                // zero cells stay uncoloured in the JPEG as on the map
     return q;
   }
@@ -5660,10 +5667,21 @@ if (MAP_STANDALONE) (function mapWindow(){
     const rsInv = document.getElementById("msRsInv");
     let rsInfo = null, rsShown = "", dragging = false, rsRaf = 0;
     // The reverse box: shown for the compare map only (not for single layers / the time series)
+    // Ticked, the slider is one handle: the % of cells closest to zero that are hidden (0 – CONF_MAX;
+    // the grey part of the track).
+    const confPos = c => Math.round(c / RG.CONF_MAX * N), posConf = p => Math.round(p / N * RG.CONF_MAX);
     function syncInv(off){
       const can = !off && !!rsInfo?.canInvert, on = can && RG.isInv(rsInfo);
       rsInv.hidden = !can; rsInv.checked = on;
       rsTrack.classList.toggle("inv", on);
+      rsMax.setAttribute("aria-label", on ? "Share of cells closest to zero to hide (%)" : "Show values up to (maximum)");
+      return on;
+    }
+    function paintConf(c){
+      rsMin.value = 0; rsMax.value = confPos(c);
+      rsLo.textContent = "0%"; rsHi.textContent = c + "%";
+      rsHi.title = `Hide the ${c}% of cells closest to zero`;
+      paintRs();
     }
     rsInv.addEventListener("change", () => { if (rsInfo?.canInvert) RG.setInv(rsInfo.key, rsInv.checked); });
     const fmtR = v => rsInfo?.kind !== "div" ? GRID_UI.fmtVal(v)
@@ -5691,9 +5709,11 @@ if (MAP_STANDALONE) (function mapWindow(){
       const off = !rsInfo || datasetSel.value === "mapeire";
       rsBox.classList.toggle("is-off", off);
       rsMin.disabled = rsMax.disabled = off;
-      syncInv(off);
+      const conf = syncInv(off);
       if (off) { rsLo.textContent = rsHi.textContent = "–"; rsMin.value = 0; rsMax.value = N; paintRs(); rsShown = ""; return; }
       if (dragging) return;
+      rsHi.removeAttribute("title");
+      if (conf) { rsShown = ""; paintConf(RG.conf(rsInfo)); return; }
       const e = RG.eff(rsInfo), key = rsInfo.key + "|" + ends(rsInfo).join(",");
       rsShown = key;
       rsMin.value = toPos(rsInfo, e.lo); rsMax.value = toPos(rsInfo, e.hi);
@@ -5702,6 +5722,13 @@ if (MAP_STANDALONE) (function mapWindow(){
     }
     function onSlide(which){
       if (!rsInfo) return;
+      if (RG.isInv(rsInfo)) {                   // reverse filter: % of cells near zero (one handle)
+        const c = posConf(+rsMax.value), key = rsInfo.key;
+        paintConf(c);
+        clearTimeout(rsRaf);
+        rsRaf = setTimeout(() => RG.setConf(key, c), 30);
+        return;
+      }
       let a = +rsMin.value, b = +rsMax.value;
       if (a > b - 1) { if (which === "min") a = rsMin.value = b - 1; else b = rsMax.value = a + 1; }
       paintRs();
@@ -6045,14 +6072,32 @@ if (MAP_STANDALONE) (function mapWindow(){
         R._ext = vs.length ? [Math.min(...vs), Math.max(...vs)] : [-R.lim, R.lim];
       }
       return { key: `cmp|${R.mode}|${R.labelA}|${R.labelB}`, kind: "div", min: R._ext[0], max: R._ext[1], lo: R._ext[0], hi: R._ext[1],
-               canInvert: true };                // the "Reverse filter" box applies to the compare map only
+               canInvert: true, confHidden: c => confHidden(R, c), confNote: c => confNote(R, c) };   // compare map only
+    }
+    // Reverse filter (the box by the slider): the slider is a % of cells, and that share of the cells
+    // whose B − A is closest to zero is hidden (e.g. 10% hides the 10% smallest |B − A|), so only the
+    // larger changes stay on the map. Same rule in map_export.py.
+    function confHidden(R, pct){
+      if (!(pct > 0)) return null;
+      if (R._conf?.pct === pct) return R._conf.set;
+      const abs = R.used.map(c => Math.abs(c.v)).sort((x, y) => x - y);
+      const n = Math.round(abs.length * pct / 100), cut = n > 0 ? abs[n - 1] : -Infinity;
+      const set = new Set();
+      R.used.forEach(c => { if (Math.abs(c.v) <= cut) set.add(c.i); });
+      R._conf = { pct, set, cut };
+      return set;
+    }
+    function confNote(R, pct){
+      const set = confHidden(R, pct);
+      return `Hiding the ${pct}% of cells closest to zero (|B − A| ≤ ${fmtVal(R._conf.cut)}${R.mode === "pct" ? "%" : ""}, ${set.size} cells)`;
     }
     GRID_UI.range.register({ priority: 2, info: rangeInfo });
     const rangeNow = () => ({ lo: -st.result.lim, hi: st.result.lim });    // colours: ±98th percentile, as always
     function restyle(){
       if (!st.layer) return;
       const op = +opacityEl.value / 100, R = st.result, rg = rangeNow(), RG = GRID_UI.range, info = rangeInfo();
-      R.used.forEach(c => st.rects[c.i]?.setStyle(RG.isBg(c.v) || RG.outside(info, c.v) ? { fillOpacity: 0 }   // background / outside the slider
+      const hid = confHidden(R, RG.conf(info));                          // reverse filter: cells near zero (or null)
+      R.used.forEach(c => st.rects[c.i]?.setStyle(RG.isBg(c.v) || RG.outside(info, c.v) || hid?.has(c.i) ? { fillOpacity: 0 }   // background / filtered
         : { fillColor: diverging(RG.divT(c.v, rg.lo, rg.hi)), fillOpacity: op }));
     }
     function removeMapLayer(){

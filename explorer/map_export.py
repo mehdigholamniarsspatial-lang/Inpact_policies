@@ -80,7 +80,8 @@ class Palette:
     rlo: Optional[float] = None     # value range filter of the slider: cells below rlo / above rhi
     rhi: Optional[float] = None     # are not drawn (None: no limit on that side)
     bg: Optional[float] = None      # cells equal to this value are not coloured
-    rinv: bool = False              # reverse filter (compare map): cells inside rlo..rhi are not drawn
+    rinv: bool = False              # reverse filter (compare map): the ``conf`` % of cells closest to
+    conf: float = 0.0               # zero are not drawn (the value range is not applied then)
 
     @classmethod
     def from_query(cls, q: dict) -> "Palette":
@@ -95,9 +96,12 @@ class Palette:
         rlo, rhi = num("rlo"), num("rhi")
         if rlo is not None and rhi is not None and not rlo < rhi:
             rlo = rhi = None
+        conf = min(max(num("conf") or 0.0, 0.0), 99.0)
+        rinv = q.get("rinv") == "1" and conf > 0
+        if rinv:
+            rlo = rhi = None
         return cls(seq if seq in SEQ_PALETTES else DEFAULT_SEQ, div if div in DIV_PALETTES else DEFAULT_DIV,
-                   q.get("reverse") == "1", rlo, rhi, num("bg"),
-                   q.get("rinv") == "1" and (rlo is not None or rhi is not None))
+                   q.get("reverse") == "1", rlo, rhi, num("bg"), rinv, conf if rinv else 0.0)
 
 
 # The palette of the download being built (set per request by ``use_palette``)
@@ -141,8 +145,7 @@ def outside(v: float) -> bool:
     p = _PALETTE.get()
     if not math.isfinite(v):
         return False
-    out = (p.rlo is not None and v < p.rlo) or (p.rhi is not None and v > p.rhi)
-    return not out if p.rinv else out   # reverse filter: the range itself is hidden
+    return (p.rlo is not None and v < p.rlo) or (p.rhi is not None and v > p.rhi)
 
 
 def is_bg(v: float) -> bool:
@@ -162,10 +165,6 @@ def _signed(v: float) -> str:
 def _filter_note(signed: bool = False) -> str:
     """' · Showing values 20 – 9,757', as on the map."""
     p, f, out = _PALETTE.get(), (_signed if signed else fmt), ""
-    if p.rinv:
-        lo, hi = p.rlo, p.rhi
-        return (f" · Hiding values {f(lo)} – {f(hi)}" if lo is not None and hi is not None
-                else f" · Hiding values ≥ {f(lo)}" if lo is not None else f" · Hiding values ≤ {f(hi)}")
     if p.rlo is not None and p.rhi is not None:
         out += f" · Showing values {f(p.rlo)} – {f(p.rhi)}"
     elif p.rlo is not None:
@@ -529,9 +528,19 @@ def _compare_layer(q: dict) -> Layer:
     lim = _quantile(np.abs(vals), 0.98) if vals.size else 1.0
     lim = lim if lim > 0 else (float(np.abs(vals).max()) if vals.size and np.abs(vals).max() > 0 else 1.0)
 
+    # Reverse filter (as on the page): hide the ``conf`` % of cells whose |B − A| is closest to zero
+    pal, cut, near_note = _PALETTE.get(), -np.inf, ""
+    if pal.rinv and vals.size:
+        k = int(math.floor(vals.size * pal.conf / 100 + 0.5))   # as Math.round on the page
+        if k > 0:
+            cut = float(np.sort(np.abs(vals))[k - 1])
+            n_hid = int((np.abs(vals) <= cut).sum())
+            near_note = (f" · Hiding the {fmt(pal.conf)}% of cells closest to zero "
+                         f"(|B − A| ≤ {fmt(cut)}{'%' if mode == 'pct' else ''}, {n_hid} cells)")
+
     cells = []
     for (w, n, dx, dy), val in zip(geo, v):
-        if np.isfinite(val) and not hidden(val):     # background value / outside the slider: not drawn
+        if np.isfinite(val) and not hidden(val) and not abs(val) <= cut:   # background / filtered: not drawn
             cells.append((w, n - dy, w + dx, n, diverging(val / lim)))
 
     arr = np.full(tif_rows * tif_cols, NODATA, dtype=np.float32)
@@ -555,7 +564,7 @@ def _compare_layer(q: dict) -> Layer:
         title=f"{formula} · B − A" + (" (%)" if mode == "pct" else ""), unit=value_unit, kind="diverging",
         lo=-lim, hi=lim,
         ticks=[(0, f"≤ −{fmt(lim)}"), (0.25, f"−{fmt(lim / 2)}"), (0.5, "0"), (0.75, f"+{fmt(lim / 2)}"), (1, f"≥ +{fmt(lim)}")],
-        note=f"A: {label_a} · B: {label_b} · scale ±98th percentile of |B − A|" + _filter_note(signed=True),
+        note=f"A: {label_a} · B: {label_b} · scale ±98th percentile of |B − A|" + _filter_note(signed=True) + near_note,
     )
     name = "EDGAR" if ds == "edgar" else "PARIS inverse model"
     return Layer(
