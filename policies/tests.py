@@ -59,6 +59,7 @@ class DashboardTests(TestCase):
         for series in PolicySeries.objects.all():
             body = self.client.get(reverse('policies:detail', args=[series.slug])).content.decode()
             self.assertNotIn('accessed 25 September 2026', body)
+            self.assertNotIn('Source check', body)
             parser = Links()
             parser.feed(body)
             for link in parser.links:

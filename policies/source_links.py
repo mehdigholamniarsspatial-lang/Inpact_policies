@@ -33,8 +33,6 @@ def refresh_citation(text):
     text = re.sub(r'\s*\[Source check: [^\]]*\]', '', text)
     verified = all(c['verified'] for c in checks)
     label = 'accessed' if verified else 'checked'
-    text = text.rstrip() + f' ({label} 15 November 2026)'
-    notes = list(dict.fromkeys(c['note'] for c in checks if c.get('note')))
-    if notes:
-        text += ' [Source check: ' + ' '.join(notes) + ']'
-    return text
+    # Review notes stay in source_link_checks.json for the audit trail; they are
+    # not shown on the public pages.
+    return text.rstrip() + f' ({label} 15 November 2026)'

@@ -6,7 +6,7 @@ from django.db.models import Prefetch
 
 from . import editorial, glossary
 from . import models as m
-from .source_links import refresh_citation, resolve_url, source_check
+from .source_links import refresh_citation, resolve_url
 
 YEARS = list(range(2000, 2024))
 
@@ -186,7 +186,6 @@ def policy_detail(series):
         "eea_description": (series.layer != "residual" and bool(series.eea_pam_ids)
                             and series.policy_id not in glossary.POLICY_SUMMARIES),
         "reference_urls": [resolve_url(u) for u in re.findall(r"https?://[^\s;]+", series.reference_url or "")],
-        "reference_checks": [source_check(u) for u in re.findall(r"https?://[^\s;]+", series.reference_url or "")],
         "chart": {
             "years": [y.year for y in years],
             "status": [y.status_in_year for y in years],

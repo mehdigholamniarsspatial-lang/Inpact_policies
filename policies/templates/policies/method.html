@@ -102,9 +102,9 @@
 </section>
 
 <section class="section">
-  <div class="section-head"><h2>Sources</h2><p>Links and source identities checked on 15 November 2026. Access dates refer to this review, not publication dates or the original data download. Any access limitations are noted below. Sources open in a new tab.</p></div>
-  <div class="panel flush"><div class="table-wrap"><table class="data"><thead><tr><th>Publisher</th><th>Title</th><th>Year</th><th>Source check</th></tr></thead>
-    <tbody>{% for r in references %}<tr><td>{{ r.publisher }}</td><td>{% if r.url %}<a href="{{ r.url }}" target="_blank" rel="noopener">{{ r.title }}</a>{% else %}{{ r.title }}{% endif %}</td><td style="white-space:nowrap">{{ r.publication_date }}</td><td>{% if r.check %}{{ r.check.status }} · {{ r.check.checked_on }}{% if r.check.note %}<div class="small muted">{{ r.check.note }}</div>{% endif %}{% else %}Not reviewed{% endif %}</td></tr>{% endfor %}</tbody></table></div></div>
+  <div class="section-head"><h2>Sources</h2><p>Official documents used to verify dates, scope and methodology. Web sources were accessed on 15 November 2026. Sources open in a new tab.</p></div>
+  <div class="panel flush"><div class="table-wrap"><table class="data"><thead><tr><th>Publisher</th><th>Title</th><th>Year</th></tr></thead>
+    <tbody>{% for r in references %}<tr><td>{{ r.publisher }}</td><td>{% if r.url %}<a href="{{ r.url }}" target="_blank" rel="noopener">{{ r.title }}</a>{% else %}{{ r.title }}{% endif %}</td><td style="white-space:nowrap">{{ r.publication_date }}</td></tr>{% endfor %}</tbody></table></div></div>
 </section>
 
 {{ flow|json_script:"flow-data" }}
