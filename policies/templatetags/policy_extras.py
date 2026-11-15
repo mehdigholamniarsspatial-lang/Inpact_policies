@@ -1,8 +1,17 @@
 from django import template
+from django.utils.html import urlize
+from django.utils.safestring import mark_safe
 
 from policies import glossary
 
 register = template.Library()
+
+
+@register.filter
+def external_citation(value):
+    """Escape citation text and open sources outside the dashboard iframe."""
+    rendered = urlize(str(value), autoescape=True)
+    return mark_safe(rendered.replace('<a ', '<a target="_blank" rel="noopener noreferrer" '))
 
 
 @register.filter

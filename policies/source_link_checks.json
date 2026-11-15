@@ -1,0 +1,506 @@
+{
+  "https://data-explorer.oecd.org/vis?df[ag]=OECD.ENV.EPI&df[id]=DSD_CAPMF@DF_CAPMF": {
+    "url": "https://data-explorer.oecd.org/vis?df%5Bag%5D=OECD.ENV.EPI&df%5Bds%5D=dsDisseminateFinalDMZ&df%5Bid%5D=DSD_CAPMF%40DF_CAPMF&df%5Bvs%5D=1.0&dq=IRL.A.&pd=1990%2C2023&lc=en",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Ireland, 1990–2023: 7,548 data points confirmed in the interactive database. Opens in a new tab; JavaScript required.",
+    "method": "browser: Ireland and period filters confirmed"
+  },
+  "https://data-explorer.oecd.org/vis?df%5Bag%5D=OECD.ENV.EPI&df%5Bds%5D=dsDisseminateFinalDMZ&df%5Bid%5D=DSD_CAPMF%40DF_CAPMF&df%5Bvs%5D=1.0&dq=IRL.A.&pd=1990%2C2023&lc=en": {
+    "url": "https://data-explorer.oecd.org/vis?df%5Bag%5D=OECD.ENV.EPI&df%5Bds%5D=dsDisseminateFinalDMZ&df%5Bid%5D=DSD_CAPMF%40DF_CAPMF&df%5Bvs%5D=1.0&dq=IRL.A.&pd=1990%2C2023&lc=en",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Ireland, 1990–2023: 7,548 data points confirmed in the interactive database. Opens in a new tab; JavaScript required.",
+    "method": "browser: Ireland and period filters confirmed"
+  },
+  "https://revisedacts.lawreform.ie/eli/2015/act/46/front/revised/en/html": {
+    "url": "https://revisedacts.lawreform.ie/eli/2015/act/46/front/revised/en/html",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.irishstatutebook.ie/eli/2021/act/32/enacted/en/html": {
+    "url": "https://www.irishstatutebook.ie/eli/2021/act/32/enacted/en/html",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.gov.ie/en/department-of-climate-energy-and-the-environment/publications/carbon-budgets/": {
+    "url": "https://www.gov.ie/en/department-of-climate-energy-and-the-environment/publications/carbon-budgets/",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://revisedacts.lawreform.ie/eli/2015/act/46/section/8/revised/en/html": {
+    "url": "https://revisedacts.lawreform.ie/eli/2015/act/46/section/8/revised/en/html",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.gov.ie/en/department-of-climate-energy-and-the-environment/publications/sectoral-emissions-ceilings/": {
+    "url": "https://www.gov.ie/en/department-of-climate-energy-and-the-environment/publications/sectoral-emissions-ceilings/",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://pam.apps.eea.europa.eu/": {
+    "url": "https://pam.apps.eea.europa.eu/",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Registry accessible; individual report 1849 records were not independently revalidated.",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.gov.ie/pdf/?file=https://assets.gov.ie/100931/7c8b812c-d857-4f39-96b9-1e7f134ba896.pdf#page=null": {
+    "url": "https://assets.gov.ie/static/documents/ag-climatise-a-roadmap-towards-climate-neutrality.pdf",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://assets.gov.ie/static/documents/ag-climatise-a-roadmap-towards-climate-neutrality.pdf": {
+    "url": "https://assets.gov.ie/static/documents/ag-climatise-a-roadmap-towards-climate-neutrality.pdf",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.gov.ie/pdf/?file=https://assets.gov.ie/218449/f1a6725a-6269-442b-bff1-2730fe2dc06c.pdf#page=null": {
+    "url": "https://assets.gov.ie/218449/f1a6725a-6269-442b-bff1-2730fe2dc06c.pdf",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Direct official PDF verified: An Overview of Ireland’s Fifth Nitrates Action Programme. Replaces a viewer returning HTTP 502.",
+    "method": "HTTP GET and document text"
+  },
+  "https://assets.gov.ie/218449/f1a6725a-6269-442b-bff1-2730fe2dc06c.pdf": {
+    "url": "https://assets.gov.ie/218449/f1a6725a-6269-442b-bff1-2730fe2dc06c.pdf",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Direct official PDF verified: An Overview of Ireland’s Fifth Nitrates Action Programme. Replaces a viewer returning HTTP 502.",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.gov.ie/en/publication/0015c-irelands-national-energy-climate-plan-2021-2030/": {
+    "url": "https://www.gov.ie/en/publication/0015c-irelands-national-energy-climate-plan-2021-2030/",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Current NECP publication page; historical programme details require the relevant plan edition.",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.seai.ie/about/regulatory-functions/energy-efficiency-obligation-scheme/about-eeos": {
+    "url": "https://www.seai.ie/about/regulatory-functions/energy-efficiency-obligation-scheme/about-eeos",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "web page/document content"
+  },
+  "http://www.seai.ie/eeos/": {
+    "url": "https://www.seai.ie/about/regulatory-functions/energy-efficiency-obligation-scheme/about-eeos",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "web page/document content"
+  },
+  "https://www.oireachtas.ie/en/debates/debate/dail/2010-06-03/42/": {
+    "url": "https://www.oireachtas.ie/en/debates/debate/dail/2010-06-03/42/",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.oireachtas.ie/en/debates/question/2010-05-25/section/36/": {
+    "url": "https://data.oireachtas.ie/ie/oireachtas/debateRecord/dail/2010-05-25/debate/mul%40/main.pdf",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Official debate PDF replaces the inaccessible question page; carbon-tax answer dated 25 May 2010.",
+    "method": "web page/document content"
+  },
+  "https://data.oireachtas.ie/ie/oireachtas/debateRecord/dail/2010-05-25/debate/mul%40/main.pdf": {
+    "url": "https://data.oireachtas.ie/ie/oireachtas/debateRecord/dail/2010-05-25/debate/mul%40/main.pdf",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Official debate PDF replaces the inaccessible question page; carbon-tax answer dated 25 May 2010.",
+    "method": "web page/document content"
+  },
+  "https://www.revenue.ie/en/companies-and-charities/excise-and-licences/energy-taxes/solid-fuel-carbon-tax/index.aspx": {
+    "url": "https://www.revenue.ie/en/companies-and-charities/excise-and-licences/energy-taxes/solid-fuel-carbon-tax/index.aspx",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://data.oireachtas.ie/ie/oireachtas/act/2020/26/eng/enacted/a2620.pdf": {
+    "url": "https://data.oireachtas.ie/ie/oireachtas/act/2020/26/eng/enacted/a2620.pdf",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://stats.oecd.org/wbos/fileview2.aspx?IDFile=447525d8-ef1f-411b-98ad-56a68d25b99f": {
+    "url": "https://stats.oecd.org/wbos/fileview2.aspx?IDFile=447525d8-ef1f-411b-98ad-56a68d25b99f",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.irishstatutebook.ie/eli/2017/si/538/made/en/print": {
+    "url": "https://www.irishstatutebook.ie/eli/2017/si/538/made/en/print",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.irishstatutebook.ie/eli/2008/si/259/made/en/pdf": {
+    "url": "https://www.irishstatutebook.ie/eli/2008/si/259/made/en/pdf",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.gov.ie/en/department-of-climate-energy-and-the-environment/publications/renewable-energy-feed-in-tariff-refit-scheme/": {
+    "url": "https://www.gov.ie/en/department-of-climate-energy-and-the-environment/publications/renewable-energy-feed-in-tariff-refit-scheme/",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.gov.ie/en/department-of-climate-energy-and-the-environment/publications/renewable-electricity-support-scheme-ress-1/": {
+    "url": "https://www.gov.ie/en/department-of-climate-energy-and-the-environment/publications/renewable-electricity-support-scheme-ress-1/",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.epa.ie/our-services/licensing/climate-change/eu-emissions-trading-system-/emissions-trading-system---aviation/": {
+    "url": "https://www.epa.ie/our-services/licensing/climate-change/eu-emissions-trading-system-/emissions-trading-system---aviation/",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "http://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX:32006L0040&from=EN": {
+    "url": "http://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX:32006L0040&from=EN",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.seai.ie/plan-your-energy-journey/public-sector/energy-auditing": {
+    "url": "https://www.seai.ie/plan-your-energy-journey/public-sector/energy-auditing",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Content verified through web access; direct automated requests encountered an access challenge.",
+    "method": "web page/document content"
+  },
+  "https://www.gov.ie/en/department-of-climate-energy-and-the-environment/policy-information/oil-and-gas-exploration-and-production/": {
+    "url": "https://www.gov.ie/en/department-of-climate-energy-and-the-environment/policy-information/oil-and-gas-exploration-and-production/",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://energy-efficient-products.ec.europa.eu/product-list/electric-motors_en": {
+    "url": "https://energy-efficient-products.ec.europa.eu/product-list/electric-motors_en",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.citizensinformation.ie/en/money-and-tax/budgets/budget-2008/#l0ba29": {
+    "url": "https://www.citizensinformation.ie/en/money-and-tax/budgets/budget-2008/#l0ba29",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32019R0631": {
+    "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32019R0631",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32009R0443": {
+    "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32009R0443",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://eur-lex.europa.eu/eli/dir/1999/31/oj/eng": {
+    "url": "https://eur-lex.europa.eu/eli/dir/1999/31/oj/eng",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://teagasc.ie/publications/macc-2023-php/": {
+    "url": "https://teagasc.ie/publications/macc-2023-php/",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.seai.ie/plan-your-energy-journey/public-sector/public-sector-energy-programme": {
+    "url": "https://www.seai.ie/plan-your-energy-journey/public-sector",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Current SEAI public-sector guidance replaces the unavailable programme URL.",
+    "method": "web page/document content"
+  },
+  "https://www.seai.ie/plan-your-energy-journey/public-sector": {
+    "url": "https://www.seai.ie/plan-your-energy-journey/public-sector",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Current SEAI public-sector guidance replaces the unavailable programme URL.",
+    "method": "web page/document content"
+  },
+  "https://www.seai.ie/grants/business-grants/accelerated-capital-allowance": {
+    "url": "https://www.seai.ie/grants/business-grants/accelerated-capital-allowance",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Content verified through web access; direct automated requests encountered an access challenge.",
+    "method": "web page/document content"
+  },
+  "https://www.seai.ie/individual-energy-upgrade-grants": {
+    "url": "https://www.seai.ie/grants/home-energy-grants/individual-grants",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Content verified through web access; direct automated requests encountered an access challenge.",
+    "method": "web page/document content"
+  },
+  "https://www.seai.ie/grants/home-energy-grants/individual-grants": {
+    "url": "https://www.seai.ie/grants/home-energy-grants/individual-grants",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Content verified through web access; direct automated requests encountered an access challenge.",
+    "method": "web page/document content"
+  },
+  "https://www.seai.ie/grants/community-grants": {
+    "url": "https://www.seai.ie/grants/community-grants",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Content verified through web access; direct automated requests encountered an access challenge.",
+    "method": "web page/document content"
+  },
+  "https://www.seai.ie/sites/default/files/publications/CHP-Update-2020.pdf": {
+    "url": "https://www.seai.ie/sites/default/files/publications/CHP-Update-2020.pdf",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.seai.ie/blog/large-industry-network": {
+    "url": "https://www.seai.ie/blog/large-industry-network",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Content verified through web access; direct automated requests encountered an access challenge.",
+    "method": "web page/document content"
+  },
+  "https://www.seai.ie/plan-your-energy-journey/for-your-business/lien/our-members": {
+    "url": "https://www.seai.ie/plan-your-energy-journey/for-your-business/lien/our-members",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Content verified through web access; direct automated requests encountered an access challenge.",
+    "method": "web page/document content"
+  },
+  "https://www.seai.ie/grants/electric-vehicle-grants": {
+    "url": "https://www.seai.ie/grants/electric-vehicle-grants",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Content verified through web access; direct automated requests encountered an access challenge.",
+    "method": "web page/document content"
+  },
+  "https://www.oecd.org/en/data/insights/data-explainers/2025/04/the-climate-actions-and-policies-measurement-framework-capmf.html": {
+    "url": "https://www.oecd.org/en/data/insights/data-explainers/2025/04/the-climate-actions-and-policies-measurement-framework-capmf.html",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Content verified through web access; direct automated requests encountered an access challenge.",
+    "method": "web page/document content"
+  },
+  "https://www.eionet.europa.eu/reportnet/docs/govreg/policies-and-measures/reporting-guidelines-dataflow-9-to-14-policies-and-measures.pdf/@@download/file/Reporting%20guidelines%20-%20Dataflow%209%20to%2014%20-%20Policies%20and%20measures%20%5B2025%5D.pdf": {
+    "url": "https://www.eionet.europa.eu/reportnet/docs/govreg/policies-and-measures/reporting-guidelines-dataflow-9-to-14-policies-and-measures.pdf/@@download/file/Reporting%20guidelines%20-%20Dataflow%209%20to%2014%20-%20Policies%20and%20measures%20%5B2025%5D.pdf",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.gov.ie/en/department-of-climate-energy-and-the-environment/publications/national-biomethane-strategy/": {
+    "url": "https://www.gov.ie/en/department-of-climate-energy-and-the-environment/publications/national-biomethane-strategy/",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.oecd.org/en/publications/handbook-on-constructing-composite-indicators-methodology-and-user-guide_9789264043466-en.html": {
+    "url": "https://www.oecd.org/en/publications/handbook-on-constructing-composite-indicators-methodology-and-user-guide_9789264043466-en.html",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Content verified through web access; direct automated requests encountered an access challenge.",
+    "method": "web page/document content"
+  },
+  "https://www.revenue.ie/en/tax-professionals/tdm/excise/excise-duty-rates/energy-excise-duty-rates.pdf": {
+    "url": "https://www.revenue.ie/en/tax-professionals/tdm/excise/excise-duty-rates/energy-excise-duty-rates.pdf",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.epa.ie/publications/monitoring--assessment/climate-change/air-emissions/EPA-Final-GHG-Emissions-Report-1990-2024.pdf": {
+    "url": "https://www.epa.ie/publications/monitoring--assessment/climate-change/air-emissions/EPA-Final-GHG-Emissions-Report-1990-2024.pdf",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.epa.ie/our-services/monitoring--assessment/climate-change/ghg/key-messages/": {
+    "url": "https://www.epa.ie/our-services/monitoring--assessment/climate-change/ghg/key-messages/",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.irishstatutebook.ie/eli/2015/act/46/enacted/en/html": {
+    "url": "https://www.irishstatutebook.ie/eli/2015/act/46/enacted/en/html",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.irishstatutebook.ie/eli/2016/si/25/made/en/print": {
+    "url": "https://www.irishstatutebook.ie/eli/2016/si/25/made/en/print",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.irishstatutebook.ie/eli/2021/si/468/made/en/print": {
+    "url": "https://www.irishstatutebook.ie/eli/2021/si/468/made/en/print",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.irishstatutebook.ie/eli/2019/si/183/made/en/print": {
+    "url": "https://www.irishstatutebook.ie/eli/2019/si/183/made/en/print",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "Correct document title: European Union (Energy Performance Of Buildings) Regulations 2019.",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.irishstatutebook.ie/eli/2008/si/259/made/en/print": {
+    "url": "https://www.irishstatutebook.ie/eli/2008/si/259/made/en/print",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.irishstatutebook.ie/eli/2014/si/426/made/en/print": {
+    "url": "https://www.irishstatutebook.ie/eli/2014/si/426/made/en/print",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.irishstatutebook.ie/eli/2014/si/131/made/en/print": {
+    "url": "https://www.irishstatutebook.ie/eli/2014/si/131/made/en/print",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.irishstatutebook.ie/eli/2002/si/86/made/en/print": {
+    "url": "https://www.irishstatutebook.ie/eli/2002/si/86/made/en/print",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.irishstatutebook.ie/eli/2001/si/339/made/en/print": {
+    "url": "https://www.irishstatutebook.ie/eli/2001/si/339/made/en/print",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://single-market-economy.ec.europa.eu/sectors/automotive-industry/environmental-protection/mobile-air-conditioning-systems-macs_en": {
+    "url": "https://single-market-economy.ec.europa.eu/sectors/automotive-industry/environmental-protection/mobile-air-conditioning-systems-macs_en",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  },
+  "https://www.nora.ie/relevant-legislation": {
+    "url": "https://www.nora.ie/relevant-legislation",
+    "checked_on": "2026-11-15",
+    "verified": true,
+    "status": "Source identified",
+    "note": "",
+    "method": "HTTP GET and document text"
+  }
+}

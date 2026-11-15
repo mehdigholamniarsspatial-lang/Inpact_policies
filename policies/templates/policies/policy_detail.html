@@ -30,6 +30,7 @@
       <p class="prose">{{ s.description }}</p>
       {% if d.eea_description %}<p class="note">Description as reported by Ireland to the European Environment Agency (PaM {{ s.eea_pam_ids }}), reproduced unedited. Statements about the "With Existing Measures" scenario are projection assumptions, not outcomes.</p>{% endif %}
       {% if s.reference_url %}<p class="small"><a href="{{ d.reference_urls.0 }}" rel="noopener" target="_blank">Official reference</a>{% for u in d.reference_urls|slice:"1:" %} · <a href="{{ u }}" rel="noopener" target="_blank">Reference {{ forloop.counter|add:1 }}</a>{% endfor %}</p>{% endif %}
+      {% for check in d.reference_checks %}{% if check %}<p class="small muted">Reference {{ forloop.counter }}: {{ check.status }} · checked {{ check.checked_on }}. {{ check.note }}</p>{% endif %}{% endfor %}
       {% if d.notes %}
       <h3 style="margin-top:16px">Verification notes</h3>
       <ul class="prose">{% for n in d.notes %}<li>{{ n }}</li>{% endfor %}</ul>
@@ -94,7 +95,7 @@
 
     <section class="panel" style="margin-top:20px">
       <h3>Sources</h3>
-      <ol class="citations">{% for c in d.citations %}<li>{{ c|urlize }}</li>{% endfor %}</ol>
+      <ol class="citations">{% for c in d.citations %}<li>{{ c|external_citation }}</li>{% endfor %}</ol>
     </section>
   </div>
 

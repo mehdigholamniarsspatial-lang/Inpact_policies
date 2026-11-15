@@ -6,6 +6,7 @@ from django.db.models import Prefetch
 
 from . import editorial, glossary
 from . import models as m
+from .source_links import refresh_citation, resolve_url, source_check
 
 YEARS = list(range(2000, 2024))
 
@@ -164,7 +165,7 @@ def policy_detail(series):
         grouped[glossary.flag_group(f)].append(editorial.FLAG_TEXT.get(f, glossary.humanise(f) + "."))
     capmf_codes = [c.strip() for c in series.capmf_code.split(";") if c.strip()]
     capmf_labels = {c.code: c.label for c in m.CapmfCategory.objects.filter(code__in=capmf_codes)}
-    citations = [c.strip() for c in (series.source_citation or "").split("\n") if c.strip()]
+    citations = [refresh_citation(c.strip()) for c in (series.source_citation or "").split("\n") if c.strip()]
     instrument = editorial.INSTRUMENTS.get(series.mechanism)
     milestones = editorial.POLICY_MILESTONES.get(series.policy_id, [])
     return {
@@ -184,7 +185,8 @@ def policy_detail(series):
         # rows and residual bundles use the dashboard's own summaries.
         "eea_description": (series.layer != "residual" and bool(series.eea_pam_ids)
                             and series.policy_id not in glossary.POLICY_SUMMARIES),
-        "reference_urls": re.findall(r"https?://[^\s;,]+", series.reference_url or ""),
+        "reference_urls": [resolve_url(u) for u in re.findall(r"https?://[^\s;]+", series.reference_url or "")],
+        "reference_checks": [source_check(u) for u in re.findall(r"https?://[^\s;]+", series.reference_url or "")],
         "chart": {
             "years": [y.year for y in years],
             "status": [y.status_in_year for y in years],

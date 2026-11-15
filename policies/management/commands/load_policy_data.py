@@ -20,6 +20,7 @@ from policies import models as m
 from policies.editorial import (COLUMN_RENAMES, DICTIONARY, METHOD_DECISIONS, REFERENCE_TITLES, VALIDATION,
                                 clean_reference_date, clean_text, format_citations)
 from policies.glossary import SECTOR_ORDER, LAYER_ORDER, POLICY_SUMMARIES
+from policies.source_links import resolve_url
 
 
 def clean(value, default=""):
@@ -290,7 +291,7 @@ class Command(BaseCommand):
             pub, title, date = REFERENCE_TITLES.get(r["source_id"], (clean(r["publisher"]), clean(r["title"]),
                                                                      clean_reference_date(r["publication_date"])))
             refs.append(m.Reference(source_id=r["source_id"], publisher=pub, title=title, publication_date=date,
-                                    url=clean(r["url"])[:600], locator="", access_status=""))
+                                    url=resolve_url(clean(r["url"]))[:600], locator="", access_status=""))
         m.Reference.objects.bulk_create(refs)
         v = self.read("validation_report.csv")
         m.ValidationCheck.objects.bulk_create([

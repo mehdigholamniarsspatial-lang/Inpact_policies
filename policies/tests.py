@@ -47,6 +47,42 @@ class DashboardTests(TestCase):
         lines = r.content.decode().strip().splitlines()
         self.assertEqual(len(lines), 25)  # header + 24 years
 
+    def test_source_links_and_review_dates(self):
+        from html.parser import HTMLParser
+        class Links(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.links = []
+            def handle_starttag(self, tag, attrs):
+                if tag == 'a':
+                    self.links.append(dict(attrs))
+        for series in PolicySeries.objects.all():
+            body = self.client.get(reverse('policies:detail', args=[series.slug])).content.decode()
+            self.assertNotIn('accessed 25 September 2026', body)
+            parser = Links()
+            parser.feed(body)
+            for link in parser.links:
+                if link.get('href', '').startswith(('https://', 'http://')):
+                    self.assertEqual(link.get('target'), '_blank', (series.slug, link))
+        body = self.client.get(reverse('policies:detail', args=['capmf-net-zero--cross-sectoral'])).content.decode()
+        self.assertIn('dq=IRL.A.', body)
+        self.assertIn('pd=1990%2C2023', body)
+        self.assertIn('accessed 15 November 2026', body)
+        body = self.client.get(reverse('policies:detail', args=['irl-p0068--agriculture'])).content.decode()
+        self.assertIn('https://assets.gov.ie/218449/f1a6725a-6269-442b-bff1-2730fe2dc06c.pdf', body)
+        self.assertNotIn('https://www.gov.ie/pdf/?file=', body)
+
+    def test_citation_links_escape_html_and_refresh_idempotently(self):
+        from .source_links import refresh_citation
+        from .templatetags.policy_extras import external_citation
+        value = '<script>alert(1)</script> https://pam.apps.eea.europa.eu/ (accessed 2026-09-25)'
+        refreshed = refresh_citation(value)
+        self.assertEqual(refresh_citation(refreshed), refreshed)
+        rendered = external_citation(refreshed)
+        self.assertNotIn('<script>', rendered)
+        self.assertIn('&lt;script&gt;', rendered)
+        self.assertIn('target="_blank"', rendered)
+
 
 class PublicationTextTests(TestCase):
     """Public pages, the API and the download must contain no internal build wording."""

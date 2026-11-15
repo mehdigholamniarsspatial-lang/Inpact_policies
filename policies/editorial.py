@@ -8,6 +8,7 @@ numbers, retrieval-status codes, drafting labels) into neutral scientific
 wording before anything is shown or exported.
 """
 import re
+from .source_links import refresh_citation
 
 # ---------------------------------------------------------------------------
 # Literature and official sources cited across the dashboard
@@ -507,7 +508,7 @@ def _clean_citation(seg):
     if seg.startswith("OECD. CAPMF Ireland export"):
         url = re.search(r"https://\S+", seg)
         return ("OECD. Climate Actions and Policies Measurement Framework (CAPMF) database, Ireland, 1990–2023. "
-                + (url.group(0) + " " if url else "") + "(accessed 25 September 2026)")
+                + (url.group(0) if url else ""))
     seg = re.sub(r"\(accessed (\d{4}-\d{2}-\d{2});[^)]*\)", lambda mm: f"(accessed {_fmt_date(mm.group(1))})", seg)
     return seg
 
@@ -521,7 +522,7 @@ def format_citations(raw):
         # some fields join several references with ';' directly after a closing bracket or full stop
         for seg in re.split(r"(?<=[).]);(?=[A-Z])", block):
             if seg.strip():
-                parts.append(_clean_citation(seg))
+                parts.append(refresh_citation(_clean_citation(seg)))
     seen, out = set(), []
     for p in parts:
         if p not in seen:
@@ -546,7 +547,7 @@ VERIFICATION_SOURCES = [
     ("Irish Statute Book", "Climate Action and Low Carbon Development Act 2015 (No. 46 of 2015)", "2015", "https://www.irishstatutebook.ie/eli/2015/act/46/enacted/en/html"),
     ("Irish Statute Book", "S.I. 25/2016: Climate Action and Low Carbon Development Act 2015 (Establishment Day) Order 2016", "2016", "https://www.irishstatutebook.ie/eli/2016/si/25/made/en/print"),
     ("Irish Statute Book", "S.I. 468/2021: Climate Action and Low Carbon Development (Amendment) Act 2021 (Commencement) Order 2021", "2021", "https://www.irishstatutebook.ie/eli/2021/si/468/made/en/print"),
-    ("Irish Statute Book", "S.I. 183/2019: Building Regulations (Part L Amendment) Regulations 2019", "2019", "https://www.irishstatutebook.ie/eli/2019/si/183/made/en/print"),
+    ("Irish Statute Book", "S.I. 183/2019: European Union (Energy Performance Of Buildings) Regulations 2019", "2019", "https://www.irishstatutebook.ie/eli/2019/si/183/made/en/print"),
     ("Irish Statute Book", "S.I. 259/2008: Building Regulations (Part L Amendment) Regulations 2008", "2008", "https://www.irishstatutebook.ie/eli/2008/si/259/made/en/print"),
     ("Irish Statute Book", "S.I. 426/2014: European Union (Energy Efficiency) Regulations 2014", "2014", "https://www.irishstatutebook.ie/eli/2014/si/426/made/en/print"),
     ("Irish Statute Book", "S.I. 131/2014: European Union (Energy Efficiency Obligation Scheme) Regulations 2014", "2014", "https://www.irishstatutebook.ie/eli/2014/si/131/made/en/print"),

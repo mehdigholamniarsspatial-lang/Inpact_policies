@@ -8,6 +8,7 @@ from django.views.decorators.cache import cache_page
 
 from . import editorial, glossary, services
 from . import models as m
+from .source_links import resolve_url, source_check
 
 
 def _base_context(active):
@@ -115,6 +116,13 @@ def capmf(request):
 
 def method(request):
     ctx = _base_context("method")
+    references = list(m.Reference.objects.all())
+    for ref in references:
+        ref.check = source_check(ref.url)
+        ref.url = resolve_url(ref.url)
+    verification_sources = [dict(publisher=pub, title=title, publication_date=year,
+                                 url=resolve_url(url), check=source_check(url))
+                            for pub, title, year, url in editorial.VERIFICATION_SOURCES]
     ctx.update({
         "stats": services.overview_stats(),
         "materiality": m.SectorMateriality.objects.all(),
@@ -122,8 +130,7 @@ def method(request):
                     "detail": editorial.VALIDATION.get(c.check_name, (c.check_name, c.detail))[1],
                     "result": c.result} for c in m.ValidationCheck.objects.all()],
         "decisions": editorial.METHOD_DECISIONS,
-        "references": m.Reference.objects.all(),
-        "verification_sources": editorial.VERIFICATION_SOURCES,
+        "references": references + verification_sources,
         "dictionary": m.DictionaryField.objects.all(),
         "overlaps": m.OverlapRelation.objects.all(),
         "timing": _timing_parameters(),
