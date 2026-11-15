@@ -5,7 +5,7 @@
 <header class="detail-head" style="border-left-color: {{ mech_info.0 }}">
   <p class="crumbs"><a href="{% url 'policies:explorer' %}">All policies</a> <span class="sep">/</span> <a href="{% url 'policies:explorer' %}?sector={{ s.sector|urlencode }}">{{ s.sector }}</a> <span class="sep">/</span> <span class="muted">{{ s.policy_id }}</span></p>
   <h1>{{ s.policy_name }}</h1>
-  <p class="muted" style="margin:6px 0 0">{% if s.sector == "Cross-sectoral" %}{{ layer_info.0 }} applying across all sectors{% else %}{{ layer_info.0 }} affecting the {{ s.sector }} sector{% endif %}, using a {{ mech_info.1|lower }} mechanism; {% if s.end_year %}reported {{ s.start_year }}–{{ s.end_year }}{% else %}in force since {{ s.start_year }}{% endif %}.</p>
+  <p class="muted" style="margin:6px 0 0">{% if s.sector == "Cross-sectoral" %}{{ layer_info.0 }} applying across all sectors{% else %}{{ layer_info.0 }} affecting the {{ s.sector }} sector{% endif %}, using a {{ mech_info.1|lower }} mechanism; {% if s.end_year %}reported {{ s.start_year }}–{{ s.end_year }}{% else %}recorded from {{ s.start_year }}{% endif %}.</p>
   <div class="tags">
     <span class="tag"><span class="dot" style="background:{{ sector_color }}"></span>{{ s.sector }}</span>
     <span class="tag" data-term="mechanisms.{{ s.mechanism }}"><span class="dot" style="background:{{ mech_info.0 }}"></span>{{ mech_info.1 }}</span>
@@ -28,7 +28,13 @@
     <section class="panel">
       <h3>About this policy</h3>
       <p class="prose">{{ s.description }}</p>
-      {% if s.reference_url %}<p class="small"><a href="{{ s.reference_url }}" rel="noopener" target="_blank">Official reference</a></p>{% endif %}
+      {% if d.eea_description %}<p class="note">Description as reported by Ireland to the European Environment Agency (PaM {{ s.eea_pam_ids }}), reproduced unedited. Statements about the "With Existing Measures" scenario are projection assumptions, not outcomes.</p>{% endif %}
+      {% if s.reference_url %}<p class="small"><a href="{{ d.reference_urls.0 }}" rel="noopener" target="_blank">Official reference</a>{% for u in d.reference_urls|slice:"1:" %} · <a href="{{ u }}" rel="noopener" target="_blank">Reference {{ forloop.counter|add:1 }}</a>{% endfor %}</p>{% endif %}
+      {% if d.notes %}
+      <h3 style="margin-top:16px">Verification notes</h3>
+      <ul class="prose">{% for n in d.notes %}<li>{{ n }}</li>{% endfor %}</ul>
+      <p class="note">Checked against official sources on 15 November 2026. These notes qualify the record; they do not change any date or score in the dataset.</p>
+      {% endif %}
       {% if d.milestones %}
       <h3 style="margin-top:16px">Key milestones</h3>
       <ol class="milestones">{% for yr, text in d.milestones %}<li><b>{{ yr }}</b><span>{{ text }}</span></li>{% endfor %}</ol>

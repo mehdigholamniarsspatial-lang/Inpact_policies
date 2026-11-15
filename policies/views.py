@@ -123,6 +123,7 @@ def method(request):
                     "result": c.result} for c in m.ValidationCheck.objects.all()],
         "decisions": editorial.METHOD_DECISIONS,
         "references": m.Reference.objects.all(),
+        "verification_sources": editorial.VERIFICATION_SOURCES,
         "dictionary": m.DictionaryField.objects.all(),
         "overlaps": m.OverlapRelation.objects.all(),
         "timing": _timing_parameters(),

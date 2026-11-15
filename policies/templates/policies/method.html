@@ -23,7 +23,7 @@
       <dl class="kv">
         <dt>I, policy intensity</dt><dd>Relative index on [0, 1].</dd>
         <dt>M, implementation</dt><dd>The same-year OECD CAPMF stringency score ÷ 10, where a matching indicator exists. Otherwise, an assumed ramp-up: M = clip((t − t₀ − lag + 0.5) / ramp, 0, 1), where t₀ is the start year. Some policies keep an effect after they end. For these, M halves every h years (the half-life) from its last level: 2<sup>−(t − t<sub>end</sub>)/h</sup>.</dd>
-        <dt>C, coverage</dt><dd>How much of the sector the policy legally covers. It is an ordinal score (a rank on a fixed scale, not a measurement): 1 (whole sector), 0.5 (major subsector), 0.25 (defined segment), 0.1 (narrow pilot).</dd>
+        <dt>C, coverage</dt><dd>The scope of the instrument or programme: the activities, technologies or recipients it reaches. It is a researcher-assigned ordinal score (a rank on a fixed scale, not a measurement): 1 (whole sector), 0.5 (major subsector), 0.25 (defined segment), 0.1 (narrow pilot).</dd>
         <dt>B, bindingness</dt><dd>How compulsory the policy is, as an ordinal score: 1 (mandatory rule or statute), 0.75 (price or obligation), 0.5 (incentive), 0.25 (information or voluntary). It is a researcher-assigned classification of legal compulsion, not a measure of enforcement, compliance or effectiveness.</dd>
       </dl>
     </div>
@@ -102,9 +102,9 @@
 </section>
 
 <section class="section">
-  <div class="section-head"><h2>Sources</h2><p>Official documents used to verify dates, scope and methodology. Web sources were accessed on 25 September 2026.</p></div>
+  <div class="section-head"><h2>Sources</h2><p>Official documents used to verify dates, scope and methodology. Web sources were accessed on 25 September 2026; links, dates, rates and figures were re-checked on 15 November 2026 against the additional sources listed at the end of the table.</p></div>
   <div class="panel flush"><div class="table-wrap"><table class="data"><thead><tr><th>Publisher</th><th>Title</th><th>Year</th></tr></thead>
-    <tbody>{% for r in references %}<tr><td>{{ r.publisher }}</td><td>{% if r.url %}<a href="{{ r.url }}" target="_blank" rel="noopener">{{ r.title }}</a>{% else %}{{ r.title }}{% endif %}</td><td style="white-space:nowrap">{{ r.publication_date }}</td></tr>{% endfor %}</tbody></table></div></div>
+    <tbody>{% for r in references %}<tr><td>{{ r.publisher }}</td><td>{% if r.url %}<a href="{{ r.url }}" target="_blank" rel="noopener">{{ r.title }}</a>{% else %}{{ r.title }}{% endif %}</td><td style="white-space:nowrap">{{ r.publication_date }}</td></tr>{% endfor %}{% for pub, title, year, url in verification_sources %}<tr><td>{{ pub }}</td><td><a href="{{ url }}" target="_blank" rel="noopener">{{ title }}</a></td><td style="white-space:nowrap">{{ year }}</td></tr>{% endfor %}</tbody></table></div></div>
 </section>
 
 {{ flow|json_script:"flow-data" }}

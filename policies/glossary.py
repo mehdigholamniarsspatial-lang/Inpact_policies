@@ -46,7 +46,7 @@ MECHANISMS = {
 
 STATUS = {
     "pre_implementation": ("Not yet started", "The year is before the policy's selected start year."),
-    "active": ("Active", "The policy is in force in this year."),
+    "active": ("Active", "The policy is recorded as active in this year, under the dataset's start and end dates. A recorded start is not always the legal commencement date."),
     "post_expiry_residual": ("Expired, lingering effect", "The source phase ended, but documentation says effects continue; an assumed decay is applied."),
     "post_expiry_no_effect": ("Expired", "The policy ended and no continuing effect is assumed."),
 }
@@ -64,7 +64,7 @@ MATCH_CONFIDENCE = {
 }
 
 SELECTION_RULE = {
-    "materiality_90pct": ("Top-impact", "Selected because, ranked by reported savings, it is among the measures that together reach 90% of its sector's reported total."),
+    "materiality_90pct": ("Largest reported savings", "Selected because, ranked by reported savings, it is among the measures that together reach 90% of its sector's reported total. The ranking uses reported or projected estimates, not verified emission cuts."),
     "anchor_capmf": ("OECD anchor", "Selected because it is a named instrument represented in the OECD CAPMF with positive stringency."),
     "residual": ("Residual", "Eligible, but grouped into its sector's residual bundle."),
 }
@@ -150,19 +150,19 @@ def as_payload():
 # Short plain-language summaries for policies added from the OECD CAPMF, which
 # have no EEA registry description. EEA-derived policies use the official text.
 POLICY_SUMMARIES = {
-    "CAPMF_ACT_2015": "Ireland's first climate law. It required national mitigation and adaptation plans, annual transition statements to the Oireachtas, and established the Climate Change Advisory Council.",
-    "CAPMF_ACT_2021": "Amended the 2015 Act to put Ireland on a legally binding path to climate neutrality by 2050 and a 51% cut by 2030 (from 2018). It introduced five-year carbon budgets, sectoral emissions ceilings and annual Climate Action Plans.",
+    "CAPMF_ACT_2015": "Ireland's first climate law, enacted on 10 December 2015. It required a national mitigation plan, a national adaptation framework and annual transition statements to the Oireachtas, and provided for the Climate Change Advisory Council, which was established in January 2016.",
+    "CAPMF_ACT_2021": "Amended the 2015 Act to put Ireland on a legally binding path to a climate-neutral economy by no later than the end of 2050. The first two carbon budgets must provide for a 51% cut in emissions by 2030, compared with 2018. It introduced five-year carbon budgets, sectoral emissions ceilings and annually updated Climate Action Plans. Enacted on 23 July 2021; in operation from 7 September 2021.",
     "CAPMF_CARBON_BUDGETS": "Five-year national limits on total greenhouse-gas emissions. The first carbon-budget programme, comprising budgets for 2021\u201325 and 2026\u201330 and a provisional budget for 2031\u201335, was approved in 2022; the dataset starts it in 2022, when the programme took effect on 6 April.",
-    "CAPMF_SECTOR_CEILINGS": "Divides the carbon budgets into maximum emissions for each sector of the economy, such as electricity, transport, buildings, industry and agriculture. Agreed by Government in July 2022.",
-    "CAPMF_NET_ZERO": "The statutory national objective, set in the 2021 Act, to achieve a climate-neutral economy no later than 2050.",
-    "CAPMF_CLIMATE_COUNCIL": "Independent statutory body that advises Government on climate policy, proposes carbon budgets and reviews progress each year.",
-    "CAPMF_EU_ETS": "The EU's cap-and-trade system. Power stations and large industrial sites must surrender an allowance for each tonne of CO\u2082 they emit; aviation was brought in from 2012.",
-    "CAPMF_PARTL_RES": "Part L of the Building Regulations sets energy-performance requirements for new homes and major renovations. Successive editions tightened the standard, up to Nearly Zero Energy Building (NZEB) levels.",
-    "CAPMF_PARTL_NONRES": "Part L of the Building Regulations for offices, shops, schools and other non-residential buildings. Successive editions tightened the standard, up to NZEB levels.",
-    "CAPMF_EE_AUDITS": "Large enterprises must carry out an energy audit at least every four years, under the EU Energy Efficiency Directive as transposed by S.I. 426/2014.",
+    "CAPMF_SECTOR_CEILINGS": "Divides the carbon budgets into maximum emissions for specified sectors, such as electricity, transport, buildings, industry and agriculture. Agreed by Government on 28 July 2022; the ceiling for land use, land-use change and forestry was deferred.",
+    "CAPMF_NET_ZERO": "The statutory national climate objective, set in the 2021 Act: the transition to a climate-resilient, biodiversity-rich, environmentally sustainable and climate-neutral economy by no later than the end of 2050.",
+    "CAPMF_CLIMATE_COUNCIL": "Independent statutory body, established on 18 January 2016, that advises Government on climate policy and reviews progress each year. Since the 2021 Act it also proposes the carbon budgets.",
+    "CAPMF_EU_ETS": "The EU's cap-and-trade system. Since 2005, power stations and large industrial sites must surrender an allowance for each tonne of CO\u2082 they emit. Aviation was brought in from 2012, in practice for flights within the European Economic Area.",
+    "CAPMF_PARTL_RES": "Part L of the Building Regulations sets energy-performance requirements for new homes and major renovations. Successive editions tightened the standard, up to Nearly Zero Energy Building (NZEB) levels for new dwellings from 1 November 2019.",
+    "CAPMF_PARTL_NONRES": "Part L of the Building Regulations for offices, shops, schools and other non-residential buildings. Successive editions tightened the standard, up to NZEB levels for new buildings from 1 January 2019.",
+    "CAPMF_EE_AUDITS": "Large enterprises must carry out an energy audit at least every four years, under the EU Energy Efficiency Directive as transposed by S.I. 426/2014. The first audit was due before 5 December 2015.",
     "CAPMF_MEPS_MOTOR": "EU ecodesign regulations set minimum efficiency classes for electric motors, which drive much of industrial electricity use.",
-    "CAPMF_MEPS_APPL": "EU ecodesign rules set minimum energy performance for appliances such as fridges, freezers, lighting and air conditioners, taking the least efficient products off the market.",
+    "CAPMF_MEPS_APPL": "EU rules set minimum energy performance for appliances such as fridges, freezers, lighting and air conditioners, taking the least efficient products off the market. They began as product-specific directives in the 1990s and now sit under the Ecodesign framework.",
     "CAPMF_LABEL_APPL": "The EU energy label must be displayed on appliances such as fridges, freezers, lamps and air conditioners, so buyers can compare efficiency.",
-    "CAPMF_LABEL_CAR": "New passenger cars must display fuel-consumption and CO\u2082 information at the point of sale (EU Car Labelling Directive 1999/94/EC).",
-    "CAPMF_FOSSIL_LICENCES": "The 2021 Climate Act restricted the granting of new petroleum authorisations for oil and gas exploration and extraction. Existing authorisations were preserved, and their holders may seek successor authorisations under the statutory saving provisions.",
+    "CAPMF_LABEL_CAR": "New passenger cars must display fuel-consumption and CO\u2082 information at the point of sale (EU Car Labelling Directive 1999/94/EC, transposed in Ireland by S.I. 339/2001).",
+    "CAPMF_FOSSIL_LICENCES": "Section 21 of the 2021 Climate Act restricted the granting of new petroleum authorisations for oil and gas exploration and extraction. Existing authorisations were preserved, and their holders may seek successor authorisations under the statutory saving provisions.",
 }

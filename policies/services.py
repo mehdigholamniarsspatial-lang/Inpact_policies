@@ -1,4 +1,5 @@
 """Query helpers that turn database rows into compact JSON-ready structures."""
+import re
 from collections import Counter, defaultdict
 
 from django.db.models import Prefetch
@@ -178,6 +179,12 @@ def policy_detail(series):
         "instrument": instrument,
         "instrument_refs": [editorial.LITERATURE[r] for r in (instrument or {}).get("refs", [])],
         "milestones": milestones,
+        "notes": editorial.POLICY_NOTES.get(series.policy_id, []),
+        # EEA-derived rows show the description Ireland reported; OECD-anchored
+        # rows and residual bundles use the dashboard's own summaries.
+        "eea_description": (series.layer != "residual" and bool(series.eea_pam_ids)
+                            and series.policy_id not in glossary.POLICY_SUMMARIES),
+        "reference_urls": re.findall(r"https?://[^\s;,]+", series.reference_url or ""),
         "chart": {
             "years": [y.year for y in years],
             "status": [y.status_in_year for y in years],

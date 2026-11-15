@@ -4,29 +4,29 @@
 {% block content %}
 <div class="page-head"><div>
   <h1>About the dataset</h1>
-  <p class="lede">The Ireland Climate Policy Timeline is a structured, annual record of the policies that shaped Ireland's greenhouse-gas emissions between 2000 and 2023. It integrates two established international sources into one consistent panel, so that policy development can be studied across sectors, instruments and time.</p>
+  <p class="lede">The Ireland Climate Policy Timeline is a structured, annual record of selected policies addressing Ireland's greenhouse-gas emissions between 2000 and 2023. It integrates two established international sources into one consistent panel, so that policy development can be studied across sectors, instruments and time.</p>
 </div></div>
 
 <div class="about-grid">
   <div class="prose-block">
     <section>
       <h2>Scope and unit of analysis</h2>
-      <p>The dataset covers {{ stats.core_families }} core policy families and {{ stats.residual_bundles }} residual sector bundles. Each policy is recorded separately for every sector it affects, giving {{ stats.series }} policy–sector series observed annually from 2000 to 2023 ({{ stats.rows|num:0 }} observations). For each observation, the dataset records the policy's status, its implementation level, and fixed scores for legal scope (coverage) and compulsion (bindingness). These are combined into a relative policy-intensity index.</p>
+      <p>The dataset covers {{ stats.core_families }} core policy families and {{ stats.residual_bundles }} residual sector bundles. Each policy is recorded separately for every sector it affects, giving {{ stats.series }} policy–sector series observed annually from 2000 to 2023 ({{ stats.rows|num:0 }} observations). For each observation, the dataset records the policy's status, its implementation level, and fixed scores for scope (coverage) and compulsion (bindingness). These are combined into a relative policy-intensity index.</p>
     </section>
 
     <section>
       <h2>Data sources</h2>
       <h3>OECD Climate Actions and Policies Measurement Framework (CAPMF)</h3>
-      <p>The CAPMF is a harmonised database that scores the stringency of climate policies on a 0–10 scale for OECD and partner countries from 1990. It covers 130 policy variables, aggregated into 56 policy categories within sectoral, cross-sectoral and international modules. Here it provides annual, comparable measures of how stringent a matched policy type was in Ireland.</p>
+      <p>The CAPMF is a harmonised database that scores the stringency of climate policies on a 0–10 scale for 50 OECD and partner countries from 1990 to 2023. It covers 130 policy variables, aggregated into 56 policy categories within sectoral, cross-sectoral and international modules. Here it provides annual, comparable measures of how stringent a matched policy type was in Ireland.</p>
       <h3>EEA database on national policies and measures (PaMs)</h3>
       <p>EU Member States report their climate and energy policies and measures to the European Commission under Article 18 of the Governance Regulation (EU) 2018/1999. The European Environment Agency publishes these reports as a searchable database. Ireland's records provide policy names, descriptions, instrument types, implementation periods and ex-ante and ex-post estimates of emission savings.</p>
       <h3>Supplementary official sources</h3>
-      <p>Legal commencement dates and scopes were verified against the Irish Statute Book, Oireachtas records, Revenue, SEAI, the EPA and EU legislation. Every source appears on the relevant policy page and on the Methods page.</p>
+      <p>Dates, rates and scopes were checked against the Irish Statute Book, Oireachtas records, Revenue, SEAI, the EPA, gov.ie and EU legislation, most recently on 15 November 2026. Not every start year is a legal commencement date: many follow the record reported to the EEA, and some follow the first year with a positive OECD score. Where an official source differs from the dataset record, the policy page carries a verification note. Sources are listed on each policy page and on the Methods page.</p>
     </section>
 
     <section>
       <h2>How the two sources are combined</h2>
-      <p>The two sources are structurally different: the CAPMF is a stringency scoring framework, whereas the EEA database is a registry of individual measures. They are linked at the level of the policy instrument. EEA records define the policies and supply the evidence used to select them. Where an OECD indicator describes the same instrument or its family, its annual score sets the policy's implementation level. Where no indicator applies, a transparent assumed timing profile is used and flagged. Selection follows two rules: measures that together account for 90% of each sector's reported savings, and named instruments anchored in the OECD framework. The full procedure is documented on the <a href="{% url 'policies:method' %}">Methods</a> page.</p>
+      <p>The two sources are structurally different: the CAPMF is a stringency scoring framework, whereas the EEA database is a registry of individual measures. They are linked at the level of the policy instrument. EEA records define the policies and supply the evidence used to select them. Where an OECD indicator describes the same instrument or its family, its annual score sets the policy's implementation level. Where no indicator applies, a transparent assumed timing profile is used and flagged. Selection follows two rules. First, in each sector with positive reported savings, the largest measures are taken until they cover at least 90% of that reported total (this cannot be assessed for land use, where the estimates sum to zero). Second, named instruments anchored in the OECD framework are included. The full procedure is documented on the <a href="{% url 'policies:method' %}">Methods</a> page.</p>
     </section>
 
     <section>
@@ -35,7 +35,7 @@
       <ul>
         <li>The intensity index is a relative composite built from ordinal judgement scores. Its multiplicative form is a stated convention, not an empirically validated weighting.</li>
         <li>Where no OECD indicator applies, implementation follows assumed timing profiles. These years are flagged and should be tested in sensitivity analyses.</li>
-        <li>Reported savings come from recent assessments and are used only for selection. This introduces retrospective selection bias, which should be considered in causal applications.</li>
+        <li>Reported savings come from recent assessments (2024–2030) and are used only for selection. This introduces retrospective selection bias, which should be considered in causal applications.</li>
         <li>Frameworks, portfolios and residual bundles overlap with other rows and are not additive.</li>
         <li>Validation consists of 20 internal consistency checks. Independent expert review of classifications, dates and scores is recommended before use in formal evaluation.</li>
       </ul>

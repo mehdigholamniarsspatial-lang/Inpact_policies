@@ -21,7 +21,7 @@
     [0, 1, F.eea_records - F.eea_single, "EEA group rows are summaries of other records"],
     [0, 2, F.eea_single, "Individual policies and measures"],
     [2, 3, F.eea_units, "Scenario variants (existing / additional measures) merged into one identity"],
-    [3, 8, F.eea_core, "Top-impact (90% rule) or OECD-anchored EEA policies"],
+    [3, 8, F.eea_core, "EEA policies with the largest reported savings (90% rule) or an OECD anchor"],
     [3, 9, F.eea_residual, "Eligible but smaller measures"],
     [3, 7, F.eea_excluded, "Failed an eligibility test"],
     [4, 5, F.capmf_l3 - F.capmf_pos, "Never scored above zero for Ireland"],
