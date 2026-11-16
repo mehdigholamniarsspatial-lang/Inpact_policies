@@ -1771,6 +1771,229 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
   html.map-standalone .ms-bar{padding:.5rem .75rem}
   .ms-crumb .home-link,.ms-crumb .sep{display:none}
 }
+
+/* ================= DATASETS TAB (data catalogue) ================= */
+.dc-wrap{max-width:1280px;margin:0 auto;padding:1.6rem 1.4rem 2.6rem}
+.dc-hero{
+  background:linear-gradient(115deg,var(--navy) 0%,#1D4264 55%,#1B5E48 100%);
+  color:#fff;border-radius:var(--radius);padding:2rem 2rem 1.5rem;margin-bottom:1.2rem;
+  box-shadow:var(--shadow-md);position:relative;overflow:hidden;
+}
+.dc-hero::after{content:"";position:absolute;right:-70px;top:-70px;width:300px;height:300px;border-radius:50%;
+  background:radial-gradient(circle,rgba(127,224,168,.18),transparent 70%);pointer-events:none}
+.dc-hero .eyebrow{font-size:.74rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7FE0A8;margin-bottom:.45rem}
+.dc-hero h2{font-size:1.8rem;font-weight:800;line-height:1.15;margin:0 0 .6rem;max-width:780px}
+.dc-hero p{font-size:.98rem;line-height:1.6;opacity:.92;margin:0;max-width:860px}
+.dc-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.7rem;margin-top:1.3rem;position:relative;z-index:1}
+.dc-kpi{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:.7rem .9rem}
+.dc-kpi .v{font-size:1.45rem;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.dc-kpi .l{font-size:.74rem;opacity:.85;margin-top:.15rem;line-height:1.3}
+
+/* category cards */
+.dc-cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.9rem;margin-bottom:1.1rem}
+.dc-cat{
+  --c:var(--emerald);--cl:var(--emerald-light);
+  text-align:left;font-family:inherit;cursor:pointer;
+  background:#fff;border:1px solid var(--grey-border);border-radius:var(--radius);
+  padding:1rem 1.1rem;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;
+  transition:border-color .15s, box-shadow .15s, transform .15s;
+}
+.dc-cat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c)}
+.dc-cat:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.dc-cat:focus-visible{outline:3px solid rgba(14,140,138,.35);outline-offset:2px}
+.dc-cat[aria-pressed="true"]{border-color:var(--c);background:var(--cl)}
+.dc-cat .top{display:flex;align-items:center;gap:.6rem}
+.dc-cat .ic{width:38px;height:38px;border-radius:10px;flex:0 0 38px;background:var(--cl);color:var(--c);display:flex;align-items:center;justify-content:center;font-size:1.15rem}
+.dc-cat[aria-pressed="true"] .ic{background:#fff}
+.dc-cat .t{font-weight:800;color:var(--navy);font-size:.98rem;line-height:1.2}
+.dc-cat .n{margin-left:auto;font-size:.74rem;font-weight:800;color:var(--c);background:#fff;border:1px solid var(--grey-border);border-radius:999px;padding:.12rem .55rem;white-space:nowrap}
+.dc-cat .d{font-size:.82rem;line-height:1.45;color:var(--text-muted);margin:.55rem 0 0}
+.dc-c-ts{--c:var(--emerald);--cl:var(--emerald-light)}
+.dc-c-raster{--c:var(--teal);--cl:var(--teal-light)}
+.dc-c-policy{--c:#3B5B8C;--cl:#E7EEF7}
+
+/* toolbar */
+.dc-toolbar{
+  position:sticky;top:calc(var(--header-h) + 52px);z-index:20;
+  background:rgba(255,255,255,.96);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border:1px solid var(--grey-border);border-radius:var(--radius);box-shadow:var(--shadow-sm);
+  padding:.75rem .9rem;margin-bottom:1rem;display:flex;flex-direction:column;gap:.6rem;
+}
+.dc-row{display:flex;flex-wrap:wrap;align-items:center;gap:.55rem}
+.dc-search{flex:1 1 320px;position:relative;min-width:0}
+.dc-search i.bi-search{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);color:var(--text-muted)}
+.dc-search input{
+  width:100%;border:1px solid var(--grey-border);border-radius:10px;background:var(--grey-panel);
+  padding:.6rem 4.6rem .6rem 2.3rem;font:inherit;font-size:.92rem;color:var(--text-main);
+}
+.dc-search input::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
+.dc-search input:focus{outline:none;border-color:var(--teal);background:#fff;box-shadow:0 0 0 3px rgba(14,140,138,.15)}
+.dc-search .kbd{position:absolute;right:.6rem;top:50%;transform:translateY(-50%);font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--text-muted);border:1px solid var(--grey-border);border-bottom-width:2px;border-radius:5px;padding:0 .35rem;background:#fff}
+.dc-search .clr{position:absolute;right:.45rem;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--text-muted);font-size:1.1rem;padding:.1rem .35rem;cursor:pointer;display:none}
+.dc-search.has-q .clr{display:block}.dc-search.has-q .kbd{display:none}
+.dc-sel{border:1px solid var(--grey-border);border-radius:10px;background:#fff;font:inherit;font-size:.84rem;padding:.5rem .6rem;color:var(--text-main)}
+.dc-view{display:inline-flex;border:1px solid var(--grey-border);border-radius:10px;overflow:hidden}
+.dc-view button{border:0;background:#fff;padding:.45rem .7rem;color:var(--text-muted);cursor:pointer;font-size:.95rem}
+.dc-view button[aria-pressed="true"]{background:var(--navy);color:#fff}
+.dc-flabel{font-size:.7rem;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);margin-right:.1rem}
+.dc-chip{
+  border:1px solid var(--grey-border);background:#fff;border-radius:999px;
+  font:inherit;font-size:.78rem;font-weight:600;color:var(--text-main);padding:.25rem .7rem;cursor:pointer;
+  transition:background .15s,border-color .15s,color .15s;
+}
+.dc-chip:hover{border-color:#9FCFCE}
+.dc-chip[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.dc-chip:focus-visible,.dc-view button:focus-visible,.dc-sel:focus-visible{outline:3px solid rgba(14,140,138,.35);outline-offset:1px}
+.dc-sep{width:1px;align-self:stretch;background:var(--grey-border);margin:0 .25rem}
+.dc-status{font-size:.82rem;color:var(--text-muted);display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.dc-status b{color:var(--navy)}
+.dc-reset{border:0;background:none;color:var(--teal);font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;padding:0;text-decoration:underline}
+
+/* results */
+.dc-group{margin-bottom:1.3rem}
+.dc-group-h{display:flex;align-items:center;gap:.55rem;margin:0 0 .7rem;font-size:1.05rem;font-weight:800;color:var(--navy)}
+.dc-group-h .ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--cl);color:var(--c);font-size:.95rem}
+.dc-group-h .cnt{font-size:.75rem;font-weight:700;color:var(--text-muted)}
+.dc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:.9rem}
+.dc-card{
+  --c:var(--emerald);--cl:var(--emerald-light);
+  background:#fff;border:1px solid var(--grey-border);border-radius:var(--radius);box-shadow:var(--shadow-sm);
+  padding:1rem 1.1rem 1rem;display:flex;flex-direction:column;gap:.55rem;cursor:pointer;position:relative;
+  transition:box-shadow .15s,border-color .15s,transform .15s;
+}
+.dc-card:hover{box-shadow:var(--shadow-md);border-color:#C9D6E2;transform:translateY(-1px)}
+.dc-card:focus-visible{outline:3px solid rgba(14,140,138,.35);outline-offset:2px}
+.dc-card .hd{display:flex;gap:.7rem;align-items:flex-start}
+.dc-card .ic{width:40px;height:40px;border-radius:11px;flex:0 0 40px;background:var(--cl);color:var(--c);display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.dc-card h4{font-size:1rem;font-weight:800;color:var(--navy);margin:0;line-height:1.25}
+.dc-card .prov{font-size:.78rem;color:var(--text-muted);margin-top:.15rem}
+.dc-card .desc{font-size:.86rem;line-height:1.5;color:var(--text-main);margin:0}
+.dc-badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--c);background:var(--cl);border-radius:6px;padding:.15rem .45rem}
+.dc-badge.type{color:var(--navy);background:var(--grey-bg)}
+.dc-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.4rem;margin-top:auto;padding-top:.55rem;border-top:1px dashed var(--grey-border)}
+.dc-meta div{min-width:0}
+.dc-meta .k{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted)}
+.dc-meta .v{font-size:.8rem;font-weight:600;color:var(--text-main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dc-pills{display:flex;flex-wrap:wrap;gap:.3rem}
+.dc-pill{font-size:.72rem;font-weight:700;color:var(--navy-soft);background:var(--grey-bg);border:1px solid var(--grey-border);border-radius:999px;padding:.08rem .5rem}
+.dc-card .open{font-size:.8rem;font-weight:700;color:var(--teal);display:flex;align-items:center;gap:.3rem}
+.dc-card mark,.dc-table mark,.dc-drawer mark{background:#FFE9A8;color:inherit;padding:0 .1rem;border-radius:3px}
+.dc-empty{background:#fff;border:1px dashed var(--grey-border);border-radius:var(--radius);padding:2.2rem 1rem;text-align:center;color:var(--text-muted)}
+.dc-empty i{font-size:2rem;display:block;margin-bottom:.4rem;color:#9FB2C4}
+
+/* table view */
+.dc-tablewrap{background:#fff;border:1px solid var(--grey-border);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow-x:auto}
+.dc-table{width:100%;border-collapse:collapse;font-size:.85rem;min-width:820px}
+.dc-table th{position:sticky;top:0;background:var(--grey-panel);text-align:left;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);padding:.65rem .8rem;border-bottom:1px solid var(--grey-border);white-space:nowrap}
+.dc-table th button{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:.25rem}
+.dc-table th button:focus-visible{outline:2px solid var(--teal)}
+.dc-table td{padding:.65rem .8rem;border-bottom:1px solid var(--grey-border);vertical-align:top}
+.dc-table tbody tr{cursor:pointer}
+.dc-table tbody tr:hover{background:#F6FAFA}
+.dc-table tbody tr:focus-visible{outline:2px solid var(--teal);outline-offset:-2px}
+.dc-table .tt{font-weight:800;color:var(--navy)}
+.dc-table .sub{font-size:.76rem;color:var(--text-muted)}
+
+/* panels: coverage + comparison */
+.dc-panel{background:#fff;border:1px solid var(--grey-border);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:1.2rem 1.3rem;margin:1.3rem 0 1rem}
+.dc-panel h3{font-size:1.12rem;font-weight:800;color:var(--navy);margin:0 0 .25rem;display:flex;align-items:center;gap:.55rem}
+.dc-panel h3 i{color:var(--teal)}
+.dc-panel .lead{font-size:.86rem;color:var(--text-muted);margin:0 0 1rem}
+.dc-cov{display:grid;grid-template-columns:minmax(150px,240px) 1fr;column-gap:.8rem;row-gap:.35rem;align-items:center}
+.dc-cov .nm{font-size:.8rem;font-weight:700;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;background:none;border:0;padding:0;text-align:left;font-family:inherit}
+.dc-cov .nm:hover{color:var(--teal);text-decoration:underline}
+.dc-cov .track{position:relative;height:20px;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(10% - 1px),var(--grey-border) calc(10% - 1px),var(--grey-border) 10%);border-radius:4px;background-color:var(--grey-panel)}
+.dc-cov .bar{position:absolute;top:3px;bottom:3px;border-radius:5px;background:var(--c);opacity:.88;cursor:pointer;border:0;padding:0}
+.dc-cov .bar:hover,.dc-cov .bar:focus-visible{opacity:1;outline:2px solid var(--navy);outline-offset:1px}
+.dc-cov .bar.proj{background:repeating-linear-gradient(135deg,var(--c) 0 5px,transparent 5px 9px);opacity:.75}
+.dc-axis{position:relative;height:18px;font-size:.68rem;color:var(--text-muted);font-variant-numeric:tabular-nums}
+.dc-axis span{position:absolute;transform:translateX(-50%)}
+.dc-legend{display:flex;flex-wrap:wrap;gap:1rem;font-size:.76rem;color:var(--text-muted);margin-top:.8rem}
+.dc-legend span{display:inline-flex;align-items:center;gap:.35rem}
+.dc-legend i{width:14px;height:10px;border-radius:3px;display:inline-block;background:var(--c)}
+.dc-legend i.proj{background:repeating-linear-gradient(135deg,var(--navy-soft) 0 3px,transparent 3px 6px);border:1px solid var(--navy-soft)}
+.dc-cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:.84rem;min-width:760px}
+.dc-cmp th,.dc-cmp td{padding:.6rem .75rem;border-bottom:1px solid var(--grey-border);vertical-align:top;text-align:left}
+.dc-cmp thead th{font-size:.92rem;color:var(--navy);font-weight:800;background:var(--teal-light)}
+.dc-cmp thead th:first-child{background:transparent}
+.dc-cmp thead th button{all:unset;cursor:pointer;color:var(--navy)}
+.dc-cmp thead th button:hover{color:var(--teal);text-decoration:underline}
+.dc-cmp tbody th{font-size:.7rem;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);white-space:nowrap;font-weight:800;width:140px}
+.dc-note{display:flex;gap:.7rem;align-items:flex-start;background:var(--grey-panel);border:1px solid var(--grey-border);border-radius:12px;padding:.85rem 1rem;font-size:.84rem;line-height:1.55;color:var(--text-main)}
+.dc-note i{color:var(--amber);font-size:1.1rem;margin-top:.05rem}
+
+/* detail drawer */
+.dc-scrim{position:fixed;inset:0;background:rgba(16,32,50,.42);z-index:2000;opacity:0;pointer-events:none;transition:opacity .2s}
+.dc-scrim.open{opacity:1;pointer-events:auto}
+.dc-drawer{
+  position:fixed;top:0;right:0;bottom:0;width:min(720px,100vw);z-index:2001;background:#fff;
+  box-shadow:-12px 0 40px rgba(16,32,50,.22);transform:translateX(102%);transition:transform .25s ease;
+  display:flex;flex-direction:column;
+}
+.dc-drawer.open{transform:none}
+.dc-dh{--c:var(--emerald);--cl:var(--emerald-light);padding:1.1rem 1.3rem .2rem;border-bottom:1px solid var(--grey-border);background:linear-gradient(180deg,var(--cl),#fff 85%)}
+.dc-dh .bar{display:flex;align-items:center;gap:.4rem;margin-bottom:.6rem}
+.dc-dh .bar .sp{flex:1}
+.dc-ibtn{border:1px solid var(--grey-border);background:#fff;border-radius:9px;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;color:var(--navy);cursor:pointer;font-size:1rem}
+.dc-ibtn:hover{border-color:var(--teal);color:var(--teal)}
+.dc-ibtn:disabled{opacity:.4;cursor:default}
+.dc-ibtn:focus-visible{outline:3px solid rgba(14,140,138,.35)}
+.dc-dh h3{font-size:1.35rem;font-weight:800;color:var(--navy);margin:.35rem 0 .15rem;line-height:1.2}
+.dc-dh .prov{font-size:.86rem;color:var(--text-muted)}
+.dc-dtabs{display:flex;gap:.1rem;margin-top:.8rem;overflow-x:auto}
+.dc-dtabs button{border:0;background:none;font:inherit;font-size:.84rem;font-weight:700;color:var(--text-muted);padding:.55rem .8rem;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+.dc-dtabs button[aria-selected="true"]{color:var(--emerald-dark);border-bottom-color:var(--emerald)}
+.dc-dbody{flex:1;overflow-y:auto;padding:1.1rem 1.3rem 1.4rem}
+.dc-dbody h5{font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin:1.2rem 0 .5rem}
+.dc-dbody h5:first-child{margin-top:0}
+.dc-dbody p{font-size:.92rem;line-height:1.6;margin:0 0 .7rem}
+.dc-kv{display:grid;grid-template-columns:170px 1fr;margin:0;border:1px solid var(--grey-border);border-radius:10px;overflow:hidden}
+.dc-kv dt,.dc-kv dd{margin:0;padding:.5rem .75rem;border-bottom:1px solid var(--grey-border);font-size:.86rem}
+.dc-kv dt{background:var(--grey-panel);font-weight:700;color:var(--navy)}
+.dc-kv dd{word-break:break-word}
+.dc-kv dt:last-of-type,.dc-kv dd:last-of-type{border-bottom:0}
+.dc-ul{margin:0;padding-left:1.15rem;font-size:.9rem;line-height:1.55}
+.dc-ul li{margin-bottom:.3rem}
+.dc-files{display:flex;flex-direction:column;gap:.45rem}
+.dc-file{display:flex;gap:.6rem;align-items:flex-start;border:1px solid var(--grey-border);border-radius:10px;padding:.55rem .7rem}
+.dc-file i{color:var(--teal);font-size:1.05rem;margin-top:.1rem}
+.dc-file code{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--navy);word-break:break-all}
+.dc-file div{font-size:.82rem;color:var(--text-muted);line-height:1.4}
+.dc-vars{width:100%;border-collapse:collapse;font-size:.84rem}
+.dc-vars th,.dc-vars td{padding:.45rem .6rem;border-bottom:1px solid var(--grey-border);text-align:left;vertical-align:top}
+.dc-vars th{font-size:.7rem;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);background:var(--grey-panel)}
+.dc-vars td:first-child{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--navy);white-space:nowrap}
+.dc-cite{background:var(--grey-panel);border:1px solid var(--grey-border);border-left:4px solid var(--teal);border-radius:8px;padding:.8rem .9rem;font-size:.88rem;line-height:1.55;margin-bottom:.5rem}
+.dc-btn{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--grey-border);background:#fff;border-radius:9px;font:inherit;font-size:.82rem;font-weight:700;color:var(--navy);padding:.45rem .8rem;cursor:pointer;text-decoration:none}
+.dc-btn:hover{border-color:var(--teal);color:var(--teal)}
+.dc-btn.primary{background:var(--emerald);border-color:var(--emerald);color:#fff}
+.dc-btn.primary:hover{background:var(--emerald-dark);color:#fff}
+.dc-btn:focus-visible{outline:3px solid rgba(14,140,138,.35)}
+.dc-links{display:flex;flex-wrap:wrap;gap:.45rem}
+.dc-dfoot{border-top:1px solid var(--grey-border);padding:.75rem 1.3rem;display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;background:var(--grey-panel)}
+.dc-dfoot .sp{flex:1}
+.dc-toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--navy);color:#fff;font-size:.85rem;font-weight:600;padding:.55rem 1rem;border-radius:999px;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:2100}
+.dc-toast.show{opacity:1;transform:translate(-50%,0)}
+html.dc-lock{overflow:hidden}
+
+@media (max-width:991px){
+  .dc-cats{grid-template-columns:1fr}
+  .dc-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dc-toolbar{position:static}
+}
+@media (max-width:575px){
+  .dc-wrap{padding:1rem 1rem 2rem}
+  .dc-hero{padding:1.4rem 1.2rem 1.2rem}
+  .dc-hero h2{font-size:1.4rem}
+  .dc-grid{grid-template-columns:1fr}
+  .dc-cov{grid-template-columns:110px 1fr}
+  .dc-kv{grid-template-columns:1fr}
+  .dc-kv dt{border-bottom:0;padding-bottom:.15rem}
+  .dc-sep{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .dc-drawer,.dc-scrim,.dc-card,.dc-cat{transition:none}
+}
 </style>
 </head>
 <body>
@@ -1834,6 +2057,9 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
   </button>
   <button class="tab-btn" role="tab" aria-selected="false" data-tab="streamlit">
     <i class="bi bi-bar-chart-steps"></i><span>Structural<span class="tab-label-long"> Break Analysis</span></span>
+  </button>
+  <button class="tab-btn" role="tab" aria-selected="false" data-tab="data">
+    <i class="bi bi-database"></i><span>Data<span class="tab-label-long">sets</span></span>
   </button>
   <button class="tab-btn" role="tab" aria-selected="false" data-tab="about">
     <i class="bi bi-info-circle"></i><span>About<span class="tab-label-long"> INPACT</span></span>
@@ -3040,6 +3266,90 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
     <iframe id="smFrame" title="Spatial Environmental Mapping" allow="fullscreen; clipboard-write" allowfullscreen></iframe>
   </div>
 </div><!-- /tab-mapping -->
+
+<!-- ================= TAB: DATASETS (data catalogue) ================= -->
+<div class="tab-pane" id="tab-data" role="tabpanel" aria-label="Datasets">
+  <div class="dc-wrap">
+
+    <div class="dc-hero">
+      <div class="eyebrow">Data Catalogue</div>
+      <h2>The datasets behind the dashboard</h2>
+      <p>Every chart, map and policy view on this platform is built from the published sources below. Search or filter the catalogue, then open a dataset to see its coverage, units, files, caveats and how to cite it.</p>
+      <div class="dc-kpis" id="dcKpis"></div>
+    </div>
+
+    <div class="dc-cats" id="dcCats" role="group" aria-label="Filter by category"></div>
+
+    <div class="dc-browse">
+    <div class="dc-toolbar" role="search">
+      <div class="dc-row">
+        <div class="dc-search" id="dcSearchBox">
+          <i class="bi bi-search" aria-hidden="true"></i>
+          <input type="search" id="dcSearch" placeholder="Search datasets, gases, sectors, providers, file names&hellip;" aria-label="Search the data catalogue" autocomplete="off">
+          <span class="kbd" aria-hidden="true">/</span>
+          <button type="button" class="clr" id="dcClear" aria-label="Clear search"><i class="bi bi-x-circle-fill"></i></button>
+        </div>
+        <label class="visually-hidden" for="dcSort">Sort by</label>
+        <select id="dcSort" class="dc-sel">
+          <option value="cat">Group by category</option>
+          <option value="az">Name A&ndash;Z</option>
+          <option value="start">Earliest coverage first</option>
+          <option value="recent">Latest coverage first</option>
+        </select>
+        <div class="dc-view" role="group" aria-label="Layout">
+          <button type="button" data-view="cards" aria-pressed="true" title="Card view"><i class="bi bi-grid-3x2-gap"></i><span class="visually-hidden">Card view</span></button>
+          <button type="button" data-view="table" aria-pressed="false" title="Table view"><i class="bi bi-list-ul"></i><span class="visually-hidden">Table view</span></button>
+        </div>
+      </div>
+      <div class="dc-row" id="dcFacets"></div>
+      <div class="dc-status" aria-live="polite"><span id="dcCount"></span><button type="button" class="dc-reset" id="dcReset" hidden>Clear all filters</button></div>
+    </div>
+
+    <div id="dcResults"></div>
+    </div><!-- /dc-browse -->
+
+    <section class="dc-panel" aria-labelledby="dcCovH">
+      <h3 id="dcCovH"><i class="bi bi-calendar-range"></i>Temporal coverage at a glance</h3>
+      <p class="lead">Years covered by each dataset in the current selection. Click a bar or a name for its metadata.</p>
+      <div id="dcCoverage"></div>
+      <div class="dc-legend" id="dcLegend"></div>
+    </section>
+
+    <section class="dc-panel" aria-labelledby="dcCmpH">
+      <h3 id="dcCmpH"><i class="bi bi-layers-half"></i>Comparing the three mapping sources</h3>
+      <p class="lead">The Spatial Mapping tab offers three independent views of where emissions occur. They differ in method, resolution and gases, so read them side by side rather than as one series.</p>
+      <div style="overflow-x:auto"><table class="dc-cmp" id="dcCompare"></table></div>
+    </section>
+
+    <div class="dc-note">
+      <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
+      <div><b>Using these data.</b> All sources remain the property of their publishers; follow each publisher&rsquo;s licence and cite them as shown in each dataset&rsquo;s <em>Cite &amp; links</em> section. Values shown on this platform may be aggregated, reprojected or rescaled for display. For formal analysis, obtain the data from the original publisher. The EPA data disclaimer on the main dashboard applies.</div>
+    </div>
+  </div>
+
+  <div class="dc-scrim" id="dcScrim"></div>
+  <aside class="dc-drawer" id="dcDrawer" role="dialog" aria-modal="true" aria-labelledby="dcDTitle" aria-hidden="true" tabindex="-1">
+    <div class="dc-dh" id="dcDHead">
+      <div class="bar">
+        <span id="dcDBadges"></span><span class="sp"></span>
+        <button type="button" class="dc-ibtn" id="dcPrev" title="Previous dataset"><i class="bi bi-chevron-up"></i><span class="visually-hidden">Previous dataset</span></button>
+        <button type="button" class="dc-ibtn" id="dcNext" title="Next dataset"><i class="bi bi-chevron-down"></i><span class="visually-hidden">Next dataset</span></button>
+        <button type="button" class="dc-ibtn" id="dcClose" title="Close (Esc)"><i class="bi bi-x-lg"></i><span class="visually-hidden">Close</span></button>
+      </div>
+      <h3 id="dcDTitle"></h3>
+      <div class="prov" id="dcDProv"></div>
+      <div class="dc-dtabs" role="tablist" aria-label="Dataset details">
+        <button type="button" role="tab" data-dt="overview" aria-selected="true">Overview</button>
+        <button type="button" role="tab" data-dt="meta" aria-selected="false">Metadata</button>
+        <button type="button" role="tab" data-dt="files" aria-selected="false">Files &amp; fields</button>
+        <button type="button" role="tab" data-dt="cite" aria-selected="false">Cite &amp; links</button>
+      </div>
+    </div>
+    <div class="dc-dbody" id="dcDBody" role="tabpanel"></div>
+    <div class="dc-dfoot" id="dcDFoot"></div>
+  </aside>
+  <div class="dc-toast" id="dcToast" role="status"></div>
+</div><!-- /tab-data -->
 
 <!-- ================= TAB: FEEDBACK ================= -->
 <div class="tab-pane" id="tab-feedback" role="tabpanel">
@@ -4934,6 +5244,7 @@ const tabPanes = {
   about: document.getElementById("tab-about"),
   feedback: document.getElementById("tab-feedback"),
   mapping: document.getElementById("tab-mapping"),
+  data: document.getElementById("tab-data"),
 };
 
 function activateTab(name){
@@ -4958,6 +5269,9 @@ function activateTab(name){
   // Spatial Mapping: load the map workspace on first visit; #mapping links straight to it.
   if (name === "mapping") smActivate();
   else if (location.hash === "#mapping") history.replaceState(null, "", location.pathname + location.search);
+  // Datasets: #data and #data/<dataset-id> deep links
+  if (name === "data") { if (window.dcActivate) window.dcActivate(); }
+  else if (window.dcDeactivate) window.dcDeactivate();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 tabButtons.forEach(b =>
@@ -7873,6 +8187,671 @@ renderFbStats();
 /* ---------------------- 12. Init ---------------------- */
 buildChart();
 applyYearWindow();
+</script>
+<script>
+/* ---------------------- 9c. Datasets tab (data catalogue) ----------------------
+ * A searchable catalogue of every source used on the platform, in three groups:
+ * EPA GHG time series, spatial emission rasters, and policy information / timelines.
+ * The catalogue below is the single source of truth for the tab: cards, table,
+ * coverage chart, comparison table and the detail drawer are all rendered from it.
+ * Deep links: #data opens the tab, #data/<dataset-id> also opens that dataset. */
+(function(){
+"use strict";
+const pane = document.getElementById("tab-data");
+if (!pane) return;
+
+const CATS = {
+  ts:     { label: "GHG emissions time series (EPA)", short: "EPA time series", icon: "bi-graph-up-arrow", cls: "dc-c-ts",
+            desc: "Ireland's official greenhouse-gas inventory from the Environmental Protection Agency: national totals by gas and emissions by sector and subsector." },
+  raster: { label: "Spatial emission maps (rasters)", short: "Mapping rasters", icon: "bi-grid-3x3-gap", cls: "dc-c-raster",
+            desc: "Gridded emission maps from three independent resources (MapEIre, EDGAR and PARIS inverse models), plus the reference layers used to draw them." },
+  policy: { label: "GHG policy information & timelines", short: "Policy & timelines", icon: "bi-journal-text", cls: "dc-c-policy",
+            desc: "The Ireland Climate Policy Timeline, the OECD and EEA policy databases it is built on, the policy roadmap and the official sources used to verify dates." },
+};
+
+const GASES = ["CO₂", "CH₄", "N₂O", "F-gases", "Air pollutants"];
+const TYPES = ["Time series", "Gridded raster", "Policy dataset", "Reference register", "Reference layer"];
+
+/* tab: a dashboard tab key; hash: optional deep link set before switching */
+const DATA = [
+  /* ---------------- GHG emissions time series (EPA) ---------------- */
+  {
+    id: "epa-national-inventory", cat: "ts", type: "Time series", icon: "bi-graph-up",
+    title: "National GHG inventory by gas",
+    provider: "Environmental Protection Agency (EPA), Ireland",
+    summary: "Ireland's annual national greenhouse-gas emissions from 1990, total and for each gas, in kilotonnes of CO₂-equivalent.",
+    about: [
+      "The national inventory is the official record of Ireland's greenhouse-gas emissions, compiled by the EPA under the UNFCCC and EU reporting rules. This dataset holds the national totals for all greenhouse gases and for each gas or gas group, one value per year.",
+      "On the Explorer Dashboard it drives the main emissions chart (section 2A), the headline indicators and the comparison with climate targets. Selecting a gas in the Indicator Selector switches the series."
+    ],
+    period: [1990, 2024], frequency: "Annual", spatial: "Republic of Ireland (national total)", resolution: "National",
+    units: "kt CO₂-eq (kilotonnes of CO₂-equivalent, AR5 GWP100)", gases: ["CO₂", "CH₄", "N₂O", "F-gases"],
+    format: "CSV (wide: one row per year, one column per gas)", licence: "© EPA Ireland. Reuse with attribution to the EPA.",
+    version: "EPA final inventory, 1990–2024",
+    meta: [["Rows × columns", "35 years × 9 series"], ["Missing values", "Blank cells mean no data (e.g. NF₃ before it was reported); the chart shows a gap"]],
+    files: [["data/ghg_inventory.csv", "Wide table read by the dashboard each time the page loads."]],
+    vars: [["year", "Calendar year (1990–2024)"], ["All greenhouse gases", "Total GHG emissions, kt CO₂-eq"], ["CO2", "Carbon dioxide, kt"], ["CH4 - (CO2 equivalent)", "Methane, kt CO₂-eq"], ["N2O - (CO2 equivalent)", "Nitrous oxide, kt CO₂-eq"], ["Fluorinated gases - (CO2 equivalent)", "Sum of HFCs, PFCs, SF₆ and NF₃, kt CO₂-eq"], ["HFCs / PFCs / SF6 / NF3 - (CO2 equivalent)", "Individual F-gases, kt CO₂-eq"]],
+    notes: ["Figures are revised each year when the EPA recalculates the whole time series; always cite the inventory edition you used.", "CO₂-equivalent values use the global warming potentials adopted for the national inventory, so they are not directly comparable with mass-based maps (EDGAR, PARIS)."],
+    usedIn: [["explorer", "Explorer Dashboard — emissions chart and KPIs"]],
+    citation: "Environmental Protection Agency. Ireland's Final Greenhouse Gas Emissions 1990–2024. EPA, Ireland.",
+    links: [["EPA: greenhouse gas emissions — key messages", "https://www.epa.ie/our-services/monitoring--assessment/climate-change/ghg/key-messages/"], ["EPA Final GHG Emissions Report 1990–2024 (PDF)", "https://www.epa.ie/publications/monitoring--assessment/climate-change/air-emissions/EPA-Final-GHG-Emissions-Report-1990-2024.pdf"]],
+    keywords: "inventory national total ghg co2e kyoto unfccc epa annual emissions fgases hfc pfc sf6 nf3 kpi"
+  },
+  {
+    id: "epa-sectoral-inventory", cat: "ts", type: "Time series", icon: "bi-diagram-3",
+    title: "Sectoral GHG inventory (sector & subsector)",
+    provider: "Environmental Protection Agency (EPA), Ireland",
+    summary: "Annual emissions for 11 main sectors and their subsectors (44 rows), separately for total GHG, CO₂, CH₄ and N₂O, from 1990.",
+    about: [
+      "A sector-by-sector breakdown of the national inventory following IPCC reporting categories: energy industries, residential, manufacturing combustion, commercial and public services, transport, industrial processes, F-gases, agriculture, waste and land use (LULUCF), each with its subsectors.",
+      "It powers the Sector Explorer mode of the Explorer Dashboard (Main Sector → Subsector) and every series in the Trend Analysis tab, so both always show identical numbers."
+    ],
+    period: [1990, 2025], frequency: "Annual", spatial: "Republic of Ireland (national, by sector)", resolution: "National, by IPCC sector",
+    units: "kt CO₂-eq (shown in Mt on charts)", gases: ["CO₂", "CH₄", "N₂O", "F-gases"],
+    format: "CSV, one file per gas (rows = sector/subsector, columns = years)", licence: "© EPA Ireland. Reuse with attribution to the EPA.",
+    version: "EPA inventory time series, 1990–2025 (latest year as in the source file)",
+    meta: [["Rows", "44 sectors and subsectors per gas"], ["Files", "4 (Total, CO₂, CH₄, N₂O) with identical year columns"], ["National total", "\"All / All\" in the Sector Explorer is the national total including LULUCF"], ["Cleaning", "Known label typos are corrected on load (e.g. \"Non-energy products from fuels and solvent use\")"]],
+    files: [["data/sector_inventory/Total.csv", "All greenhouse gases, kt CO₂-eq"], ["data/sector_inventory/CO2.csv", "Carbon dioxide"], ["data/sector_inventory/CH4.csv", "Methane, kt CO₂-eq"], ["data/sector_inventory/N2O.csv", "Nitrous oxide, kt CO₂-eq"]],
+    vars: [["sector", "Main sector or subsector name (IPCC category)"], ["1990 … 2025", "Emissions in that year, kt CO₂-eq"]],
+    sectors: ["Energy Industries", "Residential", "Manufacturing Combustion", "Commercial Services", "Public Services", "Transport", "Industrial Processes", "F-Gases", "Agriculture", "Waste", "Land use (LULUCF)"],
+    notes: ["LULUCF rows can be negative (net removals); include or exclude them deliberately when summing.", "The most recent year may be provisional and is revised in the next inventory submission."],
+    usedIn: [["explorer", "Explorer Dashboard — Sector Explorer"], ["trend", "Trend Analysis — all series"]],
+    citation: "Environmental Protection Agency. Ireland's national greenhouse gas inventory: emissions by sector, 1990–2025. EPA, Ireland.",
+    links: [["EPA: greenhouse gas emissions — key messages", "https://www.epa.ie/our-services/monitoring--assessment/climate-change/ghg/key-messages/"], ["EPA Final GHG Emissions Report 1990–2024 (PDF)", "https://www.epa.ie/publications/monitoring--assessment/climate-change/air-emissions/EPA-Final-GHG-Emissions-Report-1990-2024.pdf"]],
+    keywords: "sector subsector energy industries residential transport road agriculture enteric fermentation manure soils waste landfill lulucf forest grassland wetlands cropland industrial processes cement trend piecewise regression mann kendall"
+  },
+
+  /* ---------------- Spatial emission maps ---------------- */
+  {
+    id: "mapeire", cat: "raster", type: "Gridded raster", icon: "bi-grid-3x3",
+    title: "MapEIre national gridded emissions",
+    provider: "EPA Ireland / Aarhus University",
+    summary: "Ireland's national emission inventory mapped onto a 1 km grid: 33 pollutants for 18 GNFR sectors, for 2015 and 2019.",
+    about: [
+      "MapEIre was produced for the EPA by Aarhus University. It distributes the national inventory spatially, so each layer shows where one pollutant from one sector is emitted, at 1 km × 1 km over the Irish Exclusive Economic Zone.",
+      "It covers greenhouse gases, F-gases, acidifying gases, ozone precursors, particulate matter, heavy metals and persistent organic pollutants. On this platform the layers are pre-rendered images chosen with the Year → Sector → Pollutant selectors in the Spatial Mapping tab."
+    ],
+    period: [2015, 2019], years: [2015, 2019], frequency: "Two inventory years (2015, 2019)", spatial: "Irish Exclusive Economic Zone (land and sea)", resolution: "1 km × 1 km",
+    crs: "TM65 Irish Grid (EPSG:29902); displayed in Web Mercator", units: "kt per 1 km cell where the report states it (PM₂.₅, CO₂, NOₓ, NH₃); otherwise not stated",
+    gases: ["CO₂", "CH₄", "N₂O", "F-gases", "Air pollutants"],
+    format: "GeoTIFF source; pre-rendered PNG + JSON overlays (698 layers)", licence: "© EPA Ireland. Cite EPA Research Report 317.",
+    version: "MapEIre (Nielsen et al., 2019)",
+    meta: [["Pollutant groups", "Greenhouse gases (3), fluorinated gases (4), acidifying gases (3), ozone precursors (2), particulate matter (4), heavy metals (9), persistent organic pollutants (8)"], ["Sectors", "18 GNFR sectors and national totals (public power, industry, road transport, shipping, aviation, agriculture, waste, LULUCF …)"], ["Colour scale", "Rainbow, log scale between the 2nd and 98th percentiles; zero and nodata are transparent"], ["File naming", "<Year>_<Sector>_p<Pollutant>, e.g. 2019_B_Industry_pCO2"]],
+    files: [["data/RasterPrerendered/*.png + *.json", "698 pre-rendered overlays with bounds, value range and colour stops"], ["data/raster_metadata.json", "Display names, groups and units of sectors and pollutants"], ["data/Raster/*.tif", "Optional source GeoTIFFs for live rendering (needs rasterio)"]],
+    vars: [["Year", "2015 or 2019"], ["Sector", "GNFR code, e.g. A_PublicPower, F_RoadTransport, K_AgriLivestock"], ["Pollutant", "CO2, CH4, N2O, HFCs, PFCs, SF6, NF3, NOx, SOx, NH3, NMVOC, CO, PM2_5, PM10, TSP, BC, metals, POPs …"], ["Value", "Emission per 1 km cell"]],
+    notes: ["Units are shown only where the MapEIre report states them.", "Layers are drawn as images, so hovering shows no cell values; read values from the colour bar.", "Values are mass of each pollutant, not CO₂-equivalent."],
+    usedIn: [["mapping", "Spatial Mapping — MapEIre layers"], ["explorer", "Explorer Dashboard — map (2B)"]],
+    citation: "Nielsen, O.-K., et al. (2019). MapEIre: National Mapping of Greenhouse Gas and Non-greenhouse Gas Emissions Sources. EPA Research Report No. 317. Environmental Protection Agency, Ireland.",
+    links: [["EPA Research Report 317", "https://www.epa.ie/publications/research/reports/research-317-mapeire-national-mapping-of-greenhouse-gas-and-non-greenhouse-gas-emissions-sources-project.php"], ["MapEIre project (Aarhus University)", "https://projects.au.dk/mapeire"]],
+    keywords: "mapeire aarhus gnfr nfr crf 1km grid air pollutants nox sox nh3 nmvoc pm2.5 pm10 tsp black carbon heavy metals mercury lead cadmium dioxins pah pcb hcb shipping aviation geotiff irish grid 29902"
+  },
+  {
+    id: "edgar", cat: "raster", type: "Gridded raster", icon: "bi-layers",
+    title: "EDGAR gridded GHG emissions (EDGAR_2025_GHG)",
+    provider: "European Commission Joint Research Centre (JRC) / IEA",
+    summary: "Bottom-up CO₂, CH₄ and N₂O emissions for 8 sectors on a 0.1° grid, monthly and annual, 2000–2024, clipped to the Republic of Ireland.",
+    about: [
+      "EDGAR, the Emissions Database for Global Atmospheric Research, is the European Commission's independent bottom-up inventory. Emissions are calculated from activity statistics and emission factors for each country and sector, then spread over a 0.1° grid with spatial proxies (population, road networks, power-plant locations, livestock maps and others).",
+      "The global gridmaps were clipped to the Republic of Ireland (1,200 GeoTIFFs: 3 gases × 8 sectors × 25 years, monthly and annual) and packed into compact grids for the Spatial Mapping tab, where layers, time series and county statistics can be explored."
+    ],
+    period: [2000, 2024], frequency: "Annual totals and monthly (12 bands per year)", spatial: "Republic of Ireland (949 cells whose centre lies inside the boundary)", resolution: "0.1° × 0.1° (≈ 11 × 7 km)",
+    crs: "EPSG:4326 (WGS 84)", units: "t of gas per 0.1° cell per year (annual) or per month (monthly)",
+    gases: ["CO₂", "CH₄", "N₂O"],
+    format: "GeoTIFF (float32, DEFLATE) → NumPy .npz grids for the web map", licence: "CC BY 4.0 (European Commission JRC)",
+    version: "EDGAR Community GHG Database, release EDGAR_2025_GHG (September 2025); downloaded 2 November 2026",
+    meta: [["Grid", "55 columns × 42 rows; extent 10.8°W–5.3°W, 51.3°N–55.5°N"], ["NoData", "NaN outside the Republic of Ireland; 0 = no emission allocated"], ["Sectors", "Agriculture, Buildings, Fuel exploitation, Industrial combustion, Industrial processes, Power industry, Transport, Waste"], ["CO₂ scope", "Fossil CO₂ only; excludes biogenic CO₂ and LULUCF"], ["Cell area", "≈ 77 km² at 51.35°N to ≈ 70 km² at 55.45°N"]],
+    files: [["data/EDGAR/<GAS>_<SECTOR>.npz", "24 compact grids (3 gases × 8 sectors), all years and months"], ["data/EDGAR/edgar_metadata.json", "Grid, sectors, colour scales and national totals"], ["geotiff/<GAS>/<SECTOR>/{annual,monthly}/*.tif", "1,200 source GeoTIFFs"], ["geotiff/README_EDGAR_Ireland_metadata.md", "Full technical metadata for the GeoTIFFs"]],
+    vars: [["GAS", "CO2 (fossil), CH4, N2O — mass of gas, not CO₂-eq"], ["SECTOR", "EDGAR aggregated sector (IPCC codes in metadata)"], ["YEAR", "2000–2024"], ["Band", "Month 1–12 (monthly) or single annual band"]],
+    sectors: ["Agriculture", "Buildings", "Fuel exploitation", "Industrial combustion", "Industrial processes", "Power industry", "Transport", "Waste"],
+    notes: ["Values are mass of each gas, not CO₂-equivalent; multiply by a GWP (e.g. AR5: CH₄ = 28, N₂O = 265) for comparison with the EPA inventory.", "The spatial pattern is modelled from proxies; do not read single cells as facility data.", "Monthly values are annual totals split with sector profiles, not monthly observations.", "Recent years are EDGAR fast-track estimates."],
+    usedIn: [["mapping", "Spatial Mapping — EDGAR layers and time series"]],
+    citation: "European Commission, Joint Research Centre (JRC) & International Energy Agency (IEA) (2025). EDGAR Community GHG Database, release EDGAR_2025_GHG. https://edgar.jrc.ec.europa.eu/dataset_ghg2025",
+    links: [["EDGAR GHG 2025 dataset", "https://edgar.jrc.ec.europa.eu/dataset_ghg2025"]],
+    keywords: "edgar jrc iea emissions database global atmospheric research bottom-up gridmap 0.1 degree monthly annual fossil co2 methane nitrous oxide power industry buildings fuel exploitation npz geotiff wgs84 4326"
+  },
+  {
+    id: "paris-inverse", cat: "raster", type: "Gridded raster", icon: "bi-broadcast",
+    title: "PARIS inverse-model (top-down) emissions",
+    provider: "Horizon Europe PARIS project, via ICOS Carbon Portal",
+    summary: "Top-down CH₄ and N₂O fluxes from 12 inversion runs (3 systems × 2 transport models × 2 gases) constrained by atmospheric measurements, 2013–2024.",
+    about: [
+      "Inverse (top-down) models start from a prior emission map and adjust it so that simulated concentrations match atmospheric measurements, such as those from the ICOS and Mace Head stations. They give an independent check on bottom-up inventories.",
+      "Three inversion systems — ELRIS (Empa), InTEM (UK Met Office) and RHIME (University of Bristol) — are each run with two Lagrangian transport models, FLEXPART and NAME. Posterior fluxes are shown with their uncertainty range, and the national totals can be compared with the prior and with the inventory."
+    ],
+    period: [2013, 2024], frequency: "Annual (day-weighted mean of monthly fluxes)", spatial: "Ireland plus a 20 km buffer (modellers' country fraction, includes offshore cells)", resolution: "0.352° × 0.234° (≈ 23 × 26 km, ≈ 600 km² per cell)",
+    crs: "EPSG:4326 (WGS 84)", units: "kg of gas km⁻² yr⁻¹; national totals in kt yr⁻¹",
+    gases: ["CH₄", "N₂O"],
+    format: "NetCDF source → NumPy .npz grids for the web map", licence: "CC BY 4.0. The creators ask to be contacted before use in publications.",
+    version: "PARIS harmonised inverse modelling results for European non-CO₂ GHG emissions (DOI 10.18160/GR1Q-6SK4)",
+    meta: [["Runs", "ELRIS, InTEM, RHIME × FLEXPART, NAME × CH₄, N₂O = 12"], ["Years", "NAME runs 2013–2024; FLEXPART runs 2016–2024"], ["Priors", "CH₄: EDGAR v8 + WetCHARTs; N₂O: EDGAR v8"], ["Uncertainty", "15.9th–84.1st percentiles (1σ-equivalent range)"], ["What it represents", "Total flux (anthropogenic + natural). CH₄ includes wetland/peatland emissions, so it is not directly comparable with the EPA inventory"]],
+    files: [["data/InverseModel/<SYSTEM>_<TRANSPORT>_<GAS>.npz", "12 grids: posterior, prior and uncertainty by year"], ["data/InverseModel/inverse_metadata.json", "Grid, country fraction, models, run years, prior and posterior national totals"], ["InversionModel/Ireland_TopDown_BottomUp_GHG V1.ipynb", "Notebook used to extract the Ireland subset"]],
+    vars: [["SYSTEM", "ELRIS (Empa), InTEM (Met Office), RHIME (Univ. Bristol)"], ["TRANSPORT", "FLEXPART or NAME Lagrangian dispersion model"], ["posterior", "Optimised flux, kg km⁻² yr⁻¹"], ["prior", "A-priori flux before the inversion"], ["urr", "Uncertainty reduction ratio of the national total"]],
+    notes: ["Cell-scale structure inside Ireland mostly reflects the prior, not the observations; national totals are the most robust output.", "The Ireland mask includes offshore cells, so totals reconcile with the modellers' published national figures.", "Contact the dataset creators (A. Manning, Met Office; S. Henne, Empa) before using in publications."],
+    usedIn: [["mapping", "Spatial Mapping — Inverse model layers"]],
+    citation: "PARIS project. Harmonised inverse modelling results for European non-CO₂ GHG emissions. ICOS Carbon Portal. https://doi.org/10.18160/GR1Q-6SK4",
+    links: [["Dataset DOI 10.18160/GR1Q-6SK4", "https://doi.org/10.18160/GR1Q-6SK4"], ["ICOS Carbon Portal", "https://www.icos-cp.eu/"]],
+    keywords: "inverse model top-down paris icos atmospheric observations mace head elris empa intem met office rhime bristol flexpart name lagrangian posterior prior uncertainty methane nitrous oxide wetcharts wetlands peatland verification"
+  },
+  {
+    id: "boundaries", cat: "raster", type: "Reference layer", icon: "bi-bounding-box",
+    title: "Ireland outline and county boundaries",
+    provider: "OpenStreetMap contributors (administrative level 6)",
+    summary: "Simplified county polygons and the national outline used to select areas, compute county statistics and frame exported maps.",
+    about: [
+      "County boundaries come from the OpenStreetMap administrative level 6 layer. Rings are simplified (Douglas–Peucker, about 150–220 m tolerance), tiny islands are dropped and coordinates are rounded so the file stays small for the web map.",
+      "They let users pick a county on the map and get the time series or statistics of a raster layer for that area."
+    ],
+    period: null, frequency: "Static", spatial: "Island of Ireland", resolution: "Simplified vector (≈ 150–220 m tolerance)",
+    crs: "EPSG:4326 (WGS 84), [lat, lng] pairs", units: "—", gases: [],
+    format: "JSON (polygon rings + bounding boxes)", licence: "ODbL © OpenStreetMap contributors",
+    version: "Built with scripts/build_counties.py",
+    meta: [["Structure", "{counties: [{name, bbox, rings}]}"]],
+    files: [["data/boundaries/counties.json", "County polygons"], ["data/boundaries/ireland_outline.json", "National outline"]],
+    vars: [["name", "County name"], ["bbox", "[south, west, north, east]"], ["rings", "Polygon rings of [lat, lng] points"]],
+    notes: ["Boundaries are simplified for display and are not survey-grade."],
+    usedIn: [["mapping", "Spatial Mapping — county selection and statistics"]],
+    citation: "© OpenStreetMap contributors. Data available under the Open Database Licence (ODbL).",
+    links: [["OpenStreetMap copyright and licence", "https://www.openstreetmap.org/copyright"]],
+    keywords: "county counties boundary outline polygon osm openstreetmap admin level 6 vector mask"
+  },
+  {
+    id: "basemap", cat: "raster", type: "Reference layer", icon: "bi-globe-europe-africa",
+    title: "Satellite basemap (Esri World Imagery)",
+    provider: "Esri, Maxar, Earthstar Geographics and the GIS User Community",
+    summary: "Background satellite imagery under the emission layers on the Explorer and Spatial Mapping maps.",
+    about: ["The basemap is streamed as web tiles from Esri World Imagery. It needs an internet connection but no API key. It is a visual backdrop only and is not used in any calculation."],
+    period: null, frequency: "Streamed tiles (current imagery)", spatial: "Global", resolution: "Varies by zoom level",
+    crs: "Web Mercator (EPSG:3857)", units: "—", gases: [],
+    format: "Raster map tiles (XYZ)", licence: "Esri terms of use; attribution shown on the map",
+    version: "Live service",
+    meta: [], files: [], vars: [],
+    notes: ["Imagery dates vary by location."],
+    usedIn: [["explorer", "Explorer Dashboard — map (2B)"], ["mapping", "Spatial Mapping"]],
+    citation: "Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community.",
+    links: [["Esri World Imagery", "https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9"]],
+    keywords: "basemap satellite imagery esri tiles background web mercator"
+  },
+
+  /* ---------------- Policy information & timelines ---------------- */
+  {
+    id: "policy-timeline", cat: "policy", type: "Policy dataset", icon: "bi-calendar3-range",
+    title: "Ireland Climate Policy Timeline (core dataset)",
+    provider: "INPACT project, University of Galway",
+    summary: "47 policy–sector series for 34 core mitigation policy families and 5 residual bundles, scored every year 2000–2023 (1,128 rows × 67 columns).",
+    about: [
+      "A structured annual record of the policies that address Ireland's greenhouse-gas emissions. It links the OECD CAPMF stringency scores with the EEA database of national policies and measures at the level of the policy instrument.",
+      "For every policy, sector and year it records status, implementation level, coverage, bindingness and a 0–1 intensity index, together with classification (layer, mechanism, instrument type), the evidence behind each value and data-quality flags. It is the basis of the whole Policy Timeline tab."
+    ],
+    period: [2000, 2023], frequency: "Annual", spatial: "Ireland, by sector (Electricity, Industry, Buildings, Transport, Agriculture, LULUCF, Waste, cross-sector)", resolution: "Policy × sector × year",
+    units: "Indices 0–1 (intensity, implementation, coverage, bindingness); OECD stringency 0–10", gases: ["CO₂", "CH₄", "N₂O", "F-gases"],
+    format: "CSV release files + pre-built read-only SQLite database", licence: "INPACT research dataset; cite as shown and also cite the OECD CAPMF and EEA PaMs",
+    version: "Version of 25 September 2026; sources re-checked 15 November 2026",
+    meta: [["Candidates screened", "115 (EEA units and OECD categories), 5 eligibility tests"], ["Selection", "Largest measures covering ≥ 90% of reported savings per sector, plus OECD-anchored instruments"], ["Implementation source", "OECD-derived for 344 active/legacy rows; assumed timing (flagged) for 295"], ["Validation", "20 computational consistency checks, all passed"], ["Scope", "Retrospective policy exposure; not an estimate of emissions avoided"]],
+    files: [["data/policy_timeline/ireland_core_policy_timeline.csv", "Main panel: policy × sector × year (1,128 rows, 67 columns)"], ["data/policy_timeline/policy_catalogue.csv", "One row per policy series with classification"], ["data/policy_timeline/data_dictionary.csv", "Definition and derivation of all 67 columns"], ["data/policy_timeline/policy_timeline.sqlite3", "Read-only database used by the web pages"], ["data/policy_timeline/build_summary.json", "Counts from the build"]],
+    vars: [["policy_id / policy_name", "Canonical policy identifier and name"], ["sector", "Sector the series applies to"], ["layer / mechanism / instrument_type", "Classification of the policy"], ["status_in_year", "Active, legacy, not yet started …"], ["implementation_level", "0–1, OECD-derived or assumed"], ["capmf_stringency", "Matched OECD CAPMF score (0–10)"], ["coverage_share / bindingness", "Ordinal scores with rationales"], ["intensity_index", "Implementation × coverage × bindingness (0–1)"], ["data_quality_flag", "Flags assumed timing and other caveats"]],
+    notes: ["Intensity is a relative 0–1 index, not tonnes of CO₂ avoided.", "Reported savings (kt CO₂e) were used only for selection; they repeat across years and sectors, so never sum them.", "Frameworks, portfolios and residual bundles overlap with other rows; check the aggregation role before adding series.", "Years based on assumed timing are marked throughout."],
+    usedIn: [["policy", "Policy Timeline — all sections", "#policy"], ["policy", "Policy Timeline — Methods and data dictionary", "#policy/method/"]],
+    citation: "INPACT project (2026). Ireland Climate Policy Timeline: core greenhouse-gas policy dataset for Ireland, 2000–2023. Version of 25 September 2026. University of Galway.",
+    links: [["OECD CAPMF explainer", "https://www.oecd.org/en/data/insights/data-explainers/2025/04/the-climate-actions-and-policies-measurement-framework-capmf.html"], ["EEA policies and measures database", "https://pam.apps.eea.europa.eu/"]],
+    keywords: "policy timeline intensity implementation coverage bindingness stringency mechanism instrument layer carbon tax ets refit ress building regulations part l eeos sector series residual bundle capmf eea pams sqlite data dictionary"
+  },
+  {
+    id: "oecd-capmf", cat: "policy", type: "Reference register", icon: "bi-speedometer2",
+    title: "OECD Climate Actions and Policies Measurement Framework (CAPMF) — Ireland",
+    provider: "Organisation for Economic Co-operation and Development (OECD)",
+    summary: "Harmonised 0–10 stringency scores for Ireland's climate policies, 1990–2023: 7,548 observations across 56 level-3 policy categories.",
+    about: [
+      "The CAPMF scores the stringency of climate policies on a 0–10 scale for 50 OECD and partner countries. It covers 130 policy variables aggregated into 56 policy categories in sectoral, cross-sectoral and international modules.",
+      "Here the Ireland export supplies the annual implementation level of each matched policy, and the OECD scores section of the Policy Timeline shows the full heatmap and the eligibility decision for each category."
+    ],
+    period: [1990, 2023], frequency: "Annual", spatial: "Ireland", resolution: "Policy category / indicator (levels 3 and 4)",
+    units: "Stringency score 0–10", gases: ["CO₂", "CH₄", "N₂O", "F-gases"],
+    format: "SDMX CSV export", licence: "OECD terms and conditions (attribution required)",
+    version: "OECD Data Explorer export of 11 March 2025",
+    meta: [["Observations", "7,548"], ["Categories used", "47 positive level-3 categories; 20 eligible after screening"], ["Category reference", "204-row category list (codes, labels, modules)"]],
+    files: [["data/policy_timeline/raw/capmf_ireland.csv", "Raw OECD export for Ireland"], ["data/policy_timeline/reference/capmf_categories.csv", "Category codes and labels"], ["data/policy_timeline/config/capmf_eligibility.csv", "Eligibility decision for each category"]],
+    vars: [["REF_AREA", "Country (IRL)"], ["CLIM_ACT_POL", "CAPMF policy variable / category code"], ["MEASURE", "Measure (e.g. stringency)"], ["TIME_PERIOD", "Year"], ["OBS_VALUE", "Stringency score"], ["OBS_STATUS", "Observation status flag"]],
+    notes: ["A positive score shows that a policy type existed and how stringent it was; it is not a measure of effectiveness."],
+    usedIn: [["policy", "Policy Timeline — OECD scores", "#policy/oecd-scores/"]],
+    citation: "Nachtigall, D., et al. (2022). The climate actions and policies measurement framework: A structured and harmonised climate policy database to monitor countries' mitigation action. OECD Environment Working Papers, No. 203. OECD Publishing, Paris.",
+    links: [["CAPMF in the OECD Data Explorer (Ireland)", "https://data-explorer.oecd.org/vis?df%5Bag%5D=OECD.ENV.EPI&df%5Bds%5D=dsDisseminateFinalDMZ&df%5Bid%5D=DSD_CAPMF%40DF_CAPMF&df%5Bvs%5D=1.0&dq=IRL.A.&pd=1990%2C2023&lc=en"], ["CAPMF explainer (OECD, 2025)", "https://www.oecd.org/en/data/insights/data-explainers/2025/04/the-climate-actions-and-policies-measurement-framework-capmf.html"]],
+    keywords: "oecd capmf stringency score climate actions policies measurement framework level 3 level 4 heatmap sdmx eligibility"
+  },
+  {
+    id: "eea-pams", cat: "policy", type: "Reference register", icon: "bi-archive",
+    title: "EEA database on national policies and measures (PaMs) — Ireland",
+    provider: "European Environment Agency (EEA)",
+    summary: "Ireland's reported climate policies and measures: names, instruments, sectors, implementation periods and ex-ante / ex-post emission-saving estimates.",
+    about: [
+      "EU Member States report their climate and energy policies and measures under Article 18 of the Governance Regulation (EU) 2018/1999; the EEA publishes them as a searchable database.",
+      "Ireland's 104 records (98 single measures, 68 after de-duplication) define the policies in the Policy Timeline and supply the evidence used to select them."
+    ],
+    period: [2000, 2023], periodNote: "measures active in 2000–2023 were screened", frequency: "Registry of measures (reporting cycles)", spatial: "Ireland", resolution: "Individual policy or measure",
+    units: "Savings in kt CO₂-eq per year (used for selection only)", gases: ["CO₂", "CH₄", "N₂O", "F-gases"],
+    format: "Excel workbook (raw export)", licence: "EEA standard re-use policy (attribution required)",
+    version: "EEA PaMs application (refreshed 31 July 2026)",
+    meta: [["Raw records", "104"], ["Single PaMs", "98"], ["De-duplicated units", "68 (44 eligible)"], ["Classification", "65-row mapping of PaMs to mechanism and instrument"]],
+    files: [["data/policy_timeline/raw/eea_pams_ireland.xlsx", "Raw EEA export for Ireland"], ["data/policy_timeline/config/pam_classification.csv", "Mechanism and instrument classification of each PaM"], ["data/policy_timeline/policy_id_lineage.csv", "Link from PaM IDs to the canonical policy IDs"]],
+    vars: [["PaM ID", "EEA policy-or-measure identifier"], ["Name / description", "As reported by Ireland"], ["Instrument type", "Economic, regulatory, fiscal, information …"], ["Start / end year", "Implementation period"], ["Ex-ante / ex-post savings", "kt CO₂-eq per year"]],
+    notes: ["Reported savings come from recent assessments (2024–2030); using them for selection introduces retrospective selection bias."],
+    usedIn: [["policy", "Policy Timeline — policy profiles (EEA records)", "#policy/policies/"]],
+    citation: "European Environment Agency (2026). Integrated national climate and energy policies and measures database. https://pam.apps.eea.europa.eu/",
+    links: [["EEA PaMs database", "https://pam.apps.eea.europa.eu/"], ["Reporting guidelines, Dataflow 9–14 (2025)", "https://www.eionet.europa.eu/reportnet/docs/govreg/policies-and-measures/reporting-guidelines-dataflow-9-to-14-policies-and-measures.pdf/@@download/file/Reporting%20guidelines%20-%20Dataflow%209%20to%2014%20-%20Policies%20and%20measures%20%5B2025%5D.pdf"]],
+    keywords: "eea pams policies measures governance regulation article 18 reported savings ex-ante ex-post registry eionet"
+  },
+  {
+    id: "policy-roadmap", cat: "policy", type: "Policy dataset", icon: "bi-signpost-split",
+    title: "Climate Policy Roadmap, 1992 → 2050",
+    provider: "INPACT project (compiled from UN, EU and Irish Government sources)",
+    summary: "40 milestone policies and targets — international, EU, national and future targets — that frame Ireland's climate action.",
+    about: [
+      "A curated list of the key commitments and policies from the UNFCCC (1992) and the Kyoto Protocol to the Climate Action Plans and the 2030 and 2050 targets. Each entry records the year, level, agency, sector, policy type, instrument, a short description, its intended direction and its outcome.",
+      "It provides the policy markers on the Explorer's emissions chart, the Climate Policy Roadmap and the Policy Intelligence Panel, which links each milestone to its profile in the Policy Timeline."
+    ],
+    period: [1992, 2050], projectedFrom: 2025, frequency: "Event list (by year)", spatial: "Ireland, EU and international", resolution: "Individual milestone",
+    units: "—", gases: ["CO₂", "CH₄", "N₂O", "F-gases"],
+    format: "CSV", licence: "INPACT project compilation",
+    version: "Maintained with the dashboard",
+    meta: [["Rows", "40 (3 international, 10 EU, 24 national, 2 targets)"], ["Colour coding", "International = navy, EU = teal, National = emerald, Target = amber"]],
+    files: [["data/policies.csv", "Roadmap milestones read by the dashboard"]],
+    vars: [["year", "Year of adoption or target year"], ["name", "Policy or milestone name"], ["level", "International, EU, National or Target"], ["agency / sector", "Responsible body and sector"], ["type / instrument", "Policy type and instrument"], ["description", "Short summary"], ["direction / outcome", "Intended effect and observed outcome"]],
+    notes: ["Target rows (2030, 2050) are always shown; other rows follow the jurisdiction checkboxes."],
+    usedIn: [["explorer", "Explorer Dashboard — roadmap, chart markers and Policy Intelligence Panel"]],
+    citation: "INPACT project (2026). Climate Policy Roadmap for Ireland, 1992–2050. Ireland GHG Policy Impact Explorer.",
+    links: [["UNFCCC", "https://unfccc.int/"], ["Climate Action and Low Carbon Development (Amendment) Act 2021", "https://www.irishstatutebook.ie/eli/2021/act/32/enacted/en/html"]],
+    keywords: "roadmap milestones unfccc kyoto paris agreement climate action plan carbon budgets 2030 2050 net zero targets eu green deal fit for 55 policy intelligence panel"
+  },
+  {
+    id: "official-sources", cat: "policy", type: "Reference register", icon: "bi-patch-check",
+    title: "Official verification sources",
+    provider: "Irish Statute Book, Oireachtas, Revenue, SEAI, EPA, gov.ie, EUR-Lex, OECD, EEA",
+    summary: "25 official references used to check policy start dates, rates and scopes, with locators and access dates.",
+    about: [
+      "Policy dates, rates and scopes in the timeline were checked against primary official sources: legislation, parliamentary records, Revenue and SEAI scheme pages, EPA pages, Government publications and EU regulations. Each reference records what was checked (the locator) and when it was accessed.",
+      "Where an official source differs from the dataset record, the policy page carries a verification note."
+    ],
+    period: [2008, 2026], periodNote: "Publication dates of the references", frequency: "Reference list", spatial: "Ireland and EU", resolution: "Individual document",
+    units: "—", gases: [],
+    format: "CSV", licence: "Each source under its publisher's terms",
+    version: "Most recently checked 15 November 2026",
+    meta: [["References", "25"], ["Publishers", "Irish Statute Book, Houses of the Oireachtas, Revenue, SEAI, EPA, Government of Ireland, Law Reform Commission, European Union, OECD, EEA"]],
+    files: [["data/policy_timeline/config/references.csv", "Reference register with locator and access date"], ["data/policy_timeline/config/anchor_register.csv", "OECD-anchored instruments and their evidence"], ["data/policy_timeline/qa/persistence_evidence.csv", "Evidence that policies stayed in force"]],
+    vars: [["source_id", "Short reference key"], ["publisher / title", "Who published it and what it is"], ["publication_date", "Date of the document"], ["url", "Link to the source"], ["locator", "Section, page or statement checked"], ["access_date", "When it was last checked"]],
+    notes: ["Not every start year is a legal commencement date: many follow the record reported to the EEA, and some follow the first year with a positive OECD score."],
+    usedIn: [["policy", "Policy Timeline — policy profiles and Methods", "#policy/method/"]],
+    citation: "Cite each source individually as listed on the relevant policy page.",
+    links: [["Irish Statute Book", "https://www.irishstatutebook.ie/"], ["Houses of the Oireachtas — debates", "https://www.oireachtas.ie/en/debates/"], ["SEAI", "https://www.seai.ie/"], ["EUR-Lex", "https://eur-lex.europa.eu/"]],
+    keywords: "verification statute oireachtas revenue seai gov.ie eur-lex carbon tax solid fuel eeos biomethane part l ets aviation climate act 2015 2021 carbon budgets sectoral emissions ceilings refit ress lien references access date"
+  },
+  {
+    id: "policy-qa", cat: "policy", type: "Reference register", icon: "bi-clipboard-data",
+    title: "Policy Timeline method & QA registers",
+    provider: "INPACT project, University of Galway",
+    summary: "The audit trail of the Policy Timeline: candidate selection, sector materiality, overlaps, reconciliation, timing parameters and validation checks.",
+    about: [
+      "These registers document every decision behind the core dataset so it can be reproduced and challenged: which of the 115 candidates passed the five eligibility tests, how the 90% materiality rule worked in each sector, which policies overlap, how source conflicts were reconciled, the assumed-timing parameters, and the result of each validation check.",
+      "They feed the Methods section of the Policy Timeline (selection-flow Sankey, candidates table, validation checks and data dictionary)."
+    ],
+    period: [2000, 2023], frequency: "Registers", spatial: "Ireland", resolution: "Candidate / policy / check",
+    units: "—", gases: [],
+    format: "CSV", licence: "INPACT research dataset",
+    version: "Release of 25 September 2026",
+    meta: [["Selection log", "115 candidates with eligibility tests a–e and the rule that selected them"], ["Validation report", "20 checks, all PASS"], ["Overlap register", "12 documented overlaps"], ["Residual members", "576 measures in 5 residual bundles"]],
+    files: [["data/policy_timeline/selection_log.csv", "Every candidate, eligibility tests and selection rule"], ["data/policy_timeline/sector_materiality.csv", "90% materiality rule by sector"], ["data/policy_timeline/overlap_register.csv", "Overlapping policies and how to treat them"], ["data/policy_timeline/reconciliation_log.csv", "How source conflicts were resolved"], ["data/policy_timeline/validation_report.csv", "20 computational checks"], ["data/policy_timeline/config/timing_parameters.csv", "Assumed-timing profile parameters"], ["data/policy_timeline/qa/residual_members.csv", "Members of the residual bundles"]],
+    vars: [["candidate_id", "Candidate identifier"], ["eligibility_a … e", "Mitigation, Ireland, instrument, identified start, active 2000–2023"], ["selection_rule", "materiality_90pct, anchor, residual …"], ["check / result / detail", "Validation outcome"]],
+    notes: ["Validation consists of internal consistency checks; independent expert review is recommended before formal evaluation."],
+    usedIn: [["policy", "Policy Timeline — Methods", "#policy/method/"]],
+    citation: "INPACT project (2026). Ireland Climate Policy Timeline: methods and QA registers. Version of 25 September 2026. University of Galway.",
+    links: [],
+    keywords: "selection log materiality overlap reconciliation validation report timing parameters residual bundle qa audit sankey eligibility candidates"
+  },
+];
+
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const norm = s => String(s || "").toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "")
+  .replace(/₂/g, "2").replace(/₄/g, "4").replace(/₃/g, "3").replace(/ₓ/g, "x").replace(/\.₅/g, ".5");
+const byId = Object.fromEntries(DATA.map(d => [d.id, d]));
+const periodText = d => d.period ? (d.period[0] === d.period[1] ? String(d.period[0])
+  : d.years ? d.years.join(" & ") : `${d.period[0]}–${d.period[1]}`) : "Static / live";
+
+DATA.forEach(d => {
+  d._hay = norm([d.title, d.provider, d.summary, (d.about || []).join(" "), d.type, CATS[d.cat].label, d.spatial, d.resolution,
+    d.crs, d.units, d.format, d.licence, d.version, (d.gases || []).join(" "), (d.sectors || []).join(" "),
+    (d.meta || []).map(m => m.join(" ")).join(" "), (d.files || []).map(f => f.join(" ")).join(" "),
+    (d.vars || []).map(v => v.join(" ")).join(" "), (d.notes || []).join(" "), d.keywords, periodText(d)].join(" "));
+});
+
+/* ---------- state ---------- */
+const st = { q: "", cat: null, gases: new Set(), types: new Set(), sort: "cat", view: "cards", list: [], openId: null, dtab: "overview" };
+try { const v = localStorage.getItem("dcView"); if (v === "table" || v === "cards") st.view = v; } catch (e) { /* storage unavailable */ }
+
+function terms(){ return norm(st.q).split(/\s+/).filter(Boolean); }
+function matches(d){
+  if (st.cat && d.cat !== st.cat) return false;
+  if (st.gases.size && ![...st.gases].some(g => d.gases.includes(g))) return false;
+  if (st.types.size && !st.types.has(d.type)) return false;
+  return terms().every(t => d._hay.includes(t));
+}
+function hl(text){
+  const s = esc(text), ts = terms().filter(t => t.length > 1);
+  if (!ts.length) return s;
+  const re = new RegExp("(" + ts.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")", "gi");
+  return s.replace(/(<[^>]*>)|([^<]+)/g, (m, tag, txt) => tag ? tag : txt.replace(re, "<mark>$1</mark>"));
+}
+function sorted(list){
+  const order = { ts: 0, raster: 1, policy: 2 };
+  const s0 = d => d.period ? d.period[0] : 9999, s1 = d => d.period ? d.period[1] : -1;
+  const by = {
+    cat: (a, b) => order[a.cat] - order[b.cat] || DATA.indexOf(a) - DATA.indexOf(b),
+    az: (a, b) => a.title.localeCompare(b.title),
+    start: (a, b) => s0(a) - s0(b) || a.title.localeCompare(b.title),
+    recent: (a, b) => s1(b) - s1(a) || a.title.localeCompare(b.title),
+  }[st.sort];
+  return list.slice().sort(by);
+}
+
+/* ---------- static parts: KPIs, categories, facets, comparison ---------- */
+function renderKpis(){
+  const nSrc = DATA.length;
+  $("dcKpis").innerHTML = [
+    [nSrc, "datasets and reference sources"],
+    ["3", "independent mapping resources"],
+    ["1990–2025", "EPA emissions record"],
+    ["47", "policy–sector series, 2000–2023"],
+  ].map(([v, l]) => `<div class="dc-kpi"><div class="v">${esc(v)}</div><div class="l">${esc(l)}</div></div>`).join("");
+}
+function renderCats(){
+  $("dcCats").innerHTML = Object.entries(CATS).map(([k, c]) => {
+    const n = DATA.filter(d => d.cat === k).length;
+    return `<button type="button" class="dc-cat ${c.cls}" data-cat="${k}" aria-pressed="false">
+      <div class="top"><span class="ic"><i class="bi ${c.icon}"></i></span><span class="t">${esc(c.label)}</span><span class="n">${n} dataset${n === 1 ? "" : "s"}</span></div>
+      <p class="d">${esc(c.desc)}</p></button>`;
+  }).join("");
+  $("dcCats").querySelectorAll(".dc-cat").forEach(b => b.addEventListener("click", () => {
+    st.cat = st.cat === b.dataset.cat ? null : b.dataset.cat; update();
+  }));
+}
+function renderFacets(){
+  const chip = (kind, v) => `<button type="button" class="dc-chip" data-kind="${kind}" data-v="${esc(v)}" aria-pressed="false">${esc(v)}</button>`;
+  $("dcFacets").innerHTML = `<span class="dc-flabel">Gas</span>${GASES.map(g => chip("gas", g)).join("")}
+    <span class="dc-sep" aria-hidden="true"></span><span class="dc-flabel">Type</span>${TYPES.map(t => chip("type", t)).join("")}`;
+  $("dcFacets").querySelectorAll(".dc-chip").forEach(b => b.addEventListener("click", () => {
+    const set = b.dataset.kind === "gas" ? st.gases : st.types, v = b.dataset.v;
+    set.has(v) ? set.delete(v) : set.add(v); update();
+  }));
+}
+function renderCompare(){
+  const ids = ["mapeire", "edgar", "paris-inverse"], ds = ids.map(i => byId[i]);
+  const rows = [
+    ["Approach", ["Bottom-up: national inventory mapped with spatial proxies", "Bottom-up: independent global inventory with spatial proxies", "Top-down: prior corrected with atmospheric measurements"]],
+    ["Provider", ds.map(d => d.provider)],
+    ["Years", ds.map(periodText)],
+    ["Resolution", ds.map(d => d.resolution)],
+    ["Projection", ds.map(d => d.crs)],
+    ["Gases", ["33 pollutants: GHGs, F-gases, air pollutants, metals, POPs", "CO₂ (fossil), CH₄, N₂O", "CH₄, N₂O (total flux incl. natural)"]],
+    ["Sectors", ["18 GNFR sectors", "8 EDGAR sectors", "None — total flux only"]],
+    ["Units", ["kt per 1 km cell (where stated)", "t of gas per cell per year / month", "kg of gas km⁻² yr⁻¹"]],
+    ["Best for", ["Fine-scale detail and air-quality pollutants", "Long, consistent sector time series and monthly patterns", "Independent check of national totals against observations"]],
+  ];
+  $("dcCompare").innerHTML = `<thead><tr><th scope="col"><span class="visually-hidden">Attribute</span></th>${ds.map(d =>
+      `<th scope="col"><button type="button" data-open="${d.id}"><i class="bi ${d.icon}"></i> ${esc(d.title.split(" (")[0])}</button></th>`).join("")}</tr></thead>
+    <tbody>${rows.map(([k, v]) => `<tr><th scope="row">${esc(k)}</th>${v.map(x => `<td>${esc(x)}</td>`).join("")}</tr>`).join("")}</tbody>`;
+}
+
+/* ---------- dynamic parts ---------- */
+function cardHTML(d){
+  const c = CATS[d.cat];
+  return `<article class="dc-card ${c.cls}" tabindex="0" role="button" data-open="${d.id}" aria-label="${esc(d.title)}: view metadata">
+    <div class="hd"><span class="ic"><i class="bi ${d.icon}"></i></span>
+      <div style="min-width:0"><h4>${hl(d.title)}</h4><div class="prov">${hl(d.provider)}</div></div></div>
+    <div class="dc-pills"><span class="dc-badge"><i class="bi ${c.icon}"></i>${esc(c.short)}</span><span class="dc-badge type">${esc(d.type)}</span></div>
+    <p class="desc">${hl(d.summary)}</p>
+    ${d.gases.length ? `<div class="dc-pills">${d.gases.map(g => `<span class="dc-pill">${esc(g)}</span>`).join("")}</div>` : ""}
+    <div class="dc-meta">
+      <div><div class="k">Coverage</div><div class="v" title="${esc(periodText(d))}">${esc(periodText(d))}</div></div>
+      <div><div class="k">Resolution</div><div class="v" title="${esc(d.resolution)}">${esc(d.resolution)}</div></div>
+      <div><div class="k">Format</div><div class="v" title="${esc(d.format)}">${esc(d.format.split(/\s*[(,;→]/)[0])}</div></div>
+    </div>
+    <div class="open">View metadata <i class="bi bi-arrow-right"></i></div>
+  </article>`;
+}
+function renderResults(){
+  const list = st.list, box = $("dcResults");
+  if (!list.length){
+    box.innerHTML = `<div class="dc-empty"><i class="bi bi-search"></i><b>No datasets match your search.</b><br>Try fewer words, or <button type="button" class="dc-reset" data-reset>clear all filters</button>.</div>`;
+    return;
+  }
+  if (st.view === "table"){
+    box.innerHTML = `<div class="dc-tablewrap"><table class="dc-table"><thead><tr>
+      <th scope="col">Dataset</th><th scope="col">Category</th><th scope="col">Coverage</th><th scope="col">Spatial</th><th scope="col">Gases</th><th scope="col">Format</th></tr></thead><tbody>
+      ${list.map(d => `<tr tabindex="0" data-open="${d.id}">
+        <td><div class="tt">${hl(d.title)}</div><div class="sub">${hl(d.provider)}</div></td>
+        <td><span class="dc-badge ${CATS[d.cat].cls}">${esc(CATS[d.cat].short)}</span><div class="sub" style="margin-top:.25rem">${esc(d.type)}</div></td>
+        <td style="white-space:nowrap">${esc(periodText(d))}<div class="sub">${esc(d.frequency)}</div></td>
+        <td>${hl(d.resolution)}<div class="sub">${hl(d.spatial)}</div></td>
+        <td>${d.gases.length ? esc(d.gases.join(", ")) : "—"}</td>
+        <td>${hl(d.format)}</td></tr>`).join("")}</tbody></table></div>`;
+    return;
+  }
+  if (st.sort === "cat"){
+    box.innerHTML = Object.entries(CATS).map(([k, c]) => {
+      const g = list.filter(d => d.cat === k);
+      if (!g.length) return "";
+      return `<section class="dc-group ${c.cls}" aria-label="${esc(c.label)}"><h3 class="dc-group-h"><span class="ic"><i class="bi ${c.icon}"></i></span>${esc(c.label)} <span class="cnt">${g.length}</span></h3>
+        <div class="dc-grid">${g.map(cardHTML).join("")}</div></section>`;
+    }).join("");
+  } else {
+    box.innerHTML = `<div class="dc-grid">${list.map(cardHTML).join("")}</div>`;
+  }
+}
+function renderCoverage(){
+  const Y0 = 1990, Y1 = 2050, span = Y1 - Y0, pct = y => ((y - Y0) / span * 100).toFixed(2) + "%";
+  const list = st.list.filter(d => d.period);
+  if (!list.length){ $("dcCoverage").innerHTML = `<p class="lead" style="margin:0">No dated datasets in the current selection.</p>`; $("dcLegend").innerHTML = ""; return; }
+  const ticks = []; for (let y = Y0; y <= Y1; y += 10) ticks.push(y);
+  const bar = (d, a, b, cls, title) => `<button type="button" class="bar ${cls}" data-open="${d.id}" style="left:${pct(a)};width:calc(${pct(b + 1)} - ${pct(a)})" title="${esc(title)}" aria-label="${esc(title)}"></button>`;
+  $("dcCoverage").innerHTML = `<div class="dc-cov">${list.map(d => {
+      const c = CATS[d.cat]; let bars;
+      const end = Math.min(d.period[1], Y1 - 1);
+      if (d.years) bars = d.years.map(y => bar(d, y, y, "", `${d.title}: ${y}`)).join("");
+      else if (d.projectedFrom) bars = bar(d, d.period[0], d.projectedFrom - 1, "", `${d.title}: ${d.period[0]}–${d.projectedFrom - 1}`)
+        + bar(d, d.projectedFrom, end, "proj", `${d.title}: targets ${d.projectedFrom}–${d.period[1]}`);
+      else bars = bar(d, d.period[0], end, "", `${d.title}: ${periodText(d)}`);
+      return `<button type="button" class="nm" data-open="${d.id}" title="${esc(d.title)}">${esc(d.title)}</button><div class="track ${c.cls}">${bars}</div>`;
+    }).join("")}
+    <div></div><div class="dc-axis">${ticks.map(y => `<span style="left:${pct(y)}">${y}</span>`).join("")}</div></div>`;
+  $("dcLegend").innerHTML = Object.entries(CATS).map(([k, c]) => `<span class="${c.cls}"><i></i>${esc(c.label)}</span>`).join("")
+    + `<span><i class="proj"></i>Future targets</span>`;
+}
+function update(){
+  st.list = sorted(DATA.filter(matches));
+  $("dcCats").querySelectorAll(".dc-cat").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.cat === st.cat)));
+  $("dcFacets").querySelectorAll(".dc-chip").forEach(b => {
+    const set = b.dataset.kind === "gas" ? st.gases : st.types;
+    b.setAttribute("aria-pressed", String(set.has(b.dataset.v)));
+  });
+  pane.querySelectorAll(".dc-view button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.view === st.view)));
+  $("dcSearchBox").classList.toggle("has-q", !!st.q);
+  const filtered = st.q || st.cat || st.gases.size || st.types.size;
+  $("dcCount").innerHTML = filtered ? `Showing <b>${st.list.length}</b> of ${DATA.length} datasets` : `<b>${DATA.length}</b> datasets in 3 categories`;
+  $("dcReset").hidden = !filtered;
+  renderResults(); renderCoverage();
+}
+function resetAll(){
+  st.q = ""; st.cat = null; st.gases.clear(); st.types.clear();
+  $("dcSearch").value = ""; update();
+}
+
+/* ---------- detail drawer ---------- */
+const drawer = $("dcDrawer"), scrim = $("dcScrim"), toast = $("dcToast");
+[scrim, drawer, toast].forEach(el => document.body.appendChild(el));   // fixed layers: keep them out of the animated tab pane
+let lastFocus = null;
+
+function kv(rows){ return `<dl class="dc-kv">${rows.filter(r => r[1]).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${hl(v)}</dd>`).join("")}</dl>`; }
+function drawerBody(d){
+  if (st.dtab === "overview"){
+    return `${(d.about || []).map(p => `<p>${hl(p)}</p>`).join("")}
+      <h5>Key facts</h5>${kv([["Coverage", periodText(d) + (d.periodNote ? ` (${d.periodNote})` : "")], ["Frequency", d.frequency], ["Spatial coverage", d.spatial], ["Resolution", d.resolution], ["Gases", d.gases.join(", ")]])}
+      ${d.sectors ? `<h5>Sectors</h5><div class="dc-pills">${d.sectors.map(s => `<span class="dc-pill">${hl(s)}</span>`).join("")}</div>` : ""}
+      ${d.notes && d.notes.length ? `<h5>Read before using</h5><ul class="dc-ul">${d.notes.map(n => `<li>${hl(n)}</li>`).join("")}</ul>` : ""}
+      <h5>Used on this platform</h5><div class="dc-links">${d.usedIn.map(([t, l, h], i) => `<button type="button" class="dc-btn" data-goto="${i}"><i class="bi bi-box-arrow-in-right"></i>${esc(l)}</button>`).join("")}</div>`;
+  }
+  if (st.dtab === "meta"){
+    return `<h5>Metadata</h5>${kv([["Title", d.title], ["Category", CATS[d.cat].label], ["Data type", d.type], ["Provider", d.provider], ["Version / edition", d.version],
+      ["Temporal coverage", periodText(d) + (d.periodNote ? ` (${d.periodNote})` : "")], ["Frequency", d.frequency], ["Spatial coverage", d.spatial],
+      ["Resolution", d.resolution], ["Coordinate system", d.crs], ["Units", d.units], ["Format", d.format], ["Licence / terms", d.licence]])}
+      ${d.meta && d.meta.length ? `<h5>Technical details</h5>${kv(d.meta)}` : ""}`;
+  }
+  if (st.dtab === "files"){
+    return `<h5>Files in this platform</h5>${d.files.length ? `<div class="dc-files">${d.files.map(([p, t]) =>
+        `<div class="dc-file"><i class="bi bi-file-earmark-text"></i><div><code>${hl(p)}</code><div>${hl(t)}</div></div></div>`).join("")}</div>`
+        : `<p>No local files: this layer is streamed from the provider.</p>`}
+      ${d.vars.length ? `<h5>Fields and dimensions</h5><table class="dc-vars"><thead><tr><th>Field</th><th>Description</th></tr></thead><tbody>${d.vars.map(([k, v]) =>
+        `<tr><td>${hl(k)}</td><td>${hl(v)}</td></tr>`).join("")}</tbody></table>` : ""}`;
+  }
+  return `<h5>Suggested citation</h5><div class="dc-cite" id="dcCiteTxt">${esc(d.citation)}</div>
+    <button type="button" class="dc-btn" data-copy="cite"><i class="bi bi-clipboard"></i>Copy citation</button>
+    <h5>Licence and terms</h5><p>${esc(d.licence)}</p>
+    ${d.links.length ? `<h5>Original source</h5><div class="dc-links">${d.links.map(([l, u]) =>
+      `<a class="dc-btn" href="${esc(u)}" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right"></i>${esc(l)}</a>`).join("")}</div>` : ""}`;
+}
+function renderDrawer(){
+  const d = byId[st.openId]; if (!d) return;
+  const c = CATS[d.cat];
+  $("dcDHead").className = "dc-dh " + c.cls;
+  $("dcDBadges").innerHTML = `<span class="dc-badge"><i class="bi ${c.icon}"></i>${esc(c.short)}</span> <span class="dc-badge type">${esc(d.type)}</span>`;
+  $("dcDTitle").textContent = d.title;
+  $("dcDProv").textContent = d.provider;
+  drawer.querySelectorAll(".dc-dtabs button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.dt === st.dtab)));
+  $("dcDBody").innerHTML = drawerBody(d);
+  $("dcDBody").scrollTop = 0;
+  const nav = st.list.some(x => x.id === d.id) ? st.list : DATA, i = nav.findIndex(x => x.id === d.id);
+  $("dcPrev").disabled = i <= 0; $("dcNext").disabled = i >= nav.length - 1;
+  $("dcDFoot").innerHTML = `<span style="font-size:.78rem;color:var(--text-muted)">${i + 1} of ${nav.length}</span><span class="sp"></span>
+    <button type="button" class="dc-btn" data-copy="link"><i class="bi bi-link-45deg"></i>Copy link</button>
+    <button type="button" class="dc-btn primary" data-goto="0"><i class="bi bi-box-arrow-in-right"></i>Open in dashboard</button>`;
+}
+function openDs(id, opts = {}){
+  if (!byId[id]) return;
+  if (!drawer.classList.contains("open")) lastFocus = document.activeElement;
+  st.openId = id; if (!opts.keepTab) st.dtab = "overview";
+  renderDrawer();
+  drawer.classList.add("open"); scrim.classList.add("open");
+  drawer.setAttribute("aria-hidden", "false");
+  document.documentElement.classList.add("dc-lock");
+  if (location.hash !== "#data/" + id) history.replaceState(null, "", location.pathname + location.search + "#data/" + id);
+  setTimeout(() => $("dcClose").focus(), 30);
+}
+function closeDs(){
+  if (!drawer.classList.contains("open")) return;
+  drawer.classList.remove("open"); scrim.classList.remove("open");
+  drawer.setAttribute("aria-hidden", "true");
+  document.documentElement.classList.remove("dc-lock");
+  st.openId = null;
+  if (location.hash.startsWith("#data/")) history.replaceState(null, "", location.pathname + location.search + "#data");
+  if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+}
+function step(n){
+  const nav = st.list.some(x => x.id === st.openId) ? st.list : DATA, i = nav.findIndex(x => x.id === st.openId);
+  const nx = nav[i + n]; if (nx) openDs(nx.id, { keepTab: true });
+}
+function flash(msg){ toast.textContent = msg; toast.classList.add("show"); clearTimeout(flash.t); flash.t = setTimeout(() => toast.classList.remove("show"), 1800); }
+function copy(text, msg){
+  const done = () => flash(msg);
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, () => fallback());
+  else fallback();
+  function fallback(){
+    const ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); done(); } catch (e) { flash("Copy failed — select the text instead"); } ta.remove();
+  }
+}
+function gotoUse(d, i){
+  const u = d.usedIn[i] || d.usedIn[0]; if (!u) return;
+  const [tab, , hash] = u;
+  closeDs();
+  if (hash) history.replaceState(null, "", location.pathname + location.search + hash);
+  if (typeof activateTab === "function") activateTab(tab);
+}
+
+/* ---------- events ---------- */
+pane.addEventListener("click", e => {
+  const r = e.target.closest("[data-reset]"); if (r){ resetAll(); return; }
+  const o = e.target.closest("[data-open]"); if (o) openDs(o.dataset.open);
+});
+pane.addEventListener("keydown", e => {
+  if ((e.key === "Enter" || e.key === " ") && e.target.matches(".dc-card[data-open], tr[data-open]")){ e.preventDefault(); openDs(e.target.dataset.open); }
+});
+drawer.addEventListener("click", e => {
+  const t = e.target.closest(".dc-dtabs button"); if (t){ st.dtab = t.dataset.dt; renderDrawer(); return; }
+  const g = e.target.closest("[data-goto]"); if (g){ gotoUse(byId[st.openId], +g.dataset.goto); return; }
+  const c = e.target.closest("[data-copy]");
+  if (c){
+    const d = byId[st.openId];
+    if (c.dataset.copy === "cite") copy(d.citation, "Citation copied");
+    else copy(location.origin + location.pathname + "#data/" + d.id, "Link copied");
+  }
+});
+drawer.addEventListener("keydown", e => {
+  if (e.key === "Escape"){ e.preventDefault(); closeDs(); return; }
+  if (e.key === "Tab"){                       // keep focus inside the dialog
+    const f = [...drawer.querySelectorAll("button:not([disabled]),a[href],[tabindex='0']")].filter(x => x.offsetParent !== null);
+    if (!f.length) return;
+    if (e.shiftKey && document.activeElement === f[0]){ e.preventDefault(); f[f.length - 1].focus(); }
+    else if (!e.shiftKey && document.activeElement === f[f.length - 1]){ e.preventDefault(); f[0].focus(); }
+  }
+  if (e.target.closest(".dc-dtabs") && (e.key === "ArrowRight" || e.key === "ArrowLeft")){
+    const tabs = [...drawer.querySelectorAll(".dc-dtabs button")], i = tabs.findIndex(b => b.dataset.dt === st.dtab);
+    const n = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+    st.dtab = n.dataset.dt; renderDrawer(); drawer.querySelector(`.dc-dtabs button[data-dt="${st.dtab}"]`).focus();
+  }
+});
+scrim.addEventListener("click", closeDs);
+$("dcClose").addEventListener("click", closeDs);
+$("dcPrev").addEventListener("click", () => step(-1));
+$("dcNext").addEventListener("click", () => step(1));
+let qT = null;
+$("dcSearch").addEventListener("input", e => { st.q = e.target.value; clearTimeout(qT); qT = setTimeout(update, 120); });
+$("dcSearch").addEventListener("keydown", e => {
+  if (e.key === "Escape" && st.q){ e.preventDefault(); resetSearch(); }
+  if (e.key === "Enter" && st.list.length === 1) openDs(st.list[0].id);
+});
+function resetSearch(){ st.q = ""; $("dcSearch").value = ""; update(); $("dcSearch").focus(); }
+$("dcClear").addEventListener("click", resetSearch);
+$("dcReset").addEventListener("click", resetAll);
+$("dcSort").addEventListener("change", e => { st.sort = e.target.value; update(); });
+pane.querySelectorAll(".dc-view button").forEach(b => b.addEventListener("click", () => {
+  st.view = b.dataset.view; try { localStorage.setItem("dcView", st.view); } catch (e) { /* storage unavailable */ }
+  update();
+}));
+document.addEventListener("keydown", e => {
+  if (e.key !== "/" || !pane.classList.contains("active") || drawer.classList.contains("open")) return;
+  if (e.target.closest("input,textarea,select,[contenteditable]")) return;
+  e.preventDefault(); $("dcSearch").focus();
+});
+
+/* ---------- tab integration and deep links ---------- */
+window.dcActivate = function(){
+  if (st.openId) return;
+  const m = location.hash.match(/^#data\/([\w-]+)/);
+  if (m && byId[m[1]]) openDs(m[1]);
+  else if (!location.hash.startsWith("#data")) history.replaceState(null, "", location.pathname + location.search + "#data");
+};
+window.dcDeactivate = function(){
+  closeDs();
+  if (location.hash.startsWith("#data")) history.replaceState(null, "", location.pathname + location.search);
+};
+window.addEventListener("hashchange", () => {
+  if (!location.hash.startsWith("#data")) return;
+  if (!pane.classList.contains("active") && typeof activateTab === "function") { activateTab("data"); return; }
+  const m = location.hash.match(/^#data\/([\w-]+)/);
+  if (m && byId[m[1]] && m[1] !== st.openId) openDs(m[1]); else if (!m) closeDs();
+});
+
+renderKpis(); renderCats(); renderFacets(); renderCompare(); update();
+if (location.hash.startsWith("#data") && typeof activateTab === "function") activateTab("data");
+})();
 </script>
 </body>
 </html>

@@ -70,6 +70,7 @@ A tab bar sits directly under the INPACT / EPA header:
 | **Policy Timeline** | The full *Ireland Climate Policy Timeline* dashboard, with all eight sections and every policy profile | `policies/` app, mounted at `/policy/` |
 | **Trend Analysis** | Piecewise regression, Mann–Kendall and Sen's slope on sectoral emissions | `explorer/trend_engine.py`, `explorer/trend_views.py` |
 | **Structural Break Analysis** | Description of, and launcher for, the companion Streamlit app | `explorer/page/index.html` |
+| **Datasets** | Searchable catalogue of every data source, with metadata, files, caveats and citations | `explorer/page/index.html` (section 9c) |
 | **About INPACT** | Mission, approach, data sources and team | `explorer/page/index.html`, `explorer/static/img/` |
 | **Feedback** | Public-participation form saved to an Excel workbook | `explorer/feedback_store.py` |
 
@@ -306,6 +307,29 @@ Explains the companion **Structural Break Analysis** app and links to it. That
 app runs separately on Streamlit Community Cloud and opens in a new browser tab
 (https://inpact-epa-structural-break-analysis.streamlit.app/). Nothing done
 there changes this dashboard's data.
+
+---
+
+## Datasets tab
+
+A catalogue of the 13 data sources behind the platform, in three groups:
+**GHG emissions time series (EPA)**, **spatial emission maps** (MapEIre, EDGAR,
+PARIS inverse models, plus county boundaries and the basemap) and **GHG policy
+information and timelines** (Policy Timeline, OECD CAPMF, EEA PaMs, the roadmap,
+official verification sources and the QA registers).
+
+* Full-text search (press <kbd>/</kbd>), category cards, gas and data-type
+  filters, sorting, and a card or table layout.
+* A temporal-coverage chart and a side-by-side comparison of the three mapping
+  sources.
+* Click a dataset for a drawer with *Overview*, *Metadata*, *Files & fields* and
+  *Cite & links*, a copy-citation button and a button that opens the tab where
+  the data is used.
+* Deep links: `/#data` and `/#data/<dataset-id>` (e.g. `/#data/edgar`).
+
+The catalogue entries are the `DATA` array in section **9c** of
+`explorer/page/index.html`. Update an entry there when a source, its version or
+its files change.
 
 ---
 
