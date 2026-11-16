@@ -6871,6 +6871,71 @@ if (MAP_STANDALONE) (function mapWindow(){
     const scaleTxt = tf => `×${fmtVal(tf.a)}${Math.abs(tf.b) > 0 ? ` ${tf.b < 0 ? "−" : "+"} ${fmtVal(Math.abs(tf.b))}` : ""}`;
     const legendLabel = l => !scaling() ? l.short : l.tf.ref ? `${l.short} (reference)` : `${l.short} (${scaleTxt(l.tf)})`;
 
+    // ---- the time of the layer shown on the map: a red dot on the graph (and in the map + graph JPEG) ----
+    const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    function mapTime(){
+      if (!mapCard() || cmp.result) return null;          // no layer on the map, or a B − A difference map
+      const y = id => parseInt($(id).value, 10);
+      if (ds() === "edgar") {
+        const yr = y("edgarYear"), m = $("edgarMonth").value;
+        if (!yr) return null;
+        if (m && m !== "annual") return { t: yr + (+m - 1) / 12, year: yr, annual: false, label: `${MONTHS[+m - 1]} ${yr}` };
+        return { t: yr, year: yr, annual: true, label: String(yr) };
+      }
+      const yr = ds() === "inverse" ? y("invYear") : y("rasterYear");
+      return yr ? { t: yr, year: yr, annual: true, label: String(yr) } : null;
+    }
+    const isMonthly = dset => dset.data.some(pt => Math.abs(pt.x % 1) > 0.001);
+    function mapTimePlugin(exp){
+      return {
+        id: "tsMapTime",
+        afterDatasetsDraw(c){
+          if (exp && !exp.mapTime) return;                  // graph-only PNG: no map, no marker
+          const mt = mapTime();
+          if (!mt) return;
+          const { ctx, chartArea: a, scales: { x } } = c, k = exp ? 1.15 : 1;
+          const px = x.getPixelForValue(mt.t);
+          if (!(px >= a.left - 1 && px <= a.right + 1)) return;
+          const lines = c.data.datasets.map((d, i) => ({ d, i })).filter(o => !o.d._band && c.isDatasetVisible(o.i));
+          ctx.save();
+          if (mt.annual && lines.some(o => isMonthly(o.d))) {   // annual map over monthly lines: shade that year
+            const x1 = Math.min(x.getPixelForValue(mt.t + 1), a.right);
+            ctx.fillStyle = "rgba(214,40,40,.09)"; ctx.fillRect(px, a.top, x1 - px, a.bottom - a.top);
+          }
+          ctx.strokeStyle = "rgba(214,40,40,.6)"; ctx.lineWidth = 1; ctx.setLineDash([4, 3]);
+          ctx.beginPath(); ctx.moveTo(Math.round(px) + 0.5, a.top); ctx.lineTo(Math.round(px) + 0.5, a.bottom); ctx.stroke();
+          ctx.setLineDash([]);
+          lines.forEach(({ d, i }) => {
+            const target = isMonthly(d) ? (mt.annual ? null : mt.t) : mt.year;
+            if (target == null) return;
+            const j = d.data.findIndex(pt => Math.abs(pt.x - target) < 0.01 && pt.y != null && Number.isFinite(pt.y));
+            const el = j >= 0 && c.getDatasetMeta(i).data[j];
+            if (!el) return;
+            ctx.beginPath(); ctx.arc(el.x, el.y, 5.5 * k, 0, Math.PI * 2);
+            ctx.fillStyle = "#D62828"; ctx.fill();
+            ctx.lineWidth = 2 * k; ctx.strokeStyle = "#fff"; ctx.stroke();
+          });
+          const txt = `Map: ${mt.label}`;
+          ctx.font = `700 ${9.5 * k}px 'Source Sans 3', Arial, sans-serif`;
+          const tw = ctx.measureText(txt).width, ph = 15 * k, pw = tw + 10 * k;
+          const lx = Math.max(a.left, Math.min(px - pw / 2, a.right - pw)), ly = a.top + 2;
+          ctx.fillStyle = "#D62828"; ctx.beginPath(); ctx.roundRect(lx, ly, pw, ph, 4 * k); ctx.fill();
+          ctx.fillStyle = "#fff"; ctx.textBaseline = "middle"; ctx.fillText(txt, lx + 5 * k, ly + ph / 2 + 0.5);
+          ctx.restore();
+        },
+      };
+    }
+    let lastMapTime = null, mapTimeRaf = 0;               // re-render only when the map's time really changes
+    const redrawMapTime = () => {
+      cancelAnimationFrame(mapTimeRaf);
+      mapTimeRaf = requestAnimationFrame(() => {
+        const lbl = mapTime()?.label || null;
+        if (lbl === lastMapTime) return;
+        lastMapTime = lbl;
+        if (visible().length) render();
+      });
+    };
+
     // ---- graph (the same config draws the panel chart and the PNG export) ----
     function chartConfig(exp){
       computeScales();
@@ -6937,7 +7002,7 @@ if (MAP_STANDALONE) (function mapWindow(){
                  ticks: { font: { size: fs }, color: "#4A5A6A", callback: v => fmtVal(v), maxTicksLimit: 7 } },
           },
         },
-        plugins: exp ? [{
+        plugins: [mapTimePlugin(exp), ...(exp ? [{
           id: "tsPaper",
           beforeDraw(c){ const { ctx, width, height } = c; ctx.save(); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, width, height); ctx.restore(); },
           afterDraw(c){
@@ -6945,7 +7010,7 @@ if (MAP_STANDALONE) (function mapWindow(){
             ctx.fillStyle = "#6B7B8A"; ctx.font = "10px 'Source Sans 3', Arial, sans-serif"; ctx.textBaseline = "bottom";
             ctx.fillText(exp.source, 8, height - 6); ctx.restore();
           },
-        }] : [],
+        }] : [])],
       };
     }
 
@@ -7001,6 +7066,7 @@ if (MAP_STANDALONE) (function mapWindow(){
         scaling() ? "Dashed lines are scaled so their minimum–maximum matches the reference layer; the legend shows each scale, the tooltip, statistics and CSV give original values." : "",
         !scaling() && units.size > 1 ? "The ticked layers have different units: switch on “Scale to first layer” to compare their shape." : "",
         vis.some(l => l.data.lo) && bandEl.checked ? "Shaded band: the inverse model's 1σ-equivalent range for the pixel." : "",
+        mapTime() ? `Red dot: ${mapTime().label}, the time of the map shown.` : "",
       ].filter(Boolean).join(" ");
       drawMarks();
     }
@@ -7085,7 +7151,7 @@ if (MAP_STANDALONE) (function mapWindow(){
     });
     // A map layer shown or removed on the left switches the box on or off
     const ctrlBox = mapEl.querySelector(".leaflet-control-container");
-    if (ctrlBox) new MutationObserver(() => syncMapBox()).observe(ctrlBox, { childList: true, subtree: true });
+    if (ctrlBox) new MutationObserver(() => { syncMapBox(); redrawMapTime(); }).observe(ctrlBox, { childList: true, subtree: true });
 
     // Write the resolution into the JPEG's JFIF header so image and print software see the chosen dpi
     function jpegWithDpi(buf, dpi){
@@ -7128,6 +7194,7 @@ if (MAP_STANDALONE) (function mapWindow(){
           text: `${l.short} — ${l.def.dataset === "edgar" ? "EDGAR" : "Inverse model"}` })), true],
         ["Area", locationText()],
         ["Period", periodInfo(vis)],
+        ...(mapTime() ? [["Map time", `${mapTime().label} — red dot on the graph`]] : []),
         ["Units", units],
         ...(notes ? [["Notes", notes]] : []),
         ["Sources", sourceText(vis).replace(/^Source: /, "").replace(" · Ireland GHG Policy Impact Explorer", "")],
@@ -7184,7 +7251,7 @@ if (MAP_STANDALONE) (function mapWindow(){
       box.appendChild(cv); document.body.appendChild(box);
       try {
         const chart = new Chart(cv, chartConfig({
-          dpr,
+          dpr, mapTime: true,
           title: `${F(plotGas())} time series · ${titleEl.textContent.replace(" time series", "")}`,
           subtitle: `${locationText()}${scaling() ? " · scaled to the reference layer" : ""}`,
           source: "",
