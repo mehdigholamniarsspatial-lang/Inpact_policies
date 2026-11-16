@@ -8324,7 +8324,7 @@ const DATA = [
     format: "NetCDF source → NumPy .npz grids for the web map", licence: "CC BY 4.0. The creators ask to be contacted before use in publications.",
     version: "PARIS harmonised inverse modelling results for European non-CO₂ GHG emissions (DOI 10.18160/GR1Q-6SK4)",
     meta: [["Runs", "ELRIS, InTEM, RHIME × FLEXPART, NAME × CH₄, N₂O = 12"], ["Years", "NAME runs 2013–2024; FLEXPART runs 2016–2024"], ["Priors", "CH₄: EDGAR v8 + WetCHARTs; N₂O: EDGAR v8"], ["Uncertainty", "15.9th–84.1st percentiles (1σ-equivalent range)"], ["What it represents", "Total flux (anthropogenic + natural). CH₄ includes wetland/peatland emissions, so it is not directly comparable with the EPA inventory"]],
-    files: [["data/InverseModel/<SYSTEM>_<TRANSPORT>_<GAS>.npz", "12 grids: posterior, prior and uncertainty by year"], ["data/InverseModel/inverse_metadata.json", "Grid, country fraction, models, run years, prior and posterior national totals"], ["InversionModel/Ireland_TopDown_BottomUp_GHG V1.ipynb", "Notebook used to extract the Ireland subset"]],
+    files: [],
     vars: [["SYSTEM", "ELRIS (Empa), InTEM (Met Office), RHIME (Univ. Bristol)"], ["TRANSPORT", "FLEXPART or NAME Lagrangian dispersion model"], ["posterior", "Optimised flux, kg km⁻² yr⁻¹"], ["prior", "A-priori flux before the inversion"], ["urr", "Uncertainty reduction ratio of the national total"]],
     notes: ["Cell-scale structure inside Ireland mostly reflects the prior, not the observations; national totals are the most robust output.", "The Ireland mask includes offshore cells, so totals reconcile with the modellers' published national figures.", "Contact the dataset creators (A. Manning, Met Office; S. Henne, Empa) before using in publications."],
     usedIn: [["mapping", "Spatial Mapping — Inverse model layers"]],
@@ -8705,9 +8705,9 @@ function drawerBody(d){
       ${d.meta && d.meta.length ? `<h5>Technical details</h5>${kv(d.meta)}` : ""}`;
   }
   if (st.dtab === "files"){
-    return `<h5>Files in this platform</h5>${d.files.length ? `<div class="dc-files">${d.files.map(([p, t]) =>
+    return `${d.files.length ? `<h5>Files in this platform</h5><div class="dc-files">${d.files.map(([p, t]) =>
         `<div class="dc-file"><i class="bi bi-file-earmark-text"></i><div><code>${hl(p)}</code><div>${hl(t)}</div></div></div>`).join("")}</div>`
-        : `<p>No local files: this layer is streamed from the provider.</p>`}
+        : d.vars.length ? "" : `<h5>Files in this platform</h5><p>No local files: this layer is streamed from the provider.</p>`}
       ${d.vars.length ? `<h5>Fields and dimensions</h5><table class="dc-vars"><thead><tr><th>Field</th><th>Description</th></tr></thead><tbody>${d.vars.map(([k, v]) =>
         `<tr><td>${hl(k)}</td><td>${hl(v)}</td></tr>`).join("")}</tbody></table>` : ""}`;
   }
