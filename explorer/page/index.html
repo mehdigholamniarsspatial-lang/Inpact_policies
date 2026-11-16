@@ -382,6 +382,25 @@ input[type=range]{accent-color:var(--emerald);width:100%}
   width:14px;height:14px;flex:0 0 14px;border-radius:50%;background:var(--teal);border:2px solid #fff;
   box-shadow:0 0 0 1px rgba(14,140,138,.5);
 }
+/* Collapsible legend: a vertical "» Legend" tab on the right edge. Collapsed = only the colour ramp. */
+.raster-colorbar{position:relative;padding-right:calc(.6rem + 22px)}
+.raster-colorbar .cb-toggle{
+  position:absolute;top:0;right:0;bottom:0;width:22px;padding:0;margin:0;
+  border:0;border-left:1px solid var(--grey-border);border-radius:0 10px 10px 0;
+  background:var(--grey-panel);color:var(--navy);cursor:pointer;font:inherit;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;
+}
+.raster-colorbar .cb-toggle:hover{background:var(--teal-light);color:var(--teal)}
+.raster-colorbar .cb-toggle:focus-visible{outline:2px solid var(--teal);outline-offset:-2px}
+.raster-colorbar .cb-toggle .ch{font-size:1rem;font-weight:800;line-height:1;transform:rotate(180deg);transition:transform .2s}
+.raster-colorbar.cb-collapsed .cb-toggle .ch{transform:none}
+.raster-colorbar .cb-toggle .lb{writing-mode:vertical-rl;transform:rotate(180deg);font-size:.56rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+.raster-colorbar.cb-collapsed{padding:.4rem calc(.4rem + 22px) .4rem .45rem;max-width:none}
+.raster-colorbar.cb-collapsed > :not(.cb-row):not(.cb-toggle){display:none}
+.raster-colorbar.cb-collapsed .cb-row{height:62px;gap:.35rem}
+.raster-colorbar.cb-collapsed .cb-gradient{width:11px}
+.raster-colorbar.cb-collapsed .cb-ticks{font-size:.6rem}
+.raster-colorbar.cb-collapsed .cb-ticks span:not(:first-child):not(:last-child){visibility:hidden}
 .map-legend.stn-only{padding:.35rem .55rem}
 .map-legend.stn-only .cb-stn{margin:0;padding:0;border:0}
 .map-legend.stn-only[hidden]{display:none}
@@ -4083,6 +4102,24 @@ map.getContainer().addEventListener("change", e => {
   if (e.target.checked) stationsLayer.addTo(map); else map.removeLayer(stationsLayer);
   map.getContainer().querySelectorAll(".cb-stn-box").forEach(b => { b.checked = e.target.checked; });
 });
+// Legend open or collapsed (collapsed by default; remembered per viewer)
+let legendOpen = false;
+try { legendOpen = localStorage.getItem("inpact.legendOpen") === "1"; } catch (e) {}
+function applyLegendState(bar){
+  bar.classList.toggle("cb-collapsed", !legendOpen);
+  const b = bar.querySelector(":scope > .cb-toggle");
+  if (b) {
+    const t = legendOpen ? "Collapse the legend" : "Show the full legend";
+    if (b.title !== t) { b.title = t; b.setAttribute("aria-label", t); }
+    b.setAttribute("aria-expanded", String(legendOpen));
+  }
+}
+function toggleLegend(e){
+  e.preventDefault();
+  legendOpen = !legendOpen;
+  try { localStorage.setItem("inpact.legendOpen", legendOpen ? "1" : "0"); } catch (err) {}
+  map.getContainer().querySelectorAll(".raster-colorbar").forEach(applyLegendState);
+}
 function syncMapLegend(){
   const box = map.getContainer().querySelector(".leaflet-control-container");
   const bars = [...box.querySelectorAll(".raster-colorbar")];
@@ -4103,6 +4140,15 @@ function syncMapLegend(){
       L.DomEvent.disableClickPropagation(row);
       src ? bar.insertBefore(row, src) : bar.appendChild(row);
     }
+    if (!bar.querySelector(":scope > .cb-toggle")) {
+      const t = document.createElement("button");
+      t.type = "button"; t.className = "cb-toggle";
+      t.innerHTML = '<span class="ch" aria-hidden="true">&raquo;</span><span class="lb">Legend</span>';
+      L.DomEvent.disableClickPropagation(t);
+      t.addEventListener("click", toggleLegend);
+      bar.appendChild(t);
+    }
+    applyLegendState(bar);
   });
   // the stand-in only while no colour bar is shown
   const shown = bars.some(b => getComputedStyle(b).display !== "none");
