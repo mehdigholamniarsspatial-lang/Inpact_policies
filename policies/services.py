@@ -215,3 +215,179 @@ def emissions_context():
         rows.append({"sector": sector, "mt": mt, "share": share, "note": note, "series": counts.get(sector, 0),
                      "color": glossary.SECTORS[sector][0]})
     return rows
+
+
+# ---------------------------------------------------------------- eligibility explanations
+# Plain wording for the build notes recorded in the selection log's decision_basis field.
+DECISION_NOTES = {
+    "effect_assigned_once_to_primary_sector_for_selection":
+        "Its reported saving is counted once, in its primary sector, when measures are ranked for selection.",
+    "reported_zero_not_evidence_of_no_effect":
+        "A reported saving of zero is not taken as evidence that the measure has no effect.",
+    "source_date_conflict":
+        "The source records give different dates for this measure; the start year used was reconciled "
+        "(see the verification note on its policy profile).",
+    "reported_deployment_portfolio_not_single_legal_instrument":
+        "Reported as a deployment portfolio rather than a single legal instrument.",
+    "LIEN_source_regulatory_label_reclassified_voluntary":
+        "Reported to the EEA as “Regulatory”, but classified here as a voluntary agreement because membership is voluntary.",
+    "expiry_of_reported_rebalancing_phase_not_abolition_of_taxes":
+        "The end of the reported rebalancing phase is not treated as the abolition of the taxes.",
+    "unallocated_multisector_effect_excluded_from_sector_ranking":
+        "Its multi-sector saving cannot be allocated to one sector, so it is left out of the sector ranking.",
+    "source_2020_start_reconciled_to_narrative_2022":
+        "The EEA record gives a 2020 start; the record's own narrative dates implementation to 2022, which is used.",
+    "liming_CO2_and_N2O_tradeoff":
+        "Liming adds CO₂ but can reduce N₂O emissions; the trade-off is noted.",
+    "negative_2030_projection_not_used_for_default_ranking":
+        "Its negative 2030 projection is not used for the default ranking.",
+}
+EFFECT_SOURCES = {
+    "expost_2024": "ex-post estimate for 2024 reported to the EEA",
+    "exante_2025_WEM": "ex-ante projection for 2025, with existing measures, reported to the EEA",
+}
+ELIGIBILITY_TESTS = [
+    ("A", "Mitigation purpose", "criteria_a_mitigation"),
+    ("B", "Applies in Ireland", "criteria_b_ireland"),
+    ("C", "Identifiable instrument or framework", "criteria_c_instrument"),
+    ("D", "Identified start date", "criteria_d_start"),
+    ("E", "Active within 2000–2023", "criteria_e_active"),
+]
+
+
+def _sentence(text):
+    text = (text or "").strip()
+    return text if not text or text.endswith((".", "!", "?")) else text + "."
+
+
+def _clip(text, n=320):
+    text = re.sub(r"\s+", " ", text or "").strip()
+    return text if len(text) <= n else text[:n].rsplit(" ", 1)[0] + " …"
+
+
+def candidate_details():
+    """Item-by-item reasoning for the five eligibility tests of every selection candidate.
+
+    Built only from the stored release records (the selection log, Ireland's EEA records and the
+    OECD CAPMF categories and scores). Returns {candidate_id: {"tests": [...], "notes": [...]}};
+    each test is {"key", "label", "pass", "text", "evidence": [...]}.
+    """
+    pams = {p.pam_id: p for p in m.EeaPam.objects.all()}
+    cats = {c.code: c for c in m.CapmfCategory.objects.all()}
+    positive = defaultdict(list)
+    for o in m.CapmfObservation.objects.filter(measure="POL_STRINGENCY", value__gt=0).order_by("year"):
+        positive[o.category_id].append(o.year)
+    names = dict(m.PolicySeries.objects.values_list("policy_id", "policy_name"))
+
+    def policy_names(ids):
+        out = []
+        for i in (x.strip() for x in ids.split(";")):
+            if not i:
+                continue
+            out.append(names.get(i) or (f"{i[4:]} residual bundle" if i.startswith("RES_") else i))
+        return ", ".join(dict.fromkeys(out))
+
+    result = {}
+    for c in m.SelectionCandidate.objects.all():
+        why, ev = {}, {k: [] for k, _, _ in ELIGIBILITY_TESTS}
+        eea = c.candidate_origin.startswith("EEA")
+        if eea:
+            ids = [int(float(x)) for x in c.source_pam_ids.split(";") if x.strip()]
+            recs = [pams[i] for i in ids if i in pams]
+            # A measure can have one record per projection scenario; the dates come from the record(s) of
+            # the measure as implemented, not from a planned-scenario variant
+            recs = [r for r in recs if r.status != "Planned"] or recs
+            rec = recs[0] if recs else None
+            starts = sorted({r.start for r in recs if r.start})
+            finishes = sorted({r.finish for r in recs if r.finish})
+            statuses = sorted({r.status for r in recs if r.status})
+            why["A"] = ("Reported by Ireland to the EEA as a climate policy or measure"
+                        + (f" affecting {rec.ghgs}" if rec and rec.ghgs else "") + ".")
+            if rec and rec.sectors:
+                ev["A"].append(f"Sectors affected (EEA record): {rec.sectors}")
+            if c.reported_effect_kt is not None:
+                src = EFFECT_SOURCES.get(c.effect_source, c.effect_source.replace("_", " "))
+                ev["A"].append(f"Reported saving: {c.reported_effect_kt:,.1f} kt CO₂-eq per year ({src})")
+            elif c.effect_source == "not_quantified":
+                ev["A"].append("The EEA record does not quantify an emission saving")
+            why["B"] = "Part of Ireland's national report of policies and measures to the EEA."
+            if ids:
+                ev["B"].append(f"EEA policy-or-measure ID{'s' if len(ids) > 1 else ''}: {', '.join(map(str, ids))}"
+                               + (" (one record per projection scenario)" if len(ids) > 1 else ""))
+            why["C"] = (f"The EEA record names its instrument type: {rec.instrument_type}." if rec and rec.instrument_type
+                        else "The EEA record describes the policy or measure.")
+            if rec and rec.description:
+                ev["C"].append(f"EEA description: “{_clip(rec.description)}”")
+            if c.selected_start_year:
+                why["D"] = f"Implementation start year used: {c.selected_start_year}."
+                if starts and str(c.selected_start_year) not in starts:
+                    ev["D"].append(f"The EEA record gives {', '.join(starts)}; {c.selected_start_year} is used after "
+                                   "checking official sources (see the policy profile)")
+                elif starts:
+                    ev["D"].append(f"EEA implementation period start: {', '.join(starts)}")
+            else:
+                why["D"] = "No implementation start year is recorded."
+            first = starts[0] if starts else (c.selected_start_year or "?")
+            last = finishes[-1] if finishes else "no end date"
+            why["E"] = f"EEA status: {', '.join(statuses) or 'not stated'}; implementation period {first} to {last}."
+            if c.criteria_e_active:
+                ev["E"].append("This period overlaps 2000–2023")
+        else:
+            cat = cats.get(c.candidate_id)
+            yrs = positive.get(cat.id, []) if cat else []
+            in_period = [y for y in yrs if 2000 <= y <= 2023]
+            fpy = (cat.first_positive_year if cat else None) or (yrs[0] if yrs else None)
+            why["A"] = ("An OECD CAPMF climate-mitigation policy category"
+                        + (f" in the “{cat.domain}” module" if cat and cat.domain else "")
+                        + f": {cat.label if cat else c.candidate_name}.")
+            if cat and cat.instrument_class:
+                ev["A"].append(f"OECD instrument class: {cat.instrument_class}")
+            why["B"] = "The OECD scores this category for Ireland (country code IRL)."
+            if fpy:
+                ev["B"].append(f"First positive stringency score for Ireland: {fpy}")
+            rep = cat.represented_by if cat else ""
+            why["C"] = (f"Matched to named Irish instrument{'s' if ';' in rep else ''}: {policy_names(rep)}." if rep
+                        else "The OECD category describes an identifiable type of instrument.")
+            if c.decision_basis and not c.decision_basis.startswith("Conservative"):
+                ev["C"].append(_sentence(c.decision_basis))
+            why["D"] = (f"Start year used: {c.selected_start_year or fpy}." if c.criteria_d_start
+                        else f"The OECD score is positive from {fpy}, but that is a scoring year, not the dated start of an identified instrument."
+                        if fpy else "No start year can be identified.")
+            why["E"] = (f"Positive OECD scores in {in_period[0]}–{in_period[-1]} ({len(in_period)} of the 24 years 2000–2023)."
+                        if in_period else "No positive OECD score within 2000–2023.")
+
+        passes = [getattr(c, f) for _, _, f in ELIGIBILITY_TESTS]
+        first_fail = next((ELIGIBILITY_TESTS[i][0] for i, ok in enumerate(passes) if not ok), None)
+        reason = _sentence(c.exclusion_reason)
+        tests = []
+        for (k, label, _), ok in zip(ELIGIBILITY_TESTS, passes):
+            if ok:
+                text = why.get(k, "")
+            elif k == first_fail:
+                text = reason or "Not established from the source records."
+                if k in ("D", "E") and why.get(k):
+                    text += " " + why[k]
+            elif eea and reason:
+                # the EEA exclusion reasons are specific to the measure and cover every test it fails
+                text = reason + (" " + why[k] if k in ("D", "E") and why.get(k) else "")
+            else:
+                text = (f"Not met, because test {first_fail} failed: "
+                        + ("a candidate without an established mitigation purpose is not dated or checked for activity."
+                           if first_fail == "A" else
+                           "without an identified instrument there is no instrument whose start or activity can be dated."
+                           if first_fail == "C" else "see that test."))
+                if k in ("D", "E") and why.get(k):
+                    w = why[k]
+                    text += " For reference: " + (w if w[1:2].isupper() else w[0].lower() + w[1:])
+            tests.append({"key": k, "label": label, "pass": ok, "text": text, "evidence": ev[k]})
+
+        notes = []
+        for code in (x.strip() for x in c.decision_basis.split(";")):
+            if code in DECISION_NOTES:
+                notes.append(DECISION_NOTES[code])
+            elif code.startswith("Conservative"):
+                notes.append("Exclusion follows a conservative, evidence-based screen; it is not a claim that no such policy exists in Ireland.")
+        if c.output_policy_ids:
+            notes.append(("Retained as: " if c.outcome == "core" else "Grouped into: ") + policy_names(c.output_policy_ids) + ".")
+        result[c.candidate_id] = {"tests": tests, "notes": notes}
+    return result

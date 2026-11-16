@@ -186,6 +186,9 @@ def api_selection(request):
         "sector_effect_rank", "output_policy_ids", "outcome", "anchor_flag", "materiality_group_flag",
         "criteria_a_mitigation", "criteria_b_ireland", "criteria_c_instrument", "criteria_d_start",
         "criteria_e_active"))
+    details = services.candidate_details()       # item-by-item reasoning for tests A–E ("Show more")
+    for r in rows:
+        r["detail"] = details.get(r["candidate_id"])
     return JsonResponse({"candidates": rows})
 
 

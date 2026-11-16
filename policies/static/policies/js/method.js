@@ -45,19 +45,48 @@
   App.getJSON(window.URLS.selection).then((d) => { C = d.candidates; renderC(); });
   const tick = (b) => (b ? '<span class="pass">✓</span>' : '<span class="fail">✕</span>');
   const OUT = { core: '<span class="tag layer">Core</span>', residual: '<span class="tag">Residual</span>', excluded: '<span class="tag" style="border-style:dashed">Excluded</span>' };
+  // "Show more": item-by-item reasoning for tests A–E; each row opens and closes on its own
+  const openC = new Set();
+  const safeId = (id) => String(id).replace(/[^\w-]/g, "_");
+  function detailHTML(c) {
+    const d = c.detail;
+    if (!d) return '<p class="small muted">No further detail is recorded for this candidate.</p>';
+    return `<ol class="cand-tests">${d.tests.map((t) => `
+        <li class="${t.pass ? "ok" : "no"}">
+          <div class="ct-head"><span class="ct-key">${t.key}</span><span class="ct-label">${App.esc(t.label)}</span>
+            <span class="ct-res ${t.pass ? "pass" : "fail"}">${t.pass ? "✓ Pass" : "✕ Fail"}</span></div>
+          <p class="ct-text">${App.esc(t.text)}</p>
+          ${t.evidence.length ? `<ul class="ct-ev">${t.evidence.map((e) => `<li>${App.esc(e)}</li>`).join("")}</ul>` : ""}
+        </li>`).join("")}</ol>
+      ${d.notes.length ? `<div class="ct-notes"><b>Notes</b><ul>${d.notes.map((n) => `<li>${App.esc(n)}</li>`).join("")}</ul></div>` : ""}`;
+  }
   function renderC() {
     const q = $("c-q").value.trim().toLowerCase();
     const rows = C.filter((c) => (!origin || c.candidate_origin === origin) && (!outcome || c.outcome === outcome) && (!q || (c.candidate_name + " " + c.candidate_id).toLowerCase().includes(q)));
     $("c-count").textContent = `${rows.length} of ${C.length} candidates`;
-    $("cands").tBodies[0].innerHTML = rows.map((c) => `<tr>
+    $("cands").tBodies[0].innerHTML = rows.map((c) => {
+      const open = openC.has(c.candidate_id), did = `cand-more-${safeId(c.candidate_id)}`;
+      return `<tr class="${open ? "cand-open" : ""}">
       <td><b>${App.esc(c.candidate_name)}</b><div class="small muted">${App.esc(c.candidate_id)}, ${c.candidate_origin.startsWith("EEA") ? "EEA" : "OECD"}</div></td>
       <td>${App.esc(c.primary_sector || "–")}</td>
       <td style="white-space:nowrap;letter-spacing:3px">${[c.criteria_a_mitigation, c.criteria_b_ireland, c.criteria_c_instrument, c.criteria_d_start, c.criteria_e_active].map(tick).join("")}</td>
       <td class="num">${c.reported_effect_kt === null ? "–" : App.fmtInt(c.reported_effect_kt)}</td>
       <td class="num">${c.cumulative_effect_share === null ? "–" : (c.cumulative_effect_share * 100).toFixed(1) + "%"}</td>
       <td>${OUT[c.outcome]}</td>
-      <td class="small">${App.esc(c.exclusion_reason || ((App.G.selection[c.selection_rule] || {}).desc) || App.humanise(c.selection_rule))}</td></tr>`).join("") || '<tr><td colspan="7" class="empty">No candidates match.</td></tr>';
+      <td class="small">${App.esc(c.exclusion_reason || ((App.G.selection[c.selection_rule] || {}).desc) || App.humanise(c.selection_rule))}
+        <div><button type="button" class="cand-more" data-cid="${App.esc(c.candidate_id)}" aria-expanded="${open}" aria-controls="${did}">${open ? "Show less" : "Show more"}</button></div></td></tr>
+      ${open ? `<tr class="cand-detail" id="${did}"><td colspan="7">${detailHTML(c)}</td></tr>` : ""}`;
+    }).join("") || '<tr><td colspan="7" class="empty">No candidates match.</td></tr>';
   }
+  $("cands").tBodies[0].addEventListener("click", (e) => {
+    const b = e.target.closest(".cand-more");
+    if (!b) return;
+    const id = b.dataset.cid;
+    openC.has(id) ? openC.delete(id) : openC.add(id);
+    renderC();
+    const again = $("cands").querySelector(`.cand-more[data-cid="${CSS.escape(id)}"]`);
+    if (again) again.focus();
+  });
 
   /* ---------------------------------------------------- Materiality */
   const mm = M.slice().reverse();
