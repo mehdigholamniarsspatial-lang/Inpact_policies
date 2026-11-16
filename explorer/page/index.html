@@ -396,7 +396,20 @@ input[type=range]{accent-color:var(--emerald);width:100%}
 .raster-colorbar.cb-collapsed .cb-toggle .ch{transform:none}
 .raster-colorbar .cb-toggle .lb{writing-mode:vertical-rl;transform:rotate(180deg);font-size:.56rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
 .raster-colorbar.cb-collapsed{padding:.4rem calc(.4rem + 22px) .4rem .45rem;max-width:none}
-.raster-colorbar.cb-collapsed > :not(.cb-row):not(.cb-toggle){display:none}
+.raster-colorbar.cb-collapsed > :not(.cb-row):not(.cb-toggle):not(.cb-px){display:none}
+/* "Pixel values" on / off chip, just to the right of the legend box */
+.raster-colorbar .cb-px{
+  position:absolute;left:100%;bottom:0;margin-left:6px;white-space:nowrap;
+  display:flex;align-items:center;gap:.35rem;cursor:pointer;user-select:none;
+  background:rgba(255,255,255,.95);backdrop-filter:blur(6px);
+  border:1px solid var(--grey-border);border-radius:8px;box-shadow:var(--shadow-md);
+  padding:.28rem .55rem;font-size:.66rem;font-weight:700;color:var(--navy);line-height:1.2;
+}
+.raster-colorbar .cb-px:hover{border-color:#9FCFCE}
+.raster-colorbar .cb-px input{margin:0;accent-color:var(--teal);cursor:pointer}
+.raster-colorbar .cb-px i{color:var(--teal);font-size:.8rem}
+.raster-colorbar .cb-px[hidden]{display:none}
+.px-off .leaflet-tooltip.edgar-tip{display:none}
 .raster-colorbar.cb-collapsed .cb-row{height:62px;gap:.35rem}
 .raster-colorbar.cb-collapsed .cb-gradient{width:11px}
 .raster-colorbar.cb-collapsed .cb-ticks{font-size:.6rem}
@@ -4120,6 +4133,18 @@ function toggleLegend(e){
   try { localStorage.setItem("inpact.legendOpen", legendOpen ? "1" : "0"); } catch (err) {}
   map.getContainer().querySelectorAll(".raster-colorbar").forEach(applyLegendState);
 }
+// Pixel values on hover / click: on by default; the chip beside the legend switches them off (remembered)
+let pixelValuesOn = true;
+try { pixelValuesOn = localStorage.getItem("inpact.pixelValues") !== "0"; } catch (e) {}
+map.getContainer().classList.toggle("px-off", !pixelValuesOn);
+map.getContainer().addEventListener("change", e => {
+  if (!e.target.classList?.contains("cb-px-box")) return;
+  pixelValuesOn = e.target.checked;
+  try { localStorage.setItem("inpact.pixelValues", pixelValuesOn ? "1" : "0"); } catch (err) {}
+  map.getContainer().classList.toggle("px-off", !pixelValuesOn);
+  if (!pixelValuesOn) map.eachLayer(l => { if (l.closeTooltip && l.getTooltip?.()?.options.className === "edgar-tip") l.closeTooltip(); });
+  map.getContainer().querySelectorAll(".cb-px-box").forEach(b => { b.checked = pixelValuesOn; });
+});
 function syncMapLegend(){
   const box = map.getContainer().querySelector(".leaflet-control-container");
   const bars = [...box.querySelectorAll(".raster-colorbar")];
@@ -4148,6 +4173,19 @@ function syncMapLegend(){
       t.addEventListener("click", toggleLegend);
       bar.appendChild(t);
     }
+    let px = bar.querySelector(":scope > .cb-px");
+    if (!px) {
+      px = document.createElement("label");
+      px.className = "cb-px";
+      px.title = "Show the value of a pixel when the mouse is over it (or it is tapped)";
+      px.innerHTML = '<input type="checkbox" class="cb-px-box"><i class="bi bi-cursor" aria-hidden="true"></i><span>Pixel values</span>';
+      L.DomEvent.disableClickPropagation(px);
+      bar.appendChild(px);
+    }
+    px.querySelector("input").checked = pixelValuesOn;
+    // MapEIre layers are images: no pixel values to show
+    const noValues = document.getElementById("mapDataset")?.value === "mapeire" && !bar.classList.contains("cmp-card");
+    if (px.hidden !== noValues) px.hidden = noValues;
     applyLegendState(bar);
   });
   // the stand-in only while no colour bar is shown
