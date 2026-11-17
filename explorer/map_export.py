@@ -1046,3 +1046,265 @@ def jpeg(layer: Layer) -> Tuple[bytes, str]:
     out = io.BytesIO()
     img.resize((W, H), Image.LANCZOS).save(out, format="JPEG", quality=92, dpi=(200, 200), optimize=True)
     return out.getvalue(), f"{layer.stem}.jpg"
+
+
+# ---------------------------------------------------------------------------
+# Time series grid: one map per time step of the map layer, one shared colour scale
+# ---------------------------------------------------------------------------
+_MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+GRID_W, GRID_H = 3000, 2250        # output pixels (4:3, like the single map JPEG)
+_GU = 2.5                          # drawing pixels per design unit (design canvas 2000 x 1500)
+
+
+def grid_steps(q: dict) -> Tuple[List[Tuple[dict, str]], dict]:
+    """The map layer's time steps: (layer query, label) each, plus a description of the series.
+    EDGAR annual: every year; EDGAR monthly: the 12 months of the map's year; inverse model: the run's years."""
+    if q.get("compare") == "1":
+        raise SelectionError("A difference (B − A) map has no time series grid; use Current Map.")
+    ds = q.get("dataset", "")
+    if ds == "edgar":
+        meta = edgar.load_metadata()
+        gas = meta.get("gases", {}).get(q.get("gas", ""))
+        if gas is None or q.get("sector", "") not in meta.get("sectors", {}):
+            raise SelectionError("Unknown EDGAR selection.")
+        if q.get("month", "annual") in ("", "annual"):
+            steps = [({**q, "year": str(y), "month": "annual"}, str(y)) for y in meta["years"]]
+            return steps, {"what": "annual maps", "legend": f"{gas['formula']} · annual totals"}
+        year = q.get("year", "")
+        steps = [({**q, "month": str(m)}, f"{_MONTHS[m - 1]} {year}") for m in range(1, 13)]
+        return steps, {"what": f"monthly maps of {year}", "legend": f"{gas['formula']} · monthly totals {year}"}
+    if ds == "inverse":
+        meta = inverse.load_metadata()
+        run = meta.get("runs", {}).get(f"{q.get('model', '')}|{q.get('transport', '')}|{q.get('gas', '')}")
+        gas = meta.get("gases", {}).get(q.get("gas", ""))
+        if not run or gas is None or q.get("estimate") not in _ESTIMATES:
+            raise SelectionError("Unknown inverse model selection.")
+        steps = [({**q, "year": str(y)}, str(y)) for y in run["years"]]
+        return steps, {"what": "annual maps", "legend": f"{gas['formula']} · {_ESTIMATES[q['estimate']]}"}
+    raise SelectionError("The time series grid is available for EDGAR and the inverse model.")
+
+
+def grid_layout_ok(rows: int, cols: int, n: int) -> bool:
+    """Enough cells for every step, no single row or column (except for 2 steps), no empty row or column."""
+    if n < 2 or rows < 1 or cols < 1:
+        return False
+    if n == 2:
+        return sorted((rows, cols)) == [1, 2]
+    return rows >= 2 and cols >= 2 and rows * cols >= n and (rows - 1) * cols < n and rows * (cols - 1) < n
+
+
+def _shared_scale(layers: List[Layer]) -> Optional[Legend]:
+    """One colour scale for every panel of a region grid: the region's minimum to maximum over all steps."""
+    kind = layers[0].cell_kind
+    pairs = [vf for L in layers for vf in L.cell_vals]
+    if kind not in ("log", "diverging") or not pairs:
+        return None
+    vals = [v for v, _ in pairs]
+    faded_any = any(f for _, f in pairs)
+    shade = lambda c, f: _fade(c, FADE) if f else c          # noqa: E731
+    n_cells = max(len(L.cells) for L in layers)
+    if kind == "diverging":
+        lim = max(abs(v) for v in vals) or 1.0
+        for L in layers:
+            L.cells = [c[:4] + (shade(diverging(v / lim), f),) for c, (v, f) in zip(L.cells, L.cell_vals)]
+        return Legend(title="", unit="", kind="diverging", lo=-lim, hi=lim, ticks=_plain_ticks(-lim, lim, kind),
+                      swatches=[(_fade(diverging(0.5), FADE), "Outside the Ireland attribution area")] if faded_any else [],
+                      note=f"Linear, symmetric · one scale for all {len(layers)} maps, fitted to the region's "
+                           f"{n_cells} cells over every step" + _filter_note(signed=True))
+    pos = [v for v in vals if v > 0]
+    if not pos:
+        return None
+    lo, hi = min(pos), max(pos)
+    if hi <= lo:
+        lo, hi = lo / 1.01, hi * 1.01
+    span = math.log10(hi) - math.log10(lo)
+    colour = lambda v: rainbow((math.log10(v) - math.log10(lo)) / span) if v > 0 else ZERO_RGB   # noqa: E731
+    for L in layers:
+        L.cells = [c[:4] + (shade(colour(v), f),) for c, (v, f) in zip(L.cells, L.cell_vals)]
+    sw = []
+    if any(v == 0 for v in vals):
+        sw.append((ZERO_RGB, "0 (no emission assigned)"))
+    if faded_any:
+        sw.append((_fade(rainbow(0.6), FADE), "Outside the Ireland attribution area"))
+    return Legend(title="", unit="", kind="log", lo=lo, hi=hi, ticks=_plain_ticks(lo, hi, kind), swatches=sw,
+                  note=f"Log scale · one scale for all {len(layers)} maps, fitted to the region's "
+                       f"{n_cells} cells over every step (min – max)" + _filter_note())
+
+
+def _grid_view(layers: List[Layer]) -> Tuple[float, float, float, float]:
+    """Panel extent: Ireland, or the region (and its cells) with a margin when one is set."""
+    if not layers[0].clip_rings:
+        return VIEW
+    xs = [p[0] for r in layers[0].clip_rings for p in r]
+    ys = [p[1] for r in layers[0].clip_rings for p in r]
+    for L in layers:
+        for w, so, e, n, _ in L.cells:
+            xs += [w, e]
+            ys += [so, n]
+    w, e, so, n = min(xs), max(xs), min(ys), max(ys)
+    cx, cy = (w + e) / 2, (so + n) / 2
+    hw, hh = max((e - w) * 0.62, 0.3), max((n - so) * 0.62, 0.18)
+    return cx - hw, cy - hh, cx + hw, cy + hh
+
+
+def grid_jpeg(q: dict, rows: int, cols: int, region: bool) -> Tuple[bytes, str]:
+    """A JPEG of one map per time step in a rows × cols grid, with one shared legend.
+    No coordinate labels on the panels; each panel is titled with its time step."""
+    steps, info = grid_steps(q)
+    n = len(steps)
+    if not grid_layout_ok(rows, cols, n):
+        raise SelectionError(f"{n} maps: choose rows × columns with at least {n} cells, at least 2 rows and "
+                             "2 columns, and no empty row or column.")
+    layers, labels = [], []
+    for sq, label in steps:
+        L = build_layer(sq)
+        if region:
+            L = clip_to_region(L, q)
+        layers.append(L)
+        labels.append(label)
+    first = layers[0]
+    legend = _shared_scale(layers) if region else None
+    if legend is None:                     # Ireland: the dataset's fixed scale, already the same for every step
+        legend = first.legend
+        legend = Legend(title="", unit="", kind=legend.kind, lo=legend.lo, hi=legend.hi, stops=legend.stops,
+                        ticks=legend.ticks, swatches=legend.swatches,
+                        note=(legend.note + f" · one scale for all {n} maps").lstrip(" ·"))
+    legend.title, legend.unit = info["legend"], first.legend.unit
+    region_label = _region(q)[0] if region else ""
+
+    u = _GU
+    img = Image.new("RGB", (round(2000 * u), round(1500 * u)), "white")
+    d = ImageDraw.Draw(img)
+    font = lambda size, bold=False: _font(max(1, round(size * u / SS)), bold)   # noqa: E731
+    P = lambda v: round(v * u)                                                 # noqa: E731
+
+    # Title and subtitle
+    sub = f"{n} {info['what']}, {labels[0]} – {labels[-1]}   [{legend.unit}]" + (f"   ·   {region_label}" if region_label else "")
+    for text, size, bold, colour, y in ((first.title, 44, True, NAVY, 46), (sub, 27, True, (44, 62, 80), 108)):
+        f, sz = font(size, bold), size
+        while d.textlength(text, font=f) > P(1880) and sz > 16:
+            sz -= 2
+            f = font(sz, bold)
+        d.text((P(1000), P(y)), text, font=f, fill=colour, anchor="mt")
+
+    # Panels
+    view = _grid_view(layers)
+    west, south, east, north = view
+    (mx0, my0), (mx1, my1) = _merc(west, south), _merc(east, north)
+    # Panels keep the map's own shape: as large as the area allows, the block centred in it
+    gx0, gy0, gw, gh, gap = 40, 160, 1530, 1215, 18
+    label_h = min(38, max(22, gh / rows * 0.1))
+    # Widen the extent towards the shape of a grid cell (more surroundings, never less), by at most 30%
+    # so the map stays the focus; any remaining difference becomes margin around the centred grid
+    cell_aspect = ((gw - (cols - 1) * gap) / cols) / ((gh - (rows - 1) * gap) / rows - label_h)
+    aspect = (mx1 - mx0) / (my1 - my0)
+    if aspect < cell_aspect:
+        grow = min((my1 - my0) * cell_aspect - (mx1 - mx0), 0.3 * (mx1 - mx0)) / 2
+        mx0, mx1 = mx0 - grow, mx1 + grow
+    else:
+        grow = min((mx1 - mx0) / cell_aspect - (my1 - my0), 0.3 * (my1 - my0)) / 2
+        my0, my1 = my0 - grow, my1 + grow
+    aspect = (mx1 - mx0) / (my1 - my0)
+    cell_w = min((gw - (cols - 1) * gap) / cols, ((gh - (rows - 1) * gap) / rows - label_h) * aspect)
+    cell_h = cell_w / aspect
+    ox = gx0 + (gw - (cols * cell_w + (cols - 1) * gap)) / 2
+    oy = gy0 + (gh - (rows * (label_h + cell_h) + (rows - 1) * gap)) / 2
+    lab_f = font(min(26, max(15, label_h * 0.62)), True)
+    coast = _outline()
+    coast_col = (128, 136, 146) if region else (34, 40, 49)
+    for i, (L, label) in enumerate(zip(layers, labels)):
+        r, c = divmod(i, cols)
+        bx, by = ox + c * (cell_w + gap), oy + r * (label_h + cell_h + gap) + label_h
+        bw, bh = cell_w, cell_h
+        k = min(bw / (mx1 - mx0), bh / (my1 - my0))
+        fw, fh = (mx1 - mx0) * k, (my1 - my0) * k
+        fl, ft = bx + (bw - fw) / 2, by + (bh - fh) / 2
+        pw, ph = max(1, P(fw)), max(1, P(fh))
+        panel = Image.new("RGB", (pw, ph), "white")
+        pd = ImageDraw.Draw(panel)
+
+        def pxy(lon: float, lat: float) -> Tuple[float, float]:
+            x, y = _merc(lon, lat)
+            return (x - mx0) * k * u, (my1 - y) * k * u
+
+        for w, so, e, nn, colour in L.cells:
+            (x0, y0), (x1, y1) = pxy(w, nn), pxy(e, so)
+            pd.rectangle([x0, y0, x1, y1], fill=colour)
+        lw = max(1, round(u * (1.3 if region else 1.1)))
+        for ring in coast:
+            pts = [pxy(lon, lat) for lon, lat in ring]
+            pd.line(pts + [pts[0]], fill=coast_col, width=lw, joint="curve")
+        for width, colour in ((max(3, round(u * 4.2)), (255, 255, 255)), (max(2, round(u * 2.2)), (0, 0, 0))):
+            for ring in L.clip_rings:
+                pts = [pxy(lon, lat) for lon, lat in ring]
+                pd.line(pts + [pts[0]], fill=colour, width=width, joint="curve")
+        img.paste(panel, (P(fl), P(ft)))
+        d.rectangle([P(fl), P(ft), P(fl) + pw, P(ft) + ph], outline=(120, 128, 138), width=max(1, round(u)))
+        d.text((P(fl), P(ft - 6)), label, font=lab_f, fill=TEXT, anchor="ls")
+
+    # Shared legend (right)
+    lg = legend
+    px0, py0, pwid, pad = 1600, 200, 360, 22
+    title_f, unit_f, tick_f, small_f = font(26, True), font(21), font(20), font(17)
+    t_lines = _wrap(d, lg.title, title_f, P(pwid - 2 * pad))
+    u_lines = _wrap(d, lg.unit, unit_f, P(pwid - 2 * pad))
+    n_lines = _wrap(d, lg.note, small_f, P(pwid - 2 * pad)) if lg.note else []
+    bar_h, bar_w = 560, 40
+    panel_h = pad + len(t_lines) * 34 + len(u_lines) * 28 + 16 + bar_h + 20 + len(lg.swatches) * 36 + len(n_lines) * 23 + pad
+    d.rounded_rectangle([P(px0), P(py0), P(px0 + pwid), P(py0 + panel_h)], radius=P(10),
+                        fill=(248, 250, 252), outline=(85, 95, 108), width=max(1, round(u)))
+    y = py0 + pad
+    for ln in t_lines:
+        d.text((P(px0 + pad), P(y)), ln, font=title_f, fill=TEXT)
+        y += 34
+    for ln in u_lines:
+        d.text((P(px0 + pad), P(y)), ln, font=unit_f, fill=MUTED)
+        y += 28
+    y += 16
+    bx0, by0 = px0 + pad, y
+    for j in range(P(bar_h)):
+        t = 1 - j / (P(bar_h) - 1)
+        if lg.kind == "diverging":
+            col = diverging(2 * t - 1)
+        elif lg.kind == "stops":
+            pos = t * (len(lg.stops) - 1)
+            a = int(min(pos, len(lg.stops) - 2))
+            f_ = pos - a
+            col = tuple(round(lg.stops[a][m] + (lg.stops[a + 1][m] - lg.stops[a][m]) * f_) for m in range(3))
+        else:
+            col = rainbow(t)
+        d.line([P(bx0), P(by0) + j, P(bx0 + bar_w), P(by0) + j], fill=col)
+    d.rectangle([P(bx0), P(by0), P(bx0 + bar_w), P(by0 + bar_h)], outline=(120, 128, 138), width=max(1, round(u / 2)))
+    for t, label in lg.ticks:
+        ty = by0 + (1 - t) * bar_h
+        d.line([P(bx0 + bar_w), P(ty), P(bx0 + bar_w + 9), P(ty)], fill=TEXT, width=max(1, round(u / 2)))
+        d.text((P(bx0 + bar_w + 15), P(ty)), label, font=tick_f, fill=TEXT, anchor="lm")
+    y = by0 + bar_h + 20
+    for colour, label in lg.swatches:
+        d.rectangle([P(bx0), P(y), P(bx0 + bar_w), P(y + 22)], fill=colour, outline=(120, 128, 138), width=max(1, round(u / 2)))
+        for k_, ln in enumerate(_wrap(d, label, small_f, P(pwid - 2 * pad - bar_w - 15))[:2]):
+            d.text((P(bx0 + bar_w + 15), P(y + 11 + k_ * 20)), ln, font=small_f, fill=TEXT, anchor="lm")
+        y += 36
+    for ln in n_lines:
+        d.text((P(px0 + pad), P(y)), ln, font=small_f, fill=MUTED)
+        y += 23
+
+    # Footer
+    foot_f = font(17)
+    foot = [f"Source: {first.source}",
+            "Coastline: Natural Earth" + (f" · {first.clip_credit}" if first.clip_credit else "")
+            + (" · Black line: the time series region" if region else "")
+            + f" · {rows} × {cols} grid, one colour scale for all maps"
+            + f" · INPACT Ireland Greenhouse Gas Policy Impact Explorer · generated {date.today():%d %b %Y}"]
+    yy = 1408
+    for text in foot:
+        for ln in _wrap(d, text, foot_f, P(1880)):
+            d.text((P(60), P(yy)), ln, font=foot_f, fill=MUTED)
+            yy += 23
+
+    out = io.BytesIO()
+    img.resize((GRID_W, GRID_H), Image.LANCZOS).save(out, format="JPEG", quality=92, dpi=(300, 300), optimize=True)
+    part = _region(q)[1] if region else ""
+    stem = _slug(first.stem.split("_")[0], q.get("gas", ""), q.get("sector", "") or f"{q.get('model', '')}-{q.get('transport', '')}",
+                 q.get("estimate", ""), f"{labels[0]}-{labels[-1]}".replace(" ", ""), part, f"grid{rows}x{cols}")
+    return out.getvalue(), f"{stem}.jpg"

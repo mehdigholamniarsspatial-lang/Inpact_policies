@@ -1749,6 +1749,20 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
 .ts-incmap.off input{cursor:not-allowed}
 .ts-incmap + .ts-export{margin-left:0}
 .ts-export button:disabled,.ts-export select:disabled{opacity:.45;cursor:not-allowed;background:#fff}
+/* "Include map" options: Current Map / Time Series Grid and the grid's panel layout */
+.ts-mapopts{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:.4rem .7rem;margin:-.15rem 0 .55rem;
+  padding:.4rem .55rem;border:1px solid #CFE8E6;border-radius:8px;background:#F4FBFA;animation:ddin .15s ease}
+.ts-mapopts[hidden]{display:none}
+.ts-mapopts .cmp-mode-lbl{font-size:.7rem;font-weight:700;color:var(--text-muted)}
+.ts-mapopts .cmp-seg button{padding:.26rem .6rem;font-size:.71rem;display:inline-flex;align-items:center;gap:.3rem}
+.ts-layout{display:inline-flex;align-items:center;gap:.35rem;font-size:.71rem;font-weight:700;color:#0B5563;margin:0}
+.ts-layout[hidden]{display:none}
+.ts-layout select{height:27px;border:1px solid var(--teal);border-radius:7px;background:#fff;color:var(--navy);font-family:inherit;font-size:.72rem;font-weight:700;padding:0 .35rem;cursor:pointer}
+.ts-layout select:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.ts-layout-msg{font-size:.7rem;color:var(--text-muted);flex-basis:100%;text-align:right}
+.ts-layout-msg:empty{display:none}
+.ts-layout-msg.warn{color:#9A5B00}
+@keyframes ddin{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 .ts-chart{position:relative;height:290px}
 .ts-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem;padding:1rem;border:1px dashed var(--grey-border);border-radius:10px;background:#FAFBFC;color:var(--text-muted);font-size:.74rem;text-align:center}
 .ts-empty[hidden]{display:none}
@@ -2793,6 +2807,17 @@ html.dc-lock{overflow:hidden}
                     </select>
                     <button type="button" class="csv" id="tsCsv" title="Download the values as CSV" aria-label="Download the values as CSV" disabled><i class="bi bi-filetype-csv"></i></button>
                   </div>
+                </div>
+                <!-- "Include map" options: the map shown now, or one map per time step in a grid -->
+                <div class="ts-mapopts" id="tsMapOpts" hidden>
+                  <span class="cmp-mode-lbl" id="tsMapModeLbl">Map in the image</span>
+                  <div class="cmp-seg" role="radiogroup" aria-labelledby="tsMapModeLbl" id="tsMapMode">
+                    <button type="button" role="radio" aria-checked="true" data-mode="current" title="The map shown on the left, as it is now"><i class="bi bi-map"></i> Current Map</button>
+                    <button type="button" role="radio" aria-checked="false" data-mode="grid" title="One map per time step, in a grid with one shared legend"><i class="bi bi-grid-3x3-gap"></i> Time Series Grid</button>
+                  </div>
+                  <label class="ts-layout" id="tsLayoutBox" hidden>Panel layout
+                    <select id="tsLayout" aria-describedby="tsLayoutMsg"></select></label>
+                  <span class="ts-layout-msg" id="tsLayoutMsg" aria-live="polite"></span>
                 </div>
                 <div class="ts-chart">
                   <canvas id="tsChart" role="img" aria-label="Time series graph"></canvas>
@@ -5965,7 +5990,7 @@ if (MAP_STANDALONE) (function mapWindow(){
   }
   async function fetchFile(fmt, q){
     const res = await fetch(`/api/map/export/${fmt}/?${q}`);
-    const ext = { jpeg: "jpg", geotiff: "tif", zip: "zip" }[fmt];
+    const ext = { jpeg: "jpg", grid: "jpg", geotiff: "tif", zip: "zip" }[fmt];
     if (!res.ok) {
       let detail = `HTTP ${res.status}`;
       try { detail = (await res.json()).detail || detail; } catch (e) {}
@@ -7312,9 +7337,115 @@ if (MAP_STANDALONE) (function mapWindow(){
         : "Export the graph together with the map shown on the left (map 60%, graph and details 40%) as a JPEG";
       if (!pngBtn.querySelector(".bi-hourglass-split")) {
         pngBtn.innerHTML = `<i class="bi bi-image"></i>${withMap() ? "JPG" : "PNG"}`;
-        pngBtn.title = withMap() ? "Download the map and the graph as one JPEG image" : "Download the graph as a PNG image";
+        pngBtn.title = !withMap() ? "Download the graph as a PNG image"
+          : mapMode.value === "grid" ? "Download one map per time step (grid) and the graph as one JPEG image"
+          : "Download the map and the graph as one JPEG image";
       }
+      syncMapOpts();
     }
+
+    // ---- "Include map" options: Current Map, or a Time Series Grid (one map per time step) ----
+    // Layouts: rows × columns ≥ the number of maps, at least 2 rows and 2 columns (1 × 2 only for 2 maps),
+    // and no row or column left empty. The same rule is checked on the server.
+    const mapOpts = $("tsMapOpts"), mapModeSeg = $("tsMapMode"), layoutBox = $("tsLayoutBox");
+    const layoutSel = $("tsLayout"), layoutMsg = $("tsLayoutMsg");
+    const gridModeBtn = mapModeSeg.querySelector('[data-mode="grid"]');
+    const mapMode = { value: "current", steps: null, stepsKey: "", stepsReq: null, layout: "" };
+    try {
+      mapMode.value = localStorage.getItem("inpact.tsMapMode") === "grid" ? "grid" : "current";
+      mapMode.layout = localStorage.getItem("inpact.tsGridLayout") || "";
+    } catch (e) {}
+    function gridLayouts(n){
+      const out = [];
+      if (n === 2) return [[1, 2], [2, 1]];
+      for (let r = 2; r <= n; r++) for (let c = 2; c <= n; c++)
+        if (r * c >= n && (r - 1) * c < n && r * (c - 1) < n) out.push([r, c]);
+      // squarest first, then wider than tall (landscape suits the 4:3 image)
+      return out.sort((a, b) => Math.abs(a[0] - a[1]) - Math.abs(b[0] - b[1]) || a[0] - b[0]);
+    }
+    const stepsQuery = () => { const q = exportQuery(); ["palette", "div_palette", "reverse", "rlo", "rhi", "rinv", "conf", "bg"].forEach(k => q.delete(k)); return q; };
+    function loadSteps(){
+      const q = stepsQuery(), key = q.toString();
+      if (key === mapMode.stepsKey && (mapMode.steps || mapMode.stepsReq)) return mapMode.stepsReq || Promise.resolve(mapMode.steps);
+      mapMode.stepsKey = key; mapMode.steps = null;
+      mapMode.stepsReq = fetch(`/api/map/export/steps/?${q}`).then(async r => {
+        const j = await r.json().catch(() => ({}));
+        return r.ok ? j : { ok: false, detail: j.detail || `HTTP ${r.status}` };
+      }).catch(err => ({ ok: false, detail: err.message })).then(j => {
+        if (mapMode.stepsKey === key) { mapMode.steps = j; mapMode.stepsReq = null; }
+        return j;
+      });
+      return mapMode.stepsReq;
+    }
+    const gridOn = () => withMap() && mapMode.value === "grid" && !gridModeBtn.disabled && /^\d+x\d+$/.test(layoutSel.value);
+    function gridInfo(){
+      const j = mapMode.steps, [r, c] = layoutSel.value.split("x");
+      return j?.ok ? `${j.n} ${j.what}, ${j.labels[0]} – ${j.labels[j.labels.length - 1]} · ${r} × ${c} panels · one colour scale for all maps`
+                   : `${r} × ${c} panels, one map per time step`;
+    }
+    function setMapMode(mode, focus){
+      mapMode.value = mode === "grid" && !gridModeBtn.disabled ? "grid" : "current";
+      try { localStorage.setItem("inpact.tsMapMode", mapMode.value); } catch (e) {}
+      mapModeSeg.querySelectorAll("[data-mode]").forEach(b => {
+        const on = b.dataset.mode === mapMode.value;
+        b.setAttribute("aria-checked", String(on)); b.tabIndex = on ? 0 : -1;
+        if (on && focus) b.focus();
+      });
+      syncMapBox();
+    }
+    function renderLayouts(){
+      const j = mapMode.steps;
+      if (!j) { layoutMsg.textContent = "Finding the time steps of this layer…"; layoutMsg.classList.remove("warn"); return; }
+      const n = j.ok ? j.n : 0, opts = j.ok ? gridLayouts(n) : [];
+      gridModeBtn.disabled = !opts.length;
+      gridModeBtn.title = opts.length ? "One map per time step, in a grid with one shared legend"
+        : j.ok ? "This layer has a single time step: use Current Map" : (j.detail || "Not available for this map");
+      if (!opts.length && mapMode.value === "grid") { setMapMode("current"); return; }
+      if (mapMode.value !== "grid") return;
+      const cur = layoutSel.value || mapMode.layout;
+      layoutSel.innerHTML = opts.map(([r, c]) => {
+        const empty = r * c - n;
+        return `<option value="${r}x${c}">${r} rows × ${c} columns${empty ? ` (${empty} empty)` : ""}</option>`;
+      }).join("");
+      layoutSel.value = opts.some(([r, c]) => `${r}x${c}` === cur) ? cur : `${opts[0][0]}x${opts[0][1]}`;
+      const [r, c] = layoutSel.value.split("x").map(Number);
+      const range = `${j.labels[0]} – ${j.labels[j.labels.length - 1]}`;
+      layoutMsg.textContent = `${n} ${j.what} (${range}) → ${r} × ${c} grid, ${r * c} panels${r * c > n ? `, ${r * c - n} left empty` : ""} · one shared colour scale`;
+      layoutMsg.classList.remove("warn");
+    }
+    function syncMapOpts(){
+      const show = withMap();
+      mapOpts.hidden = !show;
+      if (!show) return;
+      layoutBox.hidden = mapMode.value !== "grid";
+      if (mapMode.value !== "grid" && mapMode.steps) { layoutMsg.textContent = ""; }
+      const q = stepsQuery().toString();
+      if (q !== mapMode.stepsKey || (!mapMode.steps && !mapMode.stepsReq)) {
+        renderLayouts();                     // "finding…" while the steps load
+        loadSteps().then(() => { if (withMap()) { layoutBox.hidden = mapMode.value !== "grid"; renderLayouts(); } });
+      } else renderLayouts();
+      if (mapMode.value !== "grid") layoutMsg.textContent = "";
+    }
+    mapModeSeg.addEventListener("click", e => {
+      const b = e.target.closest("[data-mode]");
+      if (b && !b.disabled) setMapMode(b.dataset.mode);
+    });
+    mapModeSeg.addEventListener("keydown", e => {
+      if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) return;
+      e.preventDefault();
+      const next = mapMode.value === "grid" ? "current" : "grid";
+      if (next === "grid" && gridModeBtn.disabled) return;
+      setMapMode(next, true);
+    });
+    layoutSel.addEventListener("change", () => {
+      mapMode.layout = layoutSel.value;
+      try { localStorage.setItem("inpact.tsGridLayout", layoutSel.value); } catch (e) {}
+      renderLayouts();
+    });
+    // The map layer's own selections (dataset, gas, year, month…) change its time steps
+    document.querySelectorAll("#mapDataset, #edgarGas, #edgarSector, #edgarYear, #edgarMonth, #invModel, #invTransport, #invGas, #invYear, #invEstimate")
+      .forEach(el => el.addEventListener("change", () => { if (withMap()) syncMapOpts(); }));
+    setMapMode(mapMode.value);
     try { mapCb.checked = localStorage.getItem("inpact.tsIncludeMap") === "1"; } catch (e) {}
     mapCb.addEventListener("change", () => {
       try { localStorage.setItem("inpact.tsIncludeMap", mapCb.checked ? "1" : "0"); } catch (e) {}
@@ -7365,7 +7496,8 @@ if (MAP_STANDALONE) (function mapWindow(){
           text: `${l.short} — ${l.def.dataset === "edgar" ? "EDGAR" : "Inverse model"}` })), true],
         ["Area", locationText()],
         ["Period", periodInfo(vis)],
-        ...(mapTime() ? [["Map time", `${mapTime().label} — red dot on the graph`]] : []),
+        ...(gridOn() ? [["Map grid", gridInfo()]]
+          : mapTime() ? [["Map time", `${mapTime().label} — red dot on the graph`]] : []),
         ["Units", units],
         ...(notes ? [["Notes", notes]] : []),
         ["Sources", sourceText(vis).replace(/^Source: /, "").replace(" · Ireland GHG Policy Impact Explorer", "")],
@@ -7422,7 +7554,10 @@ if (MAP_STANDALONE) (function mapWindow(){
         else if (L0.type === "rect") ["s", "w", "n", "e"].forEach(k => mq.set(k, L0[k].toFixed(4)));
         else mq.set("poly", L0.pts.map(([a, b]) => `${a.toFixed(4)},${b.toFixed(4)}`).join(";"));
       }
-      const file = await fetchFile("jpeg", mq);
+      // Time Series Grid: one map per time step in the chosen rows × columns, one shared legend
+      const grid = gridOn();
+      if (grid) { const [r, c] = layoutSel.value.split("x"); mq.set("rows", r); mq.set("cols", c); }
+      const file = await fetchFile(grid ? "grid" : "jpeg", mq);
       const mapImg = await createImageBitmap(file.blob);
       const box = document.createElement("div");
       box.style.cssText = `position:fixed;left:-20000px;top:0;width:${GW}px;height:${GH}px`;
@@ -7431,7 +7566,7 @@ if (MAP_STANDALONE) (function mapWindow(){
       box.appendChild(cv); document.body.appendChild(box);
       try {
         const chart = new Chart(cv, chartConfig({
-          dpr, mapTime: true,
+          dpr, mapTime: !grid,                              // a grid shows every time: no single-time marker
           title: `${F(plotGas())} time series · ${titleEl.textContent.replace(" time series", "")}`,
           subtitle: `${locationText()}${scaling() ? " · scaled to the reference layer" : ""}`,
           source: "",
@@ -7451,7 +7586,7 @@ if (MAP_STANDALONE) (function mapWindow(){
         drawInfo(ctx, GX, IY, GW, CH - IY - 16, vis);
         const blob = await new Promise(r => out.toBlob(r, "image/jpeg", 0.93));
         const jpg = jpegWithDpi(await blob.arrayBuffer(), dpi);
-        const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(jpg), download: `time_series_map_${plotGas()}_${fileArea()}_${dpi}dpi.jpg` });
+        const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(jpg), download: `time_series_${grid ? `mapgrid${layoutSel.value}` : "map"}_${plotGas()}_${fileArea()}_${dpi}dpi.jpg` });
         document.body.appendChild(a); a.click(); a.remove();
         setTimeout(() => URL.revokeObjectURL(a.href), 4000);
       } finally {

@@ -405,7 +405,9 @@ _EXPORT_KEYS = ("dataset", "compare", "mode", *_LAYER_KEYS, *(f"b_{k}" for k in 
                 "palette", "div_palette", "reverse", "rlo", "rhi", "rinv", "conf", "bg",
                 # the time series region (county, drawn polygon or box s/w/n/e): only its cells, its
                 # own colour range and its boundary
-                "region", "county", "poly", "s", "w", "n", "e")
+                "region", "county", "poly", "s", "w", "n", "e",
+                # the time series grid (fmt="grid"): one map per time step in rows × cols panels
+                "rows", "cols")
 
 
 def map_export(request, fmt):
@@ -413,12 +415,31 @@ def map_export(request, fmt):
     Download the layer selected on the map as a GeoTIFF (``fmt="geotiff"``),
     a JPEG map with legend (``fmt="jpeg"``) or both in one ZIP (``fmt="zip"``).
     Same query as the layer endpoints plus ``dataset`` (mapeire | edgar | inverse).
+    ``fmt="grid"``: a JPEG with one map per time step (``rows`` × ``cols`` panels, one legend);
+    ``fmt="steps"``: those time steps as JSON, for the page's panel layout choices.
     """
-    if fmt not in ("geotiff", "jpeg", "zip"):
-        return JsonResponse({"ok": False, "detail": "Format must be geotiff, jpeg or zip."}, status=404)
+    if fmt not in ("geotiff", "jpeg", "zip", "grid", "steps"):
+        return JsonResponse({"ok": False, "detail": "Format must be geotiff, jpeg, zip, grid or steps."}, status=404)
     q = {k: (request.GET.get(k) or "").strip() for k in _EXPORT_KEYS}
+    if fmt == "steps":
+        try:
+            steps, info = map_export_mod.grid_steps(q)
+        except map_export_mod.SelectionError as exc:
+            return JsonResponse({"ok": False, "detail": str(exc)}, status=404)
+        return JsonResponse({"ok": True, "n": len(steps), "labels": [label for _, label in steps], "what": info["what"]},
+                            json_dumps_params={"ensure_ascii": False})
     try:
         with map_export_mod.use_palette(map_export_mod.Palette.from_query(q)):
+            if fmt == "grid":
+                try:
+                    rows, cols = int(q["rows"]), int(q["cols"])
+                except ValueError:
+                    raise map_export_mod.SelectionError("Choose the number of rows and columns.")
+                body, filename = map_export_mod.grid_jpeg(q, rows, cols, q["region"] == "1")
+                resp = HttpResponse(body, content_type="image/jpeg")
+                resp["Content-Disposition"] = f'attachment; filename="{filename}"'
+                resp["Cache-Control"] = "public, max-age=3600"
+                return resp
             layer = map_export_mod.build_layer(q)
             if q["region"] == "1":
                 layer = map_export_mod.clip_to_region(layer, q)
