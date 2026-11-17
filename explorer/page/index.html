@@ -112,48 +112,47 @@ body{
   .brand-funder .funded-by{display:none}
 }
 
-/* Policy Timeline and Spatial Mapping: the menu bar folds away and the header shrinks to a slim strip
-   (40% lower than the earlier folded header: 106px -> 64px), for more room. The whole strip is one
-   click target (logos included) that brings the full header and menu back; the button in the right
-   corner shows it (four arrows out) and, on the full header, shrinks it again (four arrows in). */
+/* Once the user picks any tab, the header shrinks to a slim strip (64px) for more room; the menu bar
+   always stays visible under it. The whole strip is one click target (logos included) that brings the
+   full header back; the button in the right corner shows it (four arrows out) and, on the full
+   header, shrinks it again (four arrows in). */
 .nav-toggle{display:none}
-html.nav-foldable .app-header{padding-right:3.6rem}
-html.nav-foldable .nav-toggle{
+html.hdr-shrinkable .app-header{padding-right:3.6rem}
+html.hdr-shrinkable .nav-toggle{
   display:inline-flex;align-items:center;justify-content:center;position:absolute;right:.9rem;top:50%;
   transform:translateY(-50%);width:34px;height:34px;padding:0;border:1px solid var(--grey-border);border-radius:8px;
   background:#fff;color:var(--navy);cursor:pointer;box-shadow:0 1px 3px rgba(16,42,67,.12);
   transition:background .15s,color .15s,border-color .15s;
 }
-html.nav-foldable .nav-toggle:hover{background:var(--teal-light);color:var(--teal);border-color:var(--teal)}
-html.nav-foldable .nav-toggle:focus-visible{outline:3px solid rgba(14,140,138,.35);outline-offset:2px}
-html.nav-foldable .nav-toggle svg{width:20px;height:20px}
+html.hdr-shrinkable .nav-toggle:hover{background:var(--teal-light);color:var(--teal);border-color:var(--teal)}
+html.hdr-shrinkable .nav-toggle:focus-visible{outline:3px solid rgba(14,140,138,.35);outline-offset:2px}
+html.hdr-shrinkable .nav-toggle svg{width:20px;height:20px}
 .nav-toggle .ic-in{display:none}
-html.nav-foldable:not(.nav-folded) .nav-toggle .ic-out{display:none}
-html.nav-foldable:not(.nav-folded) .nav-toggle .ic-in{display:block}
+html.hdr-shrinkable:not(.hdr-slim) .nav-toggle .ic-out{display:none}
+html.hdr-shrinkable:not(.hdr-slim) .nav-toggle .ic-in{display:block}
 /* Slim (folded) strip: everything on it is clickable and opens the full header */
-html.nav-folded{--header-h:64px}                      /* 60% of the earlier folded 106px */
-html.nav-folded .app-header{cursor:pointer;transition:background .15s}
-html.nav-folded .app-header:hover{background:#F6FAFB}
-html.nav-folded .app-header a{cursor:pointer}
-html.nav-folded .tab-nav{display:none}
-html.nav-folded .header-inner{gap:1rem}
-html.nav-folded .brand-inpact img{height:46px}
-html.nav-folded .header-text{padding-left:1rem}
-html.nav-folded .app-title{font-size:1.02rem}
-html.nav-folded .app-subtitle{display:none}
-html.nav-folded .brand-funder{flex-direction:row;gap:.5rem;padding-left:1rem}
-html.nav-folded .brand-funder img{height:26px}
+html.hdr-slim{--header-h:64px}                      /* 60% of the earlier folded 106px */
+html.hdr-slim .app-header{cursor:pointer;transition:background .15s}
+html.hdr-slim .app-header:hover{background:#F6FAFB}
+html.hdr-slim .app-header a{cursor:pointer}
+html.hdr-slim .header-inner{gap:1rem}
+html.hdr-slim .brand-inpact img{height:46px}
+html.hdr-slim .header-text{padding-left:1rem}
+html.hdr-slim .app-title{font-size:1.02rem}
+html.hdr-slim .app-subtitle{display:none}
+html.hdr-slim .brand-funder{flex-direction:row;gap:.5rem;padding-left:1rem}
+html.hdr-slim .brand-funder img{height:26px}
 @media (max-width:991px){
-  html.nav-folded{--header-h:56px}                   /* 60% of the earlier folded 93px */
-  html.nav-folded .brand-inpact img{height:40px}
-  html.nav-folded .app-title{font-size:.92rem}
-  html.nav-folded .brand-funder img{height:22px}
+  html.hdr-slim{--header-h:56px}                   /* 60% of the earlier folded 93px */
+  html.hdr-slim .brand-inpact img{height:40px}
+  html.hdr-slim .app-title{font-size:.92rem}
+  html.hdr-slim .brand-funder img{height:22px}
 }
 @media (max-width:575px){
-  html.nav-folded{--header-h:46px}                   /* 60% of the earlier folded 74px */
-  html.nav-folded .brand-inpact img{height:32px}
-  html.nav-folded .brand-funder img{height:18px}
-  html.nav-foldable .nav-toggle{width:30px;height:30px;right:.6rem}
+  html.hdr-slim{--header-h:46px}                   /* 60% of the earlier folded 74px */
+  html.hdr-slim .brand-inpact img{height:32px}
+  html.hdr-slim .brand-funder img{height:18px}
+  html.hdr-shrinkable .nav-toggle{width:30px;height:30px;right:.6rem}
 }
 
 /* ============ LAYOUT ============ */
@@ -959,20 +958,58 @@ input[type=range]{accent-color:var(--emerald);width:100%}
 @media (max-width:575px){.fb-stats-row{grid-template-columns:1fr}}
 
 /* ============ POLICY TIMELINE TAB (embedded Ireland Climate Policy Timeline app) ============
-   Left: vertical sub-menu (one entry per section of the policy dashboard).
-   Right: the selected section, shown full height in a frame. */
-.pt-layout{display:flex;align-items:flex-start}
-.pt-side{
-  width:264px;flex:0 0 264px;background:#fff;border-right:1px solid var(--grey-border);
-  position:sticky;top:calc(var(--header-h) + var(--tabnav-h, 52px));
-  height:calc(100vh - var(--header-h) - var(--tabnav-h, 52px));
-  display:flex;flex-direction:column;padding:1rem .8rem .8rem;z-index:5;
+   Sections are picked from a vertical drop-down under the "Policy Timeline" tab; the selected
+   section fills the full width below a slim bar (crumb, policy search, back / forward / reload). */
+
+/* Drop-down under the Policy Timeline tab */
+.tab-dd{position:relative;display:flex}
+.tab-nav .tab-btn .tab-caret{font-size:.7rem;margin-left:-.15rem;transition:transform .2s}
+.tab-nav .tab-btn[aria-expanded="true"] .tab-caret{transform:rotate(180deg)}
+.tab-menu{
+  position:absolute;left:0;top:calc(100% + 2px);z-index:1200;width:340px;max-width:calc(100vw - 1rem);
+  display:flex;flex-direction:column;gap:.1rem;padding:.4rem;background:#fff;
+  border:1px solid var(--grey-border);border-radius:12px;box-shadow:var(--shadow-lg);
+  max-height:calc(100vh - var(--header-h) - 70px);overflow-y:auto;animation:ddin .14s ease;
 }
-.pt-search{position:relative;margin-bottom:.8rem}
+.tab-menu[hidden]{display:none}
+@keyframes ddin{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.tab-menu-item{
+  width:100%;text-align:left;border:0;background:transparent;font-family:inherit;cursor:pointer;
+  display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .7rem;border-radius:9px;color:var(--text-main);
+  transition:background .12s;
+}
+.tab-menu-item > i:first-child{font-size:1.05rem;color:var(--text-muted);flex:0 0 1.15rem;text-align:center;margin-top:.05rem}
+.tab-menu-item > span{flex:1 1 auto;min-width:0}
+.tab-menu-item .t{display:block;font-size:.88rem;font-weight:700;line-height:1.25;color:var(--navy)}
+.tab-menu-item .d{font-size:.72rem;line-height:1.35;color:var(--text-muted);margin-top:.12rem;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tab-menu-item .ck{visibility:hidden;color:var(--teal);font-size:1rem;flex:0 0 auto;margin-top:.05rem}
+.tab-menu-item:hover,.tab-menu-item:focus-visible{background:var(--grey-panel);outline:none}
+.tab-menu-item:hover > i:first-child,.tab-menu-item:focus-visible > i:first-child{color:var(--teal)}
+.tab-menu-item[aria-checked="true"]{background:var(--teal-light)}
+.tab-menu-item[aria-checked="true"] > i:first-child,.tab-menu-item[aria-checked="true"] .t{color:#0B5563}
+.tab-menu-item[aria-checked="true"] .ck{visibility:visible}
+
+/* Section bar + frame */
+.pt-layout{display:block}
+.pt-main{min-width:0}
+.pt-topbar{
+  display:flex;align-items:center;gap:.8rem;height:50px;padding:0 1rem;
+  background:#fff;border-bottom:1px solid var(--grey-border);
+}
+.pt-crumb{
+  flex:0 1 auto;min-width:0;font-family:inherit;font-size:.84rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  border:0;background:transparent;padding:.3rem .5rem;margin-left:-.5rem;border-radius:8px;cursor:pointer;text-align:left;
+}
+.pt-crumb:hover{background:var(--grey-panel)}
+.pt-crumb:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
+.pt-crumb b{color:var(--navy);font-weight:800}
+.pt-crumb .cur{color:var(--teal);font-weight:700}
+.pt-search{position:relative;flex:0 1 320px;margin-left:auto;min-width:160px}
 .pt-search > i{position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none;font-size:.85rem}
 .pt-search input{
   width:100%;border:1px solid var(--grey-border);border-radius:999px;
-  padding:.42rem 2rem .42rem 1.95rem;font-size:.82rem;background:var(--grey-panel);color:var(--text-main);
+  padding:.38rem 2rem .38rem 1.95rem;font-size:.82rem;background:var(--grey-panel);color:var(--text-main);
 }
 .pt-search input:focus{outline:none;border-color:var(--teal);background:#fff;box-shadow:0 0 0 .2rem rgba(14,140,138,.15)}
 .pt-search kbd{
@@ -981,7 +1018,7 @@ input[type=range]{accent-color:var(--emerald);width:100%}
 }
 .pt-search input:focus ~ kbd,.pt-search input:not(:placeholder-shown) ~ kbd{display:none}
 .pt-results{
-  position:absolute;left:0;top:calc(100% + 4px);width:380px;max-width:calc(100vw - 2rem);z-index:1200;
+  position:absolute;right:0;top:calc(100% + 4px);width:380px;max-width:calc(100vw - 2rem);z-index:1200;
   list-style:none;margin:0;padding:.3rem;background:#fff;
   border:1px solid var(--grey-border);border-radius:12px;box-shadow:var(--shadow-lg);
   max-height:380px;overflow-y:auto;
@@ -991,31 +1028,6 @@ input[type=range]{accent-color:var(--emerald);width:100%}
 .pt-results .dot{width:9px;height:9px;border-radius:50%;flex:0 0 9px;margin-top:.38rem}
 .pt-results .nm{font-size:.85rem;font-weight:600;color:var(--navy);line-height:1.25}
 .pt-results .mt{font-size:.72rem;color:var(--text-muted)}
-.pt-menu-label{font-size:.68rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--text-muted);padding:0 .5rem .35rem}
-.pt-vtabs{display:flex;flex-direction:column;gap:.18rem;overflow-y:auto;min-height:0;flex:1 1 auto}
-.pt-vtab{
-  width:100%;text-align:left;border:0;background:transparent;font-family:inherit;cursor:pointer;
-  display:flex;gap:.65rem;align-items:flex-start;padding:.55rem .6rem .55rem .75rem;border-radius:10px;
-  border-left:3px solid transparent;color:var(--text-main);transition:background .15s,border-color .15s,color .15s;
-}
-.pt-vtab i{font-size:1.02rem;color:var(--text-muted);margin-top:.05rem;flex:0 0 auto;width:1.1rem;text-align:center}
-.pt-vtab .t{display:block;font-size:.88rem;font-weight:700;line-height:1.25}
-.pt-vtab .d{display:none;font-size:.73rem;line-height:1.38;color:var(--text-muted);margin-top:.2rem;font-weight:400}
-.pt-vtab:hover{background:var(--grey-panel)}
-.pt-vtab:hover i{color:var(--teal)}
-.pt-vtab:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
-.pt-vtab[aria-selected="true"]{background:var(--teal-light);border-left-color:var(--teal);color:#0B5563}
-.pt-vtab[aria-selected="true"] i{color:var(--teal)}
-.pt-vtab[aria-selected="true"] .d{display:block}
-.pt-side-foot{font-size:.7rem;color:var(--text-muted);line-height:1.4;padding:.7rem .4rem 0;border-top:1px solid var(--grey-border);margin-top:.6rem}
-.pt-main{flex:1 1 auto;min-width:0}
-.pt-topbar{
-  display:flex;align-items:center;gap:.6rem;height:46px;padding:0 1rem;
-  background:#fff;border-bottom:1px solid var(--grey-border);
-}
-.pt-crumb{flex:1 1 auto;min-width:0;font-size:.84rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pt-crumb b{color:var(--navy);font-weight:800}
-.pt-crumb .cur{color:var(--teal);font-weight:700}
 .pt-tools{display:flex;align-items:center;gap:.3rem;flex:0 0 auto}
 .pt-tool{
   border:1px solid var(--grey-border);background:#fff;color:var(--navy);
@@ -1043,17 +1055,13 @@ input[type=range]{accent-color:var(--emerald);width:100%}
   border:1px solid var(--teal);border-radius:999px;padding:.12rem .6rem;
 }
 .pt-headlink:hover{background:var(--teal);color:#fff}
-/* Narrow screens: the sub-menu becomes a scrollable strip above the content */
-@media (max-width:991px){
-  .pt-layout{flex-direction:column;align-items:stretch}
-  .pt-side{width:auto;flex:none;position:static;height:auto;border-right:0;border-bottom:1px solid var(--grey-border);padding:.7rem .8rem .5rem}
-  .pt-menu-label,.pt-side-foot{display:none}
-  .pt-vtabs{flex-direction:row;overflow-x:auto;overflow-y:visible;gap:.3rem;padding-bottom:.3rem}
-  .pt-vtab{width:auto;flex:0 0 auto;white-space:nowrap;border-left:0;border-bottom:3px solid transparent;border-radius:8px 8px 0 0;padding:.45rem .7rem}
-  .pt-vtab[aria-selected="true"]{border-bottom-color:var(--teal)}
-  .pt-vtab[aria-selected="true"] .d{display:none}
-  .pt-results{width:100%}
-  .pt-tools .lbl{display:none}
+/* Narrow screens: the search takes the bar; the drop-down spans the screen */
+@media (max-width:767px){
+  .pt-topbar{gap:.5rem;padding:0 .6rem}
+  .pt-crumb{display:none}
+  .pt-search{flex:1 1 auto;margin-left:0}
+  .pt-results{width:calc(100vw - 1.2rem)}
+  .tab-menu{position:fixed;left:.5rem;right:.5rem;width:auto;top:calc(var(--header-h) + var(--tabnav-h, 52px))}
 }
 
 /* ============ SPATIAL MAPPING TAB (map workspace in a frame under the menu bar) ============ */
@@ -2069,7 +2077,7 @@ html.dc-lock{overflow:hidden}
     <svg class="ic-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M10 5v5H5M10 10 4 4M14 5v5h5M14 10l6-6M10 19v-5H5M10 14l-6 6M14 19v-5h5M14 14l6 6"/>
     </svg>
-    <span class="visually-hidden" id="navToggleTxt">Show the menu</span>
+    <span class="visually-hidden" id="navToggleTxt">Show the full header</span>
   </button>
 </header>
 
@@ -2078,9 +2086,15 @@ html.dc-lock{overflow:hidden}
   <button class="tab-btn active" role="tab" aria-selected="true" data-tab="explorer">
     <i class="bi bi-graph-up-arrow"></i><span>Explorer<span class="tab-label-long"> Dashboard</span></span>
   </button>
-  <button class="tab-btn" role="tab" aria-selected="false" data-tab="policy">
-    <i class="bi bi-calendar3-range"></i><span>Policy<span class="tab-label-long"> Timeline</span></span>
-  </button>
+  <!-- Policy Timeline: a click opens a vertical drop-down of its sections (filled by script) -->
+  <div class="tab-dd" id="ptMenuWrap">
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="policy" id="ptMenuBtn"
+            aria-haspopup="menu" aria-expanded="false" aria-controls="ptSections">
+      <i class="bi bi-calendar3-range"></i><span>Policy<span class="tab-label-long"> Timeline</span></span>
+      <i class="bi bi-chevron-down tab-caret" aria-hidden="true"></i>
+    </button>
+    <div class="tab-menu" id="ptSections" role="menu" aria-label="Policy Timeline sections" hidden></div>
+  </div>
   <button class="tab-btn" role="tab" aria-selected="false" data-tab="mapping">
     <i class="bi bi-globe-europe-africa"></i><span>Spatial<span class="tab-label-long"> Mapping</span></span>
   </button>
@@ -3252,32 +3266,22 @@ html.dc-lock{overflow:hidden}
 <div class="tab-pane" id="tab-policy" role="tabpanel" aria-label="Ireland Climate Policy Timeline">
   <div class="pt-layout">
 
-    <!-- Left vertical sub-menu -->
-    <aside class="pt-side" aria-label="Policy Timeline menu">
-      <div class="pt-search">
-        <i class="bi bi-search" aria-hidden="true"></i>
-        <input id="ptSearch" type="search" placeholder="Find a policy or sector&hellip;" autocomplete="off"
-               role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="ptResults"
-               aria-label="Search the policy timeline">
-        <kbd aria-hidden="true">/</kbd>
-        <ul id="ptResults" class="pt-results" role="listbox" hidden></ul>
-      </div>
-      <div class="pt-menu-label" id="ptMenuLabel">Sections</div>
-      <nav class="pt-vtabs" id="ptSections" role="tablist" aria-orientation="vertical" aria-labelledby="ptMenuLabel"></nav>
-      <div class="pt-side-foot">
-        <i class="bi bi-lightbulb"></i> Hover an underlined term for its definition. Your current page and filters are kept in the address bar, so you can bookmark or share any view.
-      </div>
-    </aside>
-
-    <!-- Selected section -->
+    <!-- Selected section (full width; sections are chosen from the Policy Timeline drop-down) -->
     <section class="pt-main" aria-label="Selected Policy Timeline section">
       <div class="pt-topbar">
-        <div class="pt-crumb" id="ptCrumb"><b>Policy Timeline</b></div>
+        <button type="button" class="pt-crumb" id="ptCrumb" title="Choose another section" aria-haspopup="menu" aria-controls="ptSections"><b>Policy Timeline</b></button>
+        <div class="pt-search">
+          <i class="bi bi-search" aria-hidden="true"></i>
+          <input id="ptSearch" type="search" placeholder="Find a policy or sector&hellip;" autocomplete="off"
+                 role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="ptResults"
+                 aria-label="Search the policy timeline">
+          <kbd aria-hidden="true">/</kbd>
+          <ul id="ptResults" class="pt-results" role="listbox" hidden></ul>
+        </div>
         <div class="pt-tools">
           <button type="button" class="pt-tool" id="ptBack" title="Back" aria-label="Back" disabled><i class="bi bi-arrow-left"></i></button>
           <button type="button" class="pt-tool" id="ptFwd" title="Forward" aria-label="Forward" disabled><i class="bi bi-arrow-right"></i></button>
           <button type="button" class="pt-tool" id="ptReload" title="Reload this section" aria-label="Reload"><i class="bi bi-arrow-clockwise"></i></button>
-          <a class="pt-tool" id="ptPopout" href="/policy/" target="_blank" rel="noopener" title="Open this page on its own in a new browser tab"><i class="bi bi-box-arrow-up-right"></i><span class="lbl">New tab</span></a>
         </div>
       </div>
       <div class="pt-stage">
@@ -5340,7 +5344,7 @@ function activateTab(name){
   Object.entries(tabPanes).forEach(([key, pane]) => {
     if (pane) pane.classList.toggle("active", key === name);
   });
-  syncNavFold(name);                     // Policy Timeline / Spatial Mapping: menu folded, smaller header
+  syncHeaderSize();                      // any tab chosen: slim header, menu bar stays
   // Leaflet needs a size recalculation when its container becomes visible.
   if (name === "explorer" && typeof map !== "undefined" && map) {
     setTimeout(() => map.invalidateSize(), 60);
@@ -5358,33 +5362,33 @@ function activateTab(name){
   else if (window.dcDeactivate) window.dcDeactivate();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
-tabButtons.forEach(b =>
-  b.addEventListener("click", () => activateTab(b.dataset.tab)));
+tabButtons.forEach(b => b.addEventListener("click", () => {
+  if (b.dataset.tab === "policy"){ ptMenuToggle(); return; }   // Policy Timeline: opens its section menu
+  activateTab(b.dataset.tab);
+}));
 
-/* Policy Timeline and Spatial Mapping fold the menu bar away and shrink the header to a slim strip, for
-   more room. A click anywhere on the slim strip (logos included) shows the full header and menu; the
-   button in the right corner does the same and, on the full header, shrinks it again. */
-const NAV_FOLD_TABS = new Set(["policy", "mapping"]);
+/* Choosing any tab shrinks the header to a slim strip, for more room; the menu bar stays visible.
+   A click anywhere on the slim strip (logos included) shows the full header; the button in the
+   right corner does the same and, on the full header, shrinks it again. */
 const appHeader = document.querySelector(".app-header");
 const navToggle = document.getElementById("navToggle"), navToggleTxt = document.getElementById("navToggleTxt");
-const isFoldable = () => document.documentElement.classList.contains("nav-foldable");
-const isFolded = () => document.documentElement.classList.contains("nav-folded");
+const isFoldable = () => document.documentElement.classList.contains("hdr-shrinkable");
+const isFolded = () => document.documentElement.classList.contains("hdr-slim");
 function setNavFolded(folded){
   const root = document.documentElement, nav = document.querySelector(".tab-nav");
-  root.classList.toggle("nav-folded", folded);
-  const label = folded ? "Show the menu and full header" : "Shrink the header and hide the menu";
+  root.classList.toggle("hdr-slim", folded);
+  const label = folded ? "Show the full header" : "Shrink the header";
   navToggle.title = label; navToggleTxt.textContent = label;
   navToggle.setAttribute("aria-expanded", String(!folded));
-  appHeader.title = folded ? "Click to show the menu and full header" : "";
+  appHeader.title = folded ? "Click to show the full header" : "";
   // the Policy Timeline and Spatial Mapping frames fill the space under the header and menu bar
   root.style.setProperty("--tabnav-h", (nav ? nav.offsetHeight : 0) + "px");
   if (typeof pt !== "undefined" && pt.started && ptIsActive()) ptSizeFrame();
 }
-function syncNavFold(name){
-  const foldable = !MAP_STANDALONE && NAV_FOLD_TABS.has(name);
-  document.documentElement.classList.toggle("nav-foldable", foldable);
-  if (!foldable) appHeader.removeAttribute("title");
-  setNavFolded(foldable);                // these two tabs open with the menu folded
+function syncHeaderSize(){
+  if (MAP_STANDALONE) return;
+  document.documentElement.classList.add("hdr-shrinkable");
+  setNavFolded(true);                    // every tab opens with the slim header
 }
 navToggle.addEventListener("click", e => {
   e.stopPropagation();
@@ -5442,7 +5446,6 @@ const pt = {
   tabs: document.getElementById("ptSections"),
   back: document.getElementById("ptBack"),
   fwd: document.getElementById("ptFwd"),
-  popout: document.getElementById("ptPopout"),
   started: false, stack: [], idx: -1, pending: null,
   series: null, seriesReq: null, hits: [], sel: -1,
 };
@@ -5458,36 +5461,66 @@ const ptSectionOf = p => {
   return hit ? hit.key : "overview";
 };
 
-// Left vertical sub-menu
+// Vertical drop-down under the "Policy Timeline" tab: one item per section
 pt.tabs.innerHTML = PT_SECTIONS.map((s, i) =>
-  `<button type="button" class="pt-vtab" role="tab" id="ptTab-${s.key}" data-key="${s.key}" data-path="${s.path}"
-     aria-selected="${i === 0}" aria-controls="ptFrame" tabindex="${i === 0 ? 0 : -1}" title="${ptEsc(s.desc)}">
+  `<button type="button" class="tab-menu-item" role="menuitemradio" data-key="${s.key}" data-path="${s.path}"
+     aria-checked="${i === 0}" tabindex="-1">
      <i class="bi ${s.icon}" aria-hidden="true"></i><span><span class="t">${s.label}</span><span class="d">${ptEsc(s.desc)}</span></span>
+     <i class="bi bi-check2 ck" aria-hidden="true"></i>
    </button>`).join("");
-const ptTabBtns = [...pt.tabs.querySelectorAll(".pt-vtab")];
+const ptTabBtns = [...pt.tabs.querySelectorAll(".tab-menu-item")];
+const ptMenuBtn = document.getElementById("ptMenuBtn");
+const ptMenuOpen = () => !pt.tabs.hidden;
+function ptMenuShow(focusItem){
+  pt.tabs.hidden = false;
+  ptMenuBtn.setAttribute("aria-expanded", "true");
+  if (focusItem) (ptTabBtns.find(b => b.getAttribute("aria-checked") === "true") || ptTabBtns[0]).focus();
+}
+function ptMenuHide(refocus){
+  if (!ptMenuOpen()) return;
+  pt.tabs.hidden = true;
+  ptMenuBtn.setAttribute("aria-expanded", "false");
+  if (refocus) ptMenuBtn.focus();
+}
+// Click on the tab: show the Policy Timeline (first visit: Overview) and open / close its menu
+function ptMenuToggle(){
+  if (!ptIsActive()) activateTab("policy");
+  if (ptMenuOpen()) ptMenuHide(); else ptMenuShow(false);
+}
 ptTabBtns.forEach(b => b.addEventListener("click", () => {
   const path = PT_ROOT + b.dataset.path;
   ptMarkTab(b.dataset.key);            // highlight immediately; the page confirms on load
-  if (pt.stack[pt.idx] !== path) ptOpen(path);
+  ptMenuHide();
+  if (!ptIsActive() || pt.stack[pt.idx] !== path) ptOpen(path);
 }));
-// Arrow keys move between sub-menu items (vertical tablist pattern)
+// The crumb in the section bar opens the same menu
+pt.crumb.addEventListener("click", e => { e.stopPropagation(); ptMenuShow(true); });
+// Keyboard: arrows move through the items, Escape closes, Tab leaves the menu
+ptMenuBtn.addEventListener("keydown", e => {
+  if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " "){
+    e.preventDefault();
+    if (!ptIsActive()) activateTab("policy");
+    ptMenuShow(true);
+  }
+});
 pt.tabs.addEventListener("keydown", e => {
   const i = ptTabBtns.indexOf(document.activeElement);
+  if (e.key === "Escape"){ e.preventDefault(); ptMenuHide(true); return; }
+  if (e.key === "Tab"){ ptMenuHide(); return; }
   if (i < 0) return;
   const n = ptTabBtns.length;
-  const j = { ArrowDown: i + 1, ArrowRight: i + 1, ArrowUp: i - 1, ArrowLeft: i - 1, Home: 0, End: n - 1 }[e.key];
+  const j = { ArrowDown: i + 1, ArrowUp: i - 1, Home: 0, End: n - 1 }[e.key];
   if (j === undefined) return;
   e.preventDefault();
-  const b = ptTabBtns[(j + n) % n];
-  b.focus(); b.click();
+  ptTabBtns[(j + n) % n].focus();
 });
+// Close on a click elsewhere, including inside the section frame (the page loses focus to it)
+document.addEventListener("click", e => {
+  if (ptMenuOpen() && !e.target.closest("#ptMenuWrap")) ptMenuHide();
+});
+window.addEventListener("blur", () => ptMenuHide());
 function ptMarkTab(key){
-  ptTabBtns.forEach(b => {
-    const on = b.dataset.key === key;
-    b.setAttribute("aria-selected", on ? "true" : "false");
-    b.tabIndex = on ? 0 : -1;
-    if (on && window.innerWidth < 992) b.scrollIntoView({ block: "nearest", inline: "nearest" });
-  });
+  ptTabBtns.forEach(b => b.setAttribute("aria-checked", b.dataset.key === key ? "true" : "false"));
 }
 
 /* The frame fills the viewport below the sticky header, tab bar and the section's top bar;
@@ -5546,7 +5579,6 @@ function ptSyncUI(path, title){
   pt.crumb.innerHTML = `Policy Timeline &rsaquo; <b>${sec.label}</b>${extra}`;
   pt.back.disabled = pt.idx <= 0;
   pt.fwd.disabled = pt.idx >= pt.stack.length - 1;
-  pt.popout.href = path;
   if (ptIsActive()) history.replaceState(null, "", ptHashFromPath(path));
 }
 
