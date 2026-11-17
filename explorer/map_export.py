@@ -31,9 +31,9 @@ from typing import List, Optional, Sequence, Tuple
 from xml.sax.saxutils import escape
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFont
 
-from . import edgar, inverse, rasters
+from . import edgar, inverse, rasters, timeseries
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 OUTLINE_PATH = BASE_DIR / "data" / "boundaries" / "ireland_outline.json"
@@ -229,6 +229,9 @@ class Layer:
     tif_geo: Optional[Tuple[float, float, float, float]] = None   # west, north, dx, dy (deg)
     tif_bytes: Optional[bytes] = None                   # an original file to pass through
     tif_meta: dict = field(default_factory=dict)
+    # Clipped to a county (time series region): its rings as (lon, lat) and the boundary credit
+    clip_rings: List[List[Tuple[float, float]]] = field(default_factory=list)
+    clip_credit: str = ""
 
 
 class SelectionError(ValueError):
@@ -591,6 +594,56 @@ def build_layer(q: dict) -> Layer:
     raise SelectionError("Unknown dataset.")
 
 
+def _county_mask(lat: np.ndarray, lng: np.ndarray, rings, contains) -> Tuple[np.ndarray, bool]:
+    """Cells whose centre lies inside the county (the time series rule) and whether it fell back
+    to the one cell at the county's centre (a county smaller than one cell of the grid)."""
+    inside = timeseries._in_rings(lat, lng, rings)
+    if inside.any():
+        return inside, False
+    clat, clng = max(rings, key=len).mean(axis=0)
+    return contains(float(clat), float(clng)), True
+
+
+def clip_to_county(layer: Layer, name: str) -> Layer:
+    """Keep only the cells used for a County region of the time series, and outline the county.
+    Cells: the drawn rectangles (JPEG) and the GeoTIFF band; overlays are masked when drawn."""
+    rings = timeseries.counties().get(name)
+    if rings is None:
+        raise SelectionError("Unknown county.")
+    fallback = False
+    if layer.cells:
+        b = np.asarray([c[:4] for c in layer.cells], dtype="float64")   # west, south, east, north
+        keep, fallback = _county_mask(
+            (b[:, 1] + b[:, 3]) / 2, (b[:, 0] + b[:, 2]) / 2, rings,
+            lambda la, ln: (b[:, 0] <= ln) & (ln < b[:, 2]) & (b[:, 1] <= la) & (la < b[:, 3]))
+        layer.cells = [c for c, k in zip(layer.cells, keep) if k]
+    if layer.tif_values is not None and layer.tif_geo is not None:
+        west, north, dx, dy = layer.tif_geo
+        rows, cols = layer.tif_values.shape
+        lng = west + (np.arange(cols) + 0.5) * dx
+        lat = north - (np.arange(rows) + 0.5) * dy
+        glat, glng = np.meshgrid(lat, lng, indexing="ij")
+        keep, fb = _county_mask(
+            glat.ravel(), glng.ravel(), rings,
+            lambda la, ln: (np.abs(glat.ravel() - la) <= dy / 2) & (np.abs(glng.ravel() - ln) <= dx / 2))
+        fallback = fallback or fb
+        vals = layer.tif_values.copy().ravel()
+        vals[~keep] = NODATA
+        layer.tif_values = vals.reshape(rows, cols)
+        layer.tif_meta = {**layer.tif_meta, "AREA": f"County {name}"}
+    layer.clip_rings = [[(float(p[1]), float(p[0])) for p in r] for r in rings]
+    try:
+        layer.clip_credit = json.loads(timeseries.COUNTIES_PATH.read_text(encoding="utf-8")).get("source", "")
+    except (OSError, ValueError):
+        layer.clip_credit = ""
+    layer.subtitle = f"{layer.subtitle}   ·   County {name}"
+    layer.stem = _slug(layer.stem, "county", name)
+    layer.facts.insert(0, ("Area shown", f"County {name}: the cell at its centre (the county is smaller than one cell)"
+                           if fallback else f"County {name}: only cells whose centre lies inside the county, "
+                                            "as used for the time series"))
+    return layer
+
+
 # ---------------------------------------------------------------------------
 # GeoTIFF (baseline TIFF + GeoKeys, uncompressed, one strip)
 # ---------------------------------------------------------------------------
@@ -760,9 +813,17 @@ def jpeg(layer: Layer) -> Tuple[bytes, str]:
     for w, so, e, n, colour in layer.cells:
         (x0, y0), (x1, y1) = xy(w, n), xy(e, so)
         ld.rectangle([x0, y0, x1, y1], fill=colour + (255,))
-    # Keep the layer inside the frame
+    # Keep the layer inside the frame (and, for a pre-rendered overlay clipped to a county, inside it;
+    # cells were already reduced to the county's own in clip_to_county)
     clip = Image.new("L", img.size, 0)
     ImageDraw.Draw(clip).rectangle(frame, fill=255)
+    if layer.clip_rings and layer.overlay is not None:
+        area = Image.new("L", img.size, 0)
+        for ring in layer.clip_rings:              # even-odd: islands add, holes take out
+            one = Image.new("L", img.size, 0)
+            ImageDraw.Draw(one).polygon([xy(lon, lat) for lon, lat in ring], fill=255)
+            area = ImageChops.difference(area, one)
+        clip = ImageChops.multiply(clip, area)
     layer_img.putalpha(Image.composite(layer_img.getchannel("A"), clip, clip))
     img.paste(layer_img, (0, 0), layer_img)
 
@@ -783,6 +844,11 @@ def jpeg(layer: Layer) -> Tuple[bytes, str]:
     for ring in _outline():
         pts = [xy(lon, lat) for lon, lat in ring]
         d.line(pts + [pts[0]], fill=(34, 40, 49), width=2 * s, joint="curve")
+    # County of the time series region: white casing under a dark teal line, as on the web map
+    for width, colour in ((7, (255, 255, 255)), (3, (11, 85, 99))):
+        for ring in layer.clip_rings:
+            pts = [xy(lon, lat) for lon, lat in ring]
+            d.line(pts + [pts[0]], fill=colour, width=width * s, joint="curve")
     d.rectangle(frame, outline=TEXT, width=2 * s)
 
     # Legend panel
@@ -849,7 +915,9 @@ def jpeg(layer: Layer) -> Tuple[bytes, str]:
     # Footer: source and provenance
     foot_f = _font(18)
     foot = [f"Source: {layer.source}",
-            f"Coastline: Natural Earth · INPACT Ireland Greenhouse Gas Policy Impact Explorer · generated {date.today():%d %b %Y}"]
+            "Coastline: Natural Earth"
+            + (f" · County boundary: {layer.clip_credit or 'OpenStreetMap'}" if layer.clip_rings else "")
+            + f" · INPACT Ireland Greenhouse Gas Policy Impact Explorer · generated {date.today():%d %b %Y}"]
     yy = H - 92
     for text in foot:
         for ln in _wrap(d, text, foot_f, (W - 160) * s):

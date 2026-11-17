@@ -7413,7 +7413,10 @@ if (MAP_STANDALONE) (function mapWindow(){
       const vis = visible(), dpi = +dpiSel.value, dpr = dpi / 96;
       const CW = 1600, CH = 720, MW = 960;                 // the map JPEG is 4:3, so 960 × 720 = 60% of the width
       const GX = MW + 14, GY = 14, GW = CW - MW - 28, GH = 410;
-      const file = await fetchFile("jpeg", exportQuery());
+      // A County region: the map shows only that county's cells (the ones in the series) and its boundary
+      const mq = exportQuery();
+      if (isCounty()) mq.set("county", st.loc.name);
+      const file = await fetchFile("jpeg", mq);
       const mapImg = await createImageBitmap(file.blob);
       const box = document.createElement("div");
       box.style.cssText = `position:fixed;left:-20000px;top:0;width:${GW}px;height:${GH}px`;

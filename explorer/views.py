@@ -402,7 +402,9 @@ _LAYER_KEYS = ("year", "sector", "parameter", "gas", "month", "model", "transpor
 # Plus a second layer (b_*) and the difference mode when comparing two layers
 _EXPORT_KEYS = ("dataset", "compare", "mode", *_LAYER_KEYS, *(f"b_{k}" for k in _LAYER_KEYS),
                 # the colours, colour range slider and background value of the map's "Map style" step
-                "palette", "div_palette", "reverse", "rlo", "rhi", "rinv", "conf", "bg")
+                "palette", "div_palette", "reverse", "rlo", "rhi", "rinv", "conf", "bg",
+                # the time series County region: only that county's cells, with its boundary
+                "county")
 
 
 def map_export(request, fmt):
@@ -417,6 +419,8 @@ def map_export(request, fmt):
     try:
         with map_export_mod.use_palette(map_export_mod.Palette.from_query(q)):
             layer = map_export_mod.build_layer(q)
+            if q["county"]:
+                layer = map_export_mod.clip_to_county(layer, q["county"])
             if fmt == "zip":
                 files = [map_export_mod.geotiff(layer), map_export_mod.jpeg(layer)]
                 buf = io.BytesIO()
