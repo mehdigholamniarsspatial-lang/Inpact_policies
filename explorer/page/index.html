@@ -958,37 +958,35 @@ input[type=range]{accent-color:var(--emerald);width:100%}
 @media (max-width:575px){.fb-stats-row{grid-template-columns:1fr}}
 
 /* ============ POLICY TIMELINE TAB (embedded Ireland Climate Policy Timeline app) ============
-   Sections are picked from a vertical drop-down under the "Policy Timeline" tab; the selected
+   Sections are picked from a horizontal sub-menu in the menu bar (.pt-subnav); the selected
    section fills the full width below a slim bar (crumb, policy search, back / forward / reload). */
 
-/* Drop-down under the Policy Timeline tab */
-.tab-dd{position:relative;display:flex}
-.tab-nav .tab-btn .tab-caret{font-size:.7rem;margin-left:-.15rem;transition:transform .2s}
-.tab-nav .tab-btn[aria-expanded="true"] .tab-caret{transform:rotate(180deg)}
-.tab-menu{
-  position:absolute;left:0;top:calc(100% + 2px);z-index:1200;width:340px;max-width:calc(100vw - 1rem);
-  display:flex;flex-direction:column;gap:.1rem;padding:.4rem;background:#fff;
-  border:1px solid var(--grey-border);border-radius:12px;box-shadow:var(--shadow-lg);
-  max-height:calc(100vh - var(--header-h) - 70px);overflow-y:auto;animation:ddin .14s ease;
+/* Slim header: the menu bar folds down to the current tab's button, on the left */
+html.hdr-slim .tab-nav{flex-wrap:nowrap}
+html.hdr-slim .tab-nav .tab-btn:not(.active){display:none}
+html.hdr-slim .tab-nav .tab-btn.active{flex:0 0 auto}
+
+/* Policy Timeline sections: a horizontal sub-menu in the menu bar. Slim header: beside the
+   Policy Timeline button, in place of the other tabs. Full header: a second row under the tabs. */
+.pt-subnav{display:none}
+html.pt-on .pt-subnav{
+  display:flex;gap:.1rem;flex:1 0 100%;min-width:0;overflow-x:auto;scrollbar-width:thin;
+  border-top:1px solid var(--grey-border);
 }
-.tab-menu[hidden]{display:none}
-@keyframes ddin{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
-.tab-menu-item{
-  width:100%;text-align:left;border:0;background:transparent;font-family:inherit;cursor:pointer;
-  display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .7rem;border-radius:9px;color:var(--text-main);
-  transition:background .12s;
+html.hdr-slim.pt-on .pt-subnav{flex:1 1 auto;border-top:0;border-left:1px solid var(--grey-border);margin-left:.35rem;padding-left:.35rem}
+.pt-subtab{
+  border:0;background:transparent;font-family:inherit;font-size:.8rem;font-weight:700;color:var(--text-muted);
+  padding:.95rem .85rem .85rem;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;
+  display:flex;align-items:center;gap:.4rem;flex:0 0 auto;transition:color .2s,border-color .2s,background .2s;
 }
-.tab-menu-item > i:first-child{font-size:1.05rem;color:var(--text-muted);flex:0 0 1.15rem;text-align:center;margin-top:.05rem}
-.tab-menu-item > span{flex:1 1 auto;min-width:0}
-.tab-menu-item .t{display:block;font-size:.88rem;font-weight:700;line-height:1.25;color:var(--navy)}
-.tab-menu-item .d{font-size:.72rem;line-height:1.35;color:var(--text-muted);margin-top:.12rem;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.tab-menu-item .ck{visibility:hidden;color:var(--teal);font-size:1rem;flex:0 0 auto;margin-top:.05rem}
-.tab-menu-item:hover,.tab-menu-item:focus-visible{background:var(--grey-panel);outline:none}
-.tab-menu-item:hover > i:first-child,.tab-menu-item:focus-visible > i:first-child{color:var(--teal)}
-.tab-menu-item[aria-checked="true"]{background:var(--teal-light)}
-.tab-menu-item[aria-checked="true"] > i:first-child,.tab-menu-item[aria-checked="true"] .t{color:#0B5563}
-.tab-menu-item[aria-checked="true"] .ck{visibility:visible}
+.pt-subtab i{font-size:.92rem}
+.pt-subtab:hover{color:var(--navy);background:var(--grey-panel)}
+.pt-subtab:focus-visible{outline:2px solid var(--teal);outline-offset:-2px}
+.pt-subtab[aria-selected="true"]{color:#0B5563;border-bottom-color:var(--teal)}
+.pt-subtab[aria-selected="true"] i{color:var(--teal)}
+@media (max-width:575px){
+  .pt-subtab{padding:.8rem .6rem;font-size:.76rem}
+}
 
 /* Section bar + frame */
 .pt-layout{display:block}
@@ -999,10 +997,7 @@ input[type=range]{accent-color:var(--emerald);width:100%}
 }
 .pt-crumb{
   flex:0 1 auto;min-width:0;font-family:inherit;font-size:.84rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  border:0;background:transparent;padding:.3rem .5rem;margin-left:-.5rem;border-radius:8px;cursor:pointer;text-align:left;
 }
-.pt-crumb:hover{background:var(--grey-panel)}
-.pt-crumb:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
 .pt-crumb b{color:var(--navy);font-weight:800}
 .pt-crumb .cur{color:var(--teal);font-weight:700}
 .pt-search{position:relative;flex:0 1 320px;margin-left:auto;min-width:160px}
@@ -1055,13 +1050,12 @@ input[type=range]{accent-color:var(--emerald);width:100%}
   border:1px solid var(--teal);border-radius:999px;padding:.12rem .6rem;
 }
 .pt-headlink:hover{background:var(--teal);color:#fff}
-/* Narrow screens: the search takes the bar; the drop-down spans the screen */
+/* Narrow screens: the search takes the bar */
 @media (max-width:767px){
   .pt-topbar{gap:.5rem;padding:0 .6rem}
   .pt-crumb{display:none}
   .pt-search{flex:1 1 auto;margin-left:0}
   .pt-results{width:calc(100vw - 1.2rem)}
-  .tab-menu{position:fixed;left:.5rem;right:.5rem;width:auto;top:calc(var(--header-h) + var(--tabnav-h, 52px))}
 }
 
 /* ============ SPATIAL MAPPING TAB (map workspace in a frame under the menu bar) ============ */
@@ -2077,7 +2071,7 @@ html.dc-lock{overflow:hidden}
     <svg class="ic-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M10 5v5H5M10 10 4 4M14 5v5h5M14 10l6-6M10 19v-5H5M10 14l-6 6M14 19v-5h5M14 14l6 6"/>
     </svg>
-    <span class="visually-hidden" id="navToggleTxt">Show the full header</span>
+    <span class="visually-hidden" id="navToggleTxt">Show the full header and all menus</span>
   </button>
 </header>
 
@@ -2086,15 +2080,9 @@ html.dc-lock{overflow:hidden}
   <button class="tab-btn active" role="tab" aria-selected="true" data-tab="explorer">
     <i class="bi bi-graph-up-arrow"></i><span>Explorer<span class="tab-label-long"> Dashboard</span></span>
   </button>
-  <!-- Policy Timeline: a click opens a vertical drop-down of its sections (filled by script) -->
-  <div class="tab-dd" id="ptMenuWrap">
-    <button class="tab-btn" role="tab" aria-selected="false" data-tab="policy" id="ptMenuBtn"
-            aria-haspopup="menu" aria-expanded="false" aria-controls="ptSections">
-      <i class="bi bi-calendar3-range"></i><span>Policy<span class="tab-label-long"> Timeline</span></span>
-      <i class="bi bi-chevron-down tab-caret" aria-hidden="true"></i>
-    </button>
-    <div class="tab-menu" id="ptSections" role="menu" aria-label="Policy Timeline sections" hidden></div>
-  </div>
+  <button class="tab-btn" role="tab" aria-selected="false" data-tab="policy">
+    <i class="bi bi-calendar3-range"></i><span>Policy<span class="tab-label-long"> Timeline</span></span>
+  </button>
   <button class="tab-btn" role="tab" aria-selected="false" data-tab="mapping">
     <i class="bi bi-globe-europe-africa"></i><span>Spatial<span class="tab-label-long"> Mapping</span></span>
   </button>
@@ -2113,6 +2101,9 @@ html.dc-lock{overflow:hidden}
   <button class="tab-btn" role="tab" aria-selected="false" data-tab="feedback">
     <i class="bi bi-chat-square-text"></i><span>Feedback</span>
   </button>
+  <!-- Policy Timeline only: its sections as a horizontal sub-menu (filled by script). With the slim
+       header it sits to the right of the Policy Timeline button, in place of the other tabs. -->
+  <div class="pt-subnav" id="ptSections" role="tablist" aria-label="Policy Timeline sections"></div>
 </nav>
 
 <!-- ================= TAB: EXPLORER ================= -->
@@ -3266,10 +3257,10 @@ html.dc-lock{overflow:hidden}
 <div class="tab-pane" id="tab-policy" role="tabpanel" aria-label="Ireland Climate Policy Timeline">
   <div class="pt-layout">
 
-    <!-- Selected section (full width; sections are chosen from the Policy Timeline drop-down) -->
+    <!-- Selected section (full width; sections are chosen from the sub-menu in the menu bar) -->
     <section class="pt-main" aria-label="Selected Policy Timeline section">
       <div class="pt-topbar">
-        <button type="button" class="pt-crumb" id="ptCrumb" title="Choose another section" aria-haspopup="menu" aria-controls="ptSections"><b>Policy Timeline</b></button>
+        <div class="pt-crumb" id="ptCrumb"><b>Policy Timeline</b></div>
         <div class="pt-search">
           <i class="bi bi-search" aria-hidden="true"></i>
           <input id="ptSearch" type="search" placeholder="Find a policy or sector&hellip;" autocomplete="off"
@@ -5344,7 +5335,9 @@ function activateTab(name){
   Object.entries(tabPanes).forEach(([key, pane]) => {
     if (pane) pane.classList.toggle("active", key === name);
   });
-  syncHeaderSize();                      // any tab chosen: slim header, menu bar stays
+  // Policy Timeline shows its sections as a sub-menu in the menu bar
+  document.documentElement.classList.toggle("pt-on", name === "policy");
+  syncHeaderSize();                      // any tab chosen: slim header, only this tab's button shown
   // Leaflet needs a size recalculation when its container becomes visible.
   if (name === "explorer" && typeof map !== "undefined" && map) {
     setTimeout(() => map.invalidateSize(), 60);
@@ -5362,14 +5355,13 @@ function activateTab(name){
   else if (window.dcDeactivate) window.dcDeactivate();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
-tabButtons.forEach(b => b.addEventListener("click", () => {
-  if (b.dataset.tab === "policy"){ ptMenuToggle(); return; }   // Policy Timeline: opens its section menu
-  activateTab(b.dataset.tab);
-}));
+tabButtons.forEach(b =>
+  b.addEventListener("click", () => activateTab(b.dataset.tab)));
 
-/* Choosing any tab shrinks the header to a slim strip, for more room; the menu bar stays visible.
-   A click anywhere on the slim strip (logos included) shows the full header; the button in the
-   right corner does the same and, on the full header, shrinks it again. */
+/* Choosing any tab shrinks the header to a slim strip and folds the menu bar down to that tab's own
+   button (on the left; Policy Timeline adds its sections beside it), for more room to explore.
+   A click anywhere on the slim strip (logos included), or the button in the right corner, shows the
+   full header and every tab again; on the full header that button shrinks it again. */
 const appHeader = document.querySelector(".app-header");
 const navToggle = document.getElementById("navToggle"), navToggleTxt = document.getElementById("navToggleTxt");
 const isFoldable = () => document.documentElement.classList.contains("hdr-shrinkable");
@@ -5377,10 +5369,10 @@ const isFolded = () => document.documentElement.classList.contains("hdr-slim");
 function setNavFolded(folded){
   const root = document.documentElement, nav = document.querySelector(".tab-nav");
   root.classList.toggle("hdr-slim", folded);
-  const label = folded ? "Show the full header" : "Shrink the header";
+  const label = folded ? "Show the full header and all menus" : "Shrink the header and menu";
   navToggle.title = label; navToggleTxt.textContent = label;
   navToggle.setAttribute("aria-expanded", String(!folded));
-  appHeader.title = folded ? "Click to show the full header" : "";
+  appHeader.title = folded ? "Click to show the full header and all menus" : "";
   // the Policy Timeline and Spatial Mapping frames fill the space under the header and menu bar
   root.style.setProperty("--tabnav-h", (nav ? nav.offsetHeight : 0) + "px");
   if (typeof pt !== "undefined" && pt.started && ptIsActive()) ptSizeFrame();
@@ -5461,66 +5453,36 @@ const ptSectionOf = p => {
   return hit ? hit.key : "overview";
 };
 
-// Vertical drop-down under the "Policy Timeline" tab: one item per section
+// Horizontal sub-menu of the Policy Timeline sections (in the menu bar, beside the Policy Timeline button)
 pt.tabs.innerHTML = PT_SECTIONS.map((s, i) =>
-  `<button type="button" class="tab-menu-item" role="menuitemradio" data-key="${s.key}" data-path="${s.path}"
-     aria-checked="${i === 0}" tabindex="-1">
-     <i class="bi ${s.icon}" aria-hidden="true"></i><span><span class="t">${s.label}</span><span class="d">${ptEsc(s.desc)}</span></span>
-     <i class="bi bi-check2 ck" aria-hidden="true"></i>
+  `<button type="button" class="pt-subtab" role="tab" data-key="${s.key}" data-path="${s.path}"
+     aria-selected="${i === 0}" aria-controls="ptFrame" tabindex="${i === 0 ? 0 : -1}" title="${ptEsc(s.desc)}">
+     <i class="bi ${s.icon}" aria-hidden="true"></i><span>${s.label}</span>
    </button>`).join("");
-const ptTabBtns = [...pt.tabs.querySelectorAll(".tab-menu-item")];
-const ptMenuBtn = document.getElementById("ptMenuBtn");
-const ptMenuOpen = () => !pt.tabs.hidden;
-function ptMenuShow(focusItem){
-  pt.tabs.hidden = false;
-  ptMenuBtn.setAttribute("aria-expanded", "true");
-  if (focusItem) (ptTabBtns.find(b => b.getAttribute("aria-checked") === "true") || ptTabBtns[0]).focus();
-}
-function ptMenuHide(refocus){
-  if (!ptMenuOpen()) return;
-  pt.tabs.hidden = true;
-  ptMenuBtn.setAttribute("aria-expanded", "false");
-  if (refocus) ptMenuBtn.focus();
-}
-// Click on the tab: show the Policy Timeline (first visit: Overview) and open / close its menu
-function ptMenuToggle(){
-  if (!ptIsActive()) activateTab("policy");
-  if (ptMenuOpen()) ptMenuHide(); else ptMenuShow(false);
-}
+const ptTabBtns = [...pt.tabs.querySelectorAll(".pt-subtab")];
 ptTabBtns.forEach(b => b.addEventListener("click", () => {
   const path = PT_ROOT + b.dataset.path;
   ptMarkTab(b.dataset.key);            // highlight immediately; the page confirms on load
-  ptMenuHide();
   if (!ptIsActive() || pt.stack[pt.idx] !== path) ptOpen(path);
 }));
-// The crumb in the section bar opens the same menu
-pt.crumb.addEventListener("click", e => { e.stopPropagation(); ptMenuShow(true); });
-// Keyboard: arrows move through the items, Escape closes, Tab leaves the menu
-ptMenuBtn.addEventListener("keydown", e => {
-  if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " "){
-    e.preventDefault();
-    if (!ptIsActive()) activateTab("policy");
-    ptMenuShow(true);
-  }
-});
+// Arrow keys move between the sections (horizontal tablist pattern)
 pt.tabs.addEventListener("keydown", e => {
   const i = ptTabBtns.indexOf(document.activeElement);
-  if (e.key === "Escape"){ e.preventDefault(); ptMenuHide(true); return; }
-  if (e.key === "Tab"){ ptMenuHide(); return; }
   if (i < 0) return;
   const n = ptTabBtns.length;
-  const j = { ArrowDown: i + 1, ArrowUp: i - 1, Home: 0, End: n - 1 }[e.key];
+  const j = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: n - 1 }[e.key];
   if (j === undefined) return;
   e.preventDefault();
-  ptTabBtns[(j + n) % n].focus();
+  const b = ptTabBtns[(j + n) % n];
+  b.focus(); b.click();
 });
-// Close on a click elsewhere, including inside the section frame (the page loses focus to it)
-document.addEventListener("click", e => {
-  if (ptMenuOpen() && !e.target.closest("#ptMenuWrap")) ptMenuHide();
-});
-window.addEventListener("blur", () => ptMenuHide());
 function ptMarkTab(key){
-  ptTabBtns.forEach(b => b.setAttribute("aria-checked", b.dataset.key === key ? "true" : "false"));
+  ptTabBtns.forEach(b => {
+    const on = b.dataset.key === key;
+    b.setAttribute("aria-selected", on ? "true" : "false");
+    b.tabIndex = on ? 0 : -1;
+    if (on) b.scrollIntoView({ block: "nearest", inline: "nearest" });
+  });
 }
 
 /* The frame fills the viewport below the sticky header, tab bar and the section's top bar;
