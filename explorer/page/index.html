@@ -7413,9 +7413,15 @@ if (MAP_STANDALONE) (function mapWindow(){
       const vis = visible(), dpi = +dpiSel.value, dpr = dpi / 96;
       const CW = 1600, CH = 720, MW = 960;                 // the map JPEG is 4:3, so 960 × 720 = 60% of the width
       const GX = MW + 14, GY = 14, GW = CW - MW - 28, GH = 410;
-      // A County region: the map shows only that county's cells (the ones in the series) and its boundary
-      const mq = exportQuery();
-      if (isCounty()) mq.set("county", st.loc.name);
+      // A region (box, polygon or county): the map shows only its cells (the ones in the series), its own
+      // colour range and its boundary
+      const mq = exportQuery(), L0 = st.loc;
+      if (st.where === "region" && L0) {
+        mq.set("region", "1");
+        if (L0.type === "county") mq.set("county", L0.name);
+        else if (L0.type === "rect") ["s", "w", "n", "e"].forEach(k => mq.set(k, L0[k].toFixed(4)));
+        else mq.set("poly", L0.pts.map(([a, b]) => `${a.toFixed(4)},${b.toFixed(4)}`).join(";"));
+      }
       const file = await fetchFile("jpeg", mq);
       const mapImg = await createImageBitmap(file.blob);
       const box = document.createElement("div");

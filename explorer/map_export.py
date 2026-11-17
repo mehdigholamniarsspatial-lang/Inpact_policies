@@ -43,6 +43,9 @@ R_EARTH = 6378137.0
 VIEW = (-11.0, 51.25, -5.3, 55.55)   # west, south, east, north of the JPEG map frame
 
 RGB = Tuple[int, int, int]
+ZERO_RGB = (235, 238, 241)          # EDGAR cells with no emission assigned
+FADE = 0.45                         # inverse model cells outside the Ireland attribution area
+DISCRETE_MAX = 10                   # a region with fewer cells gets one colour per value
 
 
 # ---------------------------------------------------------------------------
@@ -229,7 +232,11 @@ class Layer:
     tif_geo: Optional[Tuple[float, float, float, float]] = None   # west, north, dx, dy (deg)
     tif_bytes: Optional[bytes] = None                   # an original file to pass through
     tif_meta: dict = field(default_factory=dict)
-    # Clipped to a county (time series region): its rings as (lon, lat) and the boundary credit
+    # Value behind each drawn cell (parallel to ``cells``) and whether it is faded (outside the Ireland
+    # attribution area), so a region export can recolour its own cells; ``cell_kind`` "log" | "diverging"
+    cell_vals: List[Tuple[float, bool]] = field(default_factory=list)
+    cell_kind: str = ""
+    # Clipped to a time series region (box, polygon or county): its rings as (lon, lat) and the credit
     clip_rings: List[List[Tuple[float, float]]] = field(default_factory=list)
     clip_credit: str = ""
 
@@ -274,8 +281,8 @@ def _edgar_layer(q: dict) -> Layer:
 
     arr = np.full(rows * cols, NODATA, dtype=np.float32)
     arr[np.asarray(grid["cells"])] = np.asarray(data["values"], dtype=np.float32)
-    zero = (235, 238, 241)
-    cells = []
+    zero = ZERO_RGB
+    cells, cell_vals = [], []
     for idx, v in zip(grid["cells"], data["values"]):
         if hidden(v):
             continue                        # background value, or outside the slider: not drawn
@@ -287,6 +294,7 @@ def _edgar_layer(q: dict) -> Layer:
         else:
             colour = zero
         cells.append((w, n - res, w + res, n, colour))
+        cell_vals.append((float(v), False))
 
     src = meta["source"]
     years = meta["years"]
@@ -307,7 +315,7 @@ def _edgar_layer(q: dict) -> Layer:
             ("Cells with emission", f"{data['nonzero_cells']} of {len(grid['cells'])}"),
             ("Resolution", src["resolution"]),
         ],
-        cells=cells,
+        cells=cells, cell_vals=cell_vals, cell_kind="log",
         tif_values=arr.reshape(rows, cols), tif_geo=(west, north, res, res),
         tif_meta={"DATASET": src["dataset"], "GAS": gas["formula"], "SECTOR": sector["name"],
                   "PERIOD": period, "UNITS": data["unit"], "SOURCE": src["url"]},
@@ -332,7 +340,7 @@ def _inverse_layer(q: dict) -> Layer:
     values = post - prior if est == "difference" else (post if est == "posterior" else prior)
     frac = data["country_fraction"]
     s = data["scale"]
-    cells = []
+    cells, cell_vals = [], []
     for i, v in enumerate(values):
         if not np.isfinite(v) or hidden(v):
             continue                        # no value, background value, or outside the slider: not drawn
@@ -342,10 +350,11 @@ def _inverse_layer(q: dict) -> Layer:
             flo, fhi = s["flux"]["lo"], s["flux"]["hi"]
             colour = rainbow((math.log10(min(max(v, flo), fhi)) - math.log10(flo)) / (math.log10(fhi) - math.log10(flo)))
         if not frac[i] > 0:
-            colour = _fade(colour, 0.45)
+            colour = _fade(colour, FADE)
         r, c = divmod(i, cols)
         w, n = west + c * dlon, north - r * dlat
         cells.append((w, n - dlat, w + dlon, n, colour))
+        cell_vals.append((float(v), not frac[i] > 0))
 
     arr = np.where(np.isfinite(values), values, NODATA).astype(np.float32).reshape(rows, cols)
     if est == "difference":
@@ -381,7 +390,7 @@ def _inverse_layer(q: dict) -> Layer:
             ("Constraint", f"{data['urr']:.2f} (σ posterior / σ prior)"),
             ("Resolution", src["resolution"]),
         ],
-        cells=cells,
+        cells=cells, cell_vals=cell_vals, cell_kind="diverging" if est == "difference" else "log",
         tif_values=arr, tif_geo=(west, north, dlon, dlat),
         tif_meta={"DATASET": src["dataset"], "MODEL": q["model"], "TRANSPORT": q["transport"],
                   "GAS": gas["formula"], "YEAR": q["year"], "ESTIMATE": _ESTIMATES[est],
@@ -541,10 +550,11 @@ def _compare_layer(q: dict) -> Layer:
             near_note = (f" · Hiding the {fmt(pal.conf)}% of cells closest to zero "
                          f"(|B − A| ≤ {fmt(cut)}{'%' if mode == 'pct' else ''}, {n_hid} cells)")
 
-    cells = []
+    cells, cell_vals = [], []
     for (w, n, dx, dy), val in zip(geo, v):
         if np.isfinite(val) and not hidden(val) and not abs(val) <= cut:   # background / filtered: not drawn
             cells.append((w, n - dy, w + dx, n, diverging(val / lim)))
+            cell_vals.append((float(val), False))
 
     arr = np.full(tif_rows * tif_cols, NODATA, dtype=np.float32)
     arr[flat_index] = np.where(finite, v, NODATA).astype(np.float32)
@@ -574,7 +584,7 @@ def _compare_layer(q: dict) -> Layer:
         stem=_slug("EDGAR" if ds == "edgar" else "PARIS", sel_a["gas"], "diff", stem_b, "minus", stem_a, mode),
         title=f"{name} · {formula} {what}: B − A",
         subtitle=f"B: {label_b}  −  A: {label_a}   [{value_unit}]",
-        legend=legend, source=source, facts=facts, cells=cells,
+        legend=legend, source=source, facts=facts, cells=cells, cell_vals=cell_vals, cell_kind="diverging",
         tif_values=arr.reshape(tif_rows, tif_cols), tif_geo=tif_geo,
         tif_meta={"DATASET": name, "LAYER_A": label_a, "LAYER_B": label_b, "GAS": formula,
                   "VALUE": "B − A" if mode == "abs" else "(B − A) / A × 100", "UNITS": value_unit, "SOURCE": source},
@@ -594,52 +604,156 @@ def build_layer(q: dict) -> Layer:
     raise SelectionError("Unknown dataset.")
 
 
-def _county_mask(lat: np.ndarray, lng: np.ndarray, rings, contains) -> Tuple[np.ndarray, bool]:
-    """Cells whose centre lies inside the county (the time series rule) and whether it fell back
-    to the one cell at the county's centre (a county smaller than one cell of the grid)."""
-    inside = timeseries._in_rings(lat, lng, rings)
-    if inside.any():
-        return inside, False
-    clat, clng = max(rings, key=len).mean(axis=0)
-    return contains(float(clat), float(clng)), True
+def _region(q: dict):
+    """The time series region of ``q``: (label, file-name part, inside(lat, lng), centre (lat, lng),
+    rings as (k, 2) lat/lng arrays to draw, boundary credit) -- the rules of ``timeseries._pick``."""
+    try:
+        if q.get("county"):
+            name = q["county"]
+            rings = timeseries.counties().get(name)
+            if rings is None:
+                raise SelectionError("Unknown county.")
+            try:
+                credit = json.loads(timeseries.COUNTIES_PATH.read_text(encoding="utf-8")).get("source", "")
+            except (OSError, ValueError):
+                credit = ""
+            return (f"County {name}", f"county_{name}", lambda la, ln: timeseries._in_rings(la, ln, rings),
+                    max(rings, key=len).mean(axis=0), rings, f"County boundary: {credit or 'OpenStreetMap'}")
+        if q.get("poly"):
+            pts = timeseries._polygon(q["poly"])
+            return ("Drawn polygon", "polygon", lambda la, ln: timeseries._in_polygon(la, ln, pts),
+                    pts.mean(axis=0), [pts], "")
+        so, w, n, e = timeseries._bbox(q)
+        box = np.array([[so, w], [so, e], [n, e], [n, w]], dtype="float64")
+        lng_txt = lambda x: f"{abs(x):.2f}°{'W' if x < 0 else 'E'}"   # noqa: E731
+        return (f"Rectangle {so:.2f}–{n:.2f}°N, {lng_txt(w)} to {lng_txt(e)}", "rectangle",
+                lambda la, ln: (la >= so) & (la <= n) & (ln >= w) & (ln <= e),
+                np.array([(so + n) / 2, (w + e) / 2]), [box], "")
+    except timeseries.SelectionError as exc:
+        raise SelectionError(str(exc))
 
 
-def clip_to_county(layer: Layer, name: str) -> Layer:
-    """Keep only the cells used for a County region of the time series, and outline the county.
+def _region_mask(lat: np.ndarray, lng: np.ndarray, inside, centre, contains) -> Tuple[np.ndarray, bool]:
+    """Cells whose centre lies inside the region (the time series rule) and whether it fell back to
+    the one cell at the region's centre (a region smaller than one cell of the grid)."""
+    keep = inside(lat, lng)
+    if keep.any():
+        return keep, False
+    return contains(float(centre[0]), float(centre[1])), True
+
+
+def _plain_ticks(lo: float, hi: float, kind: str) -> List[Tuple[float, str]]:
+    """Legend ticks from the region's own minimum to maximum (no ≤ / ≥: these are the real extremes)."""
+    if kind == "diverging":
+        return [(0, f"−{fmt(hi)}"), (0.25, f"−{fmt(hi / 2)}"), (0.5, "0"), (0.75, f"+{fmt(hi / 2)}"), (1, f"+{fmt(hi)}")]
+    out = []
+    for i in range(5):
+        t = i / 4
+        out.append((t, fmt(10 ** (math.log10(lo) + t * (math.log10(hi) - math.log10(lo))))))
+    return out
+
+
+def _fit_colours(layer: Layer, label: str) -> None:
+    """Recolour the region's cells: the colour range spans only their values; fewer than
+    ``DISCRETE_MAX`` cells get one distinct colour per value and a discrete legend."""
+    if not layer.cells or len(layer.cell_vals) != len(layer.cells) or layer.cell_kind not in ("log", "diverging"):
+        return
+    lg, kind = layer.legend, layer.cell_kind
+    vals = [v for v, _ in layer.cell_vals]
+    faded_any = any(f for _, f in layer.cell_vals)
+    shade = lambda c, f: _fade(c, FADE) if f else c                          # noqa: E731
+    n = len(vals)
+    if n < DISCRETE_MAX:
+        # One colour per distinct (displayed) value, spread evenly over the palette by rank;
+        # for differences negatives stay on the negative side and positives on the positive side
+        uniq = sorted({fmt(v): v for v in vals}.items(), key=lambda kv: kv[1])
+        neg = [k for k, v in uniq if v < 0]
+        pos = [k for k, v in uniq if v > 0]
+        colours = {}
+        for k, v in uniq:
+            if kind == "diverging":
+                if v == 0:
+                    colours[k] = diverging(0.0)
+                else:
+                    side = neg if v < 0 else pos
+                    i = side.index(k) if v > 0 else len(side) - 1 - side.index(k)   # 0 = nearest zero
+                    t = 0.3 + 0.7 * (i / (len(side) - 1) if len(side) > 1 else 1.0)
+                    colours[k] = diverging(t if v > 0 else -t)
+            else:
+                colours[k] = rainbow(uniq.index((k, v)) / (len(uniq) - 1) if len(uniq) > 1 else 0.5)
+        layer.cells = [c[:4] + (shade(colours[fmt(v)], f),) for c, (v, f) in zip(layer.cells, layer.cell_vals)]
+        counts = {k: sum(1 for v in vals if fmt(v) == k) for k, _ in uniq}
+        sw = [(colours[k], f"{_signed(v) if kind == 'diverging' else fmt(v)}"
+               + f"   ({counts[k]} cell{'s' if counts[k] > 1 else ''})") for k, v in reversed(uniq)]
+        if faded_any:
+            sw.append((_fade((150, 150, 150), FADE), "Faded: outside the Ireland attribution area"))
+        layer.legend = Legend(
+            title=lg.title, unit=lg.unit, kind="discrete", swatches=sw,
+            note=f"{label}: {n} cell{'s' if n > 1 else ''}, one colour per value (fewer than {DISCRETE_MAX} cells)"
+                 + _filter_note(signed=kind == "diverging"))
+        return
+    if kind == "diverging":
+        lim = max(abs(v) for v in vals) or 1.0
+        layer.cells = [c[:4] + (shade(diverging(v / lim), f),) for c, (v, f) in zip(layer.cells, layer.cell_vals)]
+        layer.legend = Legend(
+            title=lg.title, unit=lg.unit, kind="diverging", lo=-lim, hi=lim, ticks=_plain_ticks(-lim, lim, kind),
+            swatches=[(_fade(diverging(0.5), FADE), "Outside the Ireland attribution area")] if faded_any else [],
+            note=f"Linear, symmetric · range fitted to the {n} cells of the region (largest |value|)"
+                 + _filter_note(signed=True))
+        return
+    pos = [v for v in vals if v > 0]
+    if not pos:
+        return
+    lo, hi = min(pos), max(pos)
+    if hi <= lo:
+        lo, hi = lo / 1.01, hi * 1.01
+    span = math.log10(hi) - math.log10(lo)
+    colour = lambda v: rainbow((math.log10(v) - math.log10(lo)) / span) if v > 0 else ZERO_RGB   # noqa: E731
+    layer.cells = [c[:4] + (shade(colour(v), f),) for c, (v, f) in zip(layer.cells, layer.cell_vals)]
+    sw = []
+    if any(v == 0 for v in vals):
+        sw.append((ZERO_RGB, "0 (no emission assigned)"))
+    if faded_any:
+        sw.append((_fade(rainbow(0.6), FADE), "Outside the Ireland attribution area"))
+    layer.legend = Legend(
+        title=lg.title, unit=lg.unit, kind="log", lo=lo, hi=hi, ticks=_plain_ticks(lo, hi, kind), swatches=sw,
+        note=f"Log scale · range fitted to the {n} cells of the region (min – max)" + _filter_note())
+
+
+def clip_to_region(layer: Layer, q: dict) -> Layer:
+    """Keep only the cells of the time series region (box, polygon or county: the cells whose centre lies
+    inside, as the time series uses), fit the colours and legend to them, and outline the region.
     Cells: the drawn rectangles (JPEG) and the GeoTIFF band; overlays are masked when drawn."""
-    rings = timeseries.counties().get(name)
-    if rings is None:
-        raise SelectionError("Unknown county.")
+    label, part, inside, centre, rings, credit = _region(q)
     fallback = False
     if layer.cells:
         b = np.asarray([c[:4] for c in layer.cells], dtype="float64")   # west, south, east, north
-        keep, fallback = _county_mask(
-            (b[:, 1] + b[:, 3]) / 2, (b[:, 0] + b[:, 2]) / 2, rings,
+        keep, fallback = _region_mask(
+            (b[:, 1] + b[:, 3]) / 2, (b[:, 0] + b[:, 2]) / 2, inside, centre,
             lambda la, ln: (b[:, 0] <= ln) & (ln < b[:, 2]) & (b[:, 1] <= la) & (la < b[:, 3]))
         layer.cells = [c for c, k in zip(layer.cells, keep) if k]
+        if len(layer.cell_vals) == len(keep):
+            layer.cell_vals = [v for v, k in zip(layer.cell_vals, keep) if k]
     if layer.tif_values is not None and layer.tif_geo is not None:
         west, north, dx, dy = layer.tif_geo
         rows, cols = layer.tif_values.shape
-        lng = west + (np.arange(cols) + 0.5) * dx
-        lat = north - (np.arange(rows) + 0.5) * dy
-        glat, glng = np.meshgrid(lat, lng, indexing="ij")
-        keep, fb = _county_mask(
-            glat.ravel(), glng.ravel(), rings,
-            lambda la, ln: (np.abs(glat.ravel() - la) <= dy / 2) & (np.abs(glng.ravel() - ln) <= dx / 2))
+        glat, glng = np.meshgrid(north - (np.arange(rows) + 0.5) * dy, west + (np.arange(cols) + 0.5) * dx,
+                                 indexing="ij")
+        glat, glng = glat.ravel(), glng.ravel()
+        keep, fb = _region_mask(glat, glng, inside, centre,
+                                lambda la, ln: (np.abs(glat - la) <= dy / 2) & (np.abs(glng - ln) <= dx / 2))
         fallback = fallback or fb
         vals = layer.tif_values.copy().ravel()
         vals[~keep] = NODATA
         layer.tif_values = vals.reshape(rows, cols)
-        layer.tif_meta = {**layer.tif_meta, "AREA": f"County {name}"}
+        layer.tif_meta = {**layer.tif_meta, "AREA": label}
+    _fit_colours(layer, label)
     layer.clip_rings = [[(float(p[1]), float(p[0])) for p in r] for r in rings]
-    try:
-        layer.clip_credit = json.loads(timeseries.COUNTIES_PATH.read_text(encoding="utf-8")).get("source", "")
-    except (OSError, ValueError):
-        layer.clip_credit = ""
-    layer.subtitle = f"{layer.subtitle}   ·   County {name}"
-    layer.stem = _slug(layer.stem, "county", name)
-    layer.facts.insert(0, ("Area shown", f"County {name}: the cell at its centre (the county is smaller than one cell)"
-                           if fallback else f"County {name}: only cells whose centre lies inside the county, "
+    layer.clip_credit = credit
+    layer.subtitle = f"{layer.subtitle}   ·   {label}"
+    layer.stem = _slug(layer.stem, part)
+    layer.facts.insert(0, ("Area shown", f"{label}: the cell at its centre (the region is smaller than one cell)"
+                           if fallback else f"{label}: only cells whose centre lies inside the region, "
                                             "as used for the time series"))
     return layer
 
@@ -814,7 +928,7 @@ def jpeg(layer: Layer) -> Tuple[bytes, str]:
         (x0, y0), (x1, y1) = xy(w, n), xy(e, so)
         ld.rectangle([x0, y0, x1, y1], fill=colour + (255,))
     # Keep the layer inside the frame (and, for a pre-rendered overlay clipped to a county, inside it;
-    # cells were already reduced to the county's own in clip_to_county)
+    # cells were already reduced to the region's own in clip_to_region)
     clip = Image.new("L", img.size, 0)
     ImageDraw.Draw(clip).rectangle(frame, fill=255)
     if layer.clip_rings and layer.overlay is not None:
@@ -843,9 +957,9 @@ def jpeg(layer: Layer) -> Tuple[bytes, str]:
         d.text((frame[0] - 18 * s, y), f"{lat}°N", font=tick_f, fill=TEXT, anchor="rm")
     for ring in _outline():
         pts = [xy(lon, lat) for lon, lat in ring]
-        d.line(pts + [pts[0]], fill=(34, 40, 49), width=2 * s, joint="curve")
-    # County of the time series region: white casing under a dark teal line, as on the web map
-    for width, colour in ((7, (255, 255, 255)), (3, (11, 85, 99))):
+        d.line(pts + [pts[0]], fill=(128, 136, 146) if layer.clip_rings else (34, 40, 49), width=2 * s, joint="curve")
+    # The time series region: a bold black line on a white casing, clearly apart from the grey coastline
+    for width, colour in ((10, (255, 255, 255)), (5, (0, 0, 0))):
         for ring in layer.clip_rings:
             pts = [xy(lon, lat) for lon, lat in ring]
             d.line(pts + [pts[0]], fill=colour, width=width * s, joint="curve")
@@ -858,11 +972,13 @@ def jpeg(layer: Layer) -> Tuple[bytes, str]:
     title_f, unit_f, tick_f2, small_f = _font(30, True), _font(24), _font(22), _font(19)
     lines = _wrap(d, lg.title, title_f, (pw - 2 * pad) * s)
     unit_lines = _wrap(d, lg.unit, unit_f, (pw - 2 * pad) * s)
-    bar_h, bar_w = 360, 46
+    discrete = lg.kind == "discrete"
+    bar_h, bar_w = (0 if discrete else 360), 46
     y = py0 + pad
     title_h = len(lines) * 40 + len(unit_lines) * 32 + 18
     note_lines = _wrap(d, lg.note, small_f, (pw - 2 * pad) * s) if lg.note else []
-    panel_h = pad + title_h + bar_h + 20 + len(lg.swatches) * 40 + len(note_lines) * 26 + pad + 10
+    sw_step = 48 if discrete else 40
+    panel_h = pad + title_h + bar_h + (0 if discrete else 20) + len(lg.swatches) * sw_step + len(note_lines) * 26 + pad + (0 if discrete else 10)
     d.rounded_rectangle([px0 * s, py0 * s, (px0 + pw) * s, (py0 + panel_h) * s], radius=10 * s,
                         fill=(248, 250, 252), outline=(85, 95, 108), width=2 * s)
     for ln in lines:
@@ -873,7 +989,7 @@ def jpeg(layer: Layer) -> Tuple[bytes, str]:
         y += 32
     y += 18
     bx0, by0 = px0 + pad, y
-    for i in range(bar_h * s):
+    for i in range(bar_h * s if not discrete else 0):
         t = 1 - i / (bar_h * s - 1)                 # top = high
         if lg.kind == "diverging":
             c = diverging(2 * t - 1)
@@ -885,16 +1001,18 @@ def jpeg(layer: Layer) -> Tuple[bytes, str]:
         else:
             c = rainbow(t)
         d.line([bx0 * s, by0 * s + i, (bx0 + bar_w) * s, by0 * s + i], fill=c)
-    d.rectangle([bx0 * s, by0 * s, (bx0 + bar_w) * s, (by0 + bar_h) * s], outline=(120, 128, 138), width=s)
-    for t, label in lg.ticks:
+    if not discrete:
+        d.rectangle([bx0 * s, by0 * s, (bx0 + bar_w) * s, (by0 + bar_h) * s], outline=(120, 128, 138), width=s)
+    for t, label in ([] if discrete else lg.ticks):
         ty = by0 + (1 - t) * bar_h
         d.line([(bx0 + bar_w) * s, ty * s, (bx0 + bar_w + 10) * s, ty * s], fill=TEXT, width=s)
         d.text(((bx0 + bar_w + 18) * s, ty * s), label, font=tick_f2, fill=TEXT, anchor="lm")
-    y = by0 + bar_h + 20
+    y = by0 + bar_h + (0 if discrete else 20)
+    sw_h, sw_f = (32, tick_f2) if discrete else (24, small_f)
     for colour, label in lg.swatches:
-        d.rectangle([bx0 * s, y * s, (bx0 + bar_w) * s, (y + 24) * s], fill=colour, outline=(120, 128, 138), width=s)
-        d.text(((bx0 + bar_w + 18) * s, (y + 12) * s), label, font=small_f, fill=TEXT, anchor="lm")
-        y += 40
+        d.rectangle([bx0 * s, y * s, (bx0 + bar_w) * s, (y + sw_h) * s], fill=colour, outline=(120, 128, 138), width=s)
+        d.text(((bx0 + bar_w + 18) * s, (y + sw_h / 2) * s), label, font=sw_f, fill=TEXT, anchor="lm")
+        y += sw_step
     for ln in note_lines:
         d.text(((px0 + pad) * s, y * s), ln, font=small_f, fill=MUTED)
         y += 26
@@ -916,7 +1034,8 @@ def jpeg(layer: Layer) -> Tuple[bytes, str]:
     foot_f = _font(18)
     foot = [f"Source: {layer.source}",
             "Coastline: Natural Earth"
-            + (f" · County boundary: {layer.clip_credit or 'OpenStreetMap'}" if layer.clip_rings else "")
+            + (f" · {layer.clip_credit}" if layer.clip_credit else "")
+            + (" · Black line: the time series region" if layer.clip_rings else "")
             + f" · INPACT Ireland Greenhouse Gas Policy Impact Explorer · generated {date.today():%d %b %Y}"]
     yy = H - 92
     for text in foot:
