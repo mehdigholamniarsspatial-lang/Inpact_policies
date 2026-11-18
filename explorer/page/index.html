@@ -237,6 +237,40 @@ html.hdr-shrinkable:not(.hdr-slim) .nav-toggle{
 }
 .panel-body{padding:1rem 1.1rem}
 
+/* ============ RESEARCH TEAM ============ */
+.rt-panel .panel-num i{font-size:.8rem}
+.rt-intro{font-size:.86rem;line-height:1.55;color:#4a5a6a;margin:0 0 .9rem}
+.rt-intro strong{color:var(--navy)}
+.rt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.7rem}
+.rt-card{
+  display:flex;gap:.7rem;align-items:flex-start;
+  padding:.75rem .8rem;border:1px solid var(--grey-border);border-radius:12px;
+  background:var(--grey-panel);border-left:3px solid var(--emerald);
+}
+.rt-avatar{
+  flex:0 0 46px;width:46px;height:46px;border-radius:50%;overflow:hidden;
+  border:2px solid #fff;box-shadow:0 0 0 1px var(--grey-border);
+  display:flex;align-items:center;justify-content:center;
+  background:var(--navy);color:#fff;font-size:.78rem;font-weight:700;letter-spacing:.5px;
+}
+.rt-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.rt-info{min-width:0}
+.rt-name{font-size:.88rem;font-weight:700;color:var(--navy);line-height:1.25}
+.rt-role{font-size:.76rem;color:var(--emerald-dark);font-weight:600;margin:.1rem 0 .4rem}
+.rt-links{display:flex;flex-wrap:wrap;gap:.35rem}
+.rt-links a{
+  display:inline-flex;align-items:center;gap:.25rem;
+  font-size:.72rem;font-weight:600;text-decoration:none;color:var(--teal);
+  padding:.15rem .5rem;border:1px solid var(--grey-border);border-radius:999px;background:#fff;
+}
+.rt-links a:hover{background:var(--teal-light);border-color:var(--teal)}
+.rt-partners{
+  display:flex;gap:.55rem;align-items:flex-start;margin-top:.9rem;padding:.7rem .85rem;
+  background:var(--teal-light);border-radius:10px;font-size:.8rem;line-height:1.5;color:#3d4d5c;
+}
+.rt-partners i{color:var(--teal);font-size:1rem;margin-top:.05rem}
+.rt-partners strong{color:var(--navy);font-weight:600}
+
 /* ============ SIDEBAR FILTERS ============ */
 .filter-block{margin-bottom:.65rem;border:1px solid var(--grey-border);border-radius:12px;overflow:hidden;background:var(--grey-panel)}
 .filter-toggle{
@@ -2932,6 +2966,61 @@ html.dc-lock{overflow:hidden}
               <button class="btn btn-submit text-white px-4" id="goFeedbackBtn">
                 <i class="bi bi-chat-square-text me-1"></i>Open Feedback
               </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- RESEARCH TEAM -->
+        <section class="panel rt-panel" aria-label="Research team">
+          <div class="panel-head">
+            <span class="panel-num"><i class="bi bi-people-fill"></i></span>
+            <h2 class="panel-title">Research Team</h2>
+            <span class="ms-auto text-muted" style="font-size:.72rem">University of Galway</span>
+          </div>
+          <div class="panel-body">
+            <p class="rt-intro">
+              The Ireland Greenhouse Gas Policy Impact Explorer was developed by the <strong>INPACT</strong> research team at the University of Galway, with funding from the EPA Research Programme.
+            </p>
+            <div class="rt-grid">
+              <article class="rt-card">
+                <div class="rt-avatar"><img src="/static/img/team/mehdi-gholamnia.jpg" alt="Dr Mehdi Gholamnia" onerror="this.replaceWith('MG')"></div>
+                <div class="rt-info">
+                  <div class="rt-name">Dr Mehdi Gholamnia</div>
+                  <div class="rt-role">Postdoctoral Researcher</div>
+                  <div class="rt-links">
+                    <a href="https://www.linkedin.com/in/mehdi-gholamnia-37861b14b/" target="_blank" rel="noopener" aria-label="Mehdi Gholamnia on LinkedIn"><i class="bi bi-linkedin"></i>LinkedIn</a>
+                    <a href="mailto:mehdi.gholamnia@universityofgalway.ie" aria-label="Email Mehdi Gholamnia"><i class="bi bi-envelope"></i>Email</a>
+                  </div>
+                </div>
+              </article>
+              <article class="rt-card">
+                <div class="rt-avatar"><img src="/static/img/team/liz-coleman.jpg" alt="Dr Liz Coleman" onerror="this.replaceWith('LC')"></div>
+                <div class="rt-info">
+                  <div class="rt-name">Dr Liz Coleman</div>
+                  <div class="rt-role">Principal Investigator</div>
+                  <div class="rt-links">
+                    <a href="https://research.universityofgalway.ie/en/persons/liz-coleman/" target="_blank" rel="noopener" aria-label="Liz Coleman research profile"><i class="bi bi-person-badge"></i>Profile</a>
+                    <a href="mailto:liz.coleman@universityofgalway.ie" aria-label="Email Liz Coleman"><i class="bi bi-envelope"></i>Email</a>
+                  </div>
+                </div>
+              </article>
+              <article class="rt-card">
+                <div class="rt-avatar"><img src="/static/img/team/karyn-morrissey.jpg" alt="Professor Karyn Morrissey" onerror="this.replaceWith('KM')"></div>
+                <div class="rt-info">
+                  <div class="rt-name">Professor Karyn Morrissey</div>
+                  <div class="rt-role">Co-Principal Investigator</div>
+                  <div class="rt-links">
+                    <a href="https://research.universityofgalway.ie/en/persons/karyn-marie-morrissey/" target="_blank" rel="noopener" aria-label="Karyn Morrissey research profile"><i class="bi bi-person-badge"></i>Profile</a>
+                    <a href="mailto:karyn.morrissey@universityofgalway.ie" aria-label="Email Karyn Morrissey"><i class="bi bi-envelope"></i>Email</a>
+                  </div>
+                </div>
+              </article>
+            </div>
+            <div class="rt-partners">
+              <i class="bi bi-building"></i>
+              <span>
+                INPACT is led by the <strong>Centre for Climate and Air Pollution Studies (C-CAPS)</strong>, Ryan Institute, University of Galway, in partnership with the <strong>J.E. Cairnes School of Business and Economics</strong> and the <strong>Insight Research Ireland Centre for Data Analytics</strong>.
+              </span>
             </div>
           </div>
         </section>
