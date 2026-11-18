@@ -2122,6 +2122,137 @@ html.dc-lock{overflow:hidden}
 @media (prefers-reduced-motion:reduce){
   .dc-drawer,.dc-scrim,.dc-card,.dc-cat{transition:none}
 }
+
+/* ============ USER GUIDE TAB (interactive guide; chapter 1 = Introduction) ============ */
+.ug-wrap{max-width:1240px;margin:0 auto;padding:1.6rem 1.4rem 2.5rem;
+  display:grid;grid-template-columns:250px minmax(0,1fr);gap:1.3rem;align-items:start}
+.ug-side{position:sticky;top:calc(var(--header-h) + var(--tabnav-h, 52px) + 12px);
+  background:#fff;border:1px solid var(--grey-border);border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);padding:1rem .8rem}
+.ug-side h3{font-size:.72rem;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;
+  color:var(--text-muted);margin:.1rem .4rem .7rem}
+.ug-chapters{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.2rem}
+.ug-chap{display:flex;align-items:center;gap:.6rem;width:100%;text-align:left;border:0;
+  background:transparent;border-radius:10px;padding:.55rem .6rem;font:inherit;font-size:.9rem;
+  color:var(--text-main);cursor:pointer}
+.ug-chap .n{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+  font-size:.78rem;font-weight:800;background:var(--grey-bg);color:var(--text-muted)}
+.ug-chap .soon{margin-left:auto;font-size:.66rem;font-weight:700;letter-spacing:.5px;
+  text-transform:uppercase;color:var(--text-muted);background:var(--grey-bg);border-radius:20px;padding:.1rem .45rem}
+.ug-chap:hover:not([disabled]){background:var(--grey-panel)}
+.ug-chap.active{background:var(--emerald-light);color:var(--emerald-dark);font-weight:700}
+.ug-chap.active .n{background:var(--emerald);color:#fff}
+.ug-chap[disabled]{cursor:default;color:var(--text-muted)}
+.ug-chap:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
+.ug-progress{margin:1rem .4rem .2rem;font-size:.8rem;color:var(--text-muted)}
+.ug-bar{height:8px;background:var(--grey-bg);border-radius:8px;overflow:hidden;margin-top:.35rem}
+.ug-bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--emerald));
+  border-radius:8px;transition:width .4s ease}
+
+.ug-main{min-width:0}
+.ug-hero{background:linear-gradient(115deg,var(--navy) 0%,#1D4264 55%,#1B5E48 100%);color:#fff;
+  border-radius:var(--radius);padding:2rem 2rem 1.8rem;margin-bottom:1.3rem;box-shadow:var(--shadow-md);
+  position:relative;overflow:hidden}
+.ug-hero::after{content:"";position:absolute;right:-70px;top:-70px;width:300px;height:300px;border-radius:50%;
+  background:radial-gradient(circle,rgba(127,224,168,.2),transparent 70%);pointer-events:none}
+.ug-hero .eyebrow{font-size:.74rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7FE0A8;margin-bottom:.5rem}
+.ug-hero h2{font-size:1.8rem;font-weight:800;line-height:1.15;margin:0 0 .7rem;max-width:780px}
+.ug-hero p{font-size:1rem;line-height:1.6;opacity:.93;margin:0;max-width:820px}
+.ug-hero abbr{text-decoration:underline dotted rgba(255,255,255,.6);cursor:help}
+.ug-meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem;position:relative;z-index:1}
+.ug-meta span{display:inline-flex;align-items:center;gap:.4rem;font-size:.8rem;font-weight:600;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:.3rem .75rem}
+
+/* Video: a light poster first; the YouTube player loads only when the viewer presses play */
+.ug-video-card{background:#fff;border:1px solid var(--grey-border);border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:1.4rem}
+.ug-video{position:relative;aspect-ratio:16/9;background:#0b1c2c}
+.ug-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.ug-poster{position:absolute;inset:0;width:100%;height:100%;border:0;padding:0;cursor:pointer;
+  background:#0b1c2c center/cover no-repeat;display:grid;place-items:center}
+.ug-poster::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,28,44,.15),rgba(11,28,44,.55))}
+.ug-play{position:relative;width:78px;height:78px;border-radius:50%;background:var(--emerald);color:#fff;
+  display:grid;place-items:center;font-size:2.2rem;box-shadow:0 8px 24px rgba(0,0,0,.35);transition:transform .2s,background .2s}
+.ug-play i{margin-left:5px}
+.ug-poster:hover .ug-play,.ug-poster:focus-visible .ug-play{transform:scale(1.08);background:var(--emerald-dark)}
+.ug-poster:focus-visible{outline:3px solid var(--amber);outline-offset:-3px}
+.ug-poster-lbl{position:absolute;left:1rem;bottom:.9rem;color:#fff;font-weight:700;font-size:1rem;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+.ug-video-bar{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1rem;justify-content:space-between;padding:.8rem 1.1rem}
+.ug-video-bar .t{font-weight:700;color:var(--navy)}
+.ug-video-bar .s{font-size:.85rem;color:var(--text-muted)}
+.ug-yt{display:inline-flex;align-items:center;gap:.4rem;font-size:.85rem;font-weight:700;color:#c4302b;text-decoration:none}
+.ug-yt:hover{text-decoration:underline}
+
+/* Tour steps */
+.ug-steps-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.4rem 1rem;margin:0 0 .8rem}
+.ug-steps-head h3{font-size:1.25rem;font-weight:800;color:var(--navy);margin:0}
+.ug-steps-head p{margin:0;font-size:.88rem;color:var(--text-muted)}
+.ug-steps{display:flex;flex-direction:column;gap:.7rem;counter-reset:ugstep}
+.ug-step{background:#fff;border:1px solid var(--grey-border);border-radius:var(--radius);box-shadow:var(--shadow-sm);
+  transition:border-color .2s,box-shadow .2s}
+.ug-step.open{border-color:rgba(0,132,61,.45);box-shadow:var(--shadow-md)}
+.ug-step.done .ug-step-num{background:var(--emerald);color:#fff}
+.ug-step-head{display:flex;align-items:center;gap:.9rem;width:100%;text-align:left;border:0;background:transparent;
+  font:inherit;color:inherit;padding:1rem 1.1rem;cursor:pointer;border-radius:var(--radius)}
+.ug-step-head:focus-visible{outline:2px solid var(--teal);outline-offset:-2px}
+.ug-step-num{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+  background:var(--teal-light);color:var(--teal);font-weight:800;font-size:.9rem;transition:background .2s,color .2s}
+.ug-step-ic{flex:none;font-size:1.3rem;color:var(--teal)}
+.ug-step-txt{flex:1;min-width:0}
+.ug-step-txt b{display:block;font-size:1rem;color:var(--navy)}
+.ug-step-txt span{display:block;font-size:.88rem;color:var(--text-muted);line-height:1.45}
+.ug-chev{flex:none;color:var(--text-muted);transition:transform .25s}
+.ug-step.open .ug-chev{transform:rotate(180deg)}
+.ug-step-body{display:none;padding:0 1.1rem 1.1rem calc(1.1rem + 34px + .9rem)}
+.ug-step.open .ug-step-body{display:block;animation:tabfade .3s ease}
+.ug-step-body p{font-size:.92rem;line-height:1.6;margin:0 0 .7rem}
+.ug-chips{display:flex;flex-wrap:wrap;gap:.45rem;margin:0 0 .8rem}
+.ug-chip{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--grey-border);background:var(--grey-panel);
+  border-radius:20px;padding:.32rem .75rem;font:inherit;font-size:.83rem;font-weight:600;color:var(--navy);cursor:pointer;
+  transition:background .2s,border-color .2s,color .2s}
+.ug-chip:hover,.ug-chip[aria-pressed="true"]{background:var(--emerald-light);border-color:var(--emerald);color:var(--emerald-dark)}
+.ug-chip:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
+.ug-chip.static{cursor:default}
+.ug-chip.static:hover{background:var(--grey-panel);border-color:var(--grey-border);color:var(--navy)}
+.ug-explain{font-size:.88rem;line-height:1.55;background:var(--teal-light);border-left:3px solid var(--teal);
+  border-radius:8px;padding:.6rem .85rem;margin:0 0 .8rem;color:var(--text-main);min-height:2.6em}
+.ug-actions{display:flex;flex-wrap:wrap;gap:.55rem;align-items:center}
+.ug-go{display:inline-flex;align-items:center;gap:.45rem;border:0;border-radius:9px;background:var(--navy);color:#fff;
+  font:inherit;font-size:.86rem;font-weight:700;padding:.5rem .95rem;cursor:pointer;transition:background .2s}
+.ug-go:hover{background:var(--navy-soft)}
+.ug-go.alt{background:#fff;color:var(--navy);border:1px solid var(--grey-border)}
+.ug-go.alt:hover{background:var(--grey-panel)}
+.ug-go:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.ug-done{display:inline-flex;align-items:center;gap:.4rem;margin-left:auto;font-size:.86rem;font-weight:600;color:var(--text-muted);cursor:pointer;user-select:none}
+.ug-done input{width:17px;height:17px;accent-color:var(--emerald);cursor:pointer}
+
+.ug-next{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.8rem;margin-top:1.3rem;
+  background:var(--emerald-light);border:1px solid rgba(0,132,61,.25);border-radius:var(--radius);padding:1rem 1.2rem}
+.ug-next b{color:var(--emerald-dark)}
+.ug-next span{font-size:.9rem;color:var(--text-main)}
+
+/* A dashboard element the guide points at: a short pulse so the eye finds it */
+.ug-spot{animation:ugspot 1.6s ease 2;border-radius:var(--radius)}
+@keyframes ugspot{0%,100%{box-shadow:0 0 0 0 rgba(232,163,61,0)}40%{box-shadow:0 0 0 6px rgba(232,163,61,.75)}}
+
+@media (max-width:900px){
+  .ug-wrap{grid-template-columns:minmax(0,1fr);padding:1rem 1rem 2rem}
+  .ug-side{position:static;min-width:0}
+  .ug-chapters{flex-direction:row;overflow-x:auto;padding-bottom:.2rem}
+  .ug-chap{flex:none;width:auto}
+  .ug-chap .soon{display:none}
+}
+@media (max-width:575px){
+  .ug-hero{padding:1.4rem 1.2rem}
+  .ug-hero h2{font-size:1.4rem}
+  .ug-step-body{padding:0 1rem 1rem}
+  .ug-step-ic{display:none}
+  .ug-done{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){
+  .ug-step.open .ug-step-body,.ug-spot{animation:none}
+  .ug-bar span,.ug-play,.ug-chev{transition:none}
+}
 </style>
 </head>
 <body>
@@ -2203,6 +2334,9 @@ html.dc-lock{overflow:hidden}
   </button>
   <button class="tab-btn" role="tab" aria-selected="false" data-tab="about">
     <i class="bi bi-info-circle"></i><span>About<span class="tab-label-long"> INPACT</span></span>
+  </button>
+  <button class="tab-btn" role="tab" aria-selected="false" data-tab="guide">
+    <i class="bi bi-book"></i><span>User<span class="tab-label-long"> Guide</span></span>
   </button>
   <button class="tab-btn" role="tab" aria-selected="false" data-tab="feedback">
     <i class="bi bi-chat-square-text"></i><span>Feedback</span>
@@ -3549,6 +3683,199 @@ html.dc-lock{overflow:hidden}
   </aside>
   <div class="dc-toast" id="dcToast" role="status"></div>
 </div><!-- /tab-data -->
+
+<!-- ================= TAB: USER GUIDE (interactive guide; deep link #guide) =================
+     Chapter 1 is the Introduction. Further chapters are listed in the sidebar as "Soon": to add one,
+     give its button data-chapter="<id>", drop the disabled attribute and add a matching
+     <section class="ug-chapter" data-chapter="<id>" hidden> in .ug-main. -->
+<div class="tab-pane" id="tab-guide" role="tabpanel" aria-label="User Guide">
+  <div class="ug-wrap">
+
+    <aside class="ug-side" aria-label="User Guide chapters">
+      <h3>User Guide</h3>
+      <ul class="ug-chapters">
+        <li><button type="button" class="ug-chap active" data-chapter="intro" aria-current="true"><span class="n">1</span>Introduction</button></li>
+        <li><button type="button" class="ug-chap" disabled><span class="n">2</span>Explorer Dashboard<span class="soon">Soon</span></button></li>
+        <li><button type="button" class="ug-chap" disabled><span class="n">3</span>Policy Timeline<span class="soon">Soon</span></button></li>
+        <li><button type="button" class="ug-chap" disabled><span class="n">4</span>Spatial Mapping<span class="soon">Soon</span></button></li>
+        <li><button type="button" class="ug-chap" disabled><span class="n">5</span>Trend &amp; Structural Breaks<span class="soon">Soon</span></button></li>
+        <li><button type="button" class="ug-chap" disabled><span class="n">6</span>Datasets &amp; Feedback<span class="soon">Soon</span></button></li>
+      </ul>
+      <div class="ug-progress" aria-live="polite">
+        <span id="ugProgressTxt">0 of 6 steps explored</span>
+        <div class="ug-bar" aria-hidden="true"><span id="ugProgressBar"></span></div>
+      </div>
+    </aside>
+
+    <div class="ug-main">
+    <section class="ug-chapter" data-chapter="intro" aria-labelledby="ugIntroTitle">
+
+      <div class="ug-hero">
+        <div class="eyebrow">User Guide &middot; Chapter 1 &middot; Introduction</div>
+        <h2 id="ugIntroTitle">Welcome to the Ireland Greenhouse Gas Policy Impact Explorer</h2>
+        <p>Developed by the INPACT research team (<abbr title="Investigating National Policy Impacts on Atmospheric Climate Targets">Investigating National Policy Impacts on Atmospheric Climate Targets</abbr>) at the University of Galway and funded by the EPA Research Programme.</p>
+        <div class="ug-meta">
+          <span><i class="bi bi-play-circle"></i>Video tour</span>
+          <span><i class="bi bi-list-check"></i>6 short steps</span>
+          <span><i class="bi bi-cursor"></i>Jump straight into each section</span>
+        </div>
+      </div>
+
+      <div class="ug-video-card">
+        <div class="ug-video" id="ugVideo" data-yt="wEkZHbnXJRc">
+          <button type="button" class="ug-poster" id="ugPoster" aria-label="Play the introduction video"
+                  style="background-image:url('https://i.ytimg.com/vi/wEkZHbnXJRc/hqdefault.jpg')">
+            <span class="ug-play" aria-hidden="true"><i class="bi bi-play-fill"></i></span>
+            <span class="ug-poster-lbl">Introduction to the dashboard</span>
+          </button>
+        </div>
+        <div class="ug-video-bar">
+          <div><div class="t">Watch: a quick tour of the Explorer</div><div class="s">Then follow the steps below at your own pace.</div></div>
+          <a class="ug-yt" href="https://youtu.be/wEkZHbnXJRc" target="_blank" rel="noopener"><i class="bi bi-youtube"></i>Watch on YouTube</a>
+        </div>
+      </div>
+
+      <div class="ug-steps-head">
+        <h3>In this short tour, you will learn how to&hellip;</h3>
+        <p>Open a step to read more, try the buttons, and tick it off when you are done.</p>
+      </div>
+
+      <div class="ug-steps" id="ugSteps">
+
+        <!-- 1. Main Menu -->
+        <div class="ug-step" data-step="menu">
+          <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugB1">
+            <span class="ug-step-num">1</span><i class="bi bi-list ug-step-ic" aria-hidden="true"></i>
+            <span class="ug-step-txt"><b>Move around with the Main Menu</b><span>Eight sections, one click away.</span></span>
+            <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+          </button>
+          <div class="ug-step-body" id="ugB1">
+            <p>The Main Menu at the top of the page takes you to every part of the platform. Once you open a section the menu folds away; press <b>Main Menu</b> (upper left) or the logo to bring it back. Try it: each button below opens that section.</p>
+            <div class="ug-chips">
+              <button type="button" class="ug-chip" data-go="explorer"><i class="bi bi-graph-up-arrow"></i>Explorer Dashboard</button>
+              <button type="button" class="ug-chip" data-go="policy"><i class="bi bi-calendar3-range"></i>Policy Timeline</button>
+              <button type="button" class="ug-chip" data-go="mapping"><i class="bi bi-globe-europe-africa"></i>Spatial Mapping</button>
+              <button type="button" class="ug-chip" data-go="trend"><i class="bi bi-activity"></i>Trend Analysis</button>
+              <button type="button" class="ug-chip" data-go="streamlit"><i class="bi bi-bar-chart-steps"></i>Structural Break Analysis</button>
+              <button type="button" class="ug-chip" data-go="data"><i class="bi bi-database"></i>Datasets</button>
+              <button type="button" class="ug-chip" data-go="about"><i class="bi bi-info-circle"></i>About INPACT</button>
+              <button type="button" class="ug-chip" data-go="feedback"><i class="bi bi-chat-square-text"></i>Feedback</button>
+            </div>
+            <div class="ug-actions"><label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label></div>
+          </div>
+        </div>
+
+        <!-- 2. GHG inventory + indicators -->
+        <div class="ug-step" data-step="inventory">
+          <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugB2">
+            <span class="ug-step-num">2</span><i class="bi bi-graph-up-arrow ug-step-ic" aria-hidden="true"></i>
+            <span class="ug-step-txt"><b>Explore Ireland&rsquo;s national GHG inventory (1990&ndash;2025)</b><span>Pick a gas, a sector and a year range, then read the key indicators.</span></span>
+            <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+          </button>
+          <div class="ug-step-body" id="ugB2">
+            <p>The <b>Explorer Dashboard</b> charts Ireland&rsquo;s emissions from the EPA national inventory. Choose a <b>gas</b>, a <b>sector</b> and a <b>year range</b>; the chart and the four key indicators update together. Tap an indicator to see what it tells you:</p>
+            <div class="ug-chips" role="group" aria-label="Key indicators">
+              <button type="button" class="ug-chip" aria-pressed="false" data-explain="How far emissions are below (or above) the path they were on before the policy, in per cent."><i class="bi bi-arrow-down-circle"></i>Emission reduction</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-explain="An estimate of the emissions that did not happen because of policy, compared with a no-policy baseline."><i class="bi bi-shield-check"></i>Avoided emissions</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-explain="How much the emission trend changed after a policy took effect, compared with the trend before it."><i class="bi bi-graph-down"></i>Trend change</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-explain="How confident the statistical (interrupted time-series) model is that the change is real and not chance."><i class="bi bi-patch-check"></i>Statistical confidence</button>
+            </div>
+            <div class="ug-explain" aria-live="polite">Select an indicator above.</div>
+            <div class="ug-actions">
+              <button type="button" class="ug-go" data-go="explorer" data-spot=".chart-kpis"><i class="bi bi-box-arrow-up-right"></i>Show me the indicators</button>
+              <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Policies on the chart -->
+        <div class="ug-step" data-step="policies">
+          <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugB3">
+            <span class="ug-step-num">3</span><i class="bi bi-layers ug-step-ic" aria-hidden="true"></i>
+            <span class="ug-step-txt"><b>Overlay climate policies on the emissions chart</b><span>International, EU and national policies, plus the Policy Intelligence Panel and Roadmap.</span></span>
+            <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+          </button>
+          <div class="ug-step-body" id="ugB3">
+            <p>Use the jurisdiction toggles beside the chart to show policy markers and see <b>when</b> international, EU and national climate policies started, right on top of the emissions line. The <b>Policy Intelligence Panel</b> explains each policy and links to its full profile, and the <b>Climate Policy Roadmap</b> shows the path from 1992 to 2050.</p>
+            <div class="ug-chips">
+              <span class="ug-chip static"><i class="bi bi-globe2"></i>International</span>
+              <span class="ug-chip static"><i class="bi bi-flag"></i>EU</span>
+              <span class="ug-chip static"><i class="bi bi-house"></i>National</span>
+            </div>
+            <div class="ug-actions">
+              <button type="button" class="ug-go" data-go="explorer" data-spot='[aria-label="Policy intelligence"]'><i class="bi bi-lightbulb"></i>Policy Intelligence Panel</button>
+              <button type="button" class="ug-go alt" data-go="explorer" data-spot='[aria-label="Climate policy roadmap"]'><i class="bi bi-signpost-split"></i>Roadmap 1992 &rarr; 2050</button>
+              <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Spatial Mapping -->
+        <div class="ug-step" data-step="mapping">
+          <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugB4">
+            <span class="ug-step-num">4</span><i class="bi bi-globe-europe-africa ug-step-ic" aria-hidden="true"></i>
+            <span class="ug-step-txt"><b>Navigate the Spatial Mapping section</b><span>Compare emission maps, change styles and download results.</span></span>
+            <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+          </button>
+          <div class="ug-step-body" id="ugB4">
+            <p>See <b>where</b> emissions come from. Compare three map layers, switch the map style, and download what you see. Tap a layer to learn what it is:</p>
+            <div class="ug-chips" role="group" aria-label="Map layers">
+              <button type="button" class="ug-chip" aria-pressed="false" data-explain="MapEIre: Ireland&rsquo;s own high-resolution national emission maps."><i class="bi bi-map"></i>MapEIre</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-explain="EDGAR: the European Commission&rsquo;s global emission database, gridded for comparison."><i class="bi bi-grid-3x3"></i>EDGAR</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-explain="PARIS inverse models: emissions estimated &lsquo;top-down&rsquo; from measured greenhouse gases in the atmosphere."><i class="bi bi-cloud-haze2"></i>PARIS inverse models</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-explain="Download the selected layer as a GeoTIFF (data for GIS software) or as a JPEG map with its legend."><i class="bi bi-download"></i>GeoTIFF / JPEG</button>
+            </div>
+            <div class="ug-explain" aria-live="polite">Select a layer above.</div>
+            <div class="ug-actions">
+              <button type="button" class="ug-go" data-go="mapping"><i class="bi bi-box-arrow-up-right"></i>Open Spatial Mapping</button>
+              <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Structural Break Analysis -->
+        <div class="ug-step" data-step="breaks">
+          <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugB5">
+            <span class="ug-step-num">5</span><i class="bi bi-bar-chart-steps ug-step-ic" aria-hidden="true"></i>
+            <span class="ug-step-txt"><b>Detect trend changes</b><span>Find the years when the emission trend shifted.</span></span>
+            <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+          </button>
+          <div class="ug-step-body" id="ugB5">
+            <p>The <b>Structural Break Analysis</b> companion app searches an emission series for the points where its trend changed direction or speed, so you can check whether those years line up with policies. <b>Trend Analysis</b> fits the segments in between.</p>
+            <div class="ug-actions">
+              <button type="button" class="ug-go" data-go="streamlit"><i class="bi bi-box-arrow-up-right"></i>Open Structural Break Analysis</button>
+              <button type="button" class="ug-go alt" data-go="trend"><i class="bi bi-activity"></i>Trend Analysis</button>
+              <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. Data Catalogue + Feedback -->
+        <div class="ug-step" data-step="data">
+          <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugB6">
+            <span class="ug-step-num">6</span><i class="bi bi-database ug-step-ic" aria-hidden="true"></i>
+            <span class="ug-step-txt"><b>Find the sources and share your view</b><span>The Data Catalogue and the anonymous Feedback form.</span></span>
+            <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+          </button>
+          <div class="ug-step-body" id="ugB6">
+            <p>Every dataset behind the platform is listed in the <b>Data Catalogue</b> (the Datasets section), with its source and how it is used. When you have explored, tell us what you think in the <b>Feedback</b> form; it is anonymous.</p>
+            <div class="ug-actions">
+              <button type="button" class="ug-go" data-go="data"><i class="bi bi-database"></i>Open the Data Catalogue</button>
+              <button type="button" class="ug-go alt" data-go="feedback"><i class="bi bi-chat-square-text"></i>Give feedback</button>
+              <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+            </div>
+          </div>
+        </div>
+      </div><!-- /ug-steps -->
+
+      <div class="ug-next">
+        <span><b>Ready?</b> Start with the Explorer Dashboard. Chapter 2 of this guide is coming soon.</span>
+        <button type="button" class="ug-go" data-go="explorer"><i class="bi bi-rocket-takeoff"></i>Start exploring</button>
+      </div>
+    </section>
+    </div><!-- /ug-main -->
+  </div>
+</div><!-- /tab-guide -->
 
 <!-- ================= TAB: FEEDBACK ================= -->
 <div class="tab-pane" id="tab-feedback" role="tabpanel">
@@ -5496,6 +5823,7 @@ const tabPanes = {
   feedback: document.getElementById("tab-feedback"),
   mapping: document.getElementById("tab-mapping"),
   data: document.getElementById("tab-data"),
+  guide: document.getElementById("tab-guide"),
 };
 
 function activateTab(name){
@@ -5529,6 +5857,12 @@ function activateTab(name){
   if (name === "mapping") smActivate();
   else if (location.hash === "#mapping") history.replaceState(null, "", location.pathname + location.search);
   // Datasets: #data and #data/<dataset-id> deep links
+  // User Guide: #guide deep link; leaving it stops its video
+  if (name === "guide") { if (location.hash !== "#guide") history.replaceState(null, "", location.pathname + location.search + "#guide"); }
+  else {
+    if (location.hash === "#guide") history.replaceState(null, "", location.pathname + location.search);
+    if (window.ugStopVideo) window.ugStopVideo();
+  }
   if (name === "data") { if (window.dcActivate) window.dcActivate(); }
   else if (window.dcDeactivate) window.dcDeactivate();
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -8226,6 +8560,102 @@ if (MAP_STANDALONE) (function mapWindow(){
 // Open straight into the Policy Timeline when the page is loaded with #policy...
 if (!MAP_STANDALONE && location.hash.startsWith("#policy")) activateTab("policy");
 if (!MAP_STANDALONE && location.hash === "#mapping") activateTab("mapping");
+
+/* ---------------------- 9d. User Guide tab (interactive guide) ----------------------
+ * Chapter 1 (Introduction): a YouTube tour loaded only on play, six expandable steps whose
+ * buttons open (and highlight) the section they describe, and a per-viewer progress bar.
+ * Deep link: #guide. Ticked steps are remembered in this browser only (localStorage). */
+(function(){
+  const pane = document.getElementById("tab-guide");
+  if (!pane || MAP_STANDALONE) return;
+  const STORE = "inpact.guide.intro.done";
+  const steps = [...pane.querySelectorAll(".ug-step")];
+
+  // ---- Video: poster first, the player (privacy-enhanced mode) loads on play ----
+  const video = document.getElementById("ugVideo");
+  const posterHTML = video.innerHTML;
+  function playVideo(){
+    const id = video.dataset.yt;
+    video.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + id +
+      '?autoplay=1&rel=0&modestbranding=1" title="INPACT Explorer: introduction video" ' +
+      'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ' +
+      'referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+  }
+  function bindPoster(){ const b = document.getElementById("ugPoster"); if (b) b.addEventListener("click", playVideo); }
+  bindPoster();
+  // Leaving the guide stops the video (the poster comes back)
+  window.ugStopVideo = function(){
+    if (video.querySelector("iframe")) { video.innerHTML = posterHTML; bindPoster(); }
+  };
+
+  // ---- Expandable steps ----
+  steps.forEach(step => {
+    const head = step.querySelector(".ug-step-head");
+    head.addEventListener("click", () => {
+      const open = !step.classList.contains("open");
+      step.classList.toggle("open", open);
+      head.setAttribute("aria-expanded", open);
+    });
+  });
+
+  // ---- Explain chips (tap one: its text shows below) ----
+  pane.querySelectorAll(".ug-chip[data-explain]").forEach(chip => {
+    chip.addEventListener("click", () => {
+      const group = chip.parentElement;
+      group.querySelectorAll(".ug-chip[data-explain]").forEach(c => c.setAttribute("aria-pressed", c === chip));
+      const box = group.nextElementSibling;
+      if (box && box.classList.contains("ug-explain")) box.innerHTML = "<b>" + chip.textContent.trim() + ":</b> " + chip.dataset.explain;
+    });
+  });
+
+  // ---- "Go to" buttons: open a section, optionally scroll to and pulse one element ----
+  pane.querySelectorAll("[data-go]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      activateTab(btn.dataset.go);
+      const sel = btn.dataset.spot;
+      if (!sel) return;
+      setTimeout(() => {
+        const el = document.querySelector("#tab-" + btn.dataset.go + " " + sel);
+        if (!el) return;
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.classList.remove("ug-spot"); void el.offsetWidth; el.classList.add("ug-spot");
+        setTimeout(() => el.classList.remove("ug-spot"), 3400);
+      }, 450);
+    });
+  });
+
+  // ---- Progress (ticked steps) ----
+  let done = [];
+  try { done = JSON.parse(localStorage.getItem(STORE) || "[]"); } catch (e) { done = []; }
+  function renderProgress(){
+    const n = steps.filter(s => s.classList.contains("done")).length;
+    document.getElementById("ugProgressTxt").textContent = n + " of " + steps.length + " steps explored" + (n === steps.length ? " ✔" : "");
+    document.getElementById("ugProgressBar").style.width = (100 * n / steps.length) + "%";
+  }
+  steps.forEach(step => {
+    const box = step.querySelector(".ug-done input");
+    const on = done.includes(step.dataset.step);
+    box.checked = on; step.classList.toggle("done", on);
+    box.addEventListener("change", () => {
+      step.classList.toggle("done", box.checked);
+      const ids = steps.filter(s => s.classList.contains("done")).map(s => s.dataset.step);
+      try { localStorage.setItem(STORE, JSON.stringify(ids)); } catch (e) { /* storage blocked */ }
+      renderProgress();
+    });
+  });
+  renderProgress();
+
+  // ---- Chapters (sidebar): only the Introduction exists so far ----
+  pane.querySelectorAll(".ug-chap[data-chapter]").forEach(b => b.addEventListener("click", () => {
+    pane.querySelectorAll(".ug-chap[data-chapter]").forEach(x => {
+      const on = x === b; x.classList.toggle("active", on);
+      if (on) x.setAttribute("aria-current", "true"); else x.removeAttribute("aria-current");
+    });
+    pane.querySelectorAll(".ug-chapter").forEach(c => c.hidden = c.dataset.chapter !== b.dataset.chapter);
+  }));
+})();
+if (!MAP_STANDALONE && location.hash === "#guide") activateTab("guide");
+
 
 /* ---------------------- 9b. Trend Analysis dashboard ----------------------
  * Native port of the former Streamlit "Piecewise Regression Dashboard".
