@@ -2249,6 +2249,38 @@ html.dc-lock{overflow:hidden}
   .ug-step-ic{display:none}
   .ug-done{margin-left:0}
 }
+/* User Guide, chapter 2 additions: key-ideas card, intensity calculator, lists, caution note */
+.ug-card{background:#fff;border:1px solid var(--grey-border);border-radius:var(--radius);box-shadow:var(--shadow-sm);
+  padding:1.1rem 1.2rem;margin-bottom:1.4rem}
+.ug-card-title{font-size:1.05rem;font-weight:800;color:var(--navy);margin:0 0 .8rem;display:flex;align-items:center;gap:.5rem}
+.ug-card-title i{color:var(--teal)}
+.ug-ideas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;margin-bottom:1rem}
+.ug-idea{background:var(--grey-panel);border:1px solid var(--grey-border);border-radius:10px;padding:.75rem .85rem}
+.ug-idea b{display:block;color:var(--navy);font-size:.92rem;margin-bottom:.25rem}
+.ug-idea span{display:block;font-size:.85rem;line-height:1.5;color:var(--text-main)}
+.ug-calc{border-top:1px dashed var(--grey-border);padding-top:.9rem}
+.ug-calc-row{display:grid;grid-template-columns:220px minmax(0,1fr) 46px;align-items:center;gap:.8rem;margin-bottom:.45rem}
+.ug-calc-row label{font-size:.88rem;font-weight:700;color:var(--navy);line-height:1.2}
+.ug-calc-row label small{display:block;font-weight:400;color:var(--text-muted);font-size:.76rem}
+.ug-calc-row input{width:100%;accent-color:var(--teal)}
+.ug-calc-row output{font-family:"IBM Plex Mono",monospace;font-weight:600;text-align:right}
+.ug-calc-result{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem .8rem;margin-top:.6rem;
+  background:var(--emerald-light);border-radius:10px;padding:.6rem .85rem;font-size:.9rem}
+.ug-calc-result b{font-family:"IBM Plex Mono",monospace;font-size:1.35rem;color:var(--emerald-dark)}
+.ug-calc-bar{flex:1;min-width:120px;height:10px;background:#fff;border-radius:10px;overflow:hidden}
+.ug-calc-bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--emerald));transition:width .25s}
+.ug-calc-note{font-size:.8rem;color:var(--text-muted);margin:.5rem 0 0}
+.ug-list{font-size:.92rem;line-height:1.6;margin:0 0 .8rem;padding-left:1.2rem}
+.ug-list li{margin-bottom:.3rem}
+.ug-note{display:flex;gap:.6rem;align-items:flex-start;font-size:.88rem;line-height:1.55;background:#FDF5E7;
+  border-left:3px solid var(--amber);border-radius:8px;padding:.6rem .85rem;margin:0 0 .8rem}
+.ug-note i{color:#B97A1E;margin-top:.1rem}
+.ug-go[disabled]{opacity:.5;cursor:default}
+@media (max-width:900px){ .ug-ideas{grid-template-columns:1fr} }
+@media (max-width:575px){
+  .ug-calc-row{grid-template-columns:minmax(0,1fr) 46px}
+  .ug-calc-row label{grid-column:1 / -1}
+}
 @media (prefers-reduced-motion:reduce){
   .ug-step.open .ug-step-body,.ug-spot{animation:none}
   .ug-bar span,.ug-play,.ug-chev{transition:none}
@@ -3685,7 +3717,7 @@ html.dc-lock{overflow:hidden}
 </div><!-- /tab-data -->
 
 <!-- ================= TAB: USER GUIDE (interactive guide; deep link #guide) =================
-     Chapter 1 is the Introduction. Further chapters are listed in the sidebar as "Soon": to add one,
+     Chapter 1 is the Introduction, chapter 2 the Policy Timeline. Further chapters are listed in the sidebar as "Soon": to add one,
      give its button data-chapter="<id>", drop the disabled attribute and add a matching
      <section class="ug-chapter" data-chapter="<id>" hidden> in .ug-main. -->
 <div class="tab-pane" id="tab-guide" role="tabpanel" aria-label="User Guide">
@@ -3695,14 +3727,13 @@ html.dc-lock{overflow:hidden}
       <h3>User Guide</h3>
       <ul class="ug-chapters">
         <li><button type="button" class="ug-chap active" data-chapter="intro" aria-current="true"><span class="n">1</span>Introduction</button></li>
-        <li><button type="button" class="ug-chap" disabled><span class="n">2</span>Explorer Dashboard<span class="soon">Soon</span></button></li>
-        <li><button type="button" class="ug-chap" disabled><span class="n">3</span>Policy Timeline<span class="soon">Soon</span></button></li>
-        <li><button type="button" class="ug-chap" disabled><span class="n">4</span>Spatial Mapping<span class="soon">Soon</span></button></li>
-        <li><button type="button" class="ug-chap" disabled><span class="n">5</span>Trend &amp; Structural Breaks<span class="soon">Soon</span></button></li>
-        <li><button type="button" class="ug-chap" disabled><span class="n">6</span>Datasets &amp; Feedback<span class="soon">Soon</span></button></li>
+        <li><button type="button" class="ug-chap" data-chapter="policy"><span class="n">2</span>Policy Timeline</button></li>
+        <li><button type="button" class="ug-chap" disabled><span class="n">3</span>Spatial Mapping<span class="soon">Soon</span></button></li>
+        <li><button type="button" class="ug-chap" disabled><span class="n">4</span>Trend &amp; Structural Breaks<span class="soon">Soon</span></button></li>
+        <li><button type="button" class="ug-chap" disabled><span class="n">5</span>Datasets &amp; Feedback<span class="soon">Soon</span></button></li>
       </ul>
       <div class="ug-progress" aria-live="polite">
-        <span id="ugProgressTxt">0 of 6 steps explored</span>
+        <span id="ugProgressTxt">0 steps explored</span>
         <div class="ug-bar" aria-hidden="true"><span id="ugProgressBar"></span></div>
       </div>
     </aside>
@@ -3722,8 +3753,8 @@ html.dc-lock{overflow:hidden}
       </div>
 
       <div class="ug-video-card">
-        <div class="ug-video" id="ugVideo" data-yt="wEkZHbnXJRc">
-          <button type="button" class="ug-poster" id="ugPoster" aria-label="Play the introduction video"
+        <div class="ug-video" data-yt="wEkZHbnXJRc" data-title="INPACT Explorer: introduction video">
+          <button type="button" class="ug-poster" aria-label="Play the introduction video"
                   style="background-image:url('https://i.ytimg.com/vi/wEkZHbnXJRc/hqdefault.jpg')">
             <span class="ug-play" aria-hidden="true"><i class="bi bi-play-fill"></i></span>
             <span class="ug-poster-lbl">Introduction to the dashboard</span>
@@ -3869,8 +3900,250 @@ html.dc-lock{overflow:hidden}
       </div><!-- /ug-steps -->
 
       <div class="ug-next">
-        <span><b>Ready?</b> Start with the Explorer Dashboard. Chapter 2 of this guide is coming soon.</span>
-        <button type="button" class="ug-go" data-go="explorer"><i class="bi bi-rocket-takeoff"></i>Start exploring</button>
+        <span><b>Ready?</b> Start with the Explorer Dashboard, or continue with Chapter 2: the Policy Timeline.</span>
+        <span class="ug-actions"><button type="button" class="ug-go alt" data-go="explorer"><i class="bi bi-rocket-takeoff"></i>Start exploring</button>
+        <button type="button" class="ug-go ug-chap-next" data-next="policy"><i class="bi bi-arrow-right-circle"></i>Chapter 2: Policy Timeline</button></span>
+      </div>
+    </section>
+
+    <!-- ===== Chapter 2: Policy Timeline (deep link #guide/policy) ===== -->
+    <section class="ug-chapter" data-chapter="policy" aria-labelledby="ugPolicyTitle" hidden>
+
+      <div class="ug-hero">
+        <div class="eyebrow">User Guide &middot; Chapter 2 &middot; Policy Timeline</div>
+        <h2 id="ugPolicyTitle">The Policy Timeline, step by step</h2>
+        <p>The Policy Timeline brings Ireland&rsquo;s climate policies together in one structured record, so you can follow how the policy landscape has developed over time and see how individual policies relate to the sectors that produce emissions. This chapter walks you through each of its eight tabs and shows you how to read, filter and interpret the evidence.</p>
+        <div class="ug-meta">
+          <span><i class="bi bi-play-circle"></i>Video tutorial</span>
+          <span><i class="bi bi-list-check"></i>7 guided steps</span>
+          <span><i class="bi bi-calendar-range"></i>Annual records, 2000&ndash;2023</span>
+          <span><i class="bi bi-collection"></i>EEA reports + OECD CAPMF scores</span>
+        </div>
+      </div>
+
+      <div class="ug-video-card">
+        <div class="ug-video" data-yt="U34OovWCbpA" data-title="INPACT Explorer: Policy Timeline tutorial">
+          <button type="button" class="ug-poster" aria-label="Play the Policy Timeline video"
+                  style="background-image:url('https://i.ytimg.com/vi/U34OovWCbpA/hqdefault.jpg')">
+            <span class="ug-play" aria-hidden="true"><i class="bi bi-play-fill"></i></span>
+            <span class="ug-poster-lbl">Policy Timeline tutorial</span>
+          </button>
+        </div>
+        <div class="ug-video-bar">
+          <div><div class="t">Watch: a guided tour of the Policy Timeline</div><div class="s">Pause at any point and try the same steps below.</div></div>
+          <a class="ug-yt" href="https://youtu.be/U34OovWCbpA" target="_blank" rel="noopener"><i class="bi bi-youtube"></i>Watch on YouTube</a>
+        </div>
+      </div>
+
+      <!-- Key ideas before the steps -->
+      <div class="ug-card">
+        <h3 class="ug-card-title"><i class="bi bi-key"></i>Three ideas that make the section easy to read</h3>
+        <div class="ug-ideas">
+          <div class="ug-idea"><b>A series is one policy in one sector.</b><span>A policy that applies to transport and to buildings appears as two series, one per sector.</span></div>
+          <div class="ug-idea"><b>Each series sits in a layer.</b><span><em>Framework</em> (climate acts, carbon budgets), <em>Instrument</em> (taxes, trading, codes, obligations), <em>Programme</em> (grant and support schemes) or a sector&rsquo;s <em>Residual bundle</em> of smaller measures. Layers overlap: never add them together.</span></div>
+          <div class="ug-idea"><b>Intensity is a 0&ndash;1 index, not tonnes saved.</b><span>It shows how strongly a policy bore on its sector in a given year. Try the calculator below.</span></div>
+        </div>
+
+        <div class="ug-calc" aria-label="Policy intensity calculator">
+          <div class="ug-calc-row">
+            <label for="ugImpl">Implementation <small>how far the policy was in force</small></label>
+            <input type="range" id="ugImpl" min="0" max="1" step="0.05" value="0.8"><output for="ugImpl">0.80</output>
+          </div>
+          <div class="ug-calc-row">
+            <label for="ugCov">Coverage <small>share of the sector it reaches</small></label>
+            <input type="range" id="ugCov" min="0" max="1" step="0.05" value="0.6"><output for="ugCov">0.60</output>
+          </div>
+          <div class="ug-calc-row">
+            <label for="ugBind">Bindingness <small>voluntary &rarr; legally binding</small></label>
+            <input type="range" id="ugBind" min="0" max="1" step="0.05" value="0.9"><output for="ugBind">0.90</output>
+          </div>
+          <div class="ug-calc-result">
+            <span>Implementation &times; Coverage &times; Bindingness =</span>
+            <b id="ugIntensity">0.43</b><span class="ug-calc-bar"><span id="ugIntensityBar"></span></span>
+          </div>
+          <p class="ug-calc-note">A simplified version of the scoring model. The Categories tab has the full &ldquo;Try the formula&rdquo; widget with real policies and years.</p>
+        </div>
+      </div>
+
+      <div class="ug-steps-head">
+        <h3>In this tutorial, you will learn how to&hellip;</h3>
+        <p>Open a step, try it, and tick it off when you are done.</p>
+      </div>
+
+      <div class="ug-steps">
+
+        <!-- 1. Eight tabs -->
+        <div class="ug-step" data-step="pt-tabs">
+          <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugP1">
+            <span class="ug-step-num">1</span><i class="bi bi-ui-radios-grid ug-step-ic" aria-hidden="true"></i>
+            <span class="ug-step-txt"><b>Move between the eight tabs of the section</b><span>Overview, Timeline, Categories, Instruments, Policies, OECD Scores, Methods and About.</span></span>
+            <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+          </button>
+          <div class="ug-step-body" id="ugP1">
+            <p>When you open the Policy Timeline, its eight tabs appear as a bar under the Main Menu. A breadcrumb shows where you are, the back and forward arrows retrace your steps, and the search box finds a section, sector or policy by name. Select a tab below to see what it holds:</p>
+            <div class="ug-chips ug-tabpick" role="group" aria-label="Policy Timeline tabs">
+              <button type="button" class="ug-chip" aria-pressed="false" data-pt="" data-explain="The big picture. A &lsquo;policy river&rsquo; shows every series as a strip of years, shaded by intensity. Below it: how the dataset was built in four steps, the emissions context, a sector &times; mechanism matrix (&lsquo;where the policies sit&rsquo;), the four policy layers, recorded activity over time and a short &lsquo;how to read the data&rsquo; panel."><i class="bi bi-compass"></i>Overview</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-pt="timeline/" data-explain="Every series from 2000 to 2023, as an intensity grid or as lifespans. Group, order, shade and filter the rows, drag or play the year slider, and click a row for a quick view."><i class="bi bi-bar-chart-steps"></i>Timeline</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-pt="categories/" data-explain="How the policies are classified. An interactive sunburst or treemap, category guides by mechanism and by sector, the scoring ladders for coverage and bindingness, and a &lsquo;Try the formula&rsquo; widget."><i class="bi bi-diagram-3"></i>Categories</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-pt="instruments/" data-explain="One card per policy mechanism: what it is, why governments use it, how Ireland uses it, its strengths and limitations, how the dataset measures it, and the policies of that type."><i class="bi bi-tools"></i>Instruments</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-pt="policies/" data-explain="A searchable, sortable table of every series, with filters for sector, mechanism, layer, source, OECD match and status. Open any row for the full policy profile."><i class="bi bi-table"></i>Policies</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-pt="oecd-scores/" data-explain="The OECD CAPMF stringency scores (0&ndash;10) for Ireland: a heatmap of the 56 policy categories from 1990 to 2023, a tool to compare categories or indicators over time, and which categories the dataset uses."><i class="bi bi-speedometer2"></i>OECD Scores</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-pt="method/" data-explain="How the dataset was built and checked: the selection flow, the scoring model and aggregation rules, the sensitivity index, all 115 candidates with their decisions, timing profiles, consistency checks, known overlaps and the data dictionary."><i class="bi bi-sliders"></i>Methods</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-pt="about/" data-explain="Scope and unit of analysis, the data sources and how they are combined, intended use and limitations, key literature, a suggested citation (with a copy button) and the dataset at a glance."><i class="bi bi-info-circle"></i>About</button>
+            </div>
+            <div class="ug-explain" aria-live="polite">Select a tab above.</div>
+            <div class="ug-actions">
+              <button type="button" class="ug-go" id="ugOpenPicked" data-pt="" disabled><i class="bi bi-box-arrow-up-right"></i><span>Open this tab</span></button>
+              <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Read the Timeline -->
+        <div class="ug-step" data-step="pt-timeline">
+          <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugP2">
+            <span class="ug-step-num">2</span><i class="bi bi-bar-chart-steps ug-step-ic" aria-hidden="true"></i>
+            <span class="ug-step-txt"><b>Read the Timeline</b><span>See when each policy started, how long it ran and how strongly it applied.</span></span>
+            <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+          </button>
+          <div class="ug-step-body" id="ugP2">
+            <p>Each row is one policy series and each column one year. Choose how you want to read it:</p>
+            <ul class="ug-list">
+              <li><b>View</b>: the <em>Intensity grid</em> shades every year by how strongly the policy applied; the <em>Lifespan</em> view draws a bar from start to end.</li>
+              <li><b>Shade cells by</b>: policy intensity (main index), implementation level, raw OECD stringency (0&ndash;10) or equal-weight intensity.</li>
+              <li><b>Group</b> rows by sector, mechanism, layer or source, so you can compare, for example, Framework laws with Instruments and Programmes, and <b>order</b> them by start year, intensity in 2023, peak intensity or name.</li>
+              <li><b>Find a policy</b>: type a name such as <em>carbon tax</em>, <em>Part L</em> or <em>ETS</em>.</li>
+              <li><b>Year slider</b>: drag it, or press <b>&#9654; Play</b>, to watch the policy mix build up. The charts below show the number of active series over time and the average intensity by group.</li>
+              <li><b>Download filtered CSV</b> saves exactly the rows you are looking at.</li>
+            </ul>
+            <div class="ug-actions">
+              <button type="button" class="ug-go" data-pt="timeline/"><i class="bi bi-box-arrow-up-right"></i>Open the Timeline</button>
+              <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Policy description -->
+        <div class="ug-step" data-step="pt-detail">
+          <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugP3">
+            <span class="ug-step-num">3</span><i class="bi bi-file-earmark-text ug-step-ic" aria-hidden="true"></i>
+            <span class="ug-step-txt"><b>Open any policy&rsquo;s description</b><span>From a quick view to the full policy profile.</span></span>
+            <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+          </button>
+          <div class="ug-step-body" id="ugP3">
+            <p>Click a row in the Timeline (or a strip in the Overview&rsquo;s policy river) to open a <b>quick view</b>. Then press <b>Open the full policy profile</b> for everything the dataset records about it. Tap each level to see what it contains:</p>
+            <div class="ug-chips" role="group" aria-label="Policy description levels">
+              <button type="button" class="ug-chip" aria-pressed="false" data-explain="Sector, mechanism, layer and source tags; a short summary; a year-by-year chart; the status in the selected year; the intensity formula with its three terms; the years active; the OECD match; why it was selected; its reported saving; and the other sectors the same policy covers."><i class="bi bi-window-sidebar"></i>Quick view</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-explain="About this policy, verification notes against official sources, key milestones, an explanation of its instrument type, year-by-year indices (0&ndash;1) and OECD stringency (0&ndash;10), its classification (mechanism, layer, instrument type, regime, gases, bundle, why selected, how to combine), fixed scores, the OECD CAPMF link, the same policy in other sectors, overlapping policies and sources."><i class="bi bi-file-earmark-richtext"></i>Full profile</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-explain="In the Explorer Dashboard, picking a policy on the emissions chart fills the Policy Intelligence Panel: implementation year, jurisdiction (international, EU or national), lead body, affected sectors, intended direction, instrument and status. Its link opens the matching profile here in the Policy Timeline."><i class="bi bi-lightbulb"></i>From the Explorer</button>
+            </div>
+            <div class="ug-explain" aria-live="polite">Select a level above.</div>
+            <div class="ug-actions">
+              <button type="button" class="ug-go" data-pt="timeline/"><i class="bi bi-box-arrow-up-right"></i>Try it in the Timeline</button>
+              <button type="button" class="ug-go alt" data-go="explorer" data-spot='[aria-label="Policy intelligence"]'><i class="bi bi-lightbulb"></i>Policy Intelligence Panel</button>
+              <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Categories -->
+        <div class="ug-step" data-step="pt-categories">
+          <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugP4">
+            <span class="ug-step-num">4</span><i class="bi bi-diagram-3 ug-step-ic" aria-hidden="true"></i>
+            <span class="ug-step-txt"><b>Explore policy Categories</b><span>Interactive sunburst and treemap charts.</span></span>
+            <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+          </button>
+          <div class="ug-step-body" id="ugP4">
+            <p>The Categories tab shows how the policies are spread across the classification. Pick a <b>hierarchy</b>, then switch between a <b>Sunburst</b> (rings from the centre outwards) and a <b>Treemap</b> (nested rectangles sized by the number of series). Click a segment to zoom in and see the policies inside it; click the centre (or the path bar above the treemap) to zoom back out.</p>
+            <div class="ug-chips">
+              <span class="ug-chip static">Sector &rarr; mechanism</span>
+              <span class="ug-chip static">Mechanism &rarr; sector</span>
+              <span class="ug-chip static">Layer &rarr; mechanism</span>
+              <span class="ug-chip static">Source &rarr; OECD match</span>
+            </div>
+            <p>Further down, the <b>Category guide</b> explains each mechanism and sector, <b>How each policy is scored</b> sets out the implementation, coverage and bindingness ladders, a scatter plot places every policy by coverage and bindingness, and <b>Try the formula</b> lets you pick a policy and a year and watch its intensity being calculated.</p>
+            <div class="ug-actions">
+              <button type="button" class="ug-go" data-pt="categories/"><i class="bi bi-box-arrow-up-right"></i>Open Categories</button>
+              <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Instruments -->
+        <div class="ug-step" data-step="pt-instruments">
+          <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugP5">
+            <span class="ug-step-num">5</span><i class="bi bi-tools ug-step-ic" aria-hidden="true"></i>
+            <span class="ug-step-txt"><b>Compare policy Instruments</b><span>The mechanisms governments use to cut emissions.</span></span>
+            <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+          </button>
+          <div class="ug-step-body" id="ugP5">
+            <p>Every policy works through a mechanism. The Instruments tab gives each one a card with <b>why governments use it</b>, <b>how Ireland uses it</b>, its <b>strengths</b> and <b>limitations</b>, <b>how the dataset measures it</b> and the <b>policies of that type</b>. Tap a mechanism for a short definition:</p>
+            <div class="ug-chips" role="group" aria-label="Policy mechanisms">
+              <button type="button" class="ug-chip" aria-pressed="false" data-explain="Statutes and institutions that set long-term objectives, binding emission budgets, planning and reporting cycles and independent scrutiny, without themselves prescribing what emitters must do.">Framework &amp; governance</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-explain="An explicit price on emissions. A carbon tax fixes the price and lets the quantity adjust; an emissions trading system such as the EU ETS fixes the quantity (the cap) and lets the price adjust.">Carbon pricing</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-explain="Mandatory minimum energy or emissions performance for buildings, appliances, motors and vehicles, with compulsory labels that disclose it.">Standards &amp; labelling</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-explain="Legal duties on energy suppliers, fuel suppliers or large firms to deliver a quantified outcome, with flexibility in how they comply.">Market-based obligations</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-explain="Rules on how an emitting activity is carried out, or restrictions on it, such as landfill limits, prescribed farming techniques or limits on new fossil-fuel licensing.">Regulation of practices</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-explain="Revenue or price support for renewable electricity and heat, such as feed-in tariffs and auctioned contracts for difference.">Renewable support</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-explain="Grants, accelerated capital allowances and low-cost finance that reduce the upfront cost of low-carbon investment.">Subsidies &amp; finance</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-explain="Advice, energy-management networks, benchmarking and voluntary commitments that rely on engagement rather than legal compulsion.">Information &amp; voluntary</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-explain="One summary row per sector for eligible smaller measures not selected individually; it combines several mechanisms.">Residual bundles</button>
+            </div>
+            <div class="ug-explain" aria-live="polite">Select a mechanism above.</div>
+            <div class="ug-actions">
+              <button type="button" class="ug-go" data-pt="instruments/"><i class="bi bi-box-arrow-up-right"></i>Open Instruments</button>
+              <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. Policies table -->
+        <div class="ug-step" data-step="pt-policies">
+          <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugP6">
+            <span class="ug-step-num">6</span><i class="bi bi-search ug-step-ic" aria-hidden="true"></i>
+            <span class="ug-step-txt"><b>Search and filter the Policies tab</b><span>Find a specific policy in seconds.</span></span>
+            <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+          </button>
+          <div class="ug-step-body" id="ugP6">
+            <p>The Policies tab lists every series in one table. Narrow it down, then click a column heading to sort and a row to open its profile:</p>
+            <ol class="ug-list ug-num">
+              <li><b>Search</b> by name, series ID or OECD code.</li>
+              <li><b>Filter</b> by sector, mechanism, layer, source and OECD match.</li>
+              <li>Use <b>Status in 2023</b> to show policies still <em>active</em> or <em>expired with a lingering effect</em>.</li>
+              <li>Press <b>Clear filters</b> to start again.</li>
+            </ol>
+            <div class="ug-actions">
+              <button type="button" class="ug-go" data-pt="policies/"><i class="bi bi-box-arrow-up-right"></i>Open the Policies table</button>
+              <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. OECD, Methods, About -->
+        <div class="ug-step" data-step="pt-oecd">
+          <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugP7">
+            <span class="ug-step-num">7</span><i class="bi bi-speedometer2 ug-step-ic" aria-hidden="true"></i>
+            <span class="ug-step-txt"><b>Interpret the OECD Scores and see how the data was built</b><span>OECD Scores, Methods and About.</span></span>
+            <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+          </button>
+          <div class="ug-step-body" id="ugP7">
+            <p><b>OECD Scores.</b> The OECD Climate Actions and Policies Measurement Framework (CAPMF) rates how stringent each type of climate policy is in a country, from 0 (none) to 10 (most stringent). It is organised in four levels: sectoral, cross-sectoral and international; 15 modules; policy categories such as carbon taxes or building codes; and detailed indicators such as the carbon tax on buildings. The heatmap shows Ireland&rsquo;s scores for the 56 categories from 1990 to 2023: filter it to all categories, those used in the dataset or those ever above zero, and use <b>Compare scores over time</b> to plot categories or indicators side by side.</p>
+            <p><b>Methods.</b> Follow the selection flow from 115 candidates to the core dataset, the scoring and aggregation rules, the sensitivity index, the 90% selection rule by sector, the assumed timing profiles, the internal consistency checks, known overlaps and the data dictionary. Every candidate is listed with the reason it was kept or excluded.</p>
+            <p><b>About.</b> The scope, the two main sources (Ireland&rsquo;s reports to the EEA policies and measures database, and the OECD CAPMF) and how they are combined, intended use and limitations, key literature and a ready-to-copy citation.</p>
+            <div class="ug-note"><i class="bi bi-exclamation-triangle"></i><span><b>Before you compare numbers:</b> intensity is a relative index, not emissions saved; reported savings are used only for selection and must not be summed; and rows overlap, so check a policy&rsquo;s &ldquo;how to combine&rdquo; note before adding series together.</span></div>
+            <div class="ug-actions">
+              <button type="button" class="ug-go" data-pt="oecd-scores/"><i class="bi bi-speedometer2"></i>OECD Scores</button>
+              <button type="button" class="ug-go alt" data-pt="method/"><i class="bi bi-sliders"></i>Methods</button>
+              <button type="button" class="ug-go alt" data-pt="about/"><i class="bi bi-info-circle"></i>About</button>
+              <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+            </div>
+          </div>
+        </div>
+      </div><!-- /ug-steps -->
+
+      <div class="ug-next">
+        <span><b>Well done!</b> You can now find, read and interpret any policy in the Policy Timeline. The Spatial Mapping chapter is coming soon.</span>
+        <button type="button" class="ug-go" data-pt=""><i class="bi bi-calendar3-range"></i>Open the Policy Timeline</button>
       </div>
     </section>
     </div><!-- /ug-main -->
@@ -5858,9 +6131,9 @@ function activateTab(name){
   else if (location.hash === "#mapping") history.replaceState(null, "", location.pathname + location.search);
   // Datasets: #data and #data/<dataset-id> deep links
   // User Guide: #guide deep link; leaving it stops its video
-  if (name === "guide") { if (location.hash !== "#guide") history.replaceState(null, "", location.pathname + location.search + "#guide"); }
+  if (name === "guide") { if (!location.hash.startsWith("#guide")) history.replaceState(null, "", location.pathname + location.search + "#guide"); }
   else {
-    if (location.hash === "#guide") history.replaceState(null, "", location.pathname + location.search);
+    if (location.hash.startsWith("#guide")) history.replaceState(null, "", location.pathname + location.search);
     if (window.ugStopVideo) window.ugStopVideo();
   }
   if (name === "data") { if (window.dcActivate) window.dcActivate(); }
@@ -8562,34 +8835,38 @@ if (!MAP_STANDALONE && location.hash.startsWith("#policy")) activateTab("policy"
 if (!MAP_STANDALONE && location.hash === "#mapping") activateTab("mapping");
 
 /* ---------------------- 9d. User Guide tab (interactive guide) ----------------------
- * Chapter 1 (Introduction): a YouTube tour loaded only on play, six expandable steps whose
- * buttons open (and highlight) the section they describe, and a per-viewer progress bar.
- * Deep link: #guide. Ticked steps are remembered in this browser only (localStorage). */
+ * Chapters (sidebar): 1 Introduction, 2 Policy Timeline; later ones are listed as "Soon".
+ * Each chapter: a YouTube video loaded only on play, expandable steps whose buttons open (and
+ * highlight) the part of the dashboard they describe, and a per-viewer progress bar.
+ * Deep links: #guide (Introduction) and #guide/<chapter>, e.g. #guide/policy.
+ * Ticked steps are remembered in this browser only (localStorage). */
 (function(){
   const pane = document.getElementById("tab-guide");
   if (!pane || MAP_STANDALONE) return;
-  const STORE = "inpact.guide.intro.done";
-  const steps = [...pane.querySelectorAll(".ug-step")];
+  const STORE = "inpact.guide.done";
+  const chapters = [...pane.querySelectorAll(".ug-chapter")];
+  const chapBtns = [...pane.querySelectorAll(".ug-chap[data-chapter]")];
+  let current = "intro";
 
-  // ---- Video: poster first, the player (privacy-enhanced mode) loads on play ----
-  const video = document.getElementById("ugVideo");
-  const posterHTML = video.innerHTML;
-  function playVideo(){
-    const id = video.dataset.yt;
-    video.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + id +
-      '?autoplay=1&rel=0&modestbranding=1" title="INPACT Explorer: introduction video" ' +
-      'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ' +
-      'referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+  // ---- Videos: poster first, the player (privacy-enhanced mode) loads on play ----
+  const videos = [...pane.querySelectorAll(".ug-video[data-yt]")];
+  videos.forEach(v => { v._poster = v.innerHTML; bindPoster(v); });
+  function bindPoster(v){
+    const b = v.querySelector(".ug-poster");
+    if (b) b.addEventListener("click", () => {
+      v.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + v.dataset.yt +
+        '?autoplay=1&rel=0&modestbranding=1" title="' + (v.dataset.title || "User Guide video") + '" ' +
+        'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ' +
+        'referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+    });
   }
-  function bindPoster(){ const b = document.getElementById("ugPoster"); if (b) b.addEventListener("click", playVideo); }
-  bindPoster();
-  // Leaving the guide stops the video (the poster comes back)
-  window.ugStopVideo = function(){
-    if (video.querySelector("iframe")) { video.innerHTML = posterHTML; bindPoster(); }
-  };
+  function stopVideos(){
+    videos.forEach(v => { if (v.querySelector("iframe")) { v.innerHTML = v._poster; bindPoster(v); } });
+  }
+  window.ugStopVideo = stopVideos;          // leaving the guide stops any video
 
   // ---- Expandable steps ----
-  steps.forEach(step => {
+  pane.querySelectorAll(".ug-step").forEach(step => {
     const head = step.querySelector(".ug-step-head");
     head.addEventListener("click", () => {
       const open = !step.classList.contains("open");
@@ -8605,56 +8882,100 @@ if (!MAP_STANDALONE && location.hash === "#mapping") activateTab("mapping");
       group.querySelectorAll(".ug-chip[data-explain]").forEach(c => c.setAttribute("aria-pressed", c === chip));
       const box = group.nextElementSibling;
       if (box && box.classList.contains("ug-explain")) box.innerHTML = "<b>" + chip.textContent.trim() + ":</b> " + chip.dataset.explain;
+      // Chapter 2, step 1: the "Open this tab" button follows the tab picked
+      if (group.classList.contains("ug-tabpick")) {
+        const open = document.getElementById("ugOpenPicked");
+        open.dataset.pt = chip.dataset.pt; open.disabled = false;
+        open.querySelector("span").textContent = "Open " + chip.textContent.trim();
+      }
     });
   });
 
-  // ---- "Go to" buttons: open a section, optionally scroll to and pulse one element ----
-  pane.querySelectorAll("[data-go]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      activateTab(btn.dataset.go);
-      const sel = btn.dataset.spot;
-      if (!sel) return;
-      setTimeout(() => {
-        const el = document.querySelector("#tab-" + btn.dataset.go + " " + sel);
-        if (!el) return;
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-        el.classList.remove("ug-spot"); void el.offsetWidth; el.classList.add("ug-spot");
-        setTimeout(() => el.classList.remove("ug-spot"), 3400);
-      }, 450);
-    });
+  // ---- "Go to" buttons ----
+  // data-go: a dashboard tab, optionally data-spot to scroll to and pulse one element in it
+  // data-pt: a Policy Timeline page ("" = Overview, "timeline/", "categories/", ...)
+  pane.addEventListener("click", e => {
+    const btn = e.target.closest("[data-go],[data-pt]");
+    if (!btn || btn.disabled || btn.classList.contains("ug-chip") && btn.hasAttribute("data-explain")) return;
+    if (btn.hasAttribute("data-pt")) { ptOpen(PT_ROOT + btn.dataset.pt); return; }
+    activateTab(btn.dataset.go);
+    const sel = btn.dataset.spot;
+    if (!sel) return;
+    setTimeout(() => {
+      const el = document.querySelector("#tab-" + btn.dataset.go + " " + sel);
+      if (!el) return;
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.classList.remove("ug-spot"); void el.offsetWidth; el.classList.add("ug-spot");
+      setTimeout(() => el.classList.remove("ug-spot"), 3400);
+    }, 450);
   });
 
-  // ---- Progress (ticked steps) ----
+  // ---- Intensity calculator (chapter 2) ----
+  const calc = ["ugImpl", "ugCov", "ugBind"].map(id => document.getElementById(id)).filter(Boolean);
+  function renderCalc(){
+    let v = 1;
+    calc.forEach(inp => { v *= +inp.value; inp.nextElementSibling.textContent = (+inp.value).toFixed(2); });
+    document.getElementById("ugIntensity").textContent = v.toFixed(2);
+    document.getElementById("ugIntensityBar").style.width = (v * 100) + "%";
+  }
+  if (calc.length === 3) { calc.forEach(inp => inp.addEventListener("input", renderCalc)); renderCalc(); }
+
+  // ---- Progress (ticked steps), shown for the chapter on screen ----
   let done = [];
-  try { done = JSON.parse(localStorage.getItem(STORE) || "[]"); } catch (e) { done = []; }
+  try {
+    done = JSON.parse(localStorage.getItem(STORE) || "null") ||
+           JSON.parse(localStorage.getItem("inpact.guide.intro.done") || "[]");   // earlier key
+  } catch (e) { done = []; }
+  const save = () => {
+    const ids = [...pane.querySelectorAll(".ug-step.done")].map(s => s.dataset.step);
+    try { localStorage.setItem(STORE, JSON.stringify(ids)); } catch (e) { /* storage blocked */ }
+  };
   function renderProgress(){
+    const sec = chapters.find(c => c.dataset.chapter === current);
+    const steps = [...sec.querySelectorAll(".ug-step")];
     const n = steps.filter(s => s.classList.contains("done")).length;
-    document.getElementById("ugProgressTxt").textContent = n + " of " + steps.length + " steps explored" + (n === steps.length ? " ✔" : "");
+    document.getElementById("ugProgressTxt").textContent =
+      n + " of " + steps.length + " steps explored" + (n === steps.length ? " ✔" : "");
     document.getElementById("ugProgressBar").style.width = (100 * n / steps.length) + "%";
   }
-  steps.forEach(step => {
+  pane.querySelectorAll(".ug-step").forEach(step => {
     const box = step.querySelector(".ug-done input");
     const on = done.includes(step.dataset.step);
     box.checked = on; step.classList.toggle("done", on);
-    box.addEventListener("change", () => {
-      step.classList.toggle("done", box.checked);
-      const ids = steps.filter(s => s.classList.contains("done")).map(s => s.dataset.step);
-      try { localStorage.setItem(STORE, JSON.stringify(ids)); } catch (e) { /* storage blocked */ }
-      renderProgress();
-    });
+    box.addEventListener("change", () => { step.classList.toggle("done", box.checked); save(); renderProgress(); });
   });
-  renderProgress();
 
-  // ---- Chapters (sidebar): only the Introduction exists so far ----
-  pane.querySelectorAll(".ug-chap[data-chapter]").forEach(b => b.addEventListener("click", () => {
-    pane.querySelectorAll(".ug-chap[data-chapter]").forEach(x => {
-      const on = x === b; x.classList.toggle("active", on);
+  // ---- Chapters ----
+  function showChapter(key, updateHash){
+    if (!chapters.some(c => c.dataset.chapter === key)) key = "intro";
+    if (key !== current) stopVideos();
+    current = key;
+    chapBtns.forEach(x => {
+      const on = x.dataset.chapter === key; x.classList.toggle("active", on);
       if (on) x.setAttribute("aria-current", "true"); else x.removeAttribute("aria-current");
     });
-    pane.querySelectorAll(".ug-chapter").forEach(c => c.hidden = c.dataset.chapter !== b.dataset.chapter);
+    chapters.forEach(c => c.hidden = c.dataset.chapter !== key);
+    renderProgress();
+    if (updateHash) history.replaceState(null, "", location.pathname + location.search + (key === "intro" ? "#guide" : "#guide/" + key));
+  }
+  window.ugShowChapter = showChapter;
+  pane.querySelectorAll("[data-next]").forEach(b => b.addEventListener("click", () => {
+    showChapter(b.dataset.next, true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }));
+  chapBtns.forEach(b => b.addEventListener("click", () => {
+    showChapter(b.dataset.chapter, true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }));
+  const fromHash = () => (location.hash.match(/^#guide\/([\w-]+)/) || [])[1] || "intro";
+  window.addEventListener("hashchange", () => {
+    if (!location.hash.startsWith("#guide")) return;
+    if (!pane.classList.contains("active")) activateTab("guide");
+    showChapter(fromHash(), false);
+  });
+  showChapter(fromHash(), false);
 })();
-if (!MAP_STANDALONE && location.hash === "#guide") activateTab("guide");
+if (!MAP_STANDALONE && location.hash.startsWith("#guide")) activateTab("guide");
 
 
 /* ---------------------- 9b. Trend Analysis dashboard ----------------------
