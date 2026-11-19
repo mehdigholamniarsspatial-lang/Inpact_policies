@@ -2144,6 +2144,16 @@ html.dc-lock{overflow:hidden}
 .ug-chap.active .n{background:var(--emerald);color:#fff}
 .ug-chap[disabled]{cursor:default;color:var(--text-muted)}
 .ug-chap:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
+/* Subsections listed under their chapter in the sidebar (3.1 Time series, 3.2 Compare) */
+.ug-subchaps{list-style:none;margin:.15rem 0 .2rem 1.35rem;padding:0 0 0 .55rem;border-left:2px solid var(--grey-border);
+  display:flex;flex-direction:column;gap:.1rem}
+.ug-subchap{display:flex;align-items:center;gap:.5rem;width:100%;text-align:left;border:0;background:transparent;
+  border-radius:8px;padding:.35rem .55rem;font:inherit;font-size:.84rem;color:var(--text-muted);cursor:pointer}
+.ug-subchap .n{flex:none;min-width:28px;font-size:.72rem;font-weight:800;color:var(--text-muted)}
+.ug-subchap:hover{background:var(--grey-panel);color:var(--text-main)}
+.ug-subchap.active{background:var(--teal-light);color:var(--teal);font-weight:700}
+.ug-subchap.active .n{color:var(--teal)}
+.ug-subchap:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
 .ug-progress{margin:1rem .4rem .2rem;font-size:.8rem;color:var(--text-muted)}
 .ug-bar{height:8px;background:var(--grey-bg);border-radius:8px;overflow:hidden;margin-top:.35rem}
 .ug-bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--emerald));
@@ -2241,6 +2251,7 @@ html.dc-lock{overflow:hidden}
   .ug-chapters{flex-direction:row;overflow-x:auto;padding-bottom:.2rem}
   .ug-chap{flex:none;width:auto}
   .ug-chap .soon{display:none}
+  .ug-subchaps{display:none}
 }
 @media (max-width:575px){
   .ug-hero{padding:1.4rem 1.2rem}
@@ -3760,7 +3771,11 @@ a.ug-go.alt:hover{color:var(--navy)}
       <ul class="ug-chapters">
         <li><button type="button" class="ug-chap active" data-chapter="intro" aria-current="true"><span class="n">1</span>Introduction</button></li>
         <li><button type="button" class="ug-chap" data-chapter="policy"><span class="n">2</span>Policy Timeline</button></li>
-        <li><button type="button" class="ug-chap" data-chapter="mapping"><span class="n">3</span>Spatial Mapping</button></li>
+        <li><button type="button" class="ug-chap" data-chapter="mapping"><span class="n">3</span>Spatial Mapping</button>
+          <ul class="ug-subchaps" aria-label="Spatial Mapping subsections">
+            <li><button type="button" class="ug-subchap" data-in="mapping" data-sub="timeseries"><span class="n">3.1</span>Time series</button></li>
+            <li><button type="button" class="ug-subchap" data-in="mapping" data-sub="compare"><span class="n">3.2</span>Compare</button></li>
+          </ul></li>
         <li><button type="button" class="ug-chap" data-chapter="breaks"><span class="n">4</span>Trend &amp; Structural Breaks</button></li>
       </ul>
       <div class="ug-progress" aria-live="polite">
@@ -9579,6 +9594,7 @@ if (!MAP_STANDALONE && location.hash === "#mapping") activateTab("mapping");
   const STORE = "inpact.guide.done";
   const chapters = [...pane.querySelectorAll(".ug-chapter")];
   const chapBtns = [...pane.querySelectorAll(".ug-chap[data-chapter]")];
+  const sideSubs = [...pane.querySelectorAll(".ug-subchap[data-in]")];
   let current = "intro";
 
   // ---- Videos: poster first, the player (privacy-enhanced mode) loads on play ----
@@ -9688,6 +9704,7 @@ if (!MAP_STANDALONE && location.hash === "#mapping") activateTab("mapping");
       if (on) x.setAttribute("aria-current", "true"); else x.removeAttribute("aria-current");
     });
     chapters.forEach(c => c.hidden = c.dataset.chapter !== key);
+    syncSideSubs();
     renderProgress();
     if (updateHash) history.replaceState(null, "", location.pathname + location.search + (key === "intro" ? "#guide" : "#guide/" + key));
   }
@@ -9711,6 +9728,7 @@ if (!MAP_STANDALONE && location.hash === "#mapping") activateTab("mapping");
     stopVideos();
     subs.forEach(s => s.hidden = s.dataset.sub !== key);
     sec.querySelectorAll(".ug-subtab").forEach(t => t.setAttribute("aria-selected", String(t.dataset.sub === key)));
+    syncSideSubs();
     if (updateHash) history.replaceState(null, "", location.pathname + location.search + "#guide/" + current +
       (key === subs[0].dataset.sub ? "" : "/" + key));
   }
@@ -9719,6 +9737,22 @@ if (!MAP_STANDALONE && location.hash === "#mapping") activateTab("mapping");
     if (b.hasAttribute("data-subgo")) pane.querySelector(".ug-subnav")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }));
   const subFromHash = () => (location.hash.match(/^#guide\/[\w-]+\/([\w-]+)/) || [])[1] || "";
+
+  // Sidebar subsection links (under chapter 3): open the chapter on that subsection; highlight the one on screen
+  function syncSideSubs(){
+    sideSubs.forEach(b => {
+      const sec = chapters.find(c => c.dataset.chapter === b.dataset.in);
+      const sub = sec && sec.querySelector('.ug-sub[data-sub="' + b.dataset.sub + '"]');
+      const on = b.dataset.in === current && !!sub && !sub.hidden;
+      b.classList.toggle("active", on);
+      if (on) b.setAttribute("aria-current", "true"); else b.removeAttribute("aria-current");
+    });
+  }
+  sideSubs.forEach(b => b.addEventListener("click", () => {
+    showChapter(b.dataset.in, false);
+    showSub(b.dataset.sub, true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }));
 
   window.addEventListener("hashchange", () => {
     if (!location.hash.startsWith("#guide")) return;
