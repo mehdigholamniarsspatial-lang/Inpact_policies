@@ -2296,12 +2296,6 @@ html.dc-lock{overflow:hidden}
 .ug-subtab .t b{display:block;color:var(--navy);font-size:.98rem}
 .ug-subtab .t span{display:block;font-size:.83rem;color:var(--text-muted);line-height:1.4}
 .ug-idea b i{color:var(--teal);margin-right:.2rem}
-.ug-card-p{font-size:.92rem;line-height:1.6;margin:0 0 .9rem}
-.ug-video-soon{display:grid;place-items:center;background:linear-gradient(115deg,var(--navy) 0%,#1D4264 55%,#1B5E48 100%)}
-.ug-soon-box{display:flex;flex-direction:column;align-items:center;gap:.45rem;color:#fff;text-align:center;padding:1rem 1.5rem;max-width:460px}
-.ug-soon-box i{font-size:2.6rem;color:#7FE0A8}
-.ug-soon-box b{font-size:1.1rem}
-.ug-soon-box span{font-size:.9rem;opacity:.88;line-height:1.5}
 @media (max-width:575px){ .ug-subnav{grid-template-columns:1fr} }
 @media (prefers-reduced-motion:reduce){
   .ug-step.open .ug-step-body,.ug-spot{animation:none}
@@ -4424,24 +4418,179 @@ html.dc-lock{overflow:hidden}
         </div>
       </div><!-- /3.1 -->
 
-      <!-- ---------- 3.2 Compare (video and full walkthrough to follow) ---------- -->
+      <!-- ---------- 3.2 Compare ---------- -->
       <div class="ug-sub" data-sub="compare" id="ugSubCmp" role="tabpanel" hidden>
+
         <div class="ug-video-card">
-          <div class="ug-video ug-video-soon">
-            <div class="ug-soon-box">
-              <i class="bi bi-camera-video" aria-hidden="true"></i>
-              <b>Compare tutorial: video coming soon</b>
-              <span>A guided video and step-by-step walkthrough of the Compare analysis will be added here.</span>
-            </div>
+          <div class="ug-video" data-yt="t-hrU9bEgq4" data-title="INPACT Explorer: Spatial Mapping compare tutorial">
+            <button type="button" class="ug-poster" aria-label="Play the Spatial Mapping compare video"
+                    style="background-image:url('https://i.ytimg.com/vi/t-hrU9bEgq4/hqdefault.jpg')">
+              <span class="ug-play" aria-hidden="true"><i class="bi bi-play-fill"></i></span>
+              <span class="ug-poster-lbl">Spatial Mapping: compare</span>
+            </button>
+          </div>
+          <div class="ug-video-bar">
+            <div><div class="t">Watch: mapping the difference between two emission layers</div><div class="s">Pause at any point and repeat the same steps in the workspace.</div></div>
+            <a class="ug-yt" href="https://youtu.be/t-hrU9bEgq4" target="_blank" rel="noopener"><i class="bi bi-youtube"></i>Watch on YouTube</a>
           </div>
         </div>
+
+        <!-- Key ideas -->
         <div class="ug-card">
-          <h3 class="ug-card-title"><i class="bi bi-layout-split"></i>What Compare does</h3>
-          <p class="ug-card-p">Compare shows the difference between two layers of the same dataset and gas, <b>B &minus; A</b>, directly on the map, either as an <b>absolute</b> difference or as a <b>% change</b>. Use it, for example, to see where emissions grew or fell between two years, or where an inverse model&rsquo;s posterior departs from its prior. Under <b>Choose an analysis</b>, select <b>Compare</b>, set layer A in Step 2, then set layer B beside it.</p>
-          <div class="ug-actions">
-            <button type="button" class="ug-go" data-go="mapping"><i class="bi bi-box-arrow-up-right"></i>Open Spatial Mapping</button>
-            <button type="button" class="ug-go alt" data-subgo="timeseries"><i class="bi bi-arrow-left-circle"></i>Back to 3.1 Time series</button>
+          <h3 class="ug-card-title"><i class="bi bi-layout-split"></i>Three ideas behind the Compare analysis</h3>
+          <div class="ug-ideas">
+            <div class="ug-idea"><b>The map shows B &minus; A.</b><span>Each grid cell is coloured by layer B minus layer A on a diverging scale: one colour where B is higher, another where it is lower, and a neutral colour where the two are about the same.</span></div>
+            <div class="ug-idea"><b>Like is compared with like.</b><span>Both layers come from the same dataset and the same gas, so the difference is meaningful. You can change the year, month, sector, inversion system, transport model or estimate (prior or posterior).</span></div>
+            <div class="ug-idea"><b>Absolute or relative.</b><span><em>Absolute</em> shows the difference in the layer&rsquo;s own units; <em>% change</em> shows it relative to A. In % change, cells where A is below 1% of its mean are left out to avoid misleading ratios.</span></div>
           </div>
+          <div class="ug-note"><i class="bi bi-info-circle"></i><span>The dashboard is still under active development, and <b>MapEIre</b> is not yet available for comparison. Use <b>EDGAR</b> or the <b>Inverse model</b>.</span></div>
+        </div>
+
+        <div class="ug-steps-head">
+          <h3>In this tutorial, you will learn how to&hellip;</h3>
+          <p>Open a step, try it in the workspace, and tick it off when you are done.</p>
+        </div>
+
+        <div class="ug-steps">
+
+          <!-- 1. Switch on Compare + dataset -->
+          <div class="ug-step" data-step="sm-cmp-dataset">
+            <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugC1">
+              <span class="ug-step-num">1</span><i class="bi bi-layout-split ug-step-ic" aria-hidden="true"></i>
+              <span class="ug-step-txt"><b>Switch on Compare and choose a dataset</b><span>EDGAR or the Inverse model.</span></span>
+              <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+            </button>
+            <div class="ug-step-body" id="ugC1">
+              <p>Open <b>Spatial Mapping</b> and, under <b>Choose an analysis</b> at the top of the left panel, select <b>Compare</b>. The <b>Comparison results</b> panel opens on the right of the map. Then, in <b>Step 1 &middot; Choose a dataset</b>, pick the source of both layers:</p>
+              <div class="ug-chips" role="group" aria-label="Datasets for comparison">
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="Compare two years (2000&ndash;2024), two months or two sectors of the same gas; for example, CH&#8324; from Agriculture in 2005 and in 2024."><i class="bi bi-layers"></i>EDGAR</button>
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="Compare two years, two inversion systems (ELRIS, InTEM, RHIME), two transport models (FLEXPART, NAME), or the prior against the posterior, for the same gas. The results also report how many cells differ by more than the models&rsquo; uncertainty."><i class="bi bi-broadcast"></i>Inverse model</button>
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="Not yet available for comparison while the dashboard is under development. MapEIre layers can still be viewed, styled and downloaded."><i class="bi bi-grid-3x3"></i>MapEIre</button>
+              </div>
+              <div class="ug-explain" aria-live="polite">Select a dataset above.</div>
+              <div class="ug-actions">
+                <button type="button" class="ug-go" data-go="mapping"><i class="bi bi-box-arrow-up-right"></i>Open Spatial Mapping</button>
+                <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Layers A and B -->
+          <div class="ug-step" data-step="sm-cmp-layers">
+            <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugC2">
+              <span class="ug-step-num">2</span><i class="bi bi-intersect ug-step-ic" aria-hidden="true"></i>
+              <span class="ug-step-txt"><b>Select Layer A and Layer B</b><span>Two layers of the same dataset and gas, side by side.</span></span>
+              <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+            </button>
+            <div class="ug-step-body" id="ugC2">
+              <p>In <b>Step 2 &middot; Select the layer</b>, the panel shows two columns. Fill <b>Layer A</b> (the reference) first, then <b>Layer B</b>; the gas of B follows A automatically. As soon as both are complete, the difference map is drawn and the statistics appear on the right.</p>
+              <ul class="ug-list">
+                <li><b>Map shows B &minus; A as</b>: choose <b>Absolute</b> (difference in the layer&rsquo;s units) or <b>% change</b> (difference relative to A).</li>
+                <li>Hover over a cell to read its values in A and B and their difference.</li>
+                <li>Tip: put the earlier year (or the prior) in A and the later year (or the posterior) in B, so that positive values mean an increase.</li>
+              </ul>
+              <div class="ug-actions">
+                <button type="button" class="ug-go" data-go="mapping"><i class="bi bi-box-arrow-up-right"></i>Try it in Spatial Mapping</button>
+                <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Filter -->
+          <div class="ug-step" data-step="sm-cmp-filter">
+            <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugC3">
+              <span class="ug-step-num">3</span><i class="bi bi-funnel ug-step-ic" aria-hidden="true"></i>
+              <span class="ug-step-txt"><b>Refine the difference map with the dual-mode filter</b><span>Trim the extremes, or hide the small changes around zero.</span></span>
+              <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+            </button>
+            <div class="ug-step-body" id="ugC3">
+              <p>In <b>Map style</b>, the <b>Filter</b> slider has two modes, switched by the small box to its right. In both modes the colours keep the full scale; only which cells are hidden changes. Tap a mode to learn more:</p>
+              <div class="ug-chips" role="group" aria-label="Filter modes">
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="Box unticked (default). Two handles set the lowest and highest differences shown, and cells outside that range are hidden. Use it to trim extreme increases or decreases so that the rest of the pattern stands out."><i class="bi bi-sliders"></i>Standard filter</button>
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="Box ticked. The slider becomes a single handle that sets the percentage of cells closest to zero to hide (10% by default, up to 99%). For example, 10% hides the 10% of cells with the smallest |B &minus; A|. Raising it removes minor fluctuations, which are often background noise, and leaves only the most significant spatial changes. The threshold in use is shown below the slider."><i class="bi bi-bullseye"></i>Zero-centred filter</button>
+              </div>
+              <div class="ug-explain" aria-live="polite">Select a mode above.</div>
+              <p>The <b>Colour palette</b> and <b>Reverse</b> box work as in the Time series section, applied to the diverging difference scale.</p>
+              <div class="ug-actions">
+                <button type="button" class="ug-go" data-go="mapping"><i class="bi bi-box-arrow-up-right"></i>Try it in Spatial Mapping</button>
+                <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Opacity, download, metadata -->
+          <div class="ug-step" data-step="sm-cmp-download">
+            <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugC4">
+              <span class="ug-step-num">4</span><i class="bi bi-download ug-step-ic" aria-hidden="true"></i>
+              <span class="ug-step-txt"><b>Set the opacity, download the map and check the metadata</b><span>GeoTIFF, JPEG or both, plus &ldquo;About this dataset&rdquo;.</span></span>
+              <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+            </button>
+            <div class="ug-step-body" id="ugC4">
+              <ul class="ug-list">
+                <li><b>Opacity</b>: below the filter, slide between 10% and 100% to let the satellite base map show through the difference layer.</li>
+                <li><b>Download the map</b>: export the comparison as a <b>GeoTIFF</b> (the B &minus; A cell values, for GIS software), a <b>JPEG</b> (the map with its legend, the names of A and B, and the source) or <b>Both</b> in one ZIP file. The export follows the current filter and palette.</li>
+                <li><b>About this dataset</b>: at the bottom of the left panel, a short summary of the dataset&rsquo;s metadata (provider, resolution, coverage, years, contents and notes on interpretation), with links to the original source.</li>
+              </ul>
+              <div class="ug-actions">
+                <button type="button" class="ug-go" data-go="mapping"><i class="bi bi-box-arrow-up-right"></i>Try it in Spatial Mapping</button>
+                <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Summary statistics -->
+          <div class="ug-step" data-step="sm-cmp-stats">
+            <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugC5">
+              <span class="ug-step-num">5</span><i class="bi bi-clipboard-data ug-step-ic" aria-hidden="true"></i>
+              <span class="ug-step-txt"><b>Read the comparison results</b><span>Totals, cell statistics, distribution and the share of cells that changed.</span></span>
+              <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+            </button>
+            <div class="ug-step-body" id="ugC5">
+              <p>The <b>Comparison results</b> panel summarises the difference at a glance. Tap a block to see what it shows:</p>
+              <div class="ug-chips" role="group" aria-label="Comparison results">
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="Total A, Total B and their difference B &minus; A, in absolute terms and as a percentage of A. For the inverse model these are the modellers&rsquo; Ireland totals."><i class="bi bi-calculator"></i>Totals</button>
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="Mean, median, standard deviation, minimum and maximum of the cell-by-cell difference (or % change)."><i class="bi bi-table"></i>Cell statistics</button>
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="A histogram of the cell differences, coloured as on the map, with markers for zero, the mean and the median."><i class="bi bi-bar-chart"></i>Distribution</button>
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="The share of cells that are lower in B, unchanged, or higher in B."><i class="bi bi-pie-chart"></i>Cells that changed</button>
+              </div>
+              <div class="ug-explain" aria-live="polite">Select a block above.</div>
+              <div class="ug-actions">
+                <button type="button" class="ug-go" data-go="mapping"><i class="bi bi-box-arrow-up-right"></i>Try it in Spatial Mapping</button>
+                <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. More statistics, ranked cells, CSV -->
+          <div class="ug-step" data-step="sm-cmp-more">
+            <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugC6">
+              <span class="ug-step-num">6</span><i class="bi bi-graph-up-arrow ug-step-ic" aria-hidden="true"></i>
+              <span class="ug-step-txt"><b>Open More statistics, locate hotspots and export</b><span>Advanced metrics, the largest increases and decreases, and a CSV download.</span></span>
+              <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+            </button>
+            <div class="ug-step-body" id="ugC6">
+              <p>Press <b>More statistics</b> below the summary to reveal the advanced results:</p>
+              <ul class="ug-list">
+                <li><b>Full distribution</b>: the number of cells used, quartiles, interquartile range, 5th and 95th percentiles, and skewness.</li>
+                <li><b>Agreement between A and B</b>: Pearson r (same spatial pattern), Spearman &rho; (same ranking of cells), RMSD, mean absolute difference and normalised mean bias; for the inverse model, also the number of cells whose uncertainty ranges do not overlap.</li>
+                <li><b>A against B</b>: a scatter plot with one point per cell.</li>
+                <li><b>Largest increases</b> and <b>Largest decreases</b>: ranked lists of the cells that changed most. <b>Click any cell in a list</b> and the map pans and zooms to its exact location and shows its values.</li>
+                <li><b>Download statistics (CSV)</b>: saves the summary statistics for reports or further analysis.</li>
+              </ul>
+              <div class="ug-actions">
+                <button type="button" class="ug-go" data-go="mapping"><i class="bi bi-box-arrow-up-right"></i>Try it in Spatial Mapping</button>
+                <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+              </div>
+            </div>
+          </div>
+        </div><!-- /ug-steps -->
+
+        <div class="ug-note" style="margin-top:1.2rem"><i class="bi bi-exclamation-triangle"></i><span><b>Before you interpret a difference map:</b> a difference shows <em>where</em> two estimates disagree, not <em>why</em>. EDGAR&rsquo;s spatial pattern is modelled from proxies, and inverse-model cell detail mostly reflects the prior, so focus on broad patterns and totals rather than single cells. Values are mass of each gas, not CO&#8322;-equivalent.</span></div>
+
+        <div class="ug-next">
+          <span><b>Well done!</b> You can now map, filter, quantify and export the difference between two emission layers.</span>
+          <span class="ug-actions"><button type="button" class="ug-go alt" data-subgo="timeseries"><i class="bi bi-arrow-left-circle"></i>3.1 Time series</button>
+          <button type="button" class="ug-go" data-go="mapping"><i class="bi bi-globe-europe-africa"></i>Open Spatial Mapping</button></span>
         </div>
       </div><!-- /3.2 -->
     </section>
