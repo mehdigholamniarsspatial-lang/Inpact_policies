@@ -2281,6 +2281,28 @@ html.dc-lock{overflow:hidden}
   .ug-calc-row{grid-template-columns:minmax(0,1fr) 46px}
   .ug-calc-row label{grid-column:1 / -1}
 }
+/* User Guide, chapter 3: subsection switch (3.1 Time series / 3.2 Compare) and the "video coming soon" panel */
+.ug-subnav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem;margin:0 0 1.3rem}
+.ug-subtab{display:flex;align-items:center;gap:.75rem;text-align:left;border:1px solid var(--grey-border);background:#fff;
+  border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:.8rem 1rem;font:inherit;color:inherit;cursor:pointer;
+  transition:border-color .2s,background .2s,box-shadow .2s}
+.ug-subtab:hover{background:var(--grey-panel)}
+.ug-subtab[aria-selected="true"]{border-color:var(--emerald);background:var(--emerald-light);box-shadow:var(--shadow-md)}
+.ug-subtab:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.ug-subtab .n{flex:none;min-width:42px;height:34px;border-radius:9px;display:grid;place-items:center;font-weight:800;font-size:.85rem;
+  background:var(--teal-light);color:var(--teal)}
+.ug-subtab[aria-selected="true"] .n{background:var(--emerald);color:#fff}
+.ug-subtab .t{min-width:0}
+.ug-subtab .t b{display:block;color:var(--navy);font-size:.98rem}
+.ug-subtab .t span{display:block;font-size:.83rem;color:var(--text-muted);line-height:1.4}
+.ug-idea b i{color:var(--teal);margin-right:.2rem}
+.ug-card-p{font-size:.92rem;line-height:1.6;margin:0 0 .9rem}
+.ug-video-soon{display:grid;place-items:center;background:linear-gradient(115deg,var(--navy) 0%,#1D4264 55%,#1B5E48 100%)}
+.ug-soon-box{display:flex;flex-direction:column;align-items:center;gap:.45rem;color:#fff;text-align:center;padding:1rem 1.5rem;max-width:460px}
+.ug-soon-box i{font-size:2.6rem;color:#7FE0A8}
+.ug-soon-box b{font-size:1.1rem}
+.ug-soon-box span{font-size:.9rem;opacity:.88;line-height:1.5}
+@media (max-width:575px){ .ug-subnav{grid-template-columns:1fr} }
 @media (prefers-reduced-motion:reduce){
   .ug-step.open .ug-step-body,.ug-spot{animation:none}
   .ug-bar span,.ug-play,.ug-chev{transition:none}
@@ -3728,7 +3750,7 @@ html.dc-lock{overflow:hidden}
       <ul class="ug-chapters">
         <li><button type="button" class="ug-chap active" data-chapter="intro" aria-current="true"><span class="n">1</span>Introduction</button></li>
         <li><button type="button" class="ug-chap" data-chapter="policy"><span class="n">2</span>Policy Timeline</button></li>
-        <li><button type="button" class="ug-chap" disabled><span class="n">3</span>Spatial Mapping<span class="soon">Soon</span></button></li>
+        <li><button type="button" class="ug-chap" data-chapter="mapping"><span class="n">3</span>Spatial Mapping</button></li>
         <li><button type="button" class="ug-chap" disabled><span class="n">4</span>Trend &amp; Structural Breaks<span class="soon">Soon</span></button></li>
         <li><button type="button" class="ug-chap" disabled><span class="n">5</span>Datasets &amp; Feedback<span class="soon">Soon</span></button></li>
       </ul>
@@ -4142,9 +4164,286 @@ html.dc-lock{overflow:hidden}
       </div><!-- /ug-steps -->
 
       <div class="ug-next">
-        <span><b>Well done!</b> You can now find, read and interpret any policy in the Policy Timeline. The Spatial Mapping chapter is coming soon.</span>
-        <button type="button" class="ug-go" data-pt=""><i class="bi bi-calendar3-range"></i>Open the Policy Timeline</button>
+        <span><b>Well done!</b> You can now find, read and interpret any policy in the Policy Timeline. Next, see where emissions come from in Chapter 3.</span>
+        <span class="ug-actions"><button type="button" class="ug-go alt" data-pt=""><i class="bi bi-calendar3-range"></i>Open the Policy Timeline</button>
+        <button type="button" class="ug-go ug-chap-next" data-next="mapping"><i class="bi bi-arrow-right-circle"></i>Chapter 3: Spatial Mapping</button></span>
       </div>
+    </section>
+
+    <!-- ===== Chapter 3: Spatial Mapping (deep links #guide/mapping, #guide/mapping/compare) =====
+         Two subsections switched by the .ug-subnav buttons: 3.1 Time series, 3.2 Compare. -->
+    <section class="ug-chapter" data-chapter="mapping" aria-labelledby="ugMapTitle" hidden>
+
+      <div class="ug-hero">
+        <div class="eyebrow">User Guide &middot; Chapter 3 &middot; Spatial Mapping</div>
+        <h2 id="ugMapTitle">Spatial Mapping: see where emissions come from, and how they change</h2>
+        <p>The Spatial Environmental Mapping workspace places gridded emission estimates for Ireland on a satellite base map. You can follow how emissions in one cell, a region or the whole country change over the years, or compare two layers of the same dataset. This chapter has two parts: <b>Time series</b> and <b>Compare</b>.</p>
+        <div class="ug-meta">
+          <span><i class="bi bi-play-circle"></i>Video tutorials</span>
+          <span><i class="bi bi-stack"></i>3 emission datasets</span>
+          <span><i class="bi bi-calendar-range"></i>2000&ndash;2024</span>
+          <span><i class="bi bi-download"></i>GeoTIFF, JPEG, PNG and CSV exports</span>
+        </div>
+      </div>
+
+      <div class="ug-subnav" role="tablist" aria-label="Spatial Mapping subsections">
+        <button type="button" role="tab" class="ug-subtab" data-sub="timeseries" aria-selected="true" aria-controls="ugSubTs">
+          <span class="n">3.1</span><span class="t"><b>Time series</b><span>Values over the years for a pixel, a region or the whole image</span></span>
+        </button>
+        <button type="button" role="tab" class="ug-subtab" data-sub="compare" aria-selected="false" aria-controls="ugSubCmp">
+          <span class="n">3.2</span><span class="t"><b>Compare</b><span>The difference between two layers (B &minus; A) on the map</span></span>
+        </button>
+      </div>
+
+      <!-- ---------- 3.1 Time series ---------- -->
+      <div class="ug-sub" data-sub="timeseries" id="ugSubTs" role="tabpanel">
+
+        <div class="ug-video-card">
+          <div class="ug-video" data-yt="Xx_45filPoY" data-title="INPACT Explorer: Spatial Mapping time series tutorial">
+            <button type="button" class="ug-poster" aria-label="Play the Spatial Mapping time series video"
+                    style="background-image:url('https://i.ytimg.com/vi/Xx_45filPoY/hqdefault.jpg')">
+              <span class="ug-play" aria-hidden="true"><i class="bi bi-play-fill"></i></span>
+              <span class="ug-poster-lbl">Spatial Mapping: time series</span>
+            </button>
+          </div>
+          <div class="ug-video-bar">
+            <div><div class="t">Watch: building a time series from the emission maps</div><div class="s">Pause at any point and repeat the same steps in the workspace.</div></div>
+            <a class="ug-yt" href="https://youtu.be/Xx_45filPoY" target="_blank" rel="noopener"><i class="bi bi-youtube"></i>Watch on YouTube</a>
+          </div>
+        </div>
+
+        <!-- The three datasets -->
+        <div class="ug-card">
+          <h3 class="ug-card-title"><i class="bi bi-stack"></i>Three datasets, three views of Ireland&rsquo;s emissions</h3>
+          <div class="ug-ideas">
+            <div class="ug-idea"><b><i class="bi bi-grid-3x3"></i> MapEIre</b><span>The EPA&rsquo;s national inventory mapped on a 1&nbsp;km grid (Aarhus University). <em>Years: 2015 and 2019.</em> Layers: <b>Year &rarr; Sector &rarr; Pollutant</b>, with 33 pollutants (greenhouse gases, air pollutants, heavy metals and persistent organic pollutants) by NFR/CRF sector.</span></div>
+            <div class="ug-idea"><b><i class="bi bi-layers"></i> EDGAR</b><span>The European Commission JRC&rsquo;s bottom-up inventory (EDGAR 2025 GHG) on a 0.1&deg; grid. <em>Years: 2000&ndash;2024, annual or monthly.</em> Layers: <b>Gas &rarr; Sector &rarr; Year &rarr; Period</b>, with CO&#8322; (fossil), CH&#8324; and N&#8322;O across eight sectors.</span></div>
+            <div class="ug-idea"><b><i class="bi bi-broadcast"></i> Inverse model</b><span>Top-down CH&#8324; and N&#8322;O fluxes from the Horizon Europe PARIS project, estimated from atmospheric measurements. <em>Years: 2013&ndash;2024 (NAME runs) or 2016&ndash;2024 (FLEXPART runs).</em> Layers: <b>Inverse model &rarr; Transport model &rarr; Gas &rarr; Year &rarr; Estimate</b>.</span></div>
+          </div>
+          <div class="ug-note"><i class="bi bi-info-circle"></i><span>MapEIre offers only two years, published as ready-made images, so it can be viewed, styled and downloaded but <b>not added to a time series</b>. Use <b>EDGAR</b> or the <b>Inverse model</b> for the graph.</span></div>
+        </div>
+
+        <div class="ug-steps-head">
+          <h3>In this tutorial, you will learn how to&hellip;</h3>
+          <p>Open a step, try it in the workspace, and tick it off when you are done.</p>
+        </div>
+
+        <div class="ug-steps">
+
+          <!-- 1. Turn on Time series + choose dataset -->
+          <div class="ug-step" data-step="sm-ts-dataset">
+            <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugM1">
+              <span class="ug-step-num">1</span><i class="bi bi-graph-up ug-step-ic" aria-hidden="true"></i>
+              <span class="ug-step-txt"><b>Switch on Time series and choose a dataset</b><span>Pick the analysis, then one of the three emission datasets.</span></span>
+              <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+            </button>
+            <div class="ug-step-body" id="ugM1">
+              <p>Open <b>Spatial Mapping</b> from the Main Menu. At the top of the left panel, under <b>Choose an analysis</b>, select <b>Time series</b>; the workspace adds the steps for the area and the plot, and the graph panel opens on the right. Then, in <b>Step 1 &middot; Choose a dataset</b>, select one of the three cards. Tap a dataset to see its time span:</p>
+              <div class="ug-chips" role="group" aria-label="Datasets">
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="1 km grid, 2015 and 2019. Shown as ready-made images: ideal for detailed maps, not available for time series."><i class="bi bi-grid-3x3"></i>MapEIre</button>
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="0.1&deg; grid (about 11 &times; 7 km), every year from 2000 to 2024 as annual totals or monthly values. Values are mass of each gas, not CO&#8322;-equivalent."><i class="bi bi-layers"></i>EDGAR</button>
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="About 23 &times; 26 km cells covering Ireland plus a 20 km buffer, 2013&ndash;2024 depending on the transport model. Each cell carries an uncertainty range (15.9th&ndash;84.1st percentiles)."><i class="bi bi-broadcast"></i>Inverse model</button>
+              </div>
+              <div class="ug-explain" aria-live="polite">Select a dataset above.</div>
+              <div class="ug-actions">
+                <button type="button" class="ug-go" data-go="mapping"><i class="bi bi-box-arrow-up-right"></i>Open Spatial Mapping</button>
+                <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Select the layer -->
+          <div class="ug-step" data-step="sm-ts-layer">
+            <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugM2">
+              <span class="ug-step-num">2</span><i class="bi bi-ui-checks ug-step-ic" aria-hidden="true"></i>
+              <span class="ug-step-txt"><b>Select the layer</b><span>Narrow the dataset down to the gas, sector and year you need.</span></span>
+              <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+            </button>
+            <div class="ug-step-body" id="ugM2">
+              <p>In <b>Step 2 &middot; Select the layer</b>, fill the drop-downs from left to right; each one unlocks the next, and the layer appears on the map as soon as the selection is complete. Tap a dataset to see its layers:</p>
+              <div class="ug-chips" role="group" aria-label="Layers of each dataset">
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="<b>Year</b> (2015 or 2019) &rarr; <b>Sector</b> (NFR/CRF reporting sector) &rarr; <b>Pollutant</b> (33 substances in seven groups)."><i class="bi bi-grid-3x3"></i>MapEIre layers</button>
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="<b>Gas</b> (CO&#8322; fossil, CH&#8324;, N&#8322;O) &rarr; <b>Sector</b> (Power industry, Industrial combustion, Buildings, Transport, Fuel exploitation, Industrial processes, Agriculture, Waste) &rarr; <b>Year</b> (2000&ndash;2024) &rarr; <b>Period</b> (annual total or a single month)."><i class="bi bi-layers"></i>EDGAR layers</button>
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="<b>Inverse model</b> (ELRIS, InTEM or RHIME) &rarr; <b>Transport model</b> (FLEXPART or NAME) &rarr; <b>Gas</b> (CH&#8324; or N&#8322;O) &rarr; <b>Year</b> &rarr; <b>Estimate</b>: the <em>prior</em> (the starting emission map), the <em>posterior</em> (corrected by atmospheric observations) or their <em>difference</em>."><i class="bi bi-broadcast"></i>Inverse model layers</button>
+              </div>
+              <div class="ug-explain" aria-live="polite">Select a dataset above.</div>
+              <div class="ug-note"><i class="bi bi-lightbulb"></i><span>The <b>Year</b> and <b>Period</b> chosen here only set the map. The time series always uses <b>every year</b> of the layer.</span></div>
+              <div class="ug-actions">
+                <button type="button" class="ug-go" data-go="mapping"><i class="bi bi-box-arrow-up-right"></i>Try it in Spatial Mapping</button>
+                <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Choose the area -->
+          <div class="ug-step" data-step="sm-ts-area">
+            <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugM3">
+              <span class="ug-step-num">3</span><i class="bi bi-bounding-box ug-step-ic" aria-hidden="true"></i>
+              <span class="ug-step-txt"><b>Choose the area of the time series</b><span>One pixel, a region you define, or the whole image.</span></span>
+              <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+            </button>
+            <div class="ug-step-body" id="ugM3">
+              <p>In <b>Step 3 &middot; Choose the area</b>, decide which cells the time series is calculated from. Tap an option to see how it works:</p>
+              <div class="ug-chips" role="group" aria-label="Area types">
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="Only the grid cell under the cursor. Click any cell on the map; its location (cell centre) is shown below the buttons and the series follows that single cell."><i class="bi bi-crosshair2"></i>Pixel</button>
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="A group of cells. Choose <b>Rectangle</b> or <b>Polygon</b>, press <b>Draw</b> and outline the area on the map; or choose <b>County</b> and pick a county from the list. The county boundary is drawn on the map and the series uses the cells whose centre lies inside it."><i class="bi bi-bounding-box"></i>Region</button>
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="Every cell of the layer: a single series for the whole area covered by the dataset."><i class="bi bi-map"></i>Whole image</button>
+              </div>
+              <div class="ug-explain" aria-live="polite">Select an area type above.</div>
+              <p>For a region or the whole image, <b>Combine cells by</b> (in the graph panel) sets how the cells are summarised each year: <b>Mean</b>, <b>Median</b> or <b>Sum</b> (the total of all cells).</p>
+              <div class="ug-actions">
+                <button type="button" class="ug-go" data-go="mapping"><i class="bi bi-box-arrow-up-right"></i>Try it in Spatial Mapping</button>
+                <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Add to the plot -->
+          <div class="ug-step" data-step="sm-ts-add">
+            <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugM4">
+              <span class="ug-step-num">4</span><i class="bi bi-plus-circle ug-step-ic" aria-hidden="true"></i>
+              <span class="ug-step-txt"><b>Add the layer to the time series plot</b><span>The graph appears on the right; EDGAR can be annual or monthly.</span></span>
+              <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+            </button>
+            <div class="ug-step-body" id="ugM4">
+              <p>In <b>Step 4 &middot; Add to the time series plot</b>, check the summary of the layer and press <b>Add to plot</b>. The graph opens in the panel on the right of the map.</p>
+              <ul class="ug-list">
+                <li><b>EDGAR</b>: choose the <b>Time step</b> first: <b>Annual</b> (one value per year, 2000&ndash;2024) or <b>Monthly</b> (one value per month, showing the seasonal cycle).</li>
+                <li><b>Inverse model</b>: the plot shows the selected estimate (prior, posterior or difference) for every year of the run.</li>
+                <li><b>MapEIre</b>: a notice explains that it cannot be plotted and offers to switch to EDGAR or the Inverse model.</li>
+              </ul>
+              <div class="ug-actions">
+                <button type="button" class="ug-go" data-go="mapping"><i class="bi bi-box-arrow-up-right"></i>Try it in Spatial Mapping</button>
+                <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Map style -->
+          <div class="ug-step" data-step="sm-ts-style">
+            <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugM5">
+              <span class="ug-step-num">5</span><i class="bi bi-palette ug-step-ic" aria-hidden="true"></i>
+              <span class="ug-step-txt"><b>Adjust the map style</b><span>Colour palette, reverse, value filter and opacity.</span></span>
+              <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+            </button>
+            <div class="ug-step-body" id="ugM5">
+              <p><b>Map style</b> controls how the layer is drawn. Tap a setting to see what it does:</p>
+              <div class="ug-chips" role="group" aria-label="Map style settings">
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="Open the palette list (grouped and searchable) and pick the colour scale used for the layer and its legend."><i class="bi bi-palette"></i>Colour palette</button>
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="Tick the small box next to the palette to reverse its direction, so that low and high values swap colours."><i class="bi bi-arrow-left-right"></i>Reverse</button>
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="Move the two handles to set the minimum and maximum values drawn. Cells outside the range are hidden while the colours keep the layer&rsquo;s scale, so you can remove the low-value cells around the coast and offshore and focus the map on Ireland&rsquo;s land area. Cells with a value of zero are always left uncoloured."><i class="bi bi-funnel"></i>Filter</button>
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="Slide from 10% to 100% to control how much of the satellite base map shows through the emission layer."><i class="bi bi-transparency"></i>Opacity</button>
+              </div>
+              <div class="ug-explain" aria-live="polite">Select a setting above.</div>
+              <p>MapEIre layers are ready-made images, so only their opacity can be changed.</p>
+              <div class="ug-actions">
+                <button type="button" class="ug-go" data-go="mapping"><i class="bi bi-box-arrow-up-right"></i>Try it in Spatial Mapping</button>
+                <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Download the map + metadata -->
+          <div class="ug-step" data-step="sm-ts-download">
+            <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugM6">
+              <span class="ug-step-num">6</span><i class="bi bi-download ug-step-ic" aria-hidden="true"></i>
+              <span class="ug-step-txt"><b>Download the map and check the dataset&rsquo;s metadata</b><span>GeoTIFF, JPEG or both, plus &ldquo;About this dataset&rdquo;.</span></span>
+              <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+            </button>
+            <div class="ug-step-body" id="ugM6">
+              <p>In <b>Download the map</b>, choose a <b>File format</b> and press the download button:</p>
+              <div class="ug-chips" role="group" aria-label="Map download formats">
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="A map image of the layer with its title, legend and source, ready for reports and presentations."><i class="bi bi-image"></i>JPEG</button>
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="The cell values themselves, georeferenced for GIS software such as QGIS or ArcGIS."><i class="bi bi-grid-3x3-gap"></i>GeoTIFF</button>
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="One ZIP file containing both the GeoTIFF and the JPEG."><i class="bi bi-file-earmark-zip"></i>Both</button>
+              </div>
+              <div class="ug-explain" aria-live="polite">Select a format above.</div>
+              <p>At the bottom of the left panel, <b>About this dataset</b> shows the metadata of the selected dataset: provider, resolution, projection, coverage, years and contents, notes on how to interpret it, and links to the original source.</p>
+              <div class="ug-actions">
+                <button type="button" class="ug-go" data-go="mapping"><i class="bi bi-box-arrow-up-right"></i>Try it in Spatial Mapping</button>
+                <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. Work with the graph -->
+          <div class="ug-step" data-step="sm-ts-graph">
+            <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugM7">
+              <span class="ug-step-num">7</span><i class="bi bi-graph-up-arrow ug-step-ic" aria-hidden="true"></i>
+              <span class="ug-step-txt"><b>Explore and overlay series in the graph panel</b><span>Change the area live, overlay layers of the same gas and align their scales.</span></span>
+              <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+            </button>
+            <div class="ug-step-body" id="ugM7">
+              <p>Once a layer is in the plot, the graph panel gives you full control of the analysis:</p>
+              <ul class="ug-list">
+                <li><b>Area</b>: the panel repeats the Pixel / Region / Whole image choice, with details of the current selection (the cell location, the region shape or the county). Change it at any time: every series in the graph is recalculated for the new area.</li>
+                <li><b>Overlay layers</b>: go back to Step 2, choose another layer of the <b>same gas</b> (for example another sector, or another inverse model) and press <b>Add to plot</b> again. Each layer gets its own line, listed under <b>Layers in the plot</b>, where it can be shown, hidden or removed (<b>Remove all</b> clears the plot).</li>
+                <li><b>Scale to first layer</b>: when the series differ greatly in size, this switch maps every other layer&rsquo;s minimum&ndash;maximum onto the first layer&rsquo;s range, so the shapes of the curves can be compared directly.</li>
+                <li><b>Uncertainty</b> (Inverse model, pixel): shows or hides the 1&sigma;-equivalent uncertainty band around the line.</li>
+              </ul>
+              <div class="ug-actions">
+                <button type="button" class="ug-go" data-go="mapping"><i class="bi bi-box-arrow-up-right"></i>Try it in Spatial Mapping</button>
+                <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 8. Export the graph -->
+          <div class="ug-step" data-step="sm-ts-export">
+            <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugM8">
+              <span class="ug-step-num">8</span><i class="bi bi-box-arrow-down ug-step-ic" aria-hidden="true"></i>
+              <span class="ug-step-txt"><b>Export the graph, with or without maps</b><span>Image and CSV, a single map or a grid of maps over time.</span></span>
+              <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
+            </button>
+            <div class="ug-step-body" id="ugM8">
+              <p>The buttons above the graph export your results:</p>
+              <ul class="ug-list">
+                <li><b>Image</b>: downloads the graph at 90, 200 or 300 dpi, with its legend and data sources (PNG).</li>
+                <li><b>CSV</b>: downloads the values of every series in the plot, ready for a spreadsheet or further analysis.</li>
+                <li><b>Include map</b>: adds the map to the exported image, which then downloads as a single JPEG with the map, the graph and a details box. Choose what the map part shows:</li>
+              </ul>
+              <div class="ug-chips" role="group" aria-label="Include map options">
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="The map shown on the left, exactly as it is now (layer, style and area), next to the graph."><i class="bi bi-map"></i>Current Map</button>
+                <button type="button" class="ug-chip" aria-pressed="false" data-explain="One map per time step of the layer on the map (every year, or every month for EDGAR monthly), arranged in a grid with one shared colour scale. Use <b>Panel layout</b> to choose the number of rows and columns."><i class="bi bi-grid-3x3-gap"></i>Time Series Grid</button>
+              </div>
+              <div class="ug-explain" aria-live="polite">Select an option above.</div>
+              <div class="ug-actions">
+                <button type="button" class="ug-go" data-go="mapping"><i class="bi bi-box-arrow-up-right"></i>Try it in Spatial Mapping</button>
+                <label class="ug-done"><input type="checkbox">I&rsquo;ve got this</label>
+              </div>
+            </div>
+          </div>
+        </div><!-- /ug-steps -->
+
+        <div class="ug-note" style="margin-top:1.2rem"><i class="bi bi-exclamation-triangle"></i><span><b>Before you interpret the curves:</b> EDGAR cell patterns are modelled from spatial proxies, and its monthly values are annual totals split with sector profiles; inverse-model cell detail mostly reflects the prior, so national or regional totals are the most robust output. Values are mass of each gas, not CO&#8322;-equivalent, so compare series of the same gas.</span></div>
+
+        <div class="ug-next">
+          <span><b>Well done!</b> You can now build, overlay and export time series from the emission maps. Next: compare two layers.</span>
+          <span class="ug-actions"><button type="button" class="ug-go alt" data-go="mapping"><i class="bi bi-globe-europe-africa"></i>Open Spatial Mapping</button>
+          <button type="button" class="ug-go" data-subgo="compare"><i class="bi bi-arrow-right-circle"></i>3.2 Compare</button></span>
+        </div>
+      </div><!-- /3.1 -->
+
+      <!-- ---------- 3.2 Compare (video and full walkthrough to follow) ---------- -->
+      <div class="ug-sub" data-sub="compare" id="ugSubCmp" role="tabpanel" hidden>
+        <div class="ug-video-card">
+          <div class="ug-video ug-video-soon">
+            <div class="ug-soon-box">
+              <i class="bi bi-camera-video" aria-hidden="true"></i>
+              <b>Compare tutorial: video coming soon</b>
+              <span>A guided video and step-by-step walkthrough of the Compare analysis will be added here.</span>
+            </div>
+          </div>
+        </div>
+        <div class="ug-card">
+          <h3 class="ug-card-title"><i class="bi bi-layout-split"></i>What Compare does</h3>
+          <p class="ug-card-p">Compare shows the difference between two layers of the same dataset and gas, <b>B &minus; A</b>, directly on the map, either as an <b>absolute</b> difference or as a <b>% change</b>. Use it, for example, to see where emissions grew or fell between two years, or where an inverse model&rsquo;s posterior departs from its prior. Under <b>Choose an analysis</b>, select <b>Compare</b>, set layer A in Step 2, then set layer B beside it.</p>
+          <div class="ug-actions">
+            <button type="button" class="ug-go" data-go="mapping"><i class="bi bi-box-arrow-up-right"></i>Open Spatial Mapping</button>
+            <button type="button" class="ug-go alt" data-subgo="timeseries"><i class="bi bi-arrow-left-circle"></i>Back to 3.1 Time series</button>
+          </div>
+        </div>
+      </div><!-- /3.2 -->
     </section>
     </div><!-- /ug-main -->
   </div>
@@ -8835,7 +9134,8 @@ if (!MAP_STANDALONE && location.hash.startsWith("#policy")) activateTab("policy"
 if (!MAP_STANDALONE && location.hash === "#mapping") activateTab("mapping");
 
 /* ---------------------- 9d. User Guide tab (interactive guide) ----------------------
- * Chapters (sidebar): 1 Introduction, 2 Policy Timeline; later ones are listed as "Soon".
+ * Chapters (sidebar): 1 Introduction, 2 Policy Timeline, 3 Spatial Mapping (subsections 3.1 Time series,
+ * 3.2 Compare); later ones are listed as "Soon".
  * Each chapter: a YouTube video loaded only on play, expandable steps whose buttons open (and
  * highlight) the part of the dashboard they describe, and a per-viewer progress bar.
  * Deep links: #guide (Introduction) and #guide/<chapter>, e.g. #guide/policy.
@@ -8968,12 +9268,33 @@ if (!MAP_STANDALONE && location.hash === "#mapping") activateTab("mapping");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }));
   const fromHash = () => (location.hash.match(/^#guide\/([\w-]+)/) || [])[1] || "intro";
+
+  // ---- Subsections inside a chapter (chapter 3: 3.1 Time series, 3.2 Compare); deep link #guide/mapping/compare ----
+  function showSub(key, updateHash){
+    const sec = chapters.find(c => c.dataset.chapter === current);
+    const subs = sec ? [...sec.querySelectorAll(".ug-sub")] : [];
+    if (!subs.length) return;
+    if (!subs.some(s => s.dataset.sub === key)) key = subs[0].dataset.sub;
+    stopVideos();
+    subs.forEach(s => s.hidden = s.dataset.sub !== key);
+    sec.querySelectorAll(".ug-subtab").forEach(t => t.setAttribute("aria-selected", String(t.dataset.sub === key)));
+    if (updateHash) history.replaceState(null, "", location.pathname + location.search + "#guide/" + current +
+      (key === subs[0].dataset.sub ? "" : "/" + key));
+  }
+  pane.querySelectorAll(".ug-subtab, [data-subgo]").forEach(b => b.addEventListener("click", () => {
+    showSub(b.dataset.sub || b.dataset.subgo, true);
+    if (b.hasAttribute("data-subgo")) pane.querySelector(".ug-subnav")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }));
+  const subFromHash = () => (location.hash.match(/^#guide\/[\w-]+\/([\w-]+)/) || [])[1] || "";
+
   window.addEventListener("hashchange", () => {
     if (!location.hash.startsWith("#guide")) return;
     if (!pane.classList.contains("active")) activateTab("guide");
     showChapter(fromHash(), false);
+    showSub(subFromHash(), false);
   });
   showChapter(fromHash(), false);
+  showSub(subFromHash(), false);
 })();
 if (!MAP_STANDALONE && location.hash.startsWith("#guide")) activateTab("guide");
 
