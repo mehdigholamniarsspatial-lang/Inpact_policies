@@ -3749,8 +3749,8 @@ a.ug-go.alt:hover{color:var(--navy)}
 </div><!-- /tab-data -->
 
 <!-- ================= TAB: USER GUIDE (interactive guide; deep link #guide) =================
-     Chapter 1 is the Introduction, chapter 2 the Policy Timeline, chapter 3 Spatial Mapping (3.1 Time series, 3.2 Compare) and chapter 4 Trend &amp; Structural Breaks. Further chapters are listed in the sidebar as "Soon": to add one,
-     give its button data-chapter="<id>", drop the disabled attribute and add a matching
+     Chapter 1 is the Introduction, chapter 2 the Policy Timeline, chapter 3 Spatial Mapping (3.1 Time series, 3.2 Compare) and chapter 4 Trend &amp; Structural Breaks. To add a chapter,
+     add a sidebar button with data-chapter="<id>" and a matching
      <section class="ug-chapter" data-chapter="<id>" hidden> in .ug-main. -->
 <div class="tab-pane" id="tab-guide" role="tabpanel" aria-label="User Guide">
   <div class="ug-wrap">
@@ -3762,7 +3762,6 @@ a.ug-go.alt:hover{color:var(--navy)}
         <li><button type="button" class="ug-chap" data-chapter="policy"><span class="n">2</span>Policy Timeline</button></li>
         <li><button type="button" class="ug-chap" data-chapter="mapping"><span class="n">3</span>Spatial Mapping</button></li>
         <li><button type="button" class="ug-chap" data-chapter="breaks"><span class="n">4</span>Trend &amp; Structural Breaks</button></li>
-        <li><button type="button" class="ug-chap" disabled><span class="n">5</span>Datasets &amp; Feedback<span class="soon">Soon</span></button></li>
       </ul>
       <div class="ug-progress" aria-live="polite">
         <span id="ugProgressTxt">0 steps explored</span>
