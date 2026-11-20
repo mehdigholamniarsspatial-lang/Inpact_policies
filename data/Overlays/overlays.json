@@ -114,7 +114,7 @@
   },
   {
    "id": "osm_health_polygons",
-   "name": "OSM health facility footprints",
+   "name": "Health facility footprints",
    "group": "Health locations",
    "kind": "polygon",
    "description": "Mapped building and site outlines of hospitals, clinics, doctors, dentists and pharmacies.",
@@ -141,11 +141,11 @@
    ],
    "default_field": "amenity",
    "file": "osm_health_polygons.json.gz",
-   "bytes": 34995
+   "bytes": 34988
   },
   {
    "id": "osm_health_facilities",
-   "name": "OSM health facilities",
+   "name": "Health facilities",
    "group": "Health locations",
    "kind": "mixed",
    "description": "Every selected OSM healthcare feature as mapped: points, building outlines and a few lines.",
@@ -188,7 +188,7 @@
    ],
    "default_field": "amenity",
    "file": "osm_health_facilities.json.gz",
-   "bytes": 56020
+   "bytes": 56011
   }
  ]
 }

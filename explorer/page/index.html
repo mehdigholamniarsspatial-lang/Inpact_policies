@@ -1285,7 +1285,22 @@ html.map-standalone .ov-about{margin-top:auto;padding:.1rem .9rem .2rem;border-t
 .ov-item-head input{flex:0 0 auto;width:17px;height:17px;margin:.1rem 0 0;accent-color:var(--teal);cursor:pointer}
 .ov-item-txt{display:flex;flex-direction:column;min-width:0;line-height:1.25}
 .ov-item-name{font-size:.86rem;font-weight:800;color:var(--navy)}
-.ov-item-desc{font-size:.7rem;color:var(--text-muted)}
+.ov-item-head{align-items:center}
+.ov-item.active{border-color:var(--teal);box-shadow:0 0 0 2px rgba(14,140,138,.22)}
+.ov-item-row{display:flex;align-items:center}
+.ov-item-row .ov-item-head{flex:1 1 auto;min-width:0}
+.ov-open{flex:0 0 auto;margin-right:.45rem;border:1px solid var(--grey-border);border-radius:6px;background:#fff;color:var(--teal);
+  width:28px;height:26px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:.8rem}
+.ov-open:hover{background:rgba(14,140,138,.08)}
+.ov-open[hidden]{display:none}
+.ov-item.active .ov-open{background:var(--teal);color:#fff;border-color:var(--teal)}
+/* Layer settings cards: only the active layer's card is open; the others fold to their header (») */
+.ov-results .ov-card-h{width:100%;border:0;background:none;padding:0;text-align:left;cursor:pointer}
+.ov-results .ov-card-h .ov-chev{margin-left:auto;color:var(--teal);transition:transform .15s}
+.ov-results .ov-sym:not(.collapsed) .ov-card-h .ov-chev{transform:rotate(90deg)}
+.ov-results .ov-sym.collapsed{padding-bottom:.7rem}
+.ov-results .ov-sym.collapsed > :not(.ov-card-h){display:none!important}
+.ov-results .ov-sym.active-card{border-color:var(--teal)}
 .ov-item.unavailable .ov-item-head{cursor:not-allowed;opacity:.6}
 .ov-status{font-size:.72rem;line-height:1.35;margin:.1rem .75rem .55rem;color:var(--text-muted);display:flex;gap:.4rem;align-items:flex-start}
 .ov-status:empty{display:none}
@@ -2058,6 +2073,7 @@ html.map-standalone.ms-aq .map-side{grid-row:2}
 .dc-c-raster{--c:var(--teal);--cl:var(--teal-light)}
 .dc-c-policy{--c:#3B5B8C;--cl:#E7EEF7}
 .dc-c-aq{--c:#2F7D4A;--cl:#E6F2EA}
+.dc-c-health{--c:#B03A5B;--cl:#F8E8EE}
 
 /* toolbar */
 .dc-toolbar{
@@ -2757,7 +2773,7 @@ a.ug-go.alt:hover{color:var(--navy)}
               <h3 class="ov-title" id="ovTitle"><i class="bi bi-wind" aria-hidden="true"></i>Layer Overlay</h3>
             </div>
             <div class="ov-body" id="ovBody">
-              <p class="ms-p">Layers drawn on top of the map and any emission layer. Tick a layer to show it; its settings open in the panel on the right.</p>
+              <p class="ms-p">Layers drawn on top of the map and any emission layer. Tick a layer to show it. The active layer&rsquo;s settings open on the right and its details below; use <b>&raquo;</b> to switch.</p>
               <div id="ovList"><p class="ov-status"><i class="bi bi-hourglass-split" aria-hidden="true"></i>Loading the layer list…</p></div>
             </div>
           </div>
@@ -9777,29 +9793,37 @@ if (MAP_STANDALONE) (function overlayLayers(){
   const SHAPES = { circle: "Circle", square: "Square", triangle: "Triangle", diamond: "Diamond" };
   const HEX = /^#[0-9a-f]{6}$/i;
   const clamp = (v, lo, hi, d) => { v = +v; return Number.isFinite(v) ? Math.min(Math.max(v, lo), hi) : d; };
-  const OSM_ABOUT = (shown, fields) => ({
-    lead: "<b>OpenStreetMap healthcare features</b> in the Republic of Ireland: hospitals, clinics, doctors, dentists, pharmacies " +
-          "and nursing homes mapped by OpenStreetMap contributors, selected by their <i>amenity</i> and <i>healthcare</i> tags.",
+  const OSM_ABOUT = (shown, fields, extraNote) => ({
+    lead: "<b>OpenStreetMap healthcare features &ndash; Republic of Ireland</b>: 3,714 hospitals, clinics, doctors, dentists, " +
+          "pharmacies, nursing homes and other healthcare places mapped by OpenStreetMap contributors (2,674 nodes, 1,001 ways, 39 relations).",
     more: [
+      "Features were selected through the Overpass API if <i>either</i> their <b>amenity</b> tag is hospital, clinic, doctors, dentist, " +
+      "pharmacy or nursing_home, <i>or</i> their <b>healthcare</b> tag is one of hospital, clinic, health_centre, centre, doctor, dentist, " +
+      "pharmacy, nursing_home, hospice, physiotherapist, midwife or urgent_care. Tags are raw contributor values, not harmonised clinical categories.",
       "Outlines are mapped buildings or sites, not catchment areas, and not every facility has one. A site, a building and a point " +
-      "can describe the same facility, so counts are not counts of unique establishments.",
+      "can describe the same facility, so counts are not counts of unique establishments. No matching with the HSE health centres was done.",
     ],
     facts: [
       ["Shown here", shown],
       ["Fields shown", fields],
-      ["Source", "OpenStreetMap, via the Overpass API"],
-      ["Snapshot", "OSM database of 20 November 2026, 12:42 UTC"],
+      ["Source", "OpenStreetMap contributors, via the Overpass API (parsed with OSMnx 2.2.0)"],
+      ["Snapshot", "OSM database of 20 November 2026, 12:42 UTC (a static extract)"],
+      ["Area", "Republic of Ireland (ISO 3166-1 IE); Northern Ireland not included"],
+      ["Coordinates", "WGS 84 (EPSG:4326)"],
       ["Licence", "Open Database License (ODbL) 1.0"],
     ],
     notes: [
-      "Tags are written by contributors: missing facilities, outdated names and inconsistent tags are possible.",
-      "Features with no amenity tag are shown as \u201cNot recorded\u201d.",
+      "Missing facilities, outdated names, inconsistent tags and uneven coverage between areas are possible.",
+      "Features with no amenity tag are shown as \u201cNot recorded\u201d; they qualified through their healthcare tag.",
+      "Not a measure of opening hours, capacity, eligibility or current availability.",
+      ...(extraNote ? [extraNote] : []),
       "Building outlines are small: zoom in to a town to see them.",
     ],
     cite: "OpenStreetMap contributors. Selected healthcare features, Republic of Ireland. Retrieved 20 November 2026. ODbL 1.0.",
     links: [
       ["bi-c-circle", "OpenStreetMap copyright and licence", "https://www.openstreetmap.org/copyright"],
       ["bi-journal-text", "ODbL 1.0 licence text", "https://opendatacommons.org/licenses/odbl/1-0/"],
+      ["bi-tags", "OSM healthcare tag (wiki)", "https://wiki.openstreetmap.org/wiki/Key:healthcare"],
     ],
   });
   const OVERLAY_LAYERS = [
@@ -9848,38 +9872,48 @@ if (MAP_STANDALONE) (function overlayLayers(){
       what: "Health centre", titleField: "service_name",
       defaults: { ...FEAT_DEFAULTS, mode: "single", field: "county", colour: "#0E8C8A", shape: "circle", size: 9 },
       about: {
-        lead: "<b>Health centres</b> in the Republic of Ireland: 813 locations of health centres staffed by GPs and nurses, " +
-              "from the <i>Health Centres</i> map layer hosted by the Heritage Council, which references the HSE list of health centres.",
+        lead: "<b>Health Centres &ndash; Republic of Ireland</b>: 813 health-centre locations from the <i>Health Centres</i> " +
+              "ArcGIS layer hosted by the Heritage Council (HeritageMaps). Its description identifies health centres staffed by GPs " +
+              "and nurses and links to the HSE list of health centres and data.gov.ie.",
         more: [
-          "Only the service name and county of each centre are kept here, to keep the layer small. The source also holds an " +
-          "alternative name and an address. Locations were published in Irish Transverse Mercator and converted to WGS&nbsp;84.",
+          "This is a Heritage Council-hosted layer that references the HSE, not a download from an HSE-controlled service, so it " +
+          "does not establish HSE publication or endorsement. Its compilation history, geocoding method and positional accuracy are not documented.",
+          "The points were published in Irish Transverse Mercator (EPSG:2157) and downloaded in WGS&nbsp;84. To keep the layer small, " +
+          "only <b>Service name</b> and <b>County</b> are kept here; the source also holds an alternative name and an address.",
         ],
         facts: [
-          ["Features", "813 points"],
-          ["Fields shown", "Service name, County (26 counties)"],
-          ["Host", "Heritage Council (ArcGIS Online), referencing the HSE"],
-          ["Last edit", "28 January 2025 (service edit date, not a survey date)"],
+          ["Features", "813 points (808 distinct locations)"],
+          ["Fields shown", "Service name; County (all 26 counties)"],
+          ["Host", "Heritage Council (ArcGIS Online item 5993f572…), referencing the HSE"],
+          ["Last edit", "28 January 2025 (layer edit date, not a survey date)"],
           ["Snapshot", "Downloaded 20 November 2026"],
-          ["Licence", "Not stated in the source metadata; check with the publisher before reuse"],
+          ["Coordinates", "WGS 84 (EPSG:4326); originally Irish Transverse Mercator"],
+          ["Licence", "Not established from the source metadata: check reuse terms with the publisher"],
         ],
         notes: [
-          "Not an exhaustive or verified facility register: positions and counties are as published.",
-          "This layer and the OpenStreetMap layers are separate sources and are not matched to each other.",
+          "Not an exhaustive facility register or a measure of capacity, opening hours or current availability.",
+          "Five records share exact coordinates with another (co-location or duplication); none were removed.",
+          "County is the source label and was not checked against the location.",
+          "This layer and the OpenStreetMap layers are separate sources: they are not matched or merged.",
         ],
-        cite: "Heritage Council / HeritageMaps. Health Centres [hosted ArcGIS point layer, referencing HSE]. Retrieved 20 November 2026.",
+        cite: "Heritage Council / HeritageMaps. Health Centres [hosted ArcGIS point layer, referencing HSE]. Item 5993f5720d1a4fd6be1da191fd092445, layer 0. Retrieved 20 November 2026.",
         links: [
           ["bi-database", "Source layer (ArcGIS Online)", "https://www.arcgis.com/home/item.html?id=5993f5720d1a4fd6be1da191fd092445"],
           ["bi-hospital", "HSE list of health centres", "https://www.hse.ie/eng/services/list/2/healthcentres/"],
+          ["bi-journal-text", "Catalogue entry (data.gov.ie)", "https://data.gov.ie/dataset/list-of-health-centres-in-ireland"],
         ],
       } },
-    { id: "osm_health_polygons", type: "features", group: "Health locations", name: "OSM health facility footprints",
+    { id: "osm_health_polygons", type: "features", group: "Health locations", name: "Health facility footprints",
       what: "Facility outline",
       defaults: { ...FEAT_DEFAULTS, mode: "unique", field: "amenity", fillOpacity: 55, polyWidth: 1.5 },
-      about: OSM_ABOUT("1,035 building and site outlines (polygons)", "Amenity") },
-    { id: "osm_health_facilities", type: "features", group: "Health locations", name: "OSM health facilities",
+      about: OSM_ABOUT("1,035 building and site outlines (1,033 polygons, 2 multipolygons)", "Amenity (missing on 27 outlines)",
+        "Outlines may be whole campuses or single buildings, so they are not comparable units and are not legal boundaries.") },
+    { id: "osm_health_facilities", type: "features", group: "Health locations", name: "Health facilities",
       what: "Health facility",
       defaults: { ...FEAT_DEFAULTS, mode: "unique", field: "amenity", shape: "circle", size: 8 },
-      about: OSM_ABOUT("3,714 features as mapped: 2,674 points, 1,035 outlines and 5 lines", "Amenity, Dispensing, Drive-through") },
+      about: OSM_ABOUT("3,714 features as mapped: 2,674 points, 1,035 outlines and 5 lines",
+        "Amenity (missing on 182); Dispensing (pharmacies: yes / no); Drive-through (yes / no)",
+        "The 5 line features are mapped as lines in OSM: review them before treating every non-point feature as a building.") },
   ];
   const METHODS = { equal: "Equal Interval", quantile: "Quantile", jenks: "Natural Breaks (Jenks)" };
   const CLASSES = [3, 4, 5, 6, 7, 8, 9];
@@ -9955,6 +9989,53 @@ if (MAP_STANDALONE) (function overlayLayers(){
   mappingBtn.addEventListener("click", () => setView(false));
   document.getElementById("ovBack").addEventListener("click", () => { setView(false); mappingBtn.focus(); });
   const syncEmpty = () => { settingsEmpty.hidden = states.some(s => s.on && s.symEl); };
+
+  // ---- Layer list row: the layer name only; » (shown while ticked) makes it the active layer ----
+  const ITEM_HEAD = (s, uid) => `<div class="ov-item-row">
+      <label class="ov-item-head" title="${esc(s.meta?.description || "")}"><input type="checkbox" class="ov-on"${s.on ? " checked" : ""} aria-controls="${uid("sym")}">
+        <span class="ov-item-txt"><span class="ov-item-name">${esc(s.cfg.name)}</span></span></label>
+      <button type="button" class="ov-open" data-open aria-label="Open the settings and details of ${esc(s.cfg.name)}"
+        title="Show this layer's settings and details"${s.on ? "" : " hidden"}><i class="bi bi-chevron-double-right" aria-hidden="true"></i></button></div>`;
+
+  // ---- Active layer: the one whose settings card is open (right) and whose details are shown (left).
+  //      The other ticked layers keep their settings folded to a header; » opens one of them. ----
+  let activeId = null;
+  function setActive(s){
+    activeId = s ? s.cfg.id : null;
+    states.forEach(t => {
+      const act = !!s && t === s;
+      t.el?.classList.toggle("active", act && t.on);
+      const open = t.el?.querySelector(".ov-open");
+      if (open){ open.hidden = !t.on; open.setAttribute("aria-pressed", String(act)); }
+      if (t.symEl){
+        t.symEl.classList.toggle("collapsed", !act);
+        t.symEl.classList.toggle("active-card", act);
+        t.symEl.querySelector(".ov-card-h")?.setAttribute("aria-expanded", String(act));
+      }
+      if (t.aboutEl) t.aboutEl.hidden = !(act && t.on);
+    });
+    if (s?.symEl && s.on) s.symEl.scrollIntoView({ block: "nearest" });
+  }
+  // The card header becomes a button: » on a folded card opens it (making that layer active)
+  function wireCard(s){
+    const h = s.symEl.querySelector("p.ov-card-h"); if (!h) return;
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "ov-card-h";
+    b.innerHTML = h.innerHTML + '<i class="bi bi-chevron-double-right ov-chev" aria-hidden="true"></i>';
+    b.title = "Show or fold this layer's settings";
+    h.replaceWith(b);
+    b.addEventListener("click", () => {
+      if (activeId === s.cfg.id){                       // the active card: fold / unfold it
+        const fold = !s.symEl.classList.contains("collapsed");
+        s.symEl.classList.toggle("collapsed", fold); b.setAttribute("aria-expanded", String(!fold));
+      } else setActive(s);
+    });
+  }
+  function wireItem(s, li){
+    li.querySelector("[data-open]")?.addEventListener("click", () => setActive(s));
+    wireCard(s);
+    if (s.on) setActive(states.find(t => t.cfg.id === activeId && t.on) || s);
+  }
   // Opened as /map/?mode=AirQuality (or from the dashboard's #mapping/AirQuality)
   setTimeout(() => { if (new URLSearchParams(location.search).get("mode") === "AirQuality") setView(true, true); }, 0);
 
@@ -9995,9 +10076,8 @@ if (MAP_STANDALONE) (function overlayLayers(){
     const li = document.createElement("li");
     li.className = "ov-item" + (m ? "" : " unavailable") + (s.on ? " on" : "");
     if (!m){
-      li.innerHTML = `<label class="ov-item-head"><input type="checkbox" disabled>
-        <span class="ov-item-txt"><span class="ov-item-name">${esc(s.cfg.name)}</span>
-        <span class="ov-item-desc">Not available: its data has not been built (scripts/build_overlays.py).</span></span></label>`;
+      li.innerHTML = `<label class="ov-item-head" title="Not available: its data has not been built (scripts/build_overlays.py)"><input type="checkbox" disabled>
+        <span class="ov-item-txt"><span class="ov-item-name">${esc(s.cfg.name)}</span></span></label>`;
       return (s.el = li);
     }
     if (isFeat(s)) return featItemEl(s, li);
@@ -10009,9 +10089,7 @@ if (MAP_STANDALONE) (function overlayLayers(){
     const rampOpts = Object.entries(rampGroups).map(([g, ps]) => `<optgroup label="${esc(g)}">${
       ps.map(([pid, name]) => `<option value="${esc(pid)}"${pid === sym.ramp ? " selected" : ""}>${esc(name)}</option>`).join("")}</optgroup>`).join("");
     li.innerHTML = `
-      <label class="ov-item-head"><input type="checkbox" class="ov-on"${s.on ? " checked" : ""} aria-controls="${uid("sym")}">
-        <span class="ov-item-txt"><span class="ov-item-name">${esc(s.cfg.name)}</span>
-        <span class="ov-item-desc">${esc(m.description || "")} ${(m.count || 0).toLocaleString("en-IE")} roads.</span></span></label>
+      ${ITEM_HEAD(s, uid)}
       <p class="ov-status" role="status"></p>
       <div class="ov-sym" id="${uid("sym")}"${s.on ? "" : " hidden"}>
         <p class="ov-card-h"><i class="bi bi-sliders" aria-hidden="true"></i>${esc(s.cfg.name)}</p>
@@ -10060,6 +10138,7 @@ if (MAP_STANDALONE) (function overlayLayers(){
     s.symEl.addEventListener("input", onInput);
     s.symEl.addEventListener("change", onInput);
     if (s.on && s.data) renderLegend(s);
+    wireItem(s, li);
     return li;
   }
 
@@ -10071,7 +10150,7 @@ if (MAP_STANDALONE) (function overlayLayers(){
     const id = `ov-${s.cfg.id}-about`;
     const box = document.createElement("div");
     box.className = "ov-about";
-    box.hidden = !s.on;
+    box.hidden = !(s.on && activeId === s.cfg.id);
     box.innerHTML = `<section class="ms-step is-open">
       <h3 class="ms-step-h"><button type="button" class="ms-step-btn" aria-expanded="true" aria-controls="${id}">
         <span class="ms-badge info"><i class="bi bi-info-lg"></i></span>
@@ -10242,8 +10321,10 @@ if (MAP_STANDALONE) (function overlayLayers(){
     s.on = on;
     s.el.classList.toggle("on", on);
     symEl.hidden = !on;
-    if (s.aboutEl) s.aboutEl.hidden = !on;
     syncEmpty();
+    if (on) setActive(s);
+    else if (activeId === s.cfg.id) setActive([...states].reverse().find(t => t.on && t !== s) || null);
+    else setActive(states.find(t => t.cfg.id === activeId) || null);
     if (!on){
       if (s.group) map.removeLayer(s.group);
       if (s.legendCtrl){ s.legendCtrl.remove(); s.legendCtrl = null; }
@@ -10256,7 +10337,7 @@ if (MAP_STANDALONE) (function overlayLayers(){
     } catch (err){
       status(s, `The layer could not be loaded (${err.message}). Untick and tick it to try again.`, true);
       s.on = false; box.checked = false; s.el.classList.remove("on"); symEl.hidden = true; syncEmpty();
-      if (s.aboutEl) s.aboutEl.hidden = true;
+      setActive([...states].reverse().find(t => t.on) || null);
       return;
     }
     if (!s.on) return;                                   // unticked while it was loading
@@ -10413,9 +10494,7 @@ if (MAP_STANDALONE) (function overlayLayers(){
     const range = (key, label, min, max, step, unit) => `<div class="ov-f"><label for="${uid(key)}">${label} <span data-out="${key}" data-unit="${unit}"></span></label>
       <input type="range" id="${uid(key)}" data-k="${key}" min="${min}" max="${max}" step="${step}" value="${sym[key]}"></div>`;
     li.innerHTML = `
-      <label class="ov-item-head"><input type="checkbox" class="ov-on"${s.on ? " checked" : ""} aria-controls="${uid("sym")}">
-        <span class="ov-item-txt"><span class="ov-item-name">${esc(s.cfg.name)}</span>
-        <span class="ov-item-desc">${esc(m.description || "")} ${esc(featCount(m))}.</span></span></label>
+      ${ITEM_HEAD(s, uid)}
       <p class="ov-status" role="status"></p>
       <div class="ov-sym" id="${uid("sym")}"${s.on ? "" : " hidden"}>
         <p class="ov-card-h"><i class="bi bi-sliders" aria-hidden="true"></i>${esc(s.cfg.name)}</p>
@@ -10484,6 +10563,7 @@ if (MAP_STANDALONE) (function overlayLayers(){
       save(); schedule(s, true);
     });
     if (s.on && s.data) renderFeatLegend(s);
+    wireItem(s, li);
     return li;
   }
   function syncFeatOutputs(s){
@@ -11248,8 +11328,8 @@ applyYearWindow();
 </script>
 <script>
 /* ---------------------- 9c. Datasets tab (data catalogue) ----------------------
- * A searchable catalogue of every source used on the platform, in four groups:
- * EPA GHG time series, spatial emission rasters, air quality overlays, and policy information / timelines.
+ * A searchable catalogue of every source used on the platform, in five groups:
+ * EPA GHG time series, spatial emission rasters, air quality overlays, health locations, and policy information / timelines.
  * The catalogue below is the single source of truth for the tab: cards, table,
  * coverage chart, comparison table and the detail drawer are all rendered from it.
  * Deep links: #data opens the tab, #data/<dataset-id> also opens that dataset. */
@@ -11265,6 +11345,8 @@ const CATS = {
             desc: "Gridded emission maps from three independent resources (MapEIre, EDGAR and PARIS inverse models), plus the reference layers used to draw them." },
   aq:     { label: "Air quality measurements (overlays)", short: "Air quality", icon: "bi-wind", cls: "dc-c-aq",
             desc: "Street-level air-quality measurements drawn as overlay layers in Spatial Mapping (Air Quality button), starting with Google Project Air View in Dublin City." },
+  health: { label: "Health facility locations (overlays)", short: "Health locations", icon: "bi-hospital", cls: "dc-c-health",
+            desc: "Health centres and OpenStreetMap healthcare facilities in the Republic of Ireland, drawn as point and polygon overlay layers in Spatial Mapping (Air Quality button)." },
   policy: { label: "GHG policy information & timelines", short: "Policy & timelines", icon: "bi-journal-text", cls: "dc-c-policy",
             desc: "The Ireland Climate Policy Timeline, the OECD and EEA policy databases it is built on, the policy roadmap and the official sources used to verify dates." },
 };
@@ -11452,10 +11534,60 @@ const DATA = [
     files: [["data/Overlays/airview_dublin.json.gz", "Road segments, pollutant means and measurement counts (gzipped)"], ["data/Overlays/overlays.json", "Catalogue of the overlay layers"]],
     vars: [["osm_name / osm_fclass", "Road name and OpenStreetMap road type"], ["NO2_ugm3, NO_ugm3, O3_ugm3, PM25_ugm3", "Mean concentration, µg/m³"], ["CO_mgm3, CO2_mgm3", "Mean concentration, mg/m³"], ["*points", "Number of 1-second measurements on the segment"], ["*drives", "Number of separate drives on the segment"]],
     notes: ["Values reflect typical daytime, weekday air quality, not 24-hour or annual means, so they are not directly comparable with legal limit values.", "Many NO readings are negative (sensor errors) and are excluded, so NO covers fewer roads than the other pollutants.", "The size-resolved particle counts (0.3–2.5 µm) in the raw data are not mapped here."],
-    usedIn: [["mapping", "Spatial Mapping — Air Quality: Google Air View"]],
+    usedIn: [["mapping", "Spatial Mapping — Air Quality: Google Air View", "#mapping/AirQuality"]],
     citation: "Aclima & Google 2022 via Dublinked.",
     links: [["Dataset page (data.gov.ie)", "https://data.gov.ie/dataset/google-airview-data-dublin-city/resource/ebee537f-2fc9-4576-8b74-728e5a430e08"], ["Download: 1-second measurements, zipped shapefile (Dublinked)", "https://data.smartdublin.ie/dataset/4976e11e-a015-4ef9-9179-dc7c27fb5a81/resource/ebee537f-2fc9-4576-8b74-728e5a430e08/download/airview_dublincity_measurements_ugm3.zip"]],
     keywords: "google air view airview aclima street view car dublin city council dublinked air quality no2 nitrogen dioxide no nitric oxide pm2.5 particulate ozone o3 co carbon monoxide co2 road street mobile monitoring"
+  },
+
+  /* ---------------- Health facility locations (overlays) ---------------- */
+  {
+    id: "hse-health-centres", cat: "health", type: "Vector layer", icon: "bi-hospital",
+    title: "Health Centres – Republic of Ireland (hosted by the Heritage Council, referencing HSE)",
+    provider: "Heritage Council / HeritageMaps (ArcGIS Online), referencing the Health Service Executive (HSE)",
+    summary: "813 health-centre locations in the Republic of Ireland (health centres staffed by GPs and nurses), with service name and county.",
+    about: [
+      "This layer contains 813 health-centre point records for the Republic of Ireland from the Health Centres ArcGIS service hosted by the Heritage Council. The source description identifies health centres staffed by GPs and nurses and links to the HSE list of health centres and to data.gov.ie. It is a Heritage Council-hosted layer that references the HSE, not a download from an HSE-controlled endpoint, so it does not establish direct HSE publication, ownership or endorsement.",
+      "The points were published in Irish Transverse Mercator (EPSG:2157) and downloaded in WGS 84 on 20 November 2026; the layer was last edited on 28 January 2025. The 813 records have 808 distinct locations, and all 26 counties occur in the County field. The compilation history, geocoding method and positional accuracy are not documented, and the collection is not an exhaustive facility register or a measure of capacity or availability.",
+      "On this platform the points are drawn in Spatial Mapping → Air Quality → Health locations → HSE health centres, as a single symbol or coloured by county, with a choice of marker shape, size and outline. Only the service name and county are kept, to keep the layer small."
+    ],
+    period: [2025, 2026], periodNote: "layer last edited 28 Jan 2025; snapshot 20 Nov 2026", frequency: "Static snapshot (update frequency not specified by the source)",
+    spatial: "Republic of Ireland (26 counties)", resolution: "Point locations (813 records, 808 distinct)",
+    crs: "EPSG:4326 (WGS 84); source EPSG:2157 (Irish Transverse Mercator)", units: "—", gases: [],
+    format: "GeoPackage (points) → gzipped column JSON for the web map", licence: "Not established from the inspected source metadata: check reuse terms with the publisher",
+    version: "Snapshot of 20 November 2026 (ArcGIS item 5993f5720d1a4fd6be1da191fd092445, layer 0)",
+    meta: [["Host", "Heritage_Council_Admin (ArcGIS Online), public query service"], ["Last edit", "28 January 2025 (layer edit date, not a field survey date)"], ["Quality checks", "No null or invalid geometries; no duplicate OBJECTIDs; 5 records share exact coordinates with another"], ["Processing here", "Only Service_name and County kept; built with scripts/build_overlays.py"]],
+    files: [["data/Overlays/hse_health_centres.json.gz", "Points, service name and county (gzipped, 12 kB)"], ["data/Overlays/overlays.json", "Catalogue of the overlay layers"]],
+    vars: [["Service_name", "Health-centre / service name as supplied by the hosted layer"], ["County", "Source county label (26 counties); not checked against the location"]],
+    notes: ["Not an exhaustive or verified facility register; opening hours, services and capacity need separate checks.", "No open-data licence is named in the source metadata: confirm reuse and redistribution terms with the publisher.", "Not matched to the OpenStreetMap health facilities: the two sources are kept separate."],
+    usedIn: [["mapping", "Spatial Mapping — Air Quality: HSE health centres", "#mapping/AirQuality"]],
+    citation: "Heritage Council / HeritageMaps. Health Centres [hosted ArcGIS point layer, referencing HSE]. Item 5993f5720d1a4fd6be1da191fd092445, layer 0. Retrieved 20 November 2026.",
+    links: [["Source layer (ArcGIS Online)", "https://www.arcgis.com/home/item.html?id=5993f5720d1a4fd6be1da191fd092445"], ["HSE list of health centres", "https://www.hse.ie/eng/services/list/2/healthcentres/"], ["Catalogue entry (data.gov.ie)", "https://data.gov.ie/dataset/list-of-health-centres-in-ireland"]],
+    keywords: "hse health centres health centre gp general practitioner nurse primary care heritage council heritagemaps arcgis county ireland healthcare facility location"
+  },
+  {
+    id: "osm-health-facilities", cat: "health", type: "Vector layer", icon: "bi-hospital",
+    title: "OpenStreetMap healthcare features – Republic of Ireland",
+    provider: "OpenStreetMap contributors (via the Overpass API)",
+    summary: "3,714 hospitals, clinics, doctors, dentists, pharmacies, nursing homes and other healthcare places mapped in OpenStreetMap: 2,674 points, 1,035 building / site outlines and 5 lines.",
+    about: [
+      "This dataset contains 3,714 OpenStreetMap healthcare features in the Republic of Ireland (2,674 nodes, 1,001 ways and 39 relations), downloaded through the Overpass API from the OSM database of 20 November 2026, 12:42 UTC. A feature was selected if either its amenity tag is hospital, clinic, doctors, dentist, pharmacy or nursing_home, or its healthcare tag is hospital, clinic, health_centre, centre, doctor, dentist, pharmacy, nursing_home, hospice, physiotherapist, midwife or urgent_care. Tags are raw contributor values, not harmonised clinical categories.",
+      "Outlines are mapped buildings or sites (whole campuses or single buildings), not catchment areas or legal boundaries, and not every facility has one. A site, a building and a point can describe the same facility, so counts are not counts of unique establishments. The data are contributed and maintained by volunteers: missing facilities, outdated names, inconsistent tags and uneven coverage are possible.",
+      "On this platform two layers are drawn in Spatial Mapping → Air Quality → Health locations: Health facility footprints (the 1,035 outlines, by amenity) and Health facilities (every feature as mapped, with amenity, dispensing and drive-through). Each can be shown as a single symbol or by unique values, with point and polygon symbol settings."
+    ],
+    period: [2026, 2026], periodNote: "OSM database of 20 Nov 2026; a static extract", frequency: "Static snapshot (OSM is updated continuously)",
+    spatial: "Republic of Ireland (ISO 3166-1 IE); Northern Ireland not included", resolution: "Points and building / site outlines",
+    crs: "EPSG:4326 (WGS 84)", units: "—", gases: [],
+    format: "GeoPackage (points, polygons, lines) → gzipped column JSON for the web map", licence: "Open Database License (ODbL) 1.0 — © OpenStreetMap contributors",
+    version: "Overpass extract, OSM base timestamp 2026-11-20 12:42:43 UTC (parsed with OSMnx 2.2.0)",
+    meta: [["Elements", "2,674 nodes, 1,001 ways, 39 relations"], ["Geometry", "2,674 points, 1,033 polygons, 2 multipolygons, 5 lines"], ["Missing tags", "amenity missing on 182 features (27 outlines); name missing on 283"], ["Quality checks", "No null or invalid geometries; no duplicate (element, id) pairs"], ["Processing here", "Only amenity (outlines) and amenity, dispensing, drive_through (all features) kept; built with scripts/build_overlays.py"]],
+    files: [["data/Overlays/osm_health_polygons.json.gz", "Health facility footprints: outlines and amenity (gzipped, 35 kB)"], ["data/Overlays/osm_health_facilities.json.gz", "Health facilities: every feature as mapped with amenity, dispensing, drive-through (gzipped, 56 kB)"], ["data/Overlays/overlays.json", "Catalogue of the overlay layers"]],
+    vars: [["amenity", "OSM amenity tag: pharmacy, doctors, dentist, clinic, hospital, nursing_home, …"], ["dispensing", "Pharmacy dispenses prescriptions: yes / no (mostly unrecorded)"], ["drive_through", "Drive-through service: yes / no (mostly unrecorded)"]],
+    notes: ["Do not add the footprint and facility layers together: they describe the same OSM features.", "Features with no amenity tag qualified through their healthcare tag and are shown as Not recorded.", "Not a measure of opening hours, capacity, eligibility or current availability.", "ODbL: attribute OpenStreetMap contributors and keep the licence with any derived data."],
+    usedIn: [["mapping", "Spatial Mapping — Air Quality: Health facilities and footprints", "#mapping/AirQuality"]],
+    citation: "OpenStreetMap contributors. Selected healthcare features, Republic of Ireland [OSM extract]. Database timestamp 20 November 2026, 12:42:43 UTC. Retrieved via Overpass API on 20 November 2026. Open Database License 1.0.",
+    links: [["OpenStreetMap copyright and licence", "https://www.openstreetmap.org/copyright"], ["ODbL 1.0 licence text", "https://opendatacommons.org/licenses/odbl/1-0/"], ["OSM healthcare tag (wiki)", "https://wiki.openstreetmap.org/wiki/Key:healthcare"], ["Overpass API (wiki)", "https://wiki.openstreetmap.org/wiki/Overpass_API"]],
+    keywords: "openstreetmap osm health healthcare hospital clinic doctors gp dentist pharmacy chemist nursing home hospice amenity dispensing drive through footprint building outline polygon overpass odbl"
   },
 
   /* ---------------- Policy information & timelines ---------------- */

@@ -97,7 +97,7 @@ LAYERS = {
     },
     "osm_health_polygons": {
         "format": "gpkg", "source": HEALTH_DIR / "osm_health_facilities.gpkg", "table": "facility_polygons",
-        "name": "OSM health facility footprints",
+        "name": "Health facility footprints",
         "group": "Health locations",
         "description": "Mapped building and site outlines of hospitals, clinics, doctors, dentists and pharmacies.",
         "credit": OSM_CREDIT,
@@ -107,7 +107,7 @@ LAYERS = {
     },
     "osm_health_facilities": {
         "format": "gpkg", "source": HEALTH_DIR / "osm_health_facilities.gpkg", "table": "facilities",
-        "name": "OSM health facilities",
+        "name": "Health facilities",
         "group": "Health locations",
         "description": "Every selected OSM healthcare feature as mapped: points, building outlines and a few lines.",
         "credit": OSM_CREDIT,
