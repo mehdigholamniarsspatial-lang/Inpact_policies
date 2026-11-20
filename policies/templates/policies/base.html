@@ -49,6 +49,7 @@
       <a href="{% url 'policies:instruments' %}" {% if active == 'instruments' %}aria-current="page"{% endif %}>Instruments</a>
       <a href="{% url 'policies:explorer' %}" {% if active == 'explorer' %}aria-current="page"{% endif %}>Policies</a>
       <a href="{% url 'policies:capmf' %}" {% if active == 'capmf' %}aria-current="page"{% endif %}>OECD scores</a>
+      <a href="{% url 'policies:air_quality' %}" {% if active == 'air_quality' %}aria-current="page"{% endif %}>Air quality</a>
       <a href="{% url 'policies:method' %}" {% if active == 'method' %}aria-current="page"{% endif %}>Methods</a>
       <a href="{% url 'policies:about' %}" {% if active == 'about' %}aria-current="page"{% endif %}>About</a>
     </nav>

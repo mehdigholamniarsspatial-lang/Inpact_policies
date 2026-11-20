@@ -1,0 +1,134 @@
+{% extends "policies/base.html" %}
+{% load static policy_extras %}
+{% block title %}Air quality policy | Ireland Climate Policy Timeline{% endblock %}
+{% block policy_subtitle %}Air quality policies for Ireland, 1987–2040{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Air quality policy</h1>
+    <p class="lede">The fuels that drive Ireland's greenhouse-gas emissions also pollute the air people breathe. This section sets out the policies Ireland has used to control air pollution, from the 1990 Dublin smoky coal ban to the Clean Air Strategy's 2040 goal. For each policy it covers what it does, how Ireland has applied it, what is known about its effects on health, and how it connects to the greenhouse-gas policies in this dataset.</p>
+  </div>
+</div>
+
+<div class="facts" role="list">
+  {% for n, t in facts %}<div class="fact" role="listitem"><b>{{ n }}</b><span>{{ t }}</span></div>{% endfor %}
+</div>
+
+<aside class="callout" role="note" aria-label="Scope of this section">
+  <p class="callout-title">Scope</p>
+  <p><b>This is a curated reference record, kept separate from the scored greenhouse-gas dataset.</b> The policies below have no intensity scores and are not rows of the 2000–2023 panel. Years are legal commencement or adoption dates from the Irish Statute Book, EUR-Lex, gov.ie and the EPA.</p>
+</aside>
+
+<section class="section">
+  <div class="section-head"><h2>Why air quality belongs in INPACT</h2><p>INPACT asks which policies have reduced emissions and improved climate outcomes. For air quality, the same question links policy to public health.</p></div>
+  <ol class="pipeline">
+    <li><span class="n">1</span><h3>The same fuels</h3><p>Coal, peat, oil and wood burned in homes emit CO₂ and fine particles (PM2.5). Diesel and petrol engines emit CO₂ and nitrogen dioxide (NO₂).</p></li>
+    <li><span class="n">2</span><h3>The same homes</h3><p>Building regulations, retrofit grants, heat pumps and the carbon tax change how homes are heated. They affect smoke as well as carbon.</p></li>
+    <li><span class="n">3</span><h3>Co-benefits and trade-offs</h3><p>Most climate policies also clean the air, but not all: wood stoves and the past shift to diesel cars show that the two goals can pull apart.</p></li>
+    <li><span class="n">4</span><h3>Health outcomes</h3><p>Poor air quality is linked to about 1,700 premature deaths a year in Ireland (EPA, 2025). Policy timing is the starting point for health studies.</p></li>
+  </ol>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>Milestones, 1987–2040</h2><p>National and EU air quality measures in order. Select a milestone to read its profile.</p></div>
+  <div class="panel">
+    <p class="aq-legend">{% for k, c, lab in mech_legend %}<span><span class="dot-inline" style="background:{{ c }}"></span>{{ lab }}</span>{% endfor %}</p>
+    <ol class="aq-tl">
+      {% for e in milestones %}<li style="--c: {{ e.color }}"{% if e.year > 2025 %} class="future"{% endif %}>
+        <span class="aq-year">{{ e.year }}</span>
+        <span class="aq-dot" aria-hidden="true"></span>
+        <a class="aq-text" href="#{{ e.ref }}">{{ e.text }}<small>{{ e.jur }} · {{ e.mech_label }}{% if e.year > 2025 %} · target or deadline{% endif %}</small></a>
+      </li>{% endfor %}
+    </ol>
+  </div>
+</section>
+
+<div class="guide-layout section">
+  <nav class="toc" aria-label="Air quality policies">
+    <p class="toc-title">Policies</p>
+    <ol>{% for p in profiles %}<li><a href="#{{ p.key }}"><span class="dot-inline" style="background:{{ p.color }}"></span>{{ p.title }}</a></li>{% endfor %}
+      <li><a href="#cobenefits"><span class="dot-inline" style="background:#2F7D4A"></span>GHG policies with air-quality effects</a></li>
+      <li><a href="#using"><span class="dot-inline" style="background:var(--atlantic)"></span>Using the platform</a></li>
+    </ol>
+  </nav>
+  <div>
+    {% for p in profiles %}
+    <article class="instrument anchor-link" id="{{ p.key }}" style="--c: {{ p.color }}">
+      <header>
+        <h2>{{ p.title }}</h2>
+        <p class="aq-meta">
+          <span class="tag"><span class="dot" style="background:{{ p.color }}"></span>{{ p.mech_label }}</span>
+          <span class="tag">{{ p.jurisdiction }}</span>
+          <span class="tag">{{ p.period }}</span>
+        </p>
+      </header>
+      <p class="lead-def">{{ p.definition }}</p>
+      <dl class="kv aq-kv">
+        <dt>Legal basis</dt><dd>{{ p.instrument }}</dd>
+        <dt>Pollutants</dt><dd>{% for x in p.pollutants %}<span class="tag aq-pol">{{ x }}</span> {% endfor %}</dd>
+        <dt>Sectors</dt><dd>{{ p.sectors|join:", " }}</dd>
+      </dl>
+      <div class="grid-2">
+        <div><h3>Why it was introduced</h3><p>{{ p.rationale }}</p></div>
+        <div><h3>In Ireland</h3><p>{{ p.ireland }}</p></div>
+      </div>
+      <div class="grid-2">
+        <div><h3>Health relevance and evidence</h3><p>{{ p.health }}</p></div>
+        <div><h3>Status</h3><p>{{ p.status }}</p></div>
+      </div>
+      <div class="measure"><h3>Link to the greenhouse-gas policy record</h3><p>{{ p.inpact }}</p></div>
+      <details class="more"><summary>Key sources</summary><ol class="refs">{% for r in p.refs %}<li>{{ r.text }} <a href="{{ r.url }}" target="_blank" rel="noopener">Open source</a></li>{% endfor %}</ol></details>
+    </article>
+    {% endfor %}
+
+    <article class="instrument anchor-link" id="cobenefits" style="--c: #2F7D4A">
+      <header><h2>Greenhouse-gas policies with air-quality effects</h2></header>
+      <p class="lead-def">Policies already in this dataset that change how much fuel is burned in homes, vehicles and power stations, and so affect air quality as well as emissions.</p>
+      <div class="table-wrap">
+        <table class="data aq-table">
+          <caption class="sr-only">Greenhouse-gas policies and their expected air-quality effect</caption>
+          <thead><tr><th>Policy</th><th>Sector</th><th>Effect on air quality</th><th>Pollutants</th><th>Why</th></tr></thead>
+          <tbody>{% for c in cobenefits %}<tr>
+            <td><a class="pname" href="{% url 'policies:detail' c.s.slug %}"><span class="dot-inline" style="background:{{ c.mech_color }}"></span>{% if c.s.layer == "residual" %}Other measures in {{ c.s.sector|lower }} (residual bundle){% else %}{{ c.s.policy_name }}{% endif %}</a><span class="small muted"> from {{ c.s.start_year }}</span></td>
+            <td data-label="Sector">{{ c.s.sector }}</td>
+            <td data-label="Effect"><span class="tag" style="color:{{ c.effect_color }};border-color:{{ c.effect_color }}">{{ c.effect }}</span></td>
+            <td class="small" data-label="Pollutants">{{ c.pollutants }}</td>
+            <td class="small" data-label="Why">{{ c.note }}</td>
+          </tr>{% endfor %}</tbody>
+        </table>
+      </div>
+      <p class="note">The effect column is a qualitative reading of how each instrument works, drawn from its design and published evidence. It is not an estimate from this dataset. Policy dot colours show the instrument type, as elsewhere in the Policy Timeline.</p>
+    </article>
+
+    <article class="instrument anchor-link" id="using" style="--c: var(--atlantic)">
+      <header><h2>Using the platform for air quality and health</h2></header>
+      <p class="lead-def">How to combine this section with the rest of the INPACT platform, and what is planned next.</p>
+      <div class="grid-2">
+        <div>
+          <h3>What you can do now</h3>
+          <ul>
+            <li><b>Find the policies.</b> Use this page for air quality measures and the <a href="{% url 'policies:explorer' %}">Policies</a> table (sector: Buildings or Transport) for related climate policies.</li>
+            <li><b>Map the sources.</b> In <a href="/#mapping" target="_top">Spatial Mapping</a>, the MapEIre layers show PM2.5, NOx, SO₂ and other pollutants by sector on a 1 km grid, including residential combustion (2015 and 2019).</li>
+            <li><b>Check the timing.</b> The Trend and Structural Break tools test whether an emission trend changed around a policy year.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Planned extensions</h3>
+          <ul>
+            <li>Tag every policy in the dataset with the air pollutants it affects and its health co-benefits.</li>
+            <li>Add the EPA's annual air pollutant inventory (PM2.5, NOx, SO₂, NH₃ by sector, from 1990), so trends can be tested for air pollutants.</li>
+            <li>Add measured concentrations from the EPA monitoring network, to link policy timing with air quality and, through partner studies, with health data.</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+  </div>
+</div>
+
+<section class="section">
+  <div class="caveats">
+    <h3>How to read this section</h3>
+    <ul>{% for b, t in caveats %}<li><b>{{ b }}</b>{{ t }}</li>{% endfor %}</ul>
+  </div>
+</section>
+{% endblock %}

@@ -3958,7 +3958,7 @@ a.ug-go.alt:hover{color:var(--navy)}
       <div class="ug-hero">
         <div class="eyebrow">User Guide &middot; Chapter 2 &middot; Policy Timeline</div>
         <h2 id="ugPolicyTitle">The Policy Timeline, step by step</h2>
-        <p>The Policy Timeline brings Ireland&rsquo;s climate policies together in one structured record, so you can follow how the policy landscape has developed over time and see how individual policies relate to the sectors that produce emissions. This chapter walks you through each of its eight tabs and shows you how to read, filter and interpret the evidence.</p>
+        <p>The Policy Timeline brings Ireland&rsquo;s climate policies together in one structured record, so you can follow how the policy landscape has developed over time and see how individual policies relate to the sectors that produce emissions. This chapter walks you through each of its nine tabs and shows you how to read, filter and interpret the evidence.</p>
         <div class="ug-meta">
           <span><i class="bi bi-play-circle"></i>Video tutorial</span>
           <span><i class="bi bi-list-check"></i>7 guided steps</span>
@@ -4018,15 +4018,15 @@ a.ug-go.alt:hover{color:var(--navy)}
 
       <div class="ug-steps">
 
-        <!-- 1. Eight tabs -->
+        <!-- 1. Nine tabs -->
         <div class="ug-step" data-step="pt-tabs">
           <button type="button" class="ug-step-head" aria-expanded="false" aria-controls="ugP1">
             <span class="ug-step-num">1</span><i class="bi bi-ui-radios-grid ug-step-ic" aria-hidden="true"></i>
-            <span class="ug-step-txt"><b>Move between the eight tabs of the section</b><span>Overview, Timeline, Categories, Instruments, Policies, OECD Scores, Methods and About.</span></span>
+            <span class="ug-step-txt"><b>Move between the nine tabs of the section</b><span>Overview, Timeline, Categories, Instruments, Policies, OECD Scores, Air quality, Methods and About.</span></span>
             <i class="bi bi-chevron-down ug-chev" aria-hidden="true"></i>
           </button>
           <div class="ug-step-body" id="ugP1">
-            <p>When you open the Policy Timeline, its eight tabs appear as a bar under the Main Menu. A breadcrumb shows where you are, the back and forward arrows retrace your steps, and the search box finds a section, sector or policy by name. Select a tab below to see what it holds:</p>
+            <p>When you open the Policy Timeline, its nine tabs appear as a bar under the Main Menu. A breadcrumb shows where you are, the back and forward arrows retrace your steps, and the search box finds a section, sector or policy by name. Select a tab below to see what it holds:</p>
             <div class="ug-chips ug-tabpick" role="group" aria-label="Policy Timeline tabs">
               <button type="button" class="ug-chip" aria-pressed="false" data-pt="" data-explain="The big picture. A &lsquo;policy river&rsquo; shows every series as a strip of years, shaded by intensity. Below it: how the dataset was built in four steps, the emissions context, a sector &times; mechanism matrix (&lsquo;where the policies sit&rsquo;), the four policy layers, recorded activity over time and a short &lsquo;how to read the data&rsquo; panel."><i class="bi bi-compass"></i>Overview</button>
               <button type="button" class="ug-chip" aria-pressed="false" data-pt="timeline/" data-explain="Every series from 2000 to 2023, as an intensity grid or as lifespans. Group, order, shade and filter the rows, drag or play the year slider, and click a row for a quick view."><i class="bi bi-bar-chart-steps"></i>Timeline</button>
@@ -4034,6 +4034,7 @@ a.ug-go.alt:hover{color:var(--navy)}
               <button type="button" class="ug-chip" aria-pressed="false" data-pt="instruments/" data-explain="One card per policy mechanism: what it is, why governments use it, how Ireland uses it, its strengths and limitations, how the dataset measures it, and the policies of that type."><i class="bi bi-tools"></i>Instruments</button>
               <button type="button" class="ug-chip" aria-pressed="false" data-pt="policies/" data-explain="A searchable, sortable table of every series, with filters for sector, mechanism, layer, source, OECD match and status. Open any row for the full policy profile."><i class="bi bi-table"></i>Policies</button>
               <button type="button" class="ug-chip" aria-pressed="false" data-pt="oecd-scores/" data-explain="The OECD CAPMF stringency scores (0&ndash;10) for Ireland: a heatmap of the 56 policy categories from 1990 to 2023, a tool to compare categories or indicators over time, and which categories the dataset uses."><i class="bi bi-speedometer2"></i>OECD Scores</button>
+              <button type="button" class="ug-chip" aria-pressed="false" data-pt="air-quality/" data-explain="Ireland&rsquo;s air quality policies, from the Air Pollution Act 1987 and the 1990 Dublin smoky coal ban to the Solid Fuel Regulations 2022 and the Clean Air Strategy&rsquo;s 2040 WHO goal. A milestone timeline, one profile per policy with its pollutants and health evidence, and a table of the climate policies in the dataset with air-quality co-benefits or trade-offs."><i class="bi bi-wind"></i>Air quality</button>
               <button type="button" class="ug-chip" aria-pressed="false" data-pt="method/" data-explain="How the dataset was built and checked: the selection flow, the scoring model and aggregation rules, the sensitivity index, all 115 candidates with their decisions, timing profiles, consistency checks, known overlaps and the data dictionary."><i class="bi bi-sliders"></i>Methods</button>
               <button type="button" class="ug-chip" aria-pressed="false" data-pt="about/" data-explain="Scope and unit of analysis, the data sources and how they are combined, intended use and limitations, key literature, a suggested citation (with a copy button) and the dataset at a glance."><i class="bi bi-info-circle"></i>About</button>
             </div>
@@ -6987,7 +6988,8 @@ const PT_SECTIONS = [
   { key: "instruments", path: "instruments/", icon: "bi-tools",           label: "Instruments", desc: "Each policy mechanism: rationale, use in Ireland, strengths, limitations and literature." },
   { key: "explorer",    path: "policies/",    icon: "bi-table",           label: "Policies",    desc: "Searchable, sortable table of every series. Open any policy for its full profile." },
   { key: "capmf",       path: "oecd-scores/", icon: "bi-speedometer2",    label: "OECD scores", desc: "Heatmap of the 56 OECD CAPMF categories, indicator comparison and eligibility decisions." },
-  { key: "method",      path: "method/",      icon: "bi-sliders",         label: "Methods",     desc: "Selection flow, scoring model, 115 candidates, validation checks and data dictionary." },
+  { key: "airquality",  path: "air-quality/", icon: "bi-wind",          label: "Air quality", desc: "Ireland's air quality policies from the 1990 smoky coal ban to the 2040 WHO goal, health evidence and links to the climate policies." },
+  { key: "method",      path: "method/",    icon: "bi-sliders",         label: "Methods",     desc: "Selection flow, scoring model, 115 candidates, validation checks and data dictionary." },
   { key: "about",       path: "about/",       icon: "bi-info-circle",     label: "About",       desc: "Scope, data sources, intended use and limitations, and a suggested citation." },
 ];
 const pt = {

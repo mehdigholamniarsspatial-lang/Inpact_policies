@@ -6,7 +6,7 @@ from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.cache import cache_page
 
-from . import editorial, glossary, services
+from . import air_quality, editorial, glossary, services
 from . import models as m
 from .source_links import resolve_url, source_check
 
@@ -57,6 +57,33 @@ def about(request):
         "NACHTIGALL2022", "KRUSE2022", "STECHEMESSER2024", "GOVREG", "IMPLREG", "OECDJRC2008", "IPCC2022", "EPA2026")]
     ctx["site"] = settings.SITE_INFO
     return render(request, "policies/about.html", ctx)
+
+
+def air_quality_view(request):
+    ctx = _base_context("air_quality")
+    mech = glossary.MECHANISMS
+    slugs = {(x.policy_id, x.sector): x for x in m.PolicySeries.objects.all()}
+    profiles = []
+    for p in air_quality.PROFILES:
+        c, label, _ = mech[p["mechanism"]]
+        profiles.append({**p, "color": c, "mech_label": label})
+    by_key = {p["key"]: p for p in profiles}
+    milestones = [{"year": y, "text": t, "jur": j, "color": mech[k][0], "mech_label": mech[k][1],
+                   "ref": r, "ref_title": by_key[r]["title"] if r in by_key else "GHG co-benefits"}
+                  for y, t, j, k, r in air_quality.MILESTONES]
+    cobenefits = []
+    for pid, sector, effect, pollutants, note in air_quality.COBENEFITS:
+        srs = slugs.get((pid, sector))
+        if srs is None:
+            continue
+        label, colour = air_quality.EFFECT_LABELS[effect]
+        cobenefits.append({"s": srs, "effect": label, "effect_color": colour, "pollutants": pollutants, "note": note,
+                           "mech_color": mech.get(srs.mechanism, ("#777",))[0]})
+    ctx.update({"facts": air_quality.FACTS, "milestones": milestones, "profiles": profiles,
+                "cobenefits": cobenefits, "caveats": air_quality.CAVEATS,
+                "mech_legend": [(k, mech[k][0], mech[k][1]) for k in
+                                ("framework", "standards", "practice_regulation", "information_voluntary", "subsidies_finance")]})
+    return render(request, "policies/air_quality.html", ctx)
 
 
 def timeline(request):

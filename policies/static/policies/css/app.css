@@ -423,3 +423,34 @@ html.embedded .site-head, html.embedded .skip { display: none; }
 html.embedded .csv-link, html.embedded a[href*="/download/dataset/"] { display: none !important; }
 html.embedded body { background: var(--bg); }
 html.embedded main#main { padding-top: 22px; }
+
+/* Air quality policy section */
+.aq-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--ink-2); margin: 0 0 12px; }
+.aq-tl { list-style: none; margin: 0; padding: 0; position: relative; }
+.aq-tl::before { content: ""; position: absolute; left: 67px; top: 6px; bottom: 6px; width: 2px; background: var(--line); }
+.aq-tl li { display: grid; grid-template-columns: 52px 30px minmax(0, 1fr); align-items: start; padding: 5px 0; }
+.aq-year { font-family: var(--serif); font-size: 17px; font-weight: 600; color: var(--atlantic); text-align: right; line-height: 1.35; }
+.aq-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--c); border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--c); margin: 5px 0 0 9px; position: relative; z-index: 1; }
+.aq-tl li.future .aq-dot { background: var(--surface); box-shadow: 0 0 0 2px var(--c); }
+.aq-tl li.future .aq-year { color: var(--ink-3); }
+.aq-text { color: var(--ink); text-decoration: none; font-size: 14.5px; line-height: 1.45; padding: 1px 8px; border-radius: 6px; }
+.aq-text:hover { background: var(--surface-2); color: var(--atlantic); }
+.aq-text small { display: block; font-size: 12px; color: var(--ink-3); }
+.aq-meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+.aq-kv { grid-template-columns: 110px 1fr; margin: 4px 0 6px; }
+.aq-pol { margin: 0 2px 3px 0; }
+.aq-table td { vertical-align: top; }
+.aq-table td:first-child { min-width: 210px; }
+@media (max-width: 620px) {
+  .aq-tl::before { left: 51px; }
+  .aq-tl li { grid-template-columns: 40px 26px minmax(0, 1fr); }
+  .aq-year { font-size: 15px; }
+  .aq-dot { margin-left: 6px; }
+}
+@media (max-width: 720px) {
+  .aq-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .aq-table, .aq-table tbody, .aq-table tr, .aq-table td { display: block; width: 100%; }
+  .aq-table tr { border-bottom: 1px solid var(--line); padding: 10px 0; }
+  .aq-table td { border: 0; padding: 3px 0; min-width: 0 !important; }
+  .aq-table td[data-label]::before { content: attr(data-label) ": "; font-weight: 600; color: var(--ink-2); font-size: 12.5px; }
+}
