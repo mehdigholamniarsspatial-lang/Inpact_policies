@@ -74,6 +74,121 @@
    "default_field": "NO2",
    "file": "airview_dublin.json.gz",
    "bytes": 781566
+  },
+  {
+   "id": "hse_health_centres",
+   "name": "HSE health centres",
+   "group": "Health locations",
+   "kind": "point",
+   "description": "Health centres (GP and nurse services) listed by the HSE, hosted by the Heritage Council.",
+   "credit": "Heritage Council Health Centres layer (references HSE), last edited 28 Jan 2025",
+   "url": "https://www.arcgis.com/home/item.html?id=5993f5720d1a4fd6be1da191fd092445",
+   "bbox": [
+    51.43598,
+    -10.36526,
+    55.35249,
+    -6.03549
+   ],
+   "count": 813,
+   "geometry": {
+    "point": 813
+   },
+   "fields": [
+    {
+     "key": "service_name",
+     "label": "Service name",
+     "type": "text",
+     "n": 813
+    },
+    {
+     "key": "county",
+     "label": "County",
+     "type": "category",
+     "n": 813,
+     "missing": 0
+    }
+   ],
+   "default_field": "county",
+   "file": "hse_health_centres.json.gz",
+   "bytes": 11988
+  },
+  {
+   "id": "osm_health_polygons",
+   "name": "OSM health facility footprints",
+   "group": "Health locations",
+   "kind": "polygon",
+   "description": "Mapped building and site outlines of hospitals, clinics, doctors, dentists and pharmacies.",
+   "credit": "© OpenStreetMap contributors (ODbL 1.0), extract of 20 Nov 2026",
+   "url": "https://www.openstreetmap.org/copyright",
+   "bbox": [
+    51.43592,
+    -10.23468,
+    55.26446,
+    -6.05862
+   ],
+   "count": 1035,
+   "geometry": {
+    "polygon": 1035
+   },
+   "fields": [
+    {
+     "key": "amenity",
+     "label": "Amenity",
+     "type": "category",
+     "n": 1008,
+     "missing": 27
+    }
+   ],
+   "default_field": "amenity",
+   "file": "osm_health_polygons.json.gz",
+   "bytes": 34995
+  },
+  {
+   "id": "osm_health_facilities",
+   "name": "OSM health facilities",
+   "group": "Health locations",
+   "kind": "mixed",
+   "description": "Every selected OSM healthcare feature as mapped: points, building outlines and a few lines.",
+   "credit": "© OpenStreetMap contributors (ODbL 1.0), extract of 20 Nov 2026",
+   "url": "https://www.openstreetmap.org/copyright",
+   "bbox": [
+    51.43592,
+    -10.27166,
+    55.26446,
+    -6.03057
+   ],
+   "count": 3714,
+   "geometry": {
+    "point": 2674,
+    "line": 5,
+    "polygon": 1035
+   },
+   "fields": [
+    {
+     "key": "amenity",
+     "label": "Amenity",
+     "type": "category",
+     "n": 3532,
+     "missing": 182
+    },
+    {
+     "key": "dispensing",
+     "label": "Dispensing",
+     "type": "category",
+     "n": 1068,
+     "missing": 2646
+    },
+    {
+     "key": "drive_through",
+     "label": "Drive-through",
+     "type": "category",
+     "n": 831,
+     "missing": 2883
+    }
+   ],
+   "default_field": "amenity",
+   "file": "osm_health_facilities.json.gz",
+   "bytes": 56020
   }
  ]
 }

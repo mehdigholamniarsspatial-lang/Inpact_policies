@@ -1318,11 +1318,34 @@ html.map-standalone .ov-about{margin-top:auto;padding:.1rem .9rem .2rem;border-t
 .ov-credit{font-size:.68rem;color:var(--text-muted);margin:0}
 /* The legend on the map (bottom right) while an overlay is shown */
 .ov-map-legend{background:rgba(255,255,255,.94);border-radius:8px;padding:.4rem .55rem;box-shadow:0 1px 5px rgba(0,0,0,.3);
-  font-family:"Source Sans 3",sans-serif;max-width:220px}
+  font-family:"Source Sans 3",sans-serif;max-width:220px;max-height:30vh;overflow:auto}
 .ov-map-legend .ov-legend-h{font-size:.74rem;margin-bottom:.2rem}
 .ov-map-legend ul{list-style:none;margin:0;padding:0}
 .ov-map-legend li{display:flex;align-items:center;gap:.4rem;font-size:.7rem;line-height:1.35;font-variant-numeric:tabular-nums}
 .ov-map-legend .ov-sw{width:20px;flex:0 0 20px}
+/* Point / polygon layers (health locations): ArcGIS Pro-style symbology */
+.ov-sec{margin:.1rem 0 -.2rem;padding-top:.5rem;border-top:1px dashed var(--grey-border);font-size:.68rem;font-weight:800;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);display:flex;align-items:center;gap:.35rem}
+.ov-sec i{color:var(--teal);font-size:.8rem}
+.ov-sym [hidden]{display:none!important}
+.ov-colour{display:flex;align-items:center;gap:.45rem}
+.ov-colour input[type=color]{width:34px;height:26px;padding:1px 2px;border:1px solid var(--grey-border);border-radius:6px;background:#fff;cursor:pointer}
+.ov-colour input[type=color]:disabled{opacity:.4;cursor:not-allowed}
+.ov-colour .ov-check{font-size:.72rem}
+.ov-cats-tools{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin:0 0 .3rem}
+.ov-cats-tools .ov-legend-h{margin:0}
+.ov-cats-tools span{display:inline-flex;gap:.5rem}
+.ov-cats-tools button{border:0;background:none;padding:0;font-size:.7rem;font-weight:700;color:var(--teal);cursor:pointer}
+.ov-cats-tools button:hover{text-decoration:underline}
+.ov-cats{list-style:none;margin:0;padding:0;display:grid;gap:.1rem;max-height:260px;overflow:auto}
+.ov-cat{display:grid;grid-template-columns:15px 18px 1fr auto;align-items:center;gap:.45rem;font-size:.74rem;
+  line-height:1.3;margin:0;padding:.12rem .2rem;border-radius:5px;cursor:pointer;color:var(--text-main)}
+.ov-cat:hover{background:rgba(14,140,138,.07)}
+.ov-cat input{width:14px;height:14px;margin:0;accent-color:var(--teal);cursor:pointer}
+.ov-cat .n{color:var(--text-muted);font-size:.66rem;font-variant-numeric:tabular-nums}
+.ov-cat.off span:not(.n){opacity:.45}
+.ov-swg{display:block;width:18px;height:18px;flex:0 0 18px}
+.ov-map-legend .ov-swg{width:16px;height:16px;flex:0 0 16px}
 .ov-map-legend li.nodata .ov-sw{background:repeating-linear-gradient(90deg,#9AA5AE 0 5px,transparent 5px 8px)}
 
 /* Side panel: a compact accordion stepper (1 dataset, 2 layer, 3 display) */
@@ -9739,6 +9762,46 @@ if (MAP_STANDALONE) (function mapWindow(){
 // classified and coloured here (Equal Interval / Quantile / Natural Breaks), with a live legend.
 if (MAP_STANDALONE) (function overlayLayers(){
   const { esc, fmtVal, palette } = GRID_UI;
+  // Defaults shared by the point / polygon layers (each layer overrides what it needs)
+  const FEAT_DEFAULTS = { mode: "unique", field: "", scheme: "tableau", colour: "#0E8C8A",
+    shape: "circle", size: 8, outline: "#ffffff", outlineWidth: 1,             // point symbol
+    fillOpacity: 45, polyOutlineFill: true, polyOutline: "#333333", polyWidth: 1,   // polygon symbol
+    opacity: 100, hidden: [] };
+  const QUAL = {              // qualitative colour schemes (categories)
+    tableau: { name: "Tableau 10", c: ["#4E79A7", "#F28E2B", "#E15759", "#76B7B2", "#59A14F", "#EDC948", "#B07AA1", "#FF9DA7", "#9C755F", "#BAB0AC"] },
+    bold:    { name: "Bold",       c: ["#E6194B", "#3CB44B", "#4363D8", "#F58231", "#911EB4", "#42D4F4", "#F032E6", "#9A6324", "#469990", "#800000", "#000075", "#808000"] },
+    dark2:   { name: "Dark",       c: ["#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", "#E6AB02", "#A6761D", "#666666"] },
+    set1:    { name: "Primary",    c: ["#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#A65628", "#F781BF", "#999999"] },
+    pastel:  { name: "Pastel",     c: ["#8DD3C7", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5", "#BC80BD", "#CCEBC5", "#FFED6F"] },
+  };
+  const SHAPES = { circle: "Circle", square: "Square", triangle: "Triangle", diamond: "Diamond" };
+  const HEX = /^#[0-9a-f]{6}$/i;
+  const clamp = (v, lo, hi, d) => { v = +v; return Number.isFinite(v) ? Math.min(Math.max(v, lo), hi) : d; };
+  const OSM_ABOUT = (shown, fields) => ({
+    lead: "<b>OpenStreetMap healthcare features</b> in the Republic of Ireland: hospitals, clinics, doctors, dentists, pharmacies " +
+          "and nursing homes mapped by OpenStreetMap contributors, selected by their <i>amenity</i> and <i>healthcare</i> tags.",
+    more: [
+      "Outlines are mapped buildings or sites, not catchment areas, and not every facility has one. A site, a building and a point " +
+      "can describe the same facility, so counts are not counts of unique establishments.",
+    ],
+    facts: [
+      ["Shown here", shown],
+      ["Fields shown", fields],
+      ["Source", "OpenStreetMap, via the Overpass API"],
+      ["Snapshot", "OSM database of 20 November 2026, 12:42 UTC"],
+      ["Licence", "Open Database License (ODbL) 1.0"],
+    ],
+    notes: [
+      "Tags are written by contributors: missing facilities, outdated names and inconsistent tags are possible.",
+      "Features with no amenity tag are shown as \u201cNot recorded\u201d.",
+      "Building outlines are small: zoom in to a town to see them.",
+    ],
+    cite: "OpenStreetMap contributors. Selected healthcare features, Republic of Ireland. Retrieved 20 November 2026. ODbL 1.0.",
+    links: [
+      ["bi-c-circle", "OpenStreetMap copyright and licence", "https://www.openstreetmap.org/copyright"],
+      ["bi-journal-text", "ODbL 1.0 licence text", "https://opendatacommons.org/licenses/odbl/1-0/"],
+    ],
+  });
   const OVERLAY_LAYERS = [
     { id: "airview_dublin", group: "Air Quality", name: "Google Air View", what: "Road segment",
       defaults: { field: "NO2", ramp: "turbo", reverse: false, classes: 5, method: "quantile",
@@ -9778,6 +9841,45 @@ if (MAP_STANDALONE) (function overlayLayers(){
           ["bi-file-earmark-zip", "Download 1-second measurements (zip)", "https://data.smartdublin.ie/dataset/4976e11e-a015-4ef9-9179-dc7c27fb5a81/resource/ebee537f-2fc9-4576-8b74-728e5a430e08/download/airview_dublincity_measurements_ugm3.zip"],
         ],
       } },
+
+    // ---- Health locations: point / polygon layers (type "features"), symbolised as Single Symbol or
+    //      Unique Values on one of their category fields. Only the fields kept by the build are listed. ----
+    { id: "hse_health_centres", type: "features", group: "Health locations", name: "HSE health centres",
+      what: "Health centre", titleField: "service_name",
+      defaults: { ...FEAT_DEFAULTS, mode: "single", field: "county", colour: "#0E8C8A", shape: "circle", size: 9 },
+      about: {
+        lead: "<b>Health centres</b> in the Republic of Ireland: 813 locations of health centres staffed by GPs and nurses, " +
+              "from the <i>Health Centres</i> map layer hosted by the Heritage Council, which references the HSE list of health centres.",
+        more: [
+          "Only the service name and county of each centre are kept here, to keep the layer small. The source also holds an " +
+          "alternative name and an address. Locations were published in Irish Transverse Mercator and converted to WGS&nbsp;84.",
+        ],
+        facts: [
+          ["Features", "813 points"],
+          ["Fields shown", "Service name, County (26 counties)"],
+          ["Host", "Heritage Council (ArcGIS Online), referencing the HSE"],
+          ["Last edit", "28 January 2025 (service edit date, not a survey date)"],
+          ["Snapshot", "Downloaded 20 November 2026"],
+          ["Licence", "Not stated in the source metadata; check with the publisher before reuse"],
+        ],
+        notes: [
+          "Not an exhaustive or verified facility register: positions and counties are as published.",
+          "This layer and the OpenStreetMap layers are separate sources and are not matched to each other.",
+        ],
+        cite: "Heritage Council / HeritageMaps. Health Centres [hosted ArcGIS point layer, referencing HSE]. Retrieved 20 November 2026.",
+        links: [
+          ["bi-database", "Source layer (ArcGIS Online)", "https://www.arcgis.com/home/item.html?id=5993f5720d1a4fd6be1da191fd092445"],
+          ["bi-hospital", "HSE list of health centres", "https://www.hse.ie/eng/services/list/2/healthcentres/"],
+        ],
+      } },
+    { id: "osm_health_polygons", type: "features", group: "Health locations", name: "OSM health facility footprints",
+      what: "Facility outline",
+      defaults: { ...FEAT_DEFAULTS, mode: "unique", field: "amenity", fillOpacity: 55, polyWidth: 1.5 },
+      about: OSM_ABOUT("1,035 building and site outlines (polygons)", "Amenity") },
+    { id: "osm_health_facilities", type: "features", group: "Health locations", name: "OSM health facilities",
+      what: "Health facility",
+      defaults: { ...FEAT_DEFAULTS, mode: "unique", field: "amenity", shape: "circle", size: 8 },
+      about: OSM_ABOUT("3,714 features as mapped: 2,674 points, 1,035 outlines and 5 lines", "Amenity, Dispensing, Drive-through") },
   ];
   const METHODS = { equal: "Equal Interval", quantile: "Quantile", jenks: "Natural Breaks (Jenks)" };
   const CLASSES = [3, 4, 5, 6, 7, 8, 9];
@@ -9811,8 +9913,9 @@ if (MAP_STANDALONE) (function overlayLayers(){
     out.opacity = Math.min(Math.max(+out.opacity || def.opacity, 10), 100);
     return out;
   }
+  const isFeat = s => s.cfg.type === "features";
   const states = OVERLAY_LAYERS.map(cfg => ({
-    cfg, sym: cleanSym(cfg.defaults, saved[cfg.id]), meta: null, data: null, loading: null,
+    cfg, sym: cfg.type === "features" ? cleanFeatSym(cfg.defaults, saved[cfg.id]) : cleanSym(cfg.defaults, saved[cfg.id]), meta: null, data: null, loading: null,
     group: null, lines: null, cls: null, on: false, fitted: false, el: null, legendCtrl: null, raf: 0, re: false,
   }));
   function save(){
@@ -9897,6 +10000,7 @@ if (MAP_STANDALONE) (function overlayLayers(){
         <span class="ov-item-desc">Not available: its data has not been built (scripts/build_overlays.py).</span></span></label>`;
       return (s.el = li);
     }
+    if (isFeat(s)) return featItemEl(s, li);
     if (!m.fields.some(f => f.key === sym.field && f.n > 0)) sym.field = (m.fields.find(f => f.n > 0) || m.fields[0]).key;
     const fieldOpts = m.fields.map(f =>
       `<option value="${esc(f.key)}"${f.key === sym.field ? " selected" : ""}${f.n ? "" : " disabled"}>${esc(f.label)} (${esc(f.unit)})</option>`).join("");
@@ -10022,7 +10126,7 @@ if (MAP_STANDALONE) (function overlayLayers(){
       s.loading = fetch(`/api/overlays/${encodeURIComponent(s.cfg.id)}/`)
         .then(r => r.ok ? r.json()
           : r.json().catch(() => ({})).then(d => Promise.reject(new Error(d.detail || `HTTP ${r.status}`))))
-        .then(raw => (s.data = decode(raw)))
+        .then(raw => (s.data = raw.kind === "lines" ? decode(raw) : decodeFeatures(raw)))
         .finally(() => { s.loading = null; });
     }
     return s.loading;
@@ -10130,7 +10234,7 @@ if (MAP_STANDALONE) (function overlayLayers(){
   function schedule(s, reclassify){
     s.re = s.re || reclassify;
     if (s.raf || !s.on || !s.lines) return;
-    s.raf = setTimeout(() => { s.raf = 0; const re = s.re; s.re = false; if (s.on) apply(s, re); }, 30);
+    s.raf = setTimeout(() => { s.raf = 0; const re = s.re; s.re = false; if (s.on) (isFeat(s) ? applyFeat : apply)(s, re); }, 30);
   }
 
   async function setOn(s, on){
@@ -10158,8 +10262,8 @@ if (MAP_STANDALONE) (function overlayLayers(){
     if (!s.on) return;                                   // unticked while it was loading
     status(s, "");
     try {
-      if (!s.lines) buildLines(s);
-      apply(s, true);
+      if (!s.lines) (isFeat(s) ? buildFeatures : buildLines)(s);
+      (isFeat(s) ? applyFeat : apply)(s, true);
       s.group.addTo(map);
     } catch (err){
       console.error("Overlay layer", s.cfg.id, err);
@@ -10183,6 +10287,7 @@ if (MAP_STANDALONE) (function overlayLayers(){
     return { f, rows, noData, excluded };
   }
   function renderLegend(s, colours){
+    if (isFeat(s)) return renderFeatLegend(s);
     colours = colours || rampColours(s, s.cls.k);
     const { f, rows, noData, excluded } = legendParts(s, colours);
     const el = s.symEl?.querySelector(".ov-legend");
@@ -10205,6 +10310,12 @@ if (MAP_STANDALONE) (function overlayLayers(){
     };
     ctrl.update = (f, rows, st) => {
       const div = ctrl.getContainer(); if (!div) return;
+      if (isFeat(st)){                                   // point / polygon layer: shown categories only
+        div.innerHTML = `<p class="ov-legend-h">${esc(st.cfg.name)}${st.sym.mode === "unique" ? `: ${esc(f.label)}` : ""}</p>
+          <ul>${rows.filter(r => r.on).slice(0, 8).map(r => `<li>${swatch(st, r.colour)}${esc(r.label)}</li>`).join("")}
+          ${rows.filter(r => r.on).length > 8 ? `<li>… ${rows.filter(r => r.on).length - 8} more (see Layer settings)</li>` : ""}</ul>`;
+        return;
+      }
       div.innerHTML = `<p class="ov-legend-h">${esc(st.cfg.name)}: ${esc(f.label)} (${esc(f.unit)})</p>
         <ul>${rows.map(r => `<li><span class="ov-sw" style="background:${r.colour}"></span>${esc(r.text)}</li>`).join("")}
         ${st.sym.nodata ? `<li class="nodata"><span class="ov-sw"></span>No data</li>` : ""}</ul>`;
@@ -10212,6 +10323,288 @@ if (MAP_STANDALONE) (function overlayLayers(){
     ctrl.addTo(map);
     s.legendCtrl = ctrl;
     renderLegend(s);
+  }
+
+  // =====================================================================================
+  // ---- Point / polygon layers (health locations) — ArcGIS Pro-style symbology:
+  //      Primary symbology Single Symbol or Unique Values (on a category field, with a colour
+  //      scheme and a class list whose ticks show / hide each value), a point symbol (shape,
+  //      size, outline) and a polygon symbol (fill opacity, outline), and the layer opacity. ----
+  // =====================================================================================
+  function cleanFeatSym(def, sv){
+    const o = { ...def, ...(sv && typeof sv === "object" ? sv : {}) };
+    if (o.mode !== "single" && o.mode !== "unique") o.mode = def.mode;
+    if (!QUAL[o.scheme]) o.scheme = def.scheme;
+    if (!SHAPES[o.shape]) o.shape = def.shape;
+    ["colour", "outline", "polyOutline"].forEach(k => { if (!HEX.test(o[k])) o[k] = def[k]; });
+    o.size = clamp(o.size, 3, 24, def.size);
+    o.outlineWidth = clamp(o.outlineWidth, 0, 4, def.outlineWidth);
+    o.fillOpacity = clamp(o.fillOpacity, 0, 100, def.fillOpacity);
+    o.polyWidth = clamp(o.polyWidth, 0, 5, def.polyWidth);
+    o.opacity = clamp(o.opacity, 10, 100, def.opacity);
+    o.polyOutlineFill = o.polyOutlineFill !== false;
+    o.hidden = Array.isArray(o.hidden) ? o.hidden.filter(x => typeof x === "string") : [];
+    if (typeof o.field !== "string") o.field = def.field;
+    return o;
+  }
+  // A colour of a scheme; past its end the scheme repeats, darker then lighter, so 26 counties stay distinct
+  function shade(hex, f){
+    const c = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
+    const m = c.map(v => Math.round(f < 0 ? v * (1 + f) : v + (255 - v) * f));
+    return "#" + m.map(v => v.toString(16).padStart(2, "0")).join("");
+  }
+  function schemeColour(scheme, i){
+    const c = QUAL[scheme].c, round = Math.floor(i / c.length);
+    return round === 0 ? c[i % c.length] : shade(c[i % c.length], round % 2 ? -.35 : .4);
+  }
+  const prettyValue = v => !v ? "Not recorded" : /^[a-z_]+$/.test(v) ? (v[0].toUpperCase() + v.slice(1)).replace(/_/g, " ") : v;
+  const featKinds = s => {                 // which symbol sections a layer needs
+    const k = s.meta?.kind, g = s.meta?.geometry || {};
+    return { point: k === "point" || !!g.point, poly: k === "polygon" || !!g.polygon, line: k === "line" || !!g.line };
+  };
+  const featCount = m => {
+    const g = m.geometry || {}, part = [];
+    if (g.point) part.push(`${g.point.toLocaleString("en-IE")} points`);
+    if (g.polygon) part.push(`${g.polygon.toLocaleString("en-IE")} outlines`);
+    if (g.line) part.push(`${g.line.toLocaleString("en-IE")} lines`);
+    return part.join(", ") || `${(m.count || 0).toLocaleString("en-IE")} features`;
+  };
+
+  // Symbol preview (legend rows): the point shape, or a filled square for outlines
+  function swatch(s, colour){
+    const sym = s.sym, k = featKinds(s), op = sym.opacity / 100;
+    if (!k.point){
+      const stroke = sym.polyOutlineFill ? shade(colour, -.25) : sym.polyOutline;
+      return `<svg class="ov-swg" viewBox="0 0 18 18" aria-hidden="true"><rect x="2" y="2" width="14" height="14" rx="2" fill="${colour}"
+        fill-opacity="${(sym.fillOpacity / 100) * op}" stroke="${stroke}" stroke-opacity="${op}" stroke-width="${Math.max(sym.polyWidth, .6)}"/></svg>`;
+    }
+    const st = `fill="${colour}" fill-opacity="${op}" stroke="${sym.outlineWidth ? sym.outline : "none"}" stroke-width="${Math.min(sym.outlineWidth, 2.5)}"`;
+    const shapes = { circle: `<circle cx="9" cy="9" r="6" ${st}/>`, square: `<rect x="3.5" y="3.5" width="11" height="11" ${st}/>`,
+      triangle: `<path d="M9 2.5 15.5 14.5 2.5 14.5Z" ${st}/>`, diamond: `<path d="M9 1.5 16.5 9 9 16.5 1.5 9Z" ${st}/>` };
+    return `<svg class="ov-swg" viewBox="0 0 18 18" aria-hidden="true">${shapes[sym.shape]}</svg>`;
+  }
+
+  // Canvas point marker with an ArcGIS-like shape (Leaflet's circle marker draws circles only)
+  if (!L.Canvas.prototype._ovShape){
+    L.Canvas.include({ _ovShape(layer){
+      if (!this._drawing || layer._empty()) return;
+      const p = layer._point, ctx = this._ctx, r = Math.max(layer._radius, 1);
+      ctx.beginPath();
+      switch (layer.options.shape){
+        case "square":   ctx.rect(p.x - r * .88, p.y - r * .88, r * 1.76, r * 1.76); break;
+        case "triangle": ctx.moveTo(p.x, p.y - r * 1.15); ctx.lineTo(p.x + r * 1.05, p.y + r * .8); ctx.lineTo(p.x - r * 1.05, p.y + r * .8); ctx.closePath(); break;
+        case "diamond":  ctx.moveTo(p.x, p.y - r * 1.2); ctx.lineTo(p.x + r * 1.2, p.y); ctx.lineTo(p.x, p.y + r * 1.2); ctx.lineTo(p.x - r * 1.2, p.y); ctx.closePath(); break;
+        default:         ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      }
+      this._fillStroke(ctx, layer);
+    } });
+  }
+  const ShapeMarker = L.CircleMarker.extend({
+    options: { shape: "circle" },
+    _updatePath(){ this._renderer._ovShape ? this._renderer._ovShape(this) : L.CircleMarker.prototype._updatePath.call(this); },
+  });
+
+  function featItemEl(s, li){
+    const id = s.cfg.id, m = s.meta, sym = s.sym, uid = k => `ov-${id}-${k}`, k = featKinds(s);
+    const catFields = m.fields.filter(f => f.type === "category");
+    if (!catFields.some(f => f.key === sym.field)) sym.field = (catFields.find(f => f.key === m.default_field) || catFields[0] || {}).key || "";
+    if (!catFields.length) sym.mode = "single";
+    const opt = (v, t, on) => `<option value="${esc(v)}"${on ? " selected" : ""}>${esc(t)}</option>`;
+    const range = (key, label, min, max, step, unit) => `<div class="ov-f"><label for="${uid(key)}">${label} <span data-out="${key}" data-unit="${unit}"></span></label>
+      <input type="range" id="${uid(key)}" data-k="${key}" min="${min}" max="${max}" step="${step}" value="${sym[key]}"></div>`;
+    li.innerHTML = `
+      <label class="ov-item-head"><input type="checkbox" class="ov-on"${s.on ? " checked" : ""} aria-controls="${uid("sym")}">
+        <span class="ov-item-txt"><span class="ov-item-name">${esc(s.cfg.name)}</span>
+        <span class="ov-item-desc">${esc(m.description || "")} ${esc(featCount(m))}.</span></span></label>
+      <p class="ov-status" role="status"></p>
+      <div class="ov-sym" id="${uid("sym")}"${s.on ? "" : " hidden"}>
+        <p class="ov-card-h"><i class="bi bi-sliders" aria-hidden="true"></i>${esc(s.cfg.name)}</p>
+        <div class="ov-f"><label for="${uid("mode")}">Primary symbology</label>
+          <select class="form-select form-select-sm" id="${uid("mode")}" data-k="mode">
+            ${opt("single", "Single Symbol", sym.mode === "single")}${catFields.length ? opt("unique", "Unique Values", sym.mode === "unique") : ""}</select></div>
+        <div class="ov-2" data-show="unique">
+          <div class="ov-f"><label for="${uid("field")}">Field</label>
+            <select class="form-select form-select-sm" id="${uid("field")}" data-k="field">${catFields.map(f => opt(f.key, f.label, f.key === sym.field)).join("")}</select></div>
+          <div class="ov-f"><label for="${uid("scheme")}">Colour scheme</label>
+            <select class="form-select form-select-sm" id="${uid("scheme")}" data-k="scheme">${Object.entries(QUAL).map(([q, d]) => opt(q, d.name, q === sym.scheme)).join("")}</select></div>
+        </div>
+        <div class="ov-f" data-show="single"><label for="${uid("colour")}">Colour</label>
+          <div class="ov-colour"><input type="color" id="${uid("colour")}" data-k="colour" value="${esc(sym.colour)}"></div></div>
+        <div class="ov-legend" aria-live="polite"></div>
+        ${k.point ? `<p class="ov-sec"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i>Point symbol</p>
+        <div class="ov-2">
+          <div class="ov-f"><label for="${uid("shape")}">Shape</label>
+            <select class="form-select form-select-sm" id="${uid("shape")}" data-k="shape">${Object.entries(SHAPES).map(([v, t]) => opt(v, t, v === sym.shape)).join("")}</select></div>
+          ${range("size", "Size", 3, 24, 1, " px")}
+        </div>
+        <div class="ov-2">
+          <div class="ov-f"><label for="${uid("outline")}">Outline colour</label>
+            <div class="ov-colour"><input type="color" id="${uid("outline")}" data-k="outline" value="${esc(sym.outline)}"></div></div>
+          ${range("outlineWidth", "Outline width", 0, 4, .5, " px")}
+        </div>` : ""}
+        ${k.poly || k.line ? `<p class="ov-sec"><i class="bi bi-pentagon-fill" aria-hidden="true"></i>${k.poly ? "Polygon symbol" : "Line symbol"}</p>
+        <div class="ov-2">
+          ${k.poly ? range("fillOpacity", "Fill opacity", 0, 100, 5, "%") : ""}
+          ${range("polyWidth", k.poly ? "Outline width" : "Line width", 0, 5, .5, " px")}
+        </div>
+        ${k.poly ? `<div class="ov-f"><span class="ov-lbl">Outline colour</span>
+          <div class="ov-colour"><input type="color" data-k="polyOutline" value="${esc(sym.polyOutline)}" aria-label="Outline colour"${sym.polyOutlineFill ? " disabled" : ""}>
+            <label class="ov-check"><input type="checkbox" data-k="polyOutlineFill"${sym.polyOutlineFill ? " checked" : ""}>Darker shade of the fill</label></div></div>` : ""}` : ""}
+        <p class="ov-sec"><i class="bi bi-layers-half" aria-hidden="true"></i>Layer</p>
+        ${range("opacity", "Layer opacity", 10, 100, 5, "%")}
+        <p class="ov-credit">Source: ${esc(m.credit || s.cfg.name)}${m.url ? ` · <a href="${esc(m.url)}" target="_blank" rel="noopener">source</a>` : ""}</p>
+      </div>`;
+    s.el = li;
+    s.symEl?.remove();
+    s.symEl = li.querySelector(".ov-sym");
+    settingsBody.appendChild(s.symEl);
+    syncFeatOutputs(s);
+    syncEmpty();
+    li.querySelector(".ov-on").addEventListener("change", e => setOn(s, e.target.checked));
+    const onInput = e => {
+      const t = e.target;
+      if (t.dataset.cat != null){                          // a class ticked / unticked
+        const h = new Set(s.sym.hidden);
+        t.checked ? h.delete(t.dataset.cat) : h.add(t.dataset.cat);
+        s.sym.hidden = [...h];
+      } else {
+        const key = t.dataset.k; if (!key) return;
+        s.sym[key] = t.type === "checkbox" ? t.checked : t.type === "range" ? +t.value : t.value;
+        if (key === "field" || key === "mode") s.sym.hidden = [];
+      }
+      syncFeatOutputs(s);
+      save();
+      schedule(s, true);
+    };
+    s.symEl.addEventListener("input", onInput);
+    s.symEl.addEventListener("change", e => { if (e.target.type !== "range" && e.target.type !== "color") onInput(e); });
+    s.symEl.addEventListener("click", e => {             // "All" / "None" above the class list
+      const act = e.target.closest("[data-act]")?.dataset.act; if (!act || !s.cats) return;
+      s.sym.hidden = act === "none" ? s.cats.map(c => c.key) : [];
+      save(); schedule(s, true);
+    });
+    if (s.on && s.data) renderFeatLegend(s);
+    return li;
+  }
+  function syncFeatOutputs(s){
+    const el = s.symEl; if (!el) return;
+    el.querySelectorAll("[data-out]").forEach(o => { o.textContent = `${s.sym[o.dataset.out]}${o.dataset.unit || ""}`; });
+    el.querySelectorAll("[data-show]").forEach(x => { x.hidden = x.dataset.show !== s.sym.mode; });
+    const po = el.querySelector('[data-k="polyOutline"]'); if (po) po.disabled = s.sym.polyOutlineFill;
+  }
+
+  function decodeFeatures(raw){
+    const k = 1 / raw.scale;
+    const dec = p => {
+      const out = new Array(p.length / 2);
+      let lat = 0, lng = 0;
+      for (let i = 0, j = 0; i < p.length; i += 2, j++){ lat += p[i]; lng += p[i + 1]; out[j] = [lat * k, lng * k]; }
+      return out;
+    };
+    const base = { point: 1, line: 2, polygon: 3 }[raw.kind] || 1;
+    const types = raw.gtype || null;
+    const geoms = raw.geom.map((g, i) => {
+      const t = types ? types[i] : base;
+      return t === 1 ? [g[0] * k, g[1] * k] : t === 2 ? g.map(dec) : g.map(poly => poly.map(dec));
+    });
+    return { n: raw.count, bbox: raw.bbox, kind: raw.kind, types, base, geoms, attrs: raw.attrs,
+             fields: Object.fromEntries(raw.fields.map(f => [f.key, f])) };
+  }
+  const gtypeOf = (d, i) => d.types ? d.types[i] : d.base;
+
+  function buildFeatures(s){
+    const d = s.data;
+    s.group = L.featureGroup();
+    s.lines = d.geoms.map((g, i) => {
+      const t = gtypeOf(d, i);
+      const ly = t === 1 ? new ShapeMarker(g, { renderer, radius: 4 })
+        : t === 2 ? L.polyline(g, { renderer, lineCap: "round", lineJoin: "round" })
+        : L.polygon(g, { renderer, lineJoin: "round" });
+      ly._ovi = i; ly._ovIn = false; ly._ovT = t;
+      return ly;
+    });
+    s.group.on("click", e => { L.DomEvent.stopPropagation(e); openFeatPopup(s, e.layer._ovi, e.latlng); });
+    // Outlines above points? No: points are drawn last so they stay clickable on top of building outlines
+  }
+
+  // Classes of the shown field: most frequent first, "Not recorded" last (grey)
+  function featCategories(s){
+    const f = s.data.fields[s.sym.field];
+    if (!f || f.type !== "category") return [];
+    const order = f.values.map((v, i) => ({ i, key: v, label: prettyValue(v), n: f.counts[i] }))
+      .sort((a, b) => b.n - a.n || a.label.localeCompare(b.label));
+    order.forEach((c, j) => { c.colour = schemeColour(s.sym.scheme, j); });
+    if (f.missing) order.push({ i: -1, key: "", label: "Not recorded", n: f.missing, colour: NODATA });
+    return order;
+  }
+
+  function applyFeat(s){
+    const sym = s.sym, d = s.data, op = sym.opacity / 100, unique = sym.mode === "unique";
+    s.cats = unique ? featCategories(s) : [];
+    const byIdx = new Map(s.cats.map(c => [c.i, c]));
+    const hidden = new Set(sym.hidden);
+    const col = unique ? d.attrs[sym.field] : null;
+    const add = [], drop = [];
+    s.lines.forEach((ly, i) => {
+      let colour = sym.colour, show = true;
+      if (unique){
+        const c = byIdx.get(col[i]); colour = c ? c.colour : NODATA;
+        show = !hidden.has(c ? c.key : "");
+      }
+      if (show){
+        if (ly._ovT === 1) ly.setStyle({ shape: sym.shape, radius: sym.size / 2, fillColor: colour, fillOpacity: op,
+          stroke: sym.outlineWidth > 0, color: sym.outline, weight: sym.outlineWidth, opacity: op });
+        else if (ly._ovT === 2) ly.setStyle({ color: colour, weight: Math.max(sym.polyWidth, 1) + 1, opacity: op });
+        else ly.setStyle({ fillColor: colour, fillOpacity: (sym.fillOpacity / 100) * op, stroke: sym.polyWidth > 0,
+          color: sym.polyOutlineFill ? shade(colour, -.25) : sym.polyOutline, weight: sym.polyWidth, opacity: op });
+      }
+      if (show !== ly._ovIn){ (show ? add : drop).push(ly); ly._ovIn = show; }
+    });
+    drop.forEach(ly => s.group.removeLayer(ly));
+    // Draw order: outlines and lines first, points on top
+    add.sort((a, b) => (a._ovT === 1) - (b._ovT === 1)).forEach(ly => s.group.addLayer(ly));
+    if (add.some(ly => ly._ovT !== 1)) s.lines.forEach(ly => { if (ly._ovT === 1 && ly._ovIn) ly.bringToFront(); });
+    renderFeatLegend(s);
+  }
+
+  // Class list (in the settings card: tick to show / hide a value) and the map legend
+  function renderFeatLegend(s){
+    if (!s.data) return;
+    const sym = s.sym, hidden = new Set(sym.hidden), unique = sym.mode === "unique";
+    const f = s.data.fields[sym.field] || { label: sym.field };
+    const rows = unique ? (s.cats || featCategories(s)).map(c => ({ ...c, on: !hidden.has(c.key) }))
+      : [{ key: "*", label: `All features`, n: s.data.n, colour: sym.colour, on: true }];
+    const el = s.symEl?.querySelector(".ov-legend");
+    if (el){
+      const shown = rows.filter(r => r.on).reduce((a, r) => a + r.n, 0);
+      el.innerHTML = `<div class="ov-cats-tools"><p class="ov-legend-h">${unique ? `Classes · ${esc(f.label)}` : "Symbol"}</p>
+          ${unique ? `<span><button type="button" data-act="all">All</button><button type="button" data-act="none">None</button></span>` : ""}</div>
+        <ul class="ov-cats">${rows.map(r => `<li><label class="ov-cat${r.on ? "" : " off"}">${unique
+            ? `<input type="checkbox" data-cat="${esc(r.key)}"${r.on ? " checked" : ""} aria-label="Show ${esc(r.label)}">` : "<span></span>"}
+          ${swatch(s, r.colour)}<span>${esc(r.label)}</span><span class="n">${r.n.toLocaleString("en-IE")}</span></label></li>`).join("")}</ul>
+        ${unique ? `<p class="ov-note">${shown.toLocaleString("en-IE")} of ${s.data.n.toLocaleString("en-IE")} features shown.</p>` : ""}`;
+    }
+    if (s.legendCtrl) s.legendCtrl.update(f, rows, s);
+  }
+
+  // Popup: name (when the layer has one), then every kept field
+  const GEOM_LABEL = { 1: "Point", 2: "Line", 3: "Building / site outline" };
+  function openFeatPopup(s, i, latlng){
+    const d = s.data, tf = s.cfg.titleField;
+    const val = key => {
+      const f = d.fields[key], a = d.attrs[key]?.[i];
+      if (!f) return "";
+      if (f.type === "text") return a || "";
+      return a == null || a < 0 ? "Not recorded" : prettyValue(f.values[a]);
+    };
+    const firstCat = Object.values(d.fields).find(f => f.type === "category");
+    const title = (tf && val(tf)) || (firstCat && val(firstCat.key) !== "Not recorded" ? val(firstCat.key) : s.cfg.what);
+    const rows = Object.values(d.fields).filter(f => f.key !== tf)
+      .map(f => [esc(f.label), f.key === s.sym.field && s.sym.mode === "unique" ? `<b>${esc(val(f.key))}</b>` : esc(val(f.key))]);
+    if (d.kind === "mixed") rows.push(["Mapped as", esc(GEOM_LABEL[gtypeOf(d, i)])]);
+    L.popup({ maxWidth: 280 }).setLatLng(latlng)
+      .setContent(popupHtml(rows, esc(title), esc(`${s.cfg.name} · ${s.cfg.what}`)))
+      .openOn(map);
   }
 
   // ---- Popup: road name, road type, the shown pollutant and its measurement counts ----
