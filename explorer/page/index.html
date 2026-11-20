@@ -1257,7 +1257,14 @@ html.map-standalone .ms-bar{
 .ms-tools .ms-aq i{font-size:.95rem}
 .ov-view{display:none}
 html.map-standalone.ms-aq .map-side > :not(.ov-view){display:none!important}
-html.map-standalone.ms-aq .map-side > .ov-view{display:block}
+html.map-standalone.ms-aq .map-side > .ov-view{display:flex;flex-direction:column;flex:1 0 auto}
+/* "About this dataset" of the ticked overlay layer, at the bottom of the panel (as in Mapping) */
+html.map-standalone .ov-about{margin-top:auto;padding:.1rem .9rem .2rem;border-top:1px solid var(--grey-border);background:#fff}
+.ov-about[hidden]{display:none}
+.ov-about.more-open .ms-info-more{grid-template-rows:1fr;visibility:visible}
+.ov-about .ms-info-more .ms-info-lead{margin-top:.5rem}
+.ov-cite{margin:.5rem 0 0;padding:.4rem .55rem;border-left:3px solid var(--teal);border-radius:4px;background:var(--grey-panel);
+  font-size:.68rem;line-height:1.4;color:var(--text-main)}
 .ms-modeswitch{display:inline-flex;align-items:center;gap:.35rem}
 .ov-head{padding:.75rem .9rem .6rem;border-bottom:1px solid var(--grey-border);background:#fff}
 .ov-back{
@@ -2027,6 +2034,7 @@ html.map-standalone.ms-aq .map-side{grid-row:2}
 .dc-c-ts{--c:var(--emerald);--cl:var(--emerald-light)}
 .dc-c-raster{--c:var(--teal);--cl:var(--teal-light)}
 .dc-c-policy{--c:#3B5B8C;--cl:#E7EEF7}
+.dc-c-aq{--c:#2F7D4A;--cl:#E6F2EA}
 
 /* toolbar */
 .dc-toolbar{
@@ -2697,11 +2705,12 @@ a.ug-go.alt:hover{color:var(--navy)}
                 <button type="button" class="ms-tool" id="msTextSmaller" aria-label="Smaller text" title="Smaller text"><span class="ms-a sm" aria-hidden="true">a</span></button>
                 <button type="button" class="ms-tool" id="msTextLarger" aria-label="Larger text" title="Larger text"><span class="ms-a lg" aria-hidden="true">A</span></button>
               </div>
-              <!-- Panel mode: Mapping (emission layers, time series, compare; the default) | Air Quality (overlay layers) -->
+              <!-- Panel mode: Raster Layer (emission layers, time series, compare; the default) | Air Quality (overlay layers).
+                   Deep links from the dashboard: #mapping/RasterLayer and #mapping/AirQuality (here: ?mode=AirQuality) -->
               <div class="ms-modeswitch" role="group" aria-label="Panel mode">
                 <button type="button" class="ms-tool" id="msMapping" aria-pressed="true" aria-controls="mapSide"
-                        title="Mapping: emission layers, time series and compare">
-                  <i class="bi bi-map"></i><span class="lbl">Mapping</span>
+                        title="Raster Layer: gridded emission layers, time series and compare">
+                  <i class="bi bi-grid-3x3-gap"></i><span class="lbl">Raster Layer</span>
                 </button>
                 <button type="button" class="ms-tool ms-aq" id="msAirQuality" aria-pressed="false" aria-controls="msOverlay ovSettings"
                         title="Air Quality: overlay layers such as Google Air View road concentrations">
@@ -2721,7 +2730,7 @@ a.ug-go.alt:hover{color:var(--navy)}
                stepper below). The list of layers is built by the script from OVERLAY_LAYERS. -->
           <div class="ov-view" id="msOverlay" role="region" aria-labelledby="ovTitle">
             <div class="ov-head">
-              <button type="button" class="ov-back" id="ovBack"><i class="bi bi-arrow-left" aria-hidden="true"></i>Back to Mapping</button>
+              <button type="button" class="ov-back" id="ovBack"><i class="bi bi-arrow-left" aria-hidden="true"></i>Back to Raster Layer</button>
               <h3 class="ov-title" id="ovTitle"><i class="bi bi-wind" aria-hidden="true"></i>Layer Overlay</h3>
             </div>
             <div class="ov-body" id="ovBody">
@@ -6996,7 +7005,7 @@ function activateTab(name){
   else if (location.hash.startsWith("#policy")) history.replaceState(null, "", location.pathname + location.search);
   // Spatial Mapping: load the map workspace on first visit; #mapping links straight to it.
   if (name === "mapping") smActivate();
-  else if (location.hash === "#mapping") history.replaceState(null, "", location.pathname + location.search);
+  else if (location.hash.startsWith("#mapping")) history.replaceState(null, "", location.pathname + location.search);
   // Datasets: #data and #data/<dataset-id> deep links
   // User Guide: #guide deep link; leaving it stops its video
   if (name === "guide") { if (!location.hash.startsWith("#guide")) history.replaceState(null, "", location.pathname + location.search + "#guide"); }
@@ -7081,17 +7090,37 @@ hdrCurrent.innerHTML = (mainMenu.querySelector(".tab-btn.active") || tabButtons[
 document.documentElement.style.setProperty("--tabnav-h", navStack.offsetHeight + "px");
 
 /* Spatial Mapping tab: the /map/ workspace in a frame sized to fill the screen under the menu bar.
-   It starts on the dashboard map's current view and dataset. */
+   It starts on the dashboard map's current view and dataset. Its two panel modes have their own links:
+   #mapping/RasterLayer (the default; plain #mapping opens it too) and #mapping/AirQuality. */
+const SM_MODES = ["RasterLayer", "AirQuality"];
+let smMode = "RasterLayer";                                  // last mode shown in the frame
+const smModeFromHash = () => (location.hash.match(/^#mapping\/(\w+)/) || [])[1];
 function smActivate(){
   syncNavMetrics();
-  if (location.hash !== "#mapping") history.replaceState(null, "", location.pathname + location.search + "#mapping");
+  const asked = smModeFromHash();
+  const mode = SM_MODES.find(m => m.toLowerCase() === (asked || "").toLowerCase()) || (asked ? "RasterLayer" : smMode);
+  smMode = mode;
+  if (location.hash !== "#mapping/" + mode) history.replaceState(null, "", location.pathname + location.search + "#mapping/" + mode);
   const frame = document.getElementById("smFrame");
-  if (frame.dataset.loaded) return;
+  if (frame.dataset.loaded){                                 // already open: switch its mode
+    try { frame.contentWindow.postMessage({ setInpactMapMode: mode }, location.origin); } catch (e) { /* not ready */ }
+    return;
+  }
   frame.dataset.loaded = "1";
   let q = "";
   try { q = "&" + mapStateQuery(); } catch (e) { /* dashboard map not ready yet */ }
   frame.addEventListener("load", () => { document.getElementById("smLoading").hidden = true; }, { once: true });
-  frame.src = "/map/?embed=1" + q;
+  frame.src = "/map/?embed=1" + q + (mode === "AirQuality" ? "&mode=AirQuality" : "");
+}
+if (!document.documentElement.classList.contains("map-standalone")) {   // (MAP_STANDALONE is set further down)
+  // The frame reports a mode switched with its own buttons: keep the address in step
+  window.addEventListener("message", e => {
+    if (e.origin !== location.origin || !e.data || !SM_MODES.includes(e.data.inpactMapMode)) return;
+    smMode = e.data.inpactMapMode;
+    if (location.hash.startsWith("#mapping")) history.replaceState(null, "", location.pathname + location.search + "#mapping/" + smMode);
+  });
+  // A #mapping/... link followed while the dashboard is open
+  window.addEventListener("hashchange", () => { if (location.hash.startsWith("#mapping")) activateTab("mapping"); });
 }
 window.addEventListener("resize", syncNavMetrics);
 
@@ -7387,10 +7416,12 @@ document.getElementById("mapDataset")?.dispatchEvent(new Event("change"));
 
 function mapStateQuery(){
   const c = map.getCenter();
-  return new URLSearchParams({
+  const q = new URLSearchParams({
     lat: c.lat.toFixed(4), lng: c.lng.toFixed(4), z: String(map.getZoom()),
     ds: document.getElementById("mapDataset").value
-  }).toString();
+  });
+  if (document.documentElement.classList.contains("ms-aq")) q.set("mode", "AirQuality");   // map window in Air Quality
+  return q.toString();
 }
 
 document.getElementById("mapPopout").addEventListener("click", e => {
@@ -9711,7 +9742,42 @@ if (MAP_STANDALONE) (function overlayLayers(){
   const OVERLAY_LAYERS = [
     { id: "airview_dublin", group: "Air Quality", name: "Google Air View", what: "Road segment",
       defaults: { field: "NO2", ramp: "turbo", reverse: false, classes: 5, method: "quantile",
-                  width: 3, opacity: 90, nodata: true } },
+                  width: 3, opacity: 90, nodata: true },
+      // "About this dataset" (left panel, while the layer is ticked); `lead` and `more` are trusted HTML
+      about: {
+        lead: "<b>Google Project Air View Data &ndash; Dublin City</b> (May 2021 &ndash; August 2022): street-by-street air quality " +
+              "measured by Google and Dublin City Council. Google&rsquo;s first electric Street View car, fitted with Aclima&rsquo;s " +
+              "mobile air sensing platform, measured pollution on every street and highway of Dublin City at 1-second intervals.",
+        more: [
+          "The car travelled with the flow of traffic at normal speeds. Driving took place mostly Monday to Friday between 9:00 and " +
+          "17:00 from May 2021 to August 2022, so the data mainly reflect typical daytime, weekday air quality.",
+          "The dataset has two resources: <b>AirView_DublinCity_Measurements</b>, the raw 1-second data (zipped shapefile), and " +
+          "<b>AirView_Dublin_City_RoadData</b>, which aggregates the 1-second points into road segments of about 50&nbsp;m. " +
+          "This map shows the road segments.",
+        ],
+        facts: [
+          ["Provider", "Google and Dublin City Council (Project Air View Dublin)"],
+          ["Instrument", "Aclima mobile air sensing platform on an electric Street View car"],
+          ["Period", "May 2021 – August 2022, mostly Mon–Fri 9:00–17:00"],
+          ["Sampling", "Every 1 second, driving with traffic at normal speeds"],
+          ["Coverage", "Dublin City, every street and highway"],
+          ["Shown here", "Road segments of about 50 m (24,683 segments)"],
+          ["Pollutants", "NO₂, NO, O₃, PM2.5 (µg/m³); CO, CO₂ (mg/m³)"],
+          ["Licence", "Creative Commons Attribution 4.0 (CC BY 4.0)"],
+          ["Publisher", "Dublin City Council, via Dublinked / data.gov.ie (category: Energy)"],
+        ],
+        notes: [
+          "Values describe daytime, weekday conditions, not 24-hour or annual means, so they are not directly comparable with legal limit values.",
+          "Roads with no measurement points are shown as no data; negative readings are sensor errors and are excluded.",
+          "The raw data also hold size-resolved particle counts (0.3–2.5 µm), which are not mapped here.",
+          "A full data description is in the AirView_DublinCity_Measurements_Metadata document; methods and maps are on Google EIE Labs.",
+        ],
+        cite: "Aclima & Google 2022 via Dublinked.",
+        links: [
+          ["bi-database", "Dataset page (data.gov.ie)", "https://data.gov.ie/dataset/google-airview-data-dublin-city/resource/ebee537f-2fc9-4576-8b74-728e5a430e08"],
+          ["bi-file-earmark-zip", "Download 1-second measurements (zip)", "https://data.smartdublin.ie/dataset/4976e11e-a015-4ef9-9179-dc7c27fb5a81/resource/ebee537f-2fc9-4576-8b74-728e5a430e08/download/airview_dublincity_measurements_ugm3.zip"],
+        ],
+      } },
   ];
   const METHODS = { equal: "Equal Interval", quantile: "Quantile", jenks: "Natural Breaks (Jenks)" };
   const CLASSES = [3, 4, 5, 6, 7, 8, 9];
@@ -9726,7 +9792,8 @@ if (MAP_STANDALONE) (function overlayLayers(){
   const settingsBody = document.getElementById("ovSettingsBody");
   const settingsEmpty = document.getElementById("ovSettingsEmpty");
   const sideBtn = document.getElementById("msSideToggle");
-  if (!side || !btn || !mappingBtn || !listEl || !settingsEl) return;
+  const ovView = document.getElementById("msOverlay");
+  if (!side || !btn || !mappingBtn || !listEl || !settingsEl || !ovView) return;
 
   map.createPane("ovPane").style.zIndex = 450;      // above the emission layers, below markers and popups
   const renderer = L.canvas({ pane: "ovPane", padding: .3, tolerance: 4 });
@@ -9753,10 +9820,13 @@ if (MAP_STANDALONE) (function overlayLayers(){
     catch (e) { /* not kept */ }
   }
 
-  // ---- Panel mode: Mapping (default: emission layers, time series and compare, as before) or
+  // ---- Panel mode: Raster Layer (default: emission layers, time series and compare, as before) or
   //      Air Quality (layer list on the left, layer settings on the right). Switching only changes
-  //      what the panels show: time series / compare keep their state for when Mapping comes back. ----
-  function setView(on){
+  //      what the panels show: time series / compare keep their state for when Raster Layer comes back.
+  //      The mode is kept in the URL (?mode=AirQuality) and, inside the dashboard's Spatial Mapping tab,
+  //      reported to the dashboard so its address reads #mapping/RasterLayer or #mapping/AirQuality. ----
+  const EMBED = root.classList.contains("map-embed");
+  function setView(on, fromParent){
     root.classList.toggle("ms-aq", on);
     btn.setAttribute("aria-pressed", String(on));
     mappingBtn.setAttribute("aria-pressed", String(!on));
@@ -9765,11 +9835,25 @@ if (MAP_STANDALONE) (function overlayLayers(){
     side.scrollTop = 0;
     setTimeout(() => map.invalidateSize(), 60);           // the map column changed width
     if (on) loadCatalog();
+    const mode = on ? "AirQuality" : "RasterLayer";
+    try {
+      const u = new URL(location.href);
+      if (on) u.searchParams.set("mode", mode); else u.searchParams.delete("mode");
+      history.replaceState(null, "", u.pathname + u.search);
+    } catch (e) { /* address not updated */ }
+    if (EMBED && !fromParent && window.parent !== window) window.parent.postMessage({ inpactMapMode: mode }, location.origin);
   }
+  // The dashboard asks for a mode (its #mapping/<Mode> link changed)
+  window.addEventListener("message", e => {
+    if (e.origin !== location.origin || !e.data || typeof e.data.setInpactMapMode !== "string") return;
+    setView(e.data.setInpactMapMode === "AirQuality", true);
+  });
   btn.addEventListener("click", () => setView(true));
   mappingBtn.addEventListener("click", () => setView(false));
   document.getElementById("ovBack").addEventListener("click", () => { setView(false); mappingBtn.focus(); });
   const syncEmpty = () => { settingsEmpty.hidden = states.some(s => s.on && s.symEl); };
+  // Opened as /map/?mode=AirQuality (or from the dashboard's #mapping/AirQuality)
+  setTimeout(() => { if (new URLSearchParams(location.search).get("mode") === "AirQuality") setView(true, true); }, 0);
 
   // ---- Catalogue: which layers are built, their fields and value ranges ----
   let catalogReq = null;
@@ -9793,6 +9877,7 @@ if (MAP_STANDALONE) (function overlayLayers(){
 
   function renderList(){
     listEl.innerHTML = "";
+    states.forEach(s => { s.aboutEl?.remove(); s.aboutEl = aboutEl(s); if (s.aboutEl) ovView.appendChild(s.aboutEl); });
     const groups = [...new Set(states.map(s => s.cfg.group))];
     groups.forEach(g => {
       const h = document.createElement("p"); h.className = "ov-group"; h.textContent = g;
@@ -9872,6 +9957,47 @@ if (MAP_STANDALONE) (function overlayLayers(){
     s.symEl.addEventListener("change", onInput);
     if (s.on && s.data) renderLegend(s);
     return li;
+  }
+
+  // "About this dataset" of one layer: same look and behaviour as the Mapping panel's
+  // (fold the box with its header; "More details" opens the facts, notes and citation)
+  function aboutEl(s){
+    const a = s.cfg.about;
+    if (!a) return null;
+    const id = `ov-${s.cfg.id}-about`;
+    const box = document.createElement("div");
+    box.className = "ov-about";
+    box.hidden = !s.on;
+    box.innerHTML = `<section class="ms-step is-open">
+      <h3 class="ms-step-h"><button type="button" class="ms-step-btn" aria-expanded="true" aria-controls="${id}">
+        <span class="ms-badge info"><i class="bi bi-info-lg"></i></span>
+        <span class="ms-step-txt"><span class="ms-step-title">About this dataset</span><span class="ms-step-sum">${esc(s.cfg.name)}</span></span>
+        <i class="bi bi-chevron-down ms-chev" aria-hidden="true"></i></button></h3>
+      <div class="ms-step-body" id="${id}" role="region"><div class="ms-step-inner">
+        <div class="ms-info">
+          <p class="ms-info-lead">${a.lead}</p>
+          <div class="ms-info-more" id="${id}-more"><div>
+            ${(a.more || []).map(t => `<p class="ms-info-lead">${t}</p>`).join("")}
+            <dl class="ms-facts">${(a.facts || []).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>
+            <ul class="ms-notes">${(a.notes || []).map(n => `<li>${esc(n)}</li>`).join("")}</ul>
+            ${a.cite ? `<p class="ov-cite"><b>Cite as:</b> &ldquo;${esc(a.cite)}&rdquo;</p>` : ""}
+          </div></div>
+          <div class="ms-info-links">${(a.links || []).map(([icon, label, url]) =>
+            `<a href="${esc(url)}" target="_blank" rel="noopener"><i class="bi ${esc(icon)}"></i>${esc(label)}<i class="bi bi-box-arrow-up-right ext"></i></a>`).join("")}</div>
+        </div>
+        <button type="button" class="ms-more" aria-expanded="false" aria-controls="${id}-more"><span class="lbl">More details</span><i class="bi bi-chevron-down"></i></button>
+      </div></div></section>`;
+    const step = box.querySelector(".ms-step"), head = box.querySelector(".ms-step-btn"), more = box.querySelector(".ms-more");
+    head.addEventListener("click", () => {
+      const open = !step.classList.contains("is-open");
+      step.classList.toggle("is-open", open); head.setAttribute("aria-expanded", String(open));
+    });
+    more.addEventListener("click", () => {
+      const open = !box.classList.contains("more-open");
+      box.classList.toggle("more-open", open); more.setAttribute("aria-expanded", String(open));
+      more.querySelector(".lbl").textContent = open ? "Fewer details" : "More details";
+    });
+    return box;
   }
 
   function syncOutputs(s){
@@ -10012,6 +10138,7 @@ if (MAP_STANDALONE) (function overlayLayers(){
     s.on = on;
     s.el.classList.toggle("on", on);
     symEl.hidden = !on;
+    if (s.aboutEl) s.aboutEl.hidden = !on;
     syncEmpty();
     if (!on){
       if (s.group) map.removeLayer(s.group);
@@ -10025,6 +10152,7 @@ if (MAP_STANDALONE) (function overlayLayers(){
     } catch (err){
       status(s, `The layer could not be loaded (${err.message}). Untick and tick it to try again.`, true);
       s.on = false; box.checked = false; s.el.classList.remove("on"); symEl.hidden = true; syncEmpty();
+      if (s.aboutEl) s.aboutEl.hidden = true;
       return;
     }
     if (!s.on) return;                                   // unticked while it was loading
@@ -10106,7 +10234,7 @@ if (MAP_STANDALONE) (function overlayLayers(){
 
 // Open straight into the Policy Timeline when the page is loaded with #policy...
 if (!MAP_STANDALONE && location.hash.startsWith("#policy")) activateTab("policy");
-if (!MAP_STANDALONE && location.hash === "#mapping") activateTab("mapping");
+if (!MAP_STANDALONE && location.hash.startsWith("#mapping")) activateTab("mapping");
 
 /* ---------------------- 9d. User Guide tab (interactive guide) ----------------------
  * Chapters (sidebar): 1 Introduction, 2 Policy Timeline, 3 Spatial Mapping (subsections 3.1 Time series,
@@ -10727,8 +10855,8 @@ applyYearWindow();
 </script>
 <script>
 /* ---------------------- 9c. Datasets tab (data catalogue) ----------------------
- * A searchable catalogue of every source used on the platform, in three groups:
- * EPA GHG time series, spatial emission rasters, and policy information / timelines.
+ * A searchable catalogue of every source used on the platform, in four groups:
+ * EPA GHG time series, spatial emission rasters, air quality overlays, and policy information / timelines.
  * The catalogue below is the single source of truth for the tab: cards, table,
  * coverage chart, comparison table and the detail drawer are all rendered from it.
  * Deep links: #data opens the tab, #data/<dataset-id> also opens that dataset. */
@@ -10742,12 +10870,14 @@ const CATS = {
             desc: "Ireland's official greenhouse-gas inventory from the Environmental Protection Agency: national totals by gas and emissions by sector and subsector." },
   raster: { label: "Spatial emission maps (rasters)", short: "Mapping rasters", icon: "bi-grid-3x3-gap", cls: "dc-c-raster",
             desc: "Gridded emission maps from three independent resources (MapEIre, EDGAR and PARIS inverse models), plus the reference layers used to draw them." },
+  aq:     { label: "Air quality measurements (overlays)", short: "Air quality", icon: "bi-wind", cls: "dc-c-aq",
+            desc: "Street-level air-quality measurements drawn as overlay layers in Spatial Mapping (Air Quality button), starting with Google Project Air View in Dublin City." },
   policy: { label: "GHG policy information & timelines", short: "Policy & timelines", icon: "bi-journal-text", cls: "dc-c-policy",
             desc: "The Ireland Climate Policy Timeline, the OECD and EEA policy databases it is built on, the policy roadmap and the official sources used to verify dates." },
 };
 
 const GASES = ["CO₂", "CH₄", "N₂O", "F-gases", "Air pollutants"];
-const TYPES = ["Time series", "Gridded raster", "Policy dataset", "Reference register", "Reference layer"];
+const TYPES = ["Time series", "Gridded raster", "Vector layer", "Policy dataset", "Reference register", "Reference layer"];
 
 /* tab: a dashboard tab key; hash: optional deep link set before switching */
 const DATA = [
@@ -10907,6 +11037,32 @@ const DATA = [
     citation: "Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community.",
     links: [["Esri World Imagery", "https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9"]],
     keywords: "basemap satellite imagery esri tiles background web mercator"
+  },
+
+  /* ---------------- Air quality measurements (overlays) ---------------- */
+  {
+    id: "google-airview-dublin", cat: "aq", type: "Vector layer", icon: "bi-wind",
+    title: "Google Project Air View Data – Dublin City (May 2021 – August 2022)",
+    provider: "Google and Dublin City Council (Project Air View Dublin), with Aclima",
+    summary: "Street-by-street air quality in Dublin City measured every second by Google's electric Street View car with Aclima sensors: NO₂, NO, O₃, PM2.5, CO and CO₂, averaged over road segments of about 50 m.",
+    about: [
+      "This dataset contains street-by-street air quality measurements collected by Google and Dublin City Council as part of Project Air View Dublin. Google's first electric Street View car, fitted with Aclima's mobile air sensing platform, drove the roads of Dublin City and measured pollution on every street and highway at 1-second intervals, travelling with the flow of traffic at normal speeds. Driving took place predominantly Monday to Friday between 9:00 am and 5:00 pm from May 2021 to August 2022, so the data primarily reflect typical daytime, weekday air quality. The pollutants measured are carbon monoxide (CO), carbon dioxide (CO₂), nitrogen dioxide (NO₂), nitric oxide (NO), ozone (O₃) and particulate matter PM2.5, including size-resolved particle counts from 0.3 to 2.5 µm.",
+      "The dataset is published by Dublin City Council under the Creative Commons Attribution 4.0 licence and is categorised under Energy. It includes two resources: AirView_DublinCity_Measurements, the raw 1-second interval data (available as a zipped shapefile), and AirView_Dublin_City_RoadData, which aggregates the 1-second points into approximately 50 m road segments. A full data description is provided in the AirView_DublinCity_Measurements_Metadata document, and further information on the project, methodology and maps is available from Google EIE Labs.",
+      "On this platform the road-segment data are drawn in Spatial Mapping → Air Quality → Google Air View, with a choice of pollutant, colour ramp, classes and classification method, and a popup for each road."
+    ],
+    period: [2021, 2022], periodNote: "May 2021 – August 2022, mostly Mon–Fri 9:00–17:00", frequency: "Campaign mean per road segment (from 1-second measurements)",
+    spatial: "Dublin City", resolution: "Road segments of about 50 m (24,683 segments)",
+    crs: "EPSG:4326 (WGS 84)", units: "µg/m³ (NO₂, NO, O₃, PM2.5); mg/m³ (CO, CO₂)", gases: ["CO₂", "Air pollutants"],
+    format: "Shapefile (road lines) → gzipped column JSON for the web map", licence: "CC BY 4.0 (Dublin City Council)",
+    version: "AirView_DublinCity_RoadData_ugm3 (road-segment means)",
+    meta: [["Publisher", "Dublin City Council, via Dublinked / data.gov.ie (category: Energy)"], ["Resources", "AirView_DublinCity_Measurements (1-second points, zipped shapefile); AirView_Dublin_City_RoadData (≈ 50 m road segments)"], ["Documentation", "AirView_DublinCity_Measurements_Metadata; Google EIE Labs (project, methodology, maps)"], ["Processing here", "Roads with 0 measurement points are no data; negative readings are excluded as sensor errors; built with scripts/build_overlays.py"]],
+    files: [["data/Overlays/airview_dublin.json.gz", "Road segments, pollutant means and measurement counts (gzipped)"], ["data/Overlays/overlays.json", "Catalogue of the overlay layers"]],
+    vars: [["osm_name / osm_fclass", "Road name and OpenStreetMap road type"], ["NO2_ugm3, NO_ugm3, O3_ugm3, PM25_ugm3", "Mean concentration, µg/m³"], ["CO_mgm3, CO2_mgm3", "Mean concentration, mg/m³"], ["*points", "Number of 1-second measurements on the segment"], ["*drives", "Number of separate drives on the segment"]],
+    notes: ["Values reflect typical daytime, weekday air quality, not 24-hour or annual means, so they are not directly comparable with legal limit values.", "Many NO readings are negative (sensor errors) and are excluded, so NO covers fewer roads than the other pollutants.", "The size-resolved particle counts (0.3–2.5 µm) in the raw data are not mapped here."],
+    usedIn: [["mapping", "Spatial Mapping — Air Quality: Google Air View"]],
+    citation: "Aclima & Google 2022 via Dublinked.",
+    links: [["Dataset page (data.gov.ie)", "https://data.gov.ie/dataset/google-airview-data-dublin-city/resource/ebee537f-2fc9-4576-8b74-728e5a430e08"], ["Download: 1-second measurements, zipped shapefile (Dublinked)", "https://data.smartdublin.ie/dataset/4976e11e-a015-4ef9-9179-dc7c27fb5a81/resource/ebee537f-2fc9-4576-8b74-728e5a430e08/download/airview_dublincity_measurements_ugm3.zip"]],
+    keywords: "google air view airview aclima street view car dublin city council dublinked air quality no2 nitrogen dioxide no nitric oxide pm2.5 particulate ozone o3 co carbon monoxide co2 road street mobile monitoring"
   },
 
   /* ---------------- Policy information & timelines ---------------- */

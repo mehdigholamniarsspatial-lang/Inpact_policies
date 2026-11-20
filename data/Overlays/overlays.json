@@ -5,9 +5,9 @@
    "name": "Google Air View",
    "group": "Air Quality",
    "kind": "lines",
-   "description": "Mean street-level concentrations measured by Google Street View cars, Dublin City, averaged by road segment.",
-   "credit": "Google Air View, Dublin City road data",
-   "url": "",
+   "description": "Project Air View Dublin: street-level air quality measured every second by Google's electric Street View car (Aclima sensors), May 2021 – Aug 2022, averaged over ~50 m road segments.",
+   "credit": "Aclima & Google 2022 via Dublinked (CC BY 4.0)",
+   "url": "https://data.gov.ie/dataset/google-airview-data-dublin-city/resource/ebee537f-2fc9-4576-8b74-728e5a430e08",
    "bbox": [
     53.3018,
     -6.38632,
