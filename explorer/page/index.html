@@ -1252,6 +1252,70 @@ html.map-standalone .ms-bar{
 .ms-a.lg{font-size:22px;font-weight:800}
 /* at the limit: still readable, clearly not clickable */
 .ms-textsize .ms-tool:disabled{color:#8696A3;background:#EEF2F5;cursor:not-allowed}
+/* ---- Air Quality: the side panel's "Layer Overlay" view (button beside the text size).
+   Vector layers drawn over the emission layers; the list is built from OVERLAY_LAYERS. ---- */
+.ms-tools .ms-aq i{font-size:.95rem}
+.ov-view{display:none}
+html.map-standalone .map-side.ov-on > :not(.ov-view){display:none!important}
+html.map-standalone .map-side.ov-on > .ov-view{display:block}
+.ov-head{padding:.75rem .9rem .6rem;border-bottom:1px solid var(--grey-border);background:#fff}
+.ov-back{
+  display:inline-flex;align-items:center;gap:.3rem;border:0;background:none;padding:0;margin:0 0 .35rem;
+  font:inherit;font-size:.72rem;font-weight:700;color:var(--teal);cursor:pointer;
+}
+.ov-back:hover{text-decoration:underline}
+.ov-back:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.ov-title{display:flex;align-items:center;gap:.5rem;margin:0;font-size:1rem;font-weight:800;color:var(--navy)}
+.ov-title i{color:var(--teal);font-size:1.1rem}
+.ov-body{padding:.7rem .9rem 1rem}
+.ov-group{font-size:.66rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin:.2rem 0 .4rem}
+.ov-list{list-style:none;margin:0 0 .6rem;padding:0}
+.ov-item{border:1px solid var(--grey-border);border-radius:10px;background:#fff;margin-bottom:.5rem;
+  box-shadow:0 1px 2px rgba(16,42,67,.05)}
+.ov-item.on{border-color:#9FCFCE;box-shadow:0 0 0 2px rgba(14,140,138,.12)}
+.ov-item-head{display:flex;align-items:flex-start;gap:.6rem;padding:.6rem .75rem;cursor:pointer;margin:0}
+.ov-item-head input{flex:0 0 auto;width:17px;height:17px;margin:.1rem 0 0;accent-color:var(--teal);cursor:pointer}
+.ov-item-txt{display:flex;flex-direction:column;min-width:0;line-height:1.25}
+.ov-item-name{font-size:.86rem;font-weight:800;color:var(--navy)}
+.ov-item-desc{font-size:.7rem;color:var(--text-muted)}
+.ov-item.unavailable .ov-item-head{cursor:not-allowed;opacity:.6}
+.ov-status{font-size:.72rem;line-height:1.35;margin:.1rem .75rem .55rem;color:var(--text-muted);display:flex;gap:.4rem;align-items:flex-start}
+.ov-status:empty{display:none}
+.ov-status.err{color:#B03A2E}
+.ov-sym{border-top:1px solid var(--grey-border);padding:.6rem .75rem .75rem;display:grid;gap:.6rem}
+.ov-sym[hidden]{display:none}
+.ov-f > label,.ov-f > .ov-lbl{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem;margin:0 0 .2rem;
+  font-size:.64rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--navy)}
+.ov-f > label span,.ov-f > .ov-lbl span{font-size:.7rem;font-weight:600;letter-spacing:0;text-transform:none;color:var(--text-muted);
+  font-variant-numeric:tabular-nums}
+.ov-2{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.ov-ramp-row{display:flex;align-items:center;gap:.5rem}
+.ov-ramp-row select{flex:1 1 auto;min-width:0}
+.ov-rev{display:inline-flex;align-items:center;gap:.3rem;font-size:.7rem;color:var(--text-muted);white-space:nowrap;cursor:pointer;margin:0}
+.ov-rev input{width:15px;height:15px;margin:0;accent-color:var(--teal);cursor:pointer}
+.ov-ramp{display:flex;height:12px;margin-top:.35rem;border-radius:4px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(16,42,67,.14)}
+.ov-ramp span{flex:1 1 0}
+.ov-check{display:flex;align-items:center;gap:.4rem;font-size:.74rem;color:var(--text-main);margin:0;cursor:pointer}
+.ov-check input{width:15px;height:15px;margin:0;accent-color:var(--teal);cursor:pointer}
+.ov-sym input[type=range]{width:100%;accent-color:var(--teal)}
+.ov-legend{border:1px solid var(--grey-border);border-radius:8px;background:var(--grey-panel);padding:.45rem .6rem}
+.ov-legend-h{font-size:.72rem;font-weight:800;color:var(--navy);margin:0 0 .3rem}
+.ov-legend ul{list-style:none;margin:0;padding:0;display:grid;gap:.15rem}
+.ov-legend li{display:grid;grid-template-columns:26px 1fr auto;align-items:center;gap:.45rem;font-size:.72rem;
+  font-variant-numeric:tabular-nums;color:var(--text-main)}
+.ov-legend li .n{color:var(--text-muted);font-size:.66rem}
+.ov-sw{display:block;height:5px;border-radius:3px}
+.ov-legend li.nodata .ov-sw{background:repeating-linear-gradient(90deg,#9AA5AE 0 6px,transparent 6px 9px)}
+.ov-note{font-size:.68rem;line-height:1.35;color:var(--text-muted);margin:.35rem 0 0}
+.ov-credit{font-size:.68rem;color:var(--text-muted);margin:0}
+/* The legend on the map (bottom right) while an overlay is shown */
+.ov-map-legend{background:rgba(255,255,255,.94);border-radius:8px;padding:.4rem .55rem;box-shadow:0 1px 5px rgba(0,0,0,.3);
+  font-family:"Source Sans 3",sans-serif;max-width:220px}
+.ov-map-legend .ov-legend-h{font-size:.74rem;margin-bottom:.2rem}
+.ov-map-legend ul{list-style:none;margin:0;padding:0}
+.ov-map-legend li{display:flex;align-items:center;gap:.4rem;font-size:.7rem;line-height:1.35;font-variant-numeric:tabular-nums}
+.ov-map-legend .ov-sw{width:20px;flex:0 0 20px}
+.ov-map-legend li.nodata .ov-sw{background:repeating-linear-gradient(90deg,#9AA5AE 0 5px,transparent 5px 8px)}
 
 /* Side panel: a compact accordion stepper (1 dataset, 2 layer, 3 display) */
 html.map-standalone .map-side{
@@ -2609,6 +2673,10 @@ a.ug-go.alt:hover{color:var(--navy)}
                 <button type="button" class="ms-tool" id="msTextSmaller" aria-label="Smaller text" title="Smaller text"><span class="ms-a sm" aria-hidden="true">a</span></button>
                 <button type="button" class="ms-tool" id="msTextLarger" aria-label="Larger text" title="Larger text"><span class="ms-a lg" aria-hidden="true">A</span></button>
               </div>
+              <button type="button" class="ms-tool ms-aq" id="msAirQuality" aria-pressed="false" aria-controls="msOverlay"
+                      title="Air Quality: overlay layers such as Google Air View road concentrations">
+                <i class="bi bi-wind"></i><span class="lbl">Air Quality</span>
+              </button>
               <button type="button" class="ms-tool" id="msResetView" title="Zoom back to the whole of Ireland">
                 <i class="bi bi-crosshair"></i><span class="lbl">Reset View</span>
               </button>
@@ -2618,6 +2686,18 @@ a.ug-go.alt:hover{color:var(--navy)}
             </div>
           </div>
           <div class="map-side" id="mapSide">
+          <!-- Air Quality: Layer Overlay view (the toolbar's Air Quality button swaps it in for the
+               stepper below). The list of layers is built by the script from OVERLAY_LAYERS. -->
+          <div class="ov-view" id="msOverlay" role="region" aria-labelledby="ovTitle">
+            <div class="ov-head">
+              <button type="button" class="ov-back" id="ovBack"><i class="bi bi-arrow-left" aria-hidden="true"></i>Back to emission layers</button>
+              <h3 class="ov-title" id="ovTitle"><i class="bi bi-wind" aria-hidden="true"></i>Layer Overlay</h3>
+            </div>
+            <div class="ov-body" id="ovBody">
+              <p class="ms-p">Layers drawn on top of the map and any emission layer. Tick a layer to show it and set its symbology.</p>
+              <div id="ovList"><p class="ov-status"><i class="bi bi-hourglass-split" aria-hidden="true"></i>Loading the layer list…</p></div>
+            </div>
+          </div>
           <!-- What to do with the map: compare two layers or plot a time series (drives #msCompare / #msTs) -->
           <div class="ms-modes" id="msModes">
             <p class="ms-modes-lbl" id="msModesLbl">Choose an analysis</p>
@@ -9577,6 +9657,393 @@ if (MAP_STANDALONE) (function mapWindow(){
   };
   new MutationObserver(syncLayer).observe(mapEl.querySelector(".leaflet-control-container"), { childList: true, subtree: true });
   syncLayer();
+})();
+
+/* ------------- 4f. Vector overlay layers: "Air Quality" button → Layer Overlay ------------- */
+// The toolbar's Air Quality button swaps the side panel to the Layer Overlay view, a checkbox list
+// built from OVERLAY_LAYERS. To add a layer: add its source to LAYERS in scripts/build_overlays.py,
+// run that script (it writes data/Overlays/<id>.json.gz and the catalogue), then add an entry here
+// with the same id. The server lists what was built (/api/overlays/); an entry with no data is
+// shown as unavailable. Ticked layers are drawn on their own canvas pane above the emission layers,
+// classified and coloured here (Equal Interval / Quantile / Natural Breaks), with a live legend.
+if (MAP_STANDALONE) (function overlayLayers(){
+  const { esc, fmtVal, palette } = GRID_UI;
+  const OVERLAY_LAYERS = [
+    { id: "airview_dublin", group: "Air Quality", name: "Google Air View", what: "Road segment",
+      defaults: { field: "NO2", ramp: "turbo", reverse: false, classes: 5, method: "quantile",
+                  width: 3, opacity: 90, nodata: true } },
+  ];
+  const METHODS = { equal: "Equal Interval", quantile: "Quantile", jenks: "Natural Breaks (Jenks)" };
+  const CLASSES = [3, 4, 5, 6, 7, 8, 9];
+  const NODATA = "#9AA5AE";
+  const SYM_KEY = "inpact.overlaySymbology";
+  const root = document.documentElement;
+  const side = document.getElementById("mapSide");
+  const btn = document.getElementById("msAirQuality");
+  const listEl = document.getElementById("ovList");
+  const sideBtn = document.getElementById("msSideToggle");
+  if (!side || !btn || !listEl) return;
+
+  map.createPane("ovPane").style.zIndex = 450;      // above the emission layers, below markers and popups
+  const renderer = L.canvas({ pane: "ovPane", padding: .3, tolerance: 4 });
+
+  // ---- Symbology per layer, remembered per viewer (invalid saved values fall back to the defaults) ----
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(SYM_KEY)) || {}; } catch (e) { saved = {}; }
+  function cleanSym(def, s){
+    const out = { ...def, ...(s && typeof s === "object" ? s : {}) };
+    if (!palette.PALETTES.seq[out.ramp]) out.ramp = def.ramp;
+    if (!CLASSES.includes(+out.classes)) out.classes = def.classes;
+    if (!METHODS[out.method]) out.method = def.method;
+    out.classes = +out.classes; out.reverse = out.reverse === true; out.nodata = out.nodata !== false;
+    out.width = Math.min(Math.max(+out.width || def.width, 1), 8);
+    out.opacity = Math.min(Math.max(+out.opacity || def.opacity, 10), 100);
+    return out;
+  }
+  const states = OVERLAY_LAYERS.map(cfg => ({
+    cfg, sym: cleanSym(cfg.defaults, saved[cfg.id]), meta: null, data: null, loading: null,
+    group: null, lines: null, cls: null, on: false, fitted: false, el: null, legendCtrl: null, raf: 0, re: false,
+  }));
+  function save(){
+    try { localStorage.setItem(SYM_KEY, JSON.stringify(Object.fromEntries(states.map(s => [s.cfg.id, s.sym])))); }
+    catch (e) { /* not kept */ }
+  }
+
+  // ---- The panel view: Air Quality button on, Back (or the button again) off ----
+  function setView(on){
+    side.classList.toggle("ov-on", on);
+    btn.setAttribute("aria-pressed", String(on));
+    if (on && root.classList.contains("ms-side-hidden")) sideBtn?.click();   // narrow screens: open the drawer
+    side.scrollTop = 0;
+    if (on) loadCatalog();
+  }
+  btn.addEventListener("click", () => setView(btn.getAttribute("aria-pressed") !== "true"));
+  document.getElementById("ovBack").addEventListener("click", () => { setView(false); btn.focus(); });
+
+  // ---- Catalogue: which layers are built, their fields and value ranges ----
+  let catalogReq = null;
+  function loadCatalog(){
+    if (catalogReq) return catalogReq;
+    catalogReq = fetch("/api/overlays/")
+      .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
+      .then(d => {
+        const byId = Object.fromEntries((d.layers || []).map(l => [l.id, l]));
+        states.forEach(s => { s.meta = byId[s.cfg.id] || null; });
+        renderList();
+      })
+      .catch(err => {
+        catalogReq = null;
+        listEl.innerHTML = `<p class="ov-status err" role="alert"><i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
+          <span>The layer list could not be loaded (${esc(err.message)}). <button type="button" class="ov-back" id="ovRetry">Try again</button></span></p>`;
+        document.getElementById("ovRetry")?.addEventListener("click", loadCatalog);
+      });
+    return catalogReq;
+  }
+
+  function renderList(){
+    listEl.innerHTML = "";
+    const groups = [...new Set(states.map(s => s.cfg.group))];
+    groups.forEach(g => {
+      const h = document.createElement("p"); h.className = "ov-group"; h.textContent = g;
+      const ul = document.createElement("ul"); ul.className = "ov-list";
+      states.filter(s => s.cfg.group === g).forEach(s => ul.appendChild(itemEl(s)));
+      listEl.append(h, ul);
+    });
+  }
+
+  function itemEl(s){
+    const id = s.cfg.id, m = s.meta, sym = s.sym, uid = k => `ov-${id}-${k}`;
+    const li = document.createElement("li");
+    li.className = "ov-item" + (m ? "" : " unavailable") + (s.on ? " on" : "");
+    if (!m){
+      li.innerHTML = `<label class="ov-item-head"><input type="checkbox" disabled>
+        <span class="ov-item-txt"><span class="ov-item-name">${esc(s.cfg.name)}</span>
+        <span class="ov-item-desc">Not available: its data has not been built (scripts/build_overlays.py).</span></span></label>`;
+      return (s.el = li);
+    }
+    if (!m.fields.some(f => f.key === sym.field && f.n > 0)) sym.field = (m.fields.find(f => f.n > 0) || m.fields[0]).key;
+    const fieldOpts = m.fields.map(f =>
+      `<option value="${esc(f.key)}"${f.key === sym.field ? " selected" : ""}${f.n ? "" : " disabled"}>${esc(f.label)} (${esc(f.unit)})</option>`).join("");
+    const rampGroups = {};
+    Object.entries(palette.PALETTES.seq).forEach(([pid, p]) => { (rampGroups[p.group || "Palettes"] ||= []).push([pid, p.name]); });
+    const rampOpts = Object.entries(rampGroups).map(([g, ps]) => `<optgroup label="${esc(g)}">${
+      ps.map(([pid, name]) => `<option value="${esc(pid)}"${pid === sym.ramp ? " selected" : ""}>${esc(name)}</option>`).join("")}</optgroup>`).join("");
+    li.innerHTML = `
+      <label class="ov-item-head"><input type="checkbox" class="ov-on"${s.on ? " checked" : ""} aria-controls="${uid("sym")}">
+        <span class="ov-item-txt"><span class="ov-item-name">${esc(s.cfg.name)}</span>
+        <span class="ov-item-desc">${esc(m.description || "")} ${(m.count || 0).toLocaleString("en-IE")} roads.</span></span></label>
+      <p class="ov-status" role="status"></p>
+      <div class="ov-sym" id="${uid("sym")}"${s.on ? "" : " hidden"}>
+        <div class="ov-f"><label for="${uid("field")}">Pollutant</label>
+          <select class="form-select form-select-sm" id="${uid("field")}" data-k="field">${fieldOpts}</select></div>
+        <div class="ov-f"><label for="${uid("ramp")}">Colour ramp</label>
+          <div class="ov-ramp-row">
+            <select class="form-select form-select-sm" id="${uid("ramp")}" data-k="ramp">${rampOpts}</select>
+            <label class="ov-rev"><input type="checkbox" data-k="reverse"${sym.reverse ? " checked" : ""}>Reverse</label>
+          </div>
+          <div class="ov-ramp" aria-hidden="true"></div></div>
+        <div class="ov-2">
+          <div class="ov-f"><label for="${uid("classes")}">Classes</label>
+            <select class="form-select form-select-sm" id="${uid("classes")}" data-k="classes">${
+              CLASSES.map(n => `<option value="${n}"${n === sym.classes ? " selected" : ""}>${n}</option>`).join("")}</select></div>
+          <div class="ov-f"><label for="${uid("method")}">Method</label>
+            <select class="form-select form-select-sm" id="${uid("method")}" data-k="method">${
+              Object.entries(METHODS).map(([k, t]) => `<option value="${k}"${k === sym.method ? " selected" : ""}>${t}</option>`).join("")}</select></div>
+        </div>
+        <div class="ov-2">
+          <div class="ov-f"><label for="${uid("width")}">Line width <span data-out="width"></span></label>
+            <input type="range" id="${uid("width")}" data-k="width" min="1" max="8" step="0.5" value="${sym.width}"></div>
+          <div class="ov-f"><label for="${uid("opacity")}">Opacity <span data-out="opacity"></span></label>
+            <input type="range" id="${uid("opacity")}" data-k="opacity" min="10" max="100" step="5" value="${sym.opacity}"></div>
+        </div>
+        <label class="ov-check"><input type="checkbox" data-k="nodata"${sym.nodata ? " checked" : ""}>Show roads with no data (grey)</label>
+        <div class="ov-legend" aria-live="polite"></div>
+        <p class="ov-credit">Source: ${esc(m.credit || s.cfg.name)}${m.url ? ` · <a href="${esc(m.url)}" target="_blank" rel="noopener">data</a>` : ""}</p>
+      </div>`;
+    s.el = li;
+    syncOutputs(s);
+    li.querySelector(".ov-on").addEventListener("change", e => setOn(s, e.target.checked));
+    const onInput = e => {
+      const k = e.target.dataset.k; if (!k) return;
+      const t = e.target;
+      s.sym[k] = t.type === "checkbox" ? t.checked : t.type === "range" || k === "classes" ? +t.value : t.value;
+      syncOutputs(s);
+      save();
+      schedule(s, k === "field" || k === "classes" || k === "method");
+    };
+    li.querySelector(".ov-sym").addEventListener("input", onInput);
+    li.querySelector(".ov-sym").addEventListener("change", onInput);
+    if (s.on && s.data) renderLegend(s);
+    return li;
+  }
+
+  function syncOutputs(s){
+    const el = s.el; if (!el) return;
+    const w = el.querySelector('[data-out="width"]'), o = el.querySelector('[data-out="opacity"]');
+    if (w) w.textContent = `${s.sym.width} px`;
+    if (o) o.textContent = `${s.sym.opacity}%`;
+    const bar = el.querySelector(".ov-ramp");
+    if (bar) bar.innerHTML = Array.from({ length: 16 }, (_, i) =>
+      `<span style="background:${palette.seqColour(s.sym.ramp, i / 15, s.sym.reverse)}"></span>`).join("");
+  }
+  function status(s, msg, err){
+    const p = s.el?.querySelector(".ov-status"); if (!p) return;
+    p.classList.toggle("err", !!err);
+    p.innerHTML = msg ? `<i class="bi ${err ? "bi-exclamation-triangle-fill" : "bi-hourglass-split"}" aria-hidden="true"></i><span>${esc(msg)}</span>` : "";
+  }
+
+  // ---- Data: fetched once per layer (gzipped by the server), decoded into Leaflet lat/lng arrays ----
+  function ensureData(s){
+    if (s.data) return Promise.resolve(s.data);
+    if (!s.loading){
+      s.loading = fetch(`/api/overlays/${encodeURIComponent(s.cfg.id)}/`)
+        .then(r => r.ok ? r.json()
+          : r.json().catch(() => ({})).then(d => Promise.reject(new Error(d.detail || `HTTP ${r.status}`))))
+        .then(raw => (s.data = decode(raw)))
+        .finally(() => { s.loading = null; });
+    }
+    return s.loading;
+  }
+  function decode(raw){
+    const k = 1 / raw.scale;
+    const latlngs = raw.geom.map(parts => parts.map(p => {
+      const out = new Array(p.length / 2);
+      let lat = 0, lng = 0;
+      for (let i = 0, j = 0; i < p.length; i += 2, j++){ lat += p[i]; lng += p[i + 1]; out[j] = [lat * k, lng * k]; }
+      return out;
+    }));
+    const errors = {};
+    Object.entries(raw.errors || {}).forEach(([f, ids]) => { errors[f] = new Set(ids); });
+    return {
+      n: raw.count, latlngs, bbox: raw.bbox, values: raw.values, points: raw.points, drives: raw.drives, errors,
+      name: raw.name.map(i => raw.lookup.name[i]), fclass: raw.fclass.map(i => raw.lookup.fclass[i]),
+      fields: Object.fromEntries(raw.fields.map(f => [f.key, f])),
+    };
+  }
+
+  // ---- Classification (upper-inclusive classes; the first one includes the minimum) ----
+  function classify(vals, k, method){
+    const v = vals.filter(x => x != null).sort((a, b) => a - b);
+    if (!v.length) return { k: 0, breaks: [], counts: [], n: 0 };
+    const lo = v[0], hi = v[v.length - 1];
+    let br;
+    if (lo === hi) br = [lo, hi];
+    else if (method === "equal") br = Array.from({ length: k + 1 }, (_, i) => lo + (hi - lo) * i / k);
+    else if (method === "quantile") br = Array.from({ length: k + 1 }, (_, i) => v[Math.round(i * (v.length - 1) / k)]);
+    else br = jenks(sample(v, 1000), k);
+    br[0] = lo; br[br.length - 1] = hi;
+    br = br.filter((b, i) => i === 0 || b > br[i - 1]);       // tied breaks (few distinct values) merge classes
+    if (br.length < 2) br = [lo, hi];
+    const counts = new Array(br.length - 1).fill(0);
+    v.forEach(x => { counts[classOf(br, x)]++; });
+    return { k: br.length - 1, breaks: br, counts, n: v.length };
+  }
+  function classOf(br, x){
+    let a = 0, b = br.length - 2;
+    while (a < b){ const m = (a + b) >> 1; if (x <= br[m + 1]) b = m; else a = m + 1; }
+    return a;
+  }
+  // Natural Breaks on an evenly ranked sample (as ArcGIS does for large data): O(n²·k) stays fast
+  const sample = (v, m) => v.length <= m ? v : Array.from({ length: m }, (_, i) => v[Math.round(i * (v.length - 1) / (m - 1))]);
+  function jenks(data, k){
+    const uniq = [...new Set(data)];
+    if (uniq.length <= k) return uniq.length > 1 ? uniq : [uniq[0], uniq[0]];
+    const n = data.length;
+    const lower = Array.from({ length: n + 1 }, () => new Int32Array(k + 1));
+    const vari = Array.from({ length: n + 1 }, () => new Float64Array(k + 1).fill(Infinity));
+    for (let j = 1; j <= k; j++){ lower[1][j] = 1; vari[1][j] = 0; }
+    for (let l = 2; l <= n; l++){
+      let s1 = 0, s2 = 0, w = 0, var_ = 0;
+      for (let m = 1; m <= l; m++){
+        const i3 = l - m + 1, val = data[i3 - 1];
+        s2 += val * val; s1 += val; w++;
+        var_ = s2 - (s1 * s1) / w;
+        const i4 = i3 - 1;
+        if (i4 !== 0) for (let j = 2; j <= k; j++){
+          if (vari[l][j] >= var_ + vari[i4][j - 1]){ lower[l][j] = i3; vari[l][j] = var_ + vari[i4][j - 1]; }
+        }
+      }
+      lower[l][1] = 1; vari[l][1] = var_;
+    }
+    const br = new Array(k + 1);
+    br[0] = data[0]; br[k] = data[n - 1];
+    for (let j = k, c = n; j >= 2; j--){ const id = lower[c][j] - 2; br[j - 1] = data[id]; c = lower[c][j] - 1; }
+    return br;
+  }
+  const rampColours = (s, k) => k <= 1 ? [palette.seqColour(s.sym.ramp, .5, s.sym.reverse)]
+    : Array.from({ length: k }, (_, i) => palette.seqColour(s.sym.ramp, i / (k - 1), s.sym.reverse));
+
+  // ---- Drawing: one canvas polyline per road; restyled in place (no rebuild) on every change ----
+  function buildLines(s){
+    s.group = L.featureGroup();
+    s.lines = s.data.latlngs.map((ll, i) => {
+      const pl = L.polyline(ll, { renderer, color: NODATA, weight: s.sym.width, lineCap: "round", lineJoin: "round" });
+      pl._ovi = i; pl._ovIn = false;
+      return pl;
+    });
+    s.group.on("click", e => {
+      L.DomEvent.stopPropagation(e);                     // not a click on the emission layer below
+      openPopup(s, e.layer._ovi, e.latlng);
+    });
+  }
+  function apply(s, reclassify){
+    const sym = s.sym, vals = s.data.values[sym.field] || [];
+    if (reclassify || !s.cls) s.cls = classify(vals, sym.classes, sym.method);
+    const colours = rampColours(s, s.cls.k), op = sym.opacity / 100;
+    const add = [], drop = [];
+    s.lines.forEach((pl, i) => {
+      const v = vals[i], show = v != null || sym.nodata;
+      if (show) pl.setStyle(v == null
+        ? { color: NODATA, weight: Math.max(1, sym.width * .6), opacity: op * .7 }
+        : { color: colours[classOf(s.cls.breaks, v)], weight: sym.width, opacity: op });
+      if (show !== pl._ovIn){ (show ? add : drop).push(pl); pl._ovIn = show; }
+    });
+    drop.forEach(pl => s.group.removeLayer(pl));
+    add.forEach(pl => s.group.addLayer(pl));
+    renderLegend(s, colours);
+  }
+  // Coalesce slider drags and quick changes into one restyle (a timer, not requestAnimationFrame,
+  // so a change made while the page is in the background still applies)
+  function schedule(s, reclassify){
+    s.re = s.re || reclassify;
+    if (s.raf || !s.on || !s.lines) return;
+    s.raf = setTimeout(() => { s.raf = 0; const re = s.re; s.re = false; if (s.on) apply(s, re); }, 30);
+  }
+
+  async function setOn(s, on){
+    const box = s.el.querySelector(".ov-on"), symEl = s.el.querySelector(".ov-sym");
+    s.on = on;
+    s.el.classList.toggle("on", on);
+    symEl.hidden = !on;
+    if (!on){
+      if (s.group) map.removeLayer(s.group);
+      if (s.legendCtrl){ s.legendCtrl.remove(); s.legendCtrl = null; }
+      status(s, "");
+      return;
+    }
+    if (!s.data) status(s, `Loading ${s.cfg.name}…`);
+    try {
+      await ensureData(s);
+    } catch (err){
+      status(s, `The layer could not be loaded (${err.message}). Untick and tick it to try again.`, true);
+      s.on = false; box.checked = false; s.el.classList.remove("on"); symEl.hidden = true;
+      return;
+    }
+    if (!s.on) return;                                   // unticked while it was loading
+    status(s, "");
+    try {
+      if (!s.lines) buildLines(s);
+      apply(s, true);
+      s.group.addTo(map);
+    } catch (err){
+      console.error("Overlay layer", s.cfg.id, err);
+      status(s, "The layer could not be drawn.", true);
+      return;
+    }
+    addMapLegend(s);
+    if (!s.fitted){
+      const b = s.data.bbox;
+      map.flyToBounds([[b[0], b[1]], [b[2], b[3]]], { padding: [20, 20], duration: .8 });
+      s.fitted = true;
+    }
+  }
+
+  // ---- Legend: in the panel (with counts) and on the map ----
+  const range = (br, i) => `${fmtVal(br[i])} – ${fmtVal(br[i + 1])}`;
+  function legendParts(s, colours){
+    const f = s.data.fields[s.sym.field] || { label: s.sym.field, unit: "" };
+    const c = s.cls, noData = s.data.n - c.n, excluded = s.data.errors[s.sym.field]?.size || 0;
+    const rows = c.breaks.slice(0, -1).map((_, i) => ({ colour: colours[i], text: range(c.breaks, i), n: c.counts[i] }));
+    return { f, rows, noData, excluded };
+  }
+  function renderLegend(s, colours){
+    colours = colours || rampColours(s, s.cls.k);
+    const { f, rows, noData, excluded } = legendParts(s, colours);
+    const el = s.el?.querySelector(".ov-legend");
+    if (el){
+      el.innerHTML = `<p class="ov-legend-h">${esc(f.label)} (${esc(f.unit)}) · ${esc(METHODS[s.sym.method])}</p>
+        <ul>${rows.map(r => `<li><span class="ov-sw" style="background:${r.colour}"></span><span>${esc(r.text)}</span><span class="n">${r.n.toLocaleString("en-IE")}</span></li>`).join("")}
+        <li class="nodata"><span class="ov-sw"></span><span>No data${s.sym.nodata ? "" : " (hidden)"}</span><span class="n">${noData.toLocaleString("en-IE")}</span></li></ul>
+        ${rows.length < s.sym.classes && s.cls.n ? `<p class="ov-note">Only ${rows.length} distinct classes for this field (tied break values merged).</p>` : ""}
+        ${excluded ? `<p class="ov-note">${excluded.toLocaleString("en-IE")} negative readings excluded as sensor errors (shown as no data).</p>` : ""}`;
+    }
+    if (s.legendCtrl) s.legendCtrl.update(f, rows, s);
+  }
+  function addMapLegend(s){
+    if (s.legendCtrl) return;
+    const ctrl = L.control({ position: "bottomright" });
+    ctrl.onAdd = () => {
+      const div = L.DomUtil.create("div", "ov-map-legend");
+      L.DomEvent.disableClickPropagation(div); L.DomEvent.disableScrollPropagation(div);
+      return div;
+    };
+    ctrl.update = (f, rows, st) => {
+      const div = ctrl.getContainer(); if (!div) return;
+      div.innerHTML = `<p class="ov-legend-h">${esc(st.cfg.name)}: ${esc(f.label)} (${esc(f.unit)})</p>
+        <ul>${rows.map(r => `<li><span class="ov-sw" style="background:${r.colour}"></span>${esc(r.text)}</li>`).join("")}
+        ${st.sym.nodata ? `<li class="nodata"><span class="ov-sw"></span>No data</li>` : ""}</ul>`;
+    };
+    ctrl.addTo(map);
+    s.legendCtrl = ctrl;
+    renderLegend(s);
+  }
+
+  // ---- Popup: road name, road type, the shown pollutant and its measurement counts ----
+  const roadType = c => c ? c.replace(/_/g, " ").replace(/^./, ch => ch.toUpperCase()) : "Unknown";
+  function openPopup(s, i, latlng){
+    const d = s.data, key = s.sym.field, f = d.fields[key] || { label: key, unit: "" };
+    const v = d.values[key]?.[i], pts = d.points[key]?.[i] || 0, drv = d.drives[key]?.[i] || 0;
+    const val = v != null ? `${fmtVal(v)} ${f.unit}` : d.errors[key]?.has(i) ? "Excluded (negative reading)" : "No data";
+    const rows = [
+      ["Road type", esc(roadType(d.fclass[i]))],
+      [esc(f.label), `<b>${esc(val)}</b>`],
+      ["Measurement points", pts.toLocaleString("en-IE")],
+      ["Drives", drv.toLocaleString("en-IE")],
+    ];
+    L.popup({ maxWidth: 280 }).setLatLng(latlng)
+      .setContent(popupHtml(rows, esc(d.name[i] || "Unnamed road"), esc(`${s.cfg.name} · ${s.cfg.what}`)))
+      .openOn(map);
+  }
 })();
 
 // Open straight into the Policy Timeline when the page is loaded with #policy...

@@ -1,0 +1,79 @@
+{
+ "layers": [
+  {
+   "id": "airview_dublin",
+   "name": "Google Air View",
+   "group": "Air Quality",
+   "kind": "lines",
+   "description": "Mean street-level concentrations measured by Google Street View cars, Dublin City, averaged by road segment.",
+   "credit": "Google Air View, Dublin City road data",
+   "url": "",
+   "bbox": [
+    53.3018,
+    -6.38632,
+    53.4111,
+    -6.14303
+   ],
+   "count": 24683,
+   "fields": [
+    {
+     "key": "NO2",
+     "label": "NO₂",
+     "unit": "µg/m³",
+     "n": 18134,
+     "excluded": 6350,
+     "min": 0.0,
+     "max": 503.94
+    },
+    {
+     "key": "NO",
+     "label": "NO",
+     "unit": "µg/m³",
+     "n": 10208,
+     "excluded": 14391,
+     "min": 0.0,
+     "max": 1785.45
+    },
+    {
+     "key": "PM25",
+     "label": "PM2.5",
+     "unit": "µg/m³",
+     "n": 24665,
+     "excluded": 0,
+     "min": 0.07,
+     "max": 117.34
+    },
+    {
+     "key": "O3",
+     "label": "O₃",
+     "unit": "µg/m³",
+     "n": 23417,
+     "excluded": 18,
+     "min": 0.28,
+     "max": 140.8
+    },
+    {
+     "key": "CO",
+     "label": "CO",
+     "unit": "mg/m³",
+     "n": 24637,
+     "excluded": 0,
+     "min": 0.22,
+     "max": 2.17
+    },
+    {
+     "key": "CO2",
+     "label": "CO₂",
+     "unit": "mg/m³",
+     "n": 24478,
+     "excluded": 0,
+     "min": 731.06,
+     "max": 2103.92
+    }
+   ],
+   "default_field": "NO2",
+   "file": "airview_dublin.json.gz",
+   "bytes": 781566
+  }
+ ]
+}

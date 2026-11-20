@@ -19,6 +19,8 @@ urlpatterns = [
     # Time series of a pixel, region or the whole grid (map window's Time series panel)
     path("api/map/timeseries/", views.map_timeseries, name="map_timeseries"),
     path("api/map/counties/", views.map_counties, name="map_counties"),
+    path("api/overlays/", views.overlay_catalog, name="overlay_catalog"),
+    path("api/overlays/<str:layer_id>/", views.overlay_layer, name="overlay_layer"),
     path("api/feedback/", views.submit_feedback, name="submit_feedback"),
     path("api/feedback/download/", views.download_feedback, name="download_feedback"),
     # Trend Analysis (piecewise regression) API — ported from the Streamlit app

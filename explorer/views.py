@@ -24,6 +24,7 @@ from django.views.decorators.http import require_POST
 from . import feedback_store
 from . import edgar, inverse, rasters
 from . import timeseries
+from . import overlays
 from . import map_export as map_export_mod
 
 logger = logging.getLogger(__name__)
@@ -341,6 +342,30 @@ def edgar_layer(request):
         return JsonResponse({"ok": False, "detail": "Unknown EDGAR selection."}, status=404)
     resp = JsonResponse({"ok": True, **data}, json_dumps_params={"ensure_ascii": False})
     resp["Cache-Control"] = "public, max-age=3600"
+    return resp
+
+
+def overlay_catalog(request):
+    """The vector overlay layers (Layer Overlay list): names, fields, value ranges, extents."""
+    return JsonResponse({"ok": True, **overlays.catalog()}, json_dumps_params={"ensure_ascii": False})
+
+
+def overlay_layer(request, layer_id):
+    """One packed overlay layer, sent gzipped (built by scripts/build_overlays.py)."""
+    path = overlays.layer_path(layer_id)
+    if path is None:
+        return JsonResponse({"ok": False, "detail": "Unknown overlay layer."}, status=404)
+    gzip_ok = "gzip" in request.META.get("HTTP_ACCEPT_ENCODING", "")
+    try:
+        body = overlays.read_layer(path, gzip_ok)
+    except OSError:
+        logger.exception("Failed to read overlay layer %s", layer_id)
+        return JsonResponse({"ok": False, "detail": "The overlay layer could not be loaded."}, status=500)
+    resp = HttpResponse(body, content_type="application/json; charset=utf-8")
+    if gzip_ok:
+        resp["Content-Encoding"] = "gzip"
+    resp["Vary"] = "Accept-Encoding"
+    resp["Cache-Control"] = "public, max-age=86400"
     return resp
 
 
