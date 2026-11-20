@@ -1256,8 +1256,9 @@ html.map-standalone .ms-bar{
    Vector layers drawn over the emission layers; the list is built from OVERLAY_LAYERS. ---- */
 .ms-tools .ms-aq i{font-size:.95rem}
 .ov-view{display:none}
-html.map-standalone .map-side.ov-on > :not(.ov-view){display:none!important}
-html.map-standalone .map-side.ov-on > .ov-view{display:block}
+html.map-standalone.ms-aq .map-side > :not(.ov-view){display:none!important}
+html.map-standalone.ms-aq .map-side > .ov-view{display:block}
+.ms-modeswitch{display:inline-flex;align-items:center;gap:.35rem}
 .ov-head{padding:.75rem .9rem .6rem;border-bottom:1px solid var(--grey-border);background:#fff}
 .ov-back{
   display:inline-flex;align-items:center;gap:.3rem;border:0;background:none;padding:0;margin:0 0 .35rem;
@@ -1923,6 +1924,29 @@ html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:0 minma
   html.map-standalone.ms-ts.ms-side-hidden #mapPanel{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) minmax(0,58%)}
   html.map-standalone.ms-ts .map-side{grid-row:auto}
   html.map-standalone.ms-ts{--ms-side-w:506px}
+}
+/* ---- Air Quality mode: layer list on the left, layer settings on the right; the time series and
+   compare results keep their state (not shown) until Mapping is selected again ---- */
+html.map-standalone.ms-aq{--ms-side-w:340px;--cmp-res-w:380px}
+html.map-standalone.ms-aq #mapPanel{grid-template-columns:var(--ms-side-w) minmax(0,1fr) var(--cmp-res-w);grid-template-rows:auto minmax(0,1fr)}
+html.map-standalone.ms-aq.ms-side-hidden #mapPanel{grid-template-columns:0 minmax(0,1fr) var(--cmp-res-w)}
+html.map-standalone.ms-aq #cmpResults,html.map-standalone.ms-aq #tsResults{display:none!important}
+html.map-standalone.ms-aq .map-side{grid-row:2}
+.ov-results[hidden]{display:none!important}
+.ov-res-body{display:flex;flex-direction:column;gap:.7rem;padding:.75rem .8rem 1rem}
+.ov-results .ov-sym{border:1px solid var(--grey-border);border-radius:10px;background:#fff;padding:.7rem .8rem .8rem;
+  box-shadow:0 1px 2px rgba(16,42,67,.05)}
+.ov-card-h{display:flex;align-items:center;gap:.45rem;margin:0;font-size:.9rem;font-weight:800;color:var(--navy)}
+.ov-card-h i{color:var(--teal)}
+@media (max-width:1279px){
+  html.map-standalone.ms-aq #mapPanel{grid-template-columns:var(--ms-side-w) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) minmax(0,46%)}
+  html.map-standalone.ms-aq.ms-side-hidden #mapPanel{grid-template-columns:0 minmax(0,1fr)}
+  html.map-standalone.ms-aq .map-side{grid-row:2 / 4}
+}
+@media (max-width:991px){
+  html.map-standalone.ms-aq #mapPanel,
+  html.map-standalone.ms-aq.ms-side-hidden #mapPanel{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) minmax(0,50%)}
+  html.map-standalone.ms-aq .map-side{grid-row:auto}
 }
 @media (max-width:575px){
   #map .raster-colorbar.cmp-card .cb-note{display:none}
@@ -2673,10 +2697,17 @@ a.ug-go.alt:hover{color:var(--navy)}
                 <button type="button" class="ms-tool" id="msTextSmaller" aria-label="Smaller text" title="Smaller text"><span class="ms-a sm" aria-hidden="true">a</span></button>
                 <button type="button" class="ms-tool" id="msTextLarger" aria-label="Larger text" title="Larger text"><span class="ms-a lg" aria-hidden="true">A</span></button>
               </div>
-              <button type="button" class="ms-tool ms-aq" id="msAirQuality" aria-pressed="false" aria-controls="msOverlay"
-                      title="Air Quality: overlay layers such as Google Air View road concentrations">
-                <i class="bi bi-wind"></i><span class="lbl">Air Quality</span>
-              </button>
+              <!-- Panel mode: Mapping (emission layers, time series, compare; the default) | Air Quality (overlay layers) -->
+              <div class="ms-modeswitch" role="group" aria-label="Panel mode">
+                <button type="button" class="ms-tool" id="msMapping" aria-pressed="true" aria-controls="mapSide"
+                        title="Mapping: emission layers, time series and compare">
+                  <i class="bi bi-map"></i><span class="lbl">Mapping</span>
+                </button>
+                <button type="button" class="ms-tool ms-aq" id="msAirQuality" aria-pressed="false" aria-controls="msOverlay ovSettings"
+                        title="Air Quality: overlay layers such as Google Air View road concentrations">
+                  <i class="bi bi-wind"></i><span class="lbl">Air Quality</span>
+                </button>
+              </div>
               <button type="button" class="ms-tool" id="msResetView" title="Zoom back to the whole of Ireland">
                 <i class="bi bi-crosshair"></i><span class="lbl">Reset View</span>
               </button>
@@ -2690,11 +2721,11 @@ a.ug-go.alt:hover{color:var(--navy)}
                stepper below). The list of layers is built by the script from OVERLAY_LAYERS. -->
           <div class="ov-view" id="msOverlay" role="region" aria-labelledby="ovTitle">
             <div class="ov-head">
-              <button type="button" class="ov-back" id="ovBack"><i class="bi bi-arrow-left" aria-hidden="true"></i>Back to emission layers</button>
+              <button type="button" class="ov-back" id="ovBack"><i class="bi bi-arrow-left" aria-hidden="true"></i>Back to Mapping</button>
               <h3 class="ov-title" id="ovTitle"><i class="bi bi-wind" aria-hidden="true"></i>Layer Overlay</h3>
             </div>
             <div class="ov-body" id="ovBody">
-              <p class="ms-p">Layers drawn on top of the map and any emission layer. Tick a layer to show it and set its symbology.</p>
+              <p class="ms-p">Layers drawn on top of the map and any emission layer. Tick a layer to show it; its settings open in the panel on the right.</p>
               <div id="ovList"><p class="ov-status"><i class="bi bi-hourglass-split" aria-hidden="true"></i>Loading the layer list…</p></div>
             </div>
           </div>
@@ -3071,6 +3102,15 @@ a.ug-go.alt:hover{color:var(--navy)}
           </div>
           </div><!-- /map-side -->
           <div id="map"></div>
+          <!-- Air Quality mode: symbology of the ticked overlay layers (filled by the script) -->
+          <aside class="cmp-results ov-results ms-only" id="ovSettings" aria-label="Layer settings" hidden>
+            <div class="cmp-res-head">
+              <div><div class="ms-kicker">Air Quality</div><div class="cmp-res-title">Layer settings</div></div>
+            </div>
+            <div class="cmp-res-body ov-res-body" id="ovSettingsBody">
+              <p class="cmp-empty" id="ovSettingsEmpty">Tick a layer in the Layer Overlay list on the left to show it on the map and set its symbology here.</p>
+            </div>
+          </aside>
           <!-- Compare mode: statistics of the difference map -->
           <aside class="cmp-results ms-only" id="cmpResults" aria-label="Comparison results" hidden>
             <div class="cmp-res-head">
@@ -9680,9 +9720,13 @@ if (MAP_STANDALONE) (function overlayLayers(){
   const root = document.documentElement;
   const side = document.getElementById("mapSide");
   const btn = document.getElementById("msAirQuality");
+  const mappingBtn = document.getElementById("msMapping");
   const listEl = document.getElementById("ovList");
+  const settingsEl = document.getElementById("ovSettings");
+  const settingsBody = document.getElementById("ovSettingsBody");
+  const settingsEmpty = document.getElementById("ovSettingsEmpty");
   const sideBtn = document.getElementById("msSideToggle");
-  if (!side || !btn || !listEl) return;
+  if (!side || !btn || !mappingBtn || !listEl || !settingsEl) return;
 
   map.createPane("ovPane").style.zIndex = 450;      // above the emission layers, below markers and popups
   const renderer = L.canvas({ pane: "ovPane", padding: .3, tolerance: 4 });
@@ -9709,16 +9753,23 @@ if (MAP_STANDALONE) (function overlayLayers(){
     catch (e) { /* not kept */ }
   }
 
-  // ---- The panel view: Air Quality button on, Back (or the button again) off ----
+  // ---- Panel mode: Mapping (default: emission layers, time series and compare, as before) or
+  //      Air Quality (layer list on the left, layer settings on the right). Switching only changes
+  //      what the panels show: time series / compare keep their state for when Mapping comes back. ----
   function setView(on){
-    side.classList.toggle("ov-on", on);
+    root.classList.toggle("ms-aq", on);
     btn.setAttribute("aria-pressed", String(on));
+    mappingBtn.setAttribute("aria-pressed", String(!on));
+    settingsEl.hidden = !on;
     if (on && root.classList.contains("ms-side-hidden")) sideBtn?.click();   // narrow screens: open the drawer
     side.scrollTop = 0;
+    setTimeout(() => map.invalidateSize(), 60);           // the map column changed width
     if (on) loadCatalog();
   }
-  btn.addEventListener("click", () => setView(btn.getAttribute("aria-pressed") !== "true"));
-  document.getElementById("ovBack").addEventListener("click", () => { setView(false); btn.focus(); });
+  btn.addEventListener("click", () => setView(true));
+  mappingBtn.addEventListener("click", () => setView(false));
+  document.getElementById("ovBack").addEventListener("click", () => { setView(false); mappingBtn.focus(); });
+  const syncEmpty = () => { settingsEmpty.hidden = states.some(s => s.on && s.symEl); };
 
   // ---- Catalogue: which layers are built, their fields and value ranges ----
   let catalogReq = null;
@@ -9774,6 +9825,7 @@ if (MAP_STANDALONE) (function overlayLayers(){
         <span class="ov-item-desc">${esc(m.description || "")} ${(m.count || 0).toLocaleString("en-IE")} roads.</span></span></label>
       <p class="ov-status" role="status"></p>
       <div class="ov-sym" id="${uid("sym")}"${s.on ? "" : " hidden"}>
+        <p class="ov-card-h"><i class="bi bi-sliders" aria-hidden="true"></i>${esc(s.cfg.name)}</p>
         <div class="ov-f"><label for="${uid("field")}">Pollutant</label>
           <select class="form-select form-select-sm" id="${uid("field")}" data-k="field">${fieldOpts}</select></div>
         <div class="ov-f"><label for="${uid("ramp")}">Colour ramp</label>
@@ -9801,7 +9853,12 @@ if (MAP_STANDALONE) (function overlayLayers(){
         <p class="ov-credit">Source: ${esc(m.credit || s.cfg.name)}${m.url ? ` · <a href="${esc(m.url)}" target="_blank" rel="noopener">data</a>` : ""}</p>
       </div>`;
     s.el = li;
+    // The settings go to the right-hand panel (one card per ticked layer)
+    s.symEl?.remove();
+    s.symEl = li.querySelector(".ov-sym");
+    settingsBody.appendChild(s.symEl);
     syncOutputs(s);
+    syncEmpty();
     li.querySelector(".ov-on").addEventListener("change", e => setOn(s, e.target.checked));
     const onInput = e => {
       const k = e.target.dataset.k; if (!k) return;
@@ -9811,14 +9868,14 @@ if (MAP_STANDALONE) (function overlayLayers(){
       save();
       schedule(s, k === "field" || k === "classes" || k === "method");
     };
-    li.querySelector(".ov-sym").addEventListener("input", onInput);
-    li.querySelector(".ov-sym").addEventListener("change", onInput);
+    s.symEl.addEventListener("input", onInput);
+    s.symEl.addEventListener("change", onInput);
     if (s.on && s.data) renderLegend(s);
     return li;
   }
 
   function syncOutputs(s){
-    const el = s.el; if (!el) return;
+    const el = s.symEl; if (!el) return;
     const w = el.querySelector('[data-out="width"]'), o = el.querySelector('[data-out="opacity"]');
     if (w) w.textContent = `${s.sym.width} px`;
     if (o) o.textContent = `${s.sym.opacity}%`;
@@ -9951,10 +10008,11 @@ if (MAP_STANDALONE) (function overlayLayers(){
   }
 
   async function setOn(s, on){
-    const box = s.el.querySelector(".ov-on"), symEl = s.el.querySelector(".ov-sym");
+    const box = s.el.querySelector(".ov-on"), symEl = s.symEl;
     s.on = on;
     s.el.classList.toggle("on", on);
     symEl.hidden = !on;
+    syncEmpty();
     if (!on){
       if (s.group) map.removeLayer(s.group);
       if (s.legendCtrl){ s.legendCtrl.remove(); s.legendCtrl = null; }
@@ -9966,7 +10024,7 @@ if (MAP_STANDALONE) (function overlayLayers(){
       await ensureData(s);
     } catch (err){
       status(s, `The layer could not be loaded (${err.message}). Untick and tick it to try again.`, true);
-      s.on = false; box.checked = false; s.el.classList.remove("on"); symEl.hidden = true;
+      s.on = false; box.checked = false; s.el.classList.remove("on"); symEl.hidden = true; syncEmpty();
       return;
     }
     if (!s.on) return;                                   // unticked while it was loading
@@ -9999,7 +10057,7 @@ if (MAP_STANDALONE) (function overlayLayers(){
   function renderLegend(s, colours){
     colours = colours || rampColours(s, s.cls.k);
     const { f, rows, noData, excluded } = legendParts(s, colours);
-    const el = s.el?.querySelector(".ov-legend");
+    const el = s.symEl?.querySelector(".ov-legend");
     if (el){
       el.innerHTML = `<p class="ov-legend-h">${esc(f.label)} (${esc(f.unit)}) · ${esc(METHODS[s.sym.method])}</p>
         <ul>${rows.map(r => `<li><span class="ov-sw" style="background:${r.colour}"></span><span>${esc(r.text)}</span><span class="n">${r.n.toLocaleString("en-IE")}</span></li>`).join("")}
